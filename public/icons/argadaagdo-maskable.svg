@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">ArGadaagdo maskable app icon</title>
+  <desc id="description">Green maskable icon with centered ArGadaagdo initials.</desc>
+  <rect width="512" height="512" fill="#166534"/>
+  <circle cx="256" cy="256" r="148" fill="#F7F6EF"/>
+  <path d="M169 299c35 38 88 55 139 43 36-8 68-31 88-63-34 11-70 9-101-5-27-12-49-32-63-57-11 35-33 64-63 82z" fill="#22C55E"/>
+  <path d="M168 204c28-31 70-48 113-42 29 4 56 17 77 37-26-5-53-1-78 12-22 11-40 28-53 49-13-24-33-43-59-56z" fill="#86EFAC"/>
+  <text x="256" y="298" fill="#14532D" font-family="Arial, Helvetica, sans-serif" font-size="96" font-weight="900" text-anchor="middle">AG</text>
+</svg>

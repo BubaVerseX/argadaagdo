@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">ArGadaagdo app icon</title>
+  <desc id="description">Green rounded square icon with the letters AG and a food rescue mark.</desc>
+  <rect width="512" height="512" rx="112" fill="#166534"/>
+  <circle cx="256" cy="256" r="176" fill="#F7F6EF"/>
+  <path d="M151 302c39 47 102 70 162 57 45-10 84-39 107-80-40 14-83 13-121-4-32-14-59-38-77-68-11 41-37 75-71 95z" fill="#22C55E"/>
+  <path d="M145 194c32-39 84-61 137-55 36 4 69 20 95 45-31-7-64-3-94 12-26 13-48 33-64 58-14-29-39-51-74-60z" fill="#86EFAC"/>
+  <text x="256" y="298" fill="#14532D" font-family="Arial, Helvetica, sans-serif" font-size="108" font-weight="900" text-anchor="middle">AG</text>
+</svg>

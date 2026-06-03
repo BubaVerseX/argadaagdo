@@ -1,0 +1,57 @@
+{
+  "id": "/",
+  "name": "ArGadaagdo - Food Rescue in Tbilisi",
+  "short_name": "ArGadaagdo",
+  "description": "Reserve discounted leftover food boxes from local Tbilisi businesses and pick them up in store.",
+  "start_url": "/offers",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F6EF",
+  "theme_color": "#166534",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["food", "shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/argadaagdo-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/argadaagdo-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse rescue offers",
+      "short_name": "Offers",
+      "description": "See available discounted food boxes.",
+      "url": "/offers",
+      "icons": [
+        {
+          "src": "/icons/argadaagdo-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "My orders",
+      "short_name": "Orders",
+      "description": "Open your pickup codes and reservation history.",
+      "url": "/orders",
+      "icons": [
+        {
+          "src": "/icons/argadaagdo-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
