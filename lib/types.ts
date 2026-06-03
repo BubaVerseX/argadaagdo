@@ -1,5 +1,11 @@
 export type UserRole = "customer" | "business" | "admin";
-export type OrderStatus = "reserved" | "completed" | "cancelled";
+export type OrderStatus =
+  | "reserved"
+  | "confirmed"
+  | "completed"
+  | "cancelled"
+  | "refunded"
+  | "no_show";
 
 export type Profile = {
   id: string;
@@ -28,6 +34,9 @@ export type Offer = {
   pickup_start: string | null;
   pickup_end: string | null;
   active: boolean;
+  status?: "active" | "inactive" | "sold_out" | null;
+  description?: string | null;
+  allergens?: string | null;
   image_url: string | null;
   businesses?: Pick<Business, "name" | "address" | "business_type"> | null;
 };
@@ -47,6 +56,15 @@ export type Order = {
   status: OrderStatus;
   payment_method: string | null;
   pickup_code: string | null;
+  amount?: number | string | null;
+  platform_fee?: number | string | null;
+  business_amount?: number | string | null;
+  cancelled_at?: string | null;
+  cancelled_reason?: string | null;
+  completed_at?: string | null;
+  no_show_at?: string | null;
+  rated_at?: string | null;
+  quantity_restored_at?: string | null;
   offers?: (Pick<
     Offer,
     | "id"

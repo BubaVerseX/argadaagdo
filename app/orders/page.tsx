@@ -5,6 +5,12 @@ import Notice from "@/components/Notice";
 import StatCard from "@/components/StatCard";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { notifyOrderCancelled } from "@/lib/notifications";
+import {
+  getInactiveOrderMessage,
+  getOrderStatusClassName,
+  getOrderStatusLabel,
+  isConfirmedOrderStatus,
+} from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Order } from "@/lib/types";
 import Link from "next/link";
@@ -58,17 +64,17 @@ export default function OrdersPage() {
   }
 
   async function cancelOrder(order: Order) {
-    if (order.status !== "reserved") return;
+    if (!isConfirmedOrderStatus(order.status)) return;
 
     setCancellingOrderId(order.id);
     setMessage("");
     setOrders((currentOrders) =>
       currentOrders.map((item) =>
-        item.id === order.id ? { ...item, status: "cancelled" } : item
+        item.id === order.id ? { ...item, status: "refunded" } : item
       )
     );
 
-    const { error: orderError } = await supabase.rpc("cancel_order", {
+    const { error: orderError } = await supabase.rpc("cancel_paid_order", {
       p_order_id: order.id,
     });
 
@@ -81,7 +87,7 @@ export default function OrdersPage() {
     }
 
     setMessageTone("success");
-    setMessage("Order cancelled. Quantity restored.");
+    setMessage("Order refunded. Quantity restored.");
     notifyOrderCancelled({
       orderId: order.id,
       offerTitle: order.offers?.title,
@@ -137,11 +143,13 @@ export default function OrdersPage() {
     };
   }, [router]);
 
-  const reservedCount = orders.filter((order) => order.status === "reserved").length;
+  const confirmedCount = orders.filter((order) =>
+    isConfirmedOrderStatus(order.status)
+  ).length;
   const completedCount = orders.filter((order) => order.status === "completed").length;
   const cancelledCount = orders.filter((order) => order.status === "cancelled").length;
-  const visibleOrders = orders.filter((order) => order.status !== "cancelled");
-  const cancelledOrders = orders.filter((order) => order.status === "cancelled");
+  const refundedCount = orders.filter((order) => order.status === "refunded").length;
+  const noShowCount = orders.filter((order) => order.status === "no_show").length;
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -161,10 +169,12 @@ export default function OrdersPage() {
             Show your pickup code at the business during pickup time.
           </p>
 
-          <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-8 sm:gap-4">
-            <StatCard title="Reserved" value={reservedCount} tone="yellow" />
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
+            <StatCard title="Confirmed" value={confirmedCount} tone="yellow" />
             <StatCard title="Completed" value={completedCount} tone="green" />
             <StatCard title="Cancelled" value={cancelledCount} tone="red" />
+            <StatCard title="Refunded" value={refundedCount} />
+            <StatCard title="No-show" value={noShowCount} tone="red" />
           </div>
         </div>
 
@@ -180,20 +190,18 @@ export default function OrdersPage() {
           </div>
         )}
 
-        {!loading && visibleOrders.length === 0 && (
+        {!loading && orders.length === 0 && (
           <div className="mt-8 rounded-[2rem] bg-white p-10 text-center shadow-sm">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
               🥡
             </div>
 
             <h2 className="mt-5 text-3xl font-black">
-              {orders.length === 0 ? "No orders yet" : "No active orders"}
+              No orders yet
             </h2>
 
             <p className="mt-3 font-medium text-gray-600">
-              {orders.length === 0
-                ? "Reserve your first food offer and it will appear here."
-                : "Cancelled reservations are removed from the active pickup flow."}
+              Reserve your first food offer and it will appear here.
             </p>
 
             <Link
@@ -206,19 +214,15 @@ export default function OrdersPage() {
         )}
 
         <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5">
-          {visibleOrders.map((order) => {
+          {orders.map((order) => {
             const businessAddress =
               order.offers?.businesses?.address || "Address unavailable";
             const mapsUrl = createMapsSearchUrl(
               order.offers?.businesses?.address,
               order.offers?.businesses?.name
             );
-            const statusClass =
-              order.status === "completed"
-                ? "bg-green-100 text-green-700"
-                : order.status === "cancelled"
-                ? "bg-red-100 text-red-700"
-                : "bg-yellow-100 text-yellow-700";
+            const statusClass = getOrderStatusClassName(order.status);
+            const isConfirmed = isConfirmedOrderStatus(order.status);
 
             return (
               <div
@@ -231,7 +235,7 @@ export default function OrdersPage() {
                       <span
                         className={`rounded-full px-4 py-2 text-sm font-black ${statusClass}`}
                       >
-                        {order.status}
+                        {getOrderStatusLabel(order.status)}
                       </span>
 
                       <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700">
@@ -280,7 +284,7 @@ export default function OrdersPage() {
                       Pickup Code
                     </p>
 
-                    {order.status === "reserved" ? (
+                    {isConfirmed ? (
                       <>
                         <div className="mt-3 rounded-2xl bg-white px-4 py-4 shadow-sm sm:rounded-3xl sm:px-6 sm:py-5">
                           <p className="font-mono text-3xl font-black tracking-[0.18em] text-green-700 sm:text-4xl">
@@ -294,13 +298,11 @@ export default function OrdersPage() {
                       </>
                     ) : (
                       <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-gray-600 shadow-sm">
-                        {order.status === "completed"
-                          ? "Pickup completed"
-                          : "Reservation cancelled"}
+                        {getInactiveOrderMessage(order.status)}
                       </div>
                     )}
 
-                    {order.status === "reserved" && (
+                    {isConfirmed && (
                       <button
                         onClick={() => cancelOrder(order)}
                         disabled={cancellingOrderId !== null}
@@ -317,44 +319,6 @@ export default function OrdersPage() {
             );
           })}
         </div>
-
-        {!loading && cancelledOrders.length > 0 && (
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-xl font-black sm:text-2xl">
-                Cancelled reservations
-              </h2>
-              <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-black text-red-700">
-                Not active
-              </span>
-            </div>
-
-            <div className="mt-5 grid gap-3">
-              {cancelledOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="rounded-2xl border border-red-100 bg-red-50/40 p-4"
-                >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h3 className="font-black text-gray-950">
-                        {order.offers?.title || "Offer unavailable"}
-                      </h3>
-                      <p className="mt-1 font-semibold text-gray-600">
-                        {order.offers?.businesses?.name ||
-                          "Business unavailable"}
-                      </p>
-                    </div>
-
-                    <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-black text-red-700">
-                      Cancelled
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
     </main>
   );

@@ -305,7 +305,7 @@ export default function Home() {
                     </div>
 
                     <Link
-                      href="/offers"
+                      href={`/checkout/${offer.id}`}
                       className="min-h-12 rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800"
                     >
                       Reserve

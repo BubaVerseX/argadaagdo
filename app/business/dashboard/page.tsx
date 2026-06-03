@@ -6,6 +6,11 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { getProfileById } from "@/lib/auth";
 import { notifyPickupCompleted } from "@/lib/notifications";
+import {
+  getOrderStatusClassName,
+  getOrderStatusLabel,
+  isConfirmedOrderStatus,
+} from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -330,31 +335,26 @@ export default function BusinessDashboardPage() {
     await loadDashboard();
   }
 
-  async function completeOrder(orderId: number) {
+  async function completeOrder(orderId: number, pickupCodeValue: string) {
     const completedOrder = orders.find((order) => order.id === orderId);
 
+    if (!pickupCodeValue.trim()) {
+      setMessageTone("error");
+      setMessage("Pickup code required to complete an order.");
+      return false;
+    }
+
     setUpdatingOrderId(orderId);
-    const { data, error } = await supabase
-      .from("orders")
-      .update({ status: "completed" })
-      .eq("id", orderId)
-      .eq("status", "reserved")
-      .select("id")
-      .maybeSingle();
+    const { error } = await supabase.rpc("complete_pickup", {
+      p_order_id: orderId,
+      p_pickup_code: pickupCodeValue.trim(),
+    });
 
     if (error) {
       setUpdatingOrderId(null);
       setMessageTone("error");
       setMessage(error.message);
-      return;
-    }
-
-    if (!data) {
-      setUpdatingOrderId(null);
-      setMessageTone("warning");
-      setMessage("This reservation was already updated.");
-      await loadDashboard();
-      return;
+      return false;
     }
 
     setUpdatingOrderId(null);
@@ -371,6 +371,7 @@ export default function BusinessDashboardPage() {
       )
     );
     await loadDashboard();
+    return true;
   }
 
   async function verifyPickupCode() {
@@ -385,7 +386,7 @@ export default function BusinessDashboardPage() {
     const order = orders.find(
       (item) =>
         item.pickup_code === pickupCode.trim() &&
-        item.status === "reserved"
+        isConfirmedOrderStatus(item.status)
     );
 
     if (!order) {
@@ -394,8 +395,8 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    await completeOrder(order.id);
-    setPickupCode("");
+    const completed = await completeOrder(order.id, pickupCode.trim());
+    if (completed) setPickupCode("");
   }
 
   useEffect(() => {
@@ -446,8 +447,12 @@ export default function BusinessDashboardPage() {
 
   const activeOffers = offers.filter((offer) => offer.active);
   const completedOrders = orders.filter((order) => order.status === "completed");
-  const reservedOrders = orders.filter((order) => order.status === "reserved");
-  const cancelledOrders = orders.filter((order) => order.status === "cancelled");
+  const reservedOrders = orders.filter((order) =>
+    isConfirmedOrderStatus(order.status)
+  );
+  const cancelledOrders = orders.filter(
+    (order) => order.status === "cancelled" || order.status === "refunded"
+  );
   const businessAnalytics = [
     {
       title: "Reservations",
@@ -791,15 +796,9 @@ export default function BusinessDashboardPage() {
 
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span
-                      className={`rounded-full px-4 py-2 text-sm font-black ${
-                        order.status === "completed"
-                          ? "bg-green-100 text-green-700"
-                          : order.status === "cancelled"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
+                      className={`rounded-full px-4 py-2 text-sm font-black ${getOrderStatusClassName(order.status)}`}
                     >
-                      {order.status}
+                      {getOrderStatusLabel(order.status)}
                     </span>
 
                     <span className="rounded-full bg-gray-100 px-4 py-2 font-mono text-sm font-black text-gray-700">
@@ -808,9 +807,11 @@ export default function BusinessDashboardPage() {
                   </div>
                 </div>
 
-                {order.status === "reserved" && (
+                {isConfirmedOrderStatus(order.status) && (
                   <button
-                    onClick={() => completeOrder(order.id)}
+                    onClick={() =>
+                      void completeOrder(order.id, order.pickup_code || "")
+                    }
                     disabled={updatingOrderId !== null}
                     className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                   >

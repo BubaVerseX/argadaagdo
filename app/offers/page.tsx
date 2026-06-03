@@ -5,7 +5,6 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { getProfileById } from "@/lib/auth";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { notifyReservationConfirmed } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -29,7 +28,6 @@ export default function OffersPage() {
     "success" | "error" | "warning"
   >("success");
   const [loading, setLoading] = useState(true);
-  const [reservingOfferId, setReservingOfferId] = useState<number | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [canUseFavorites, setCanUseFavorites] = useState(false);
   const [favoriteOfferIds, setFavoriteOfferIds] = useState<number[]>([]);
@@ -77,55 +75,10 @@ export default function OffersPage() {
     refreshTimer.current = setTimeout(() => void loadOffers(), 150);
   }, [loadOffers]);
 
-  async function reserveOffer(offer: Offer) {
-    setMessage("");
-
-    const { data: userData } = await supabase.auth.getUser();
-
-    if (!userData.user) {
-      router.push("/login");
-      return;
-    }
-
-    setReservingOfferId(offer.id);
-
-    const { error } = await supabase.rpc("reserve_offer", {
-      p_offer_id: offer.id,
-    });
-
-    if (error) {
-      setMessageTone("error");
-      setMessage(error.message || "This offer could not be reserved.");
-      setReservingOfferId(null);
-      await loadOffers();
-      return;
-    }
-
-    setMessageTone("success");
-    setMessage("Reserved successfully. Your pickup code is in Orders.");
-    notifyReservationConfirmed({
-      offerId: offer.id,
-      offerTitle: offer.title,
-      businessName: offer.businesses?.name,
-      pickupStart: offer.pickup_start,
-      pickupEnd: offer.pickup_end,
-    });
-    setOffers((currentOffers) =>
-      currentOffers
-        .map((item) =>
-          item.id === offer.id
-            ? {
-                ...item,
-                quantity: Math.max(Number(item.quantity || 0) - 1, 0),
-                active: Number(item.quantity || 0) - 1 > 0,
-              }
-            : item
-        )
-        .filter((item) => item.active && Number(item.quantity || 0) > 0)
-    );
-    setReservingOfferId(null);
-    await loadOffers();
+  function openCheckout(offer: Offer) {
+    router.push(`/checkout/${offer.id}`);
   }
+
 
   async function toggleFavorite(offer: Offer) {
     setMessage("");
@@ -546,16 +499,11 @@ export default function OffersPage() {
                         </button>
 
                         <button
-                          onClick={() => reserveOffer(offer)}
-                          disabled={
-                            reservingOfferId !== null ||
-                            Number(offer.quantity || 0) <= 0
-                          }
+                          onClick={() => openCheckout(offer)}
+                          disabled={Number(offer.quantity || 0) <= 0}
                           className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                         >
-                          {reservingOfferId === offer.id
-                            ? "Reserving..."
-                            : Number(offer.quantity || 0) <= 0
+                          {Number(offer.quantity || 0) <= 0
                             ? "Sold out"
                             : "Reserve"}
                         </button>

@@ -312,7 +312,7 @@ export default function FavoritesPage() {
 
                       {isAvailable && (
                         <Link
-                          href="/offers"
+                          href={`/checkout/${offer.id}`}
                           className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
                         >
                           Reserve
