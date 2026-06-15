@@ -3,7 +3,13 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
+import {
+  getConfirmedUser,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyReservationConfirmed } from "@/lib/notifications";
+import { formatPickupWindow, isOfferReservable } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import Link from "next/link";
@@ -32,11 +38,14 @@ async function fetchCheckoutOffer(
     };
   }
 
+  await processExpiredMarketplace();
+
   const { data, error } = await supabase
     .from("offers")
     .select("*, businesses(name, address, business_type)")
     .eq("id", offerId)
     .eq("active", true)
+    .eq("status", "active")
     .maybeSingle();
 
   if (error) {
@@ -56,6 +65,32 @@ async function fetchCheckoutOffer(
   return { status: "success", offer: data as CheckoutOffer };
 }
 
+function getReservationErrorMessage(message?: string) {
+  const normalizedMessage = (message || "").toLowerCase();
+
+  if (normalizedMessage.includes("at most 3 active reservations")) {
+    return "You already have 3 active reservations. Complete or cancel one before reserving another.";
+  }
+
+  if (normalizedMessage.includes("not logged in")) {
+    return "Please sign in first.";
+  }
+
+  if (normalizedMessage.includes("offer sold out")) {
+    return "Offer is sold out.";
+  }
+
+  if (normalizedMessage.includes("offer is not available")) {
+    return "This offer is no longer available for checkout. It may be expired, sold out, or inactive.";
+  }
+
+  if (normalizedMessage.includes("restricted customer")) {
+    return "Only customer accounts in good standing can reserve offers.";
+  }
+
+  return message || "Demo payment could not be completed.";
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
@@ -64,6 +99,8 @@ export default function CheckoutPage() {
   const [offer, setOffer] = useState<CheckoutOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [rulesAccepted, setRulesAccepted] = useState(false);
+  const [checkoutBlocked, setCheckoutBlocked] = useState(true);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -71,6 +108,28 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     let isCurrent = true;
+
+    async function checkCheckoutAccess() {
+      const authResult = await getConfirmedUser();
+
+      if (!isCurrent) return;
+
+      if (authResult.status === "signed_out") {
+        setCheckoutBlocked(true);
+        setMessageTone("warning");
+        setMessage("Please sign in first.");
+        return;
+      }
+
+      if (authResult.status === "unverified") {
+        setCheckoutBlocked(true);
+        setMessageTone("warning");
+        setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+        return;
+      }
+
+      setCheckoutBlocked(false);
+    }
 
     async function loadInitialOffer() {
       const result = await fetchCheckoutOffer(offerId);
@@ -89,12 +148,13 @@ export default function CheckoutPage() {
       setLoading(false);
     }
 
+    void checkCheckoutAccess();
     void loadInitialOffer();
 
     return () => {
       isCurrent = false;
     };
-  }, [offerId]);
+  }, [offerId, router]);
 
   async function refreshOffer() {
     const result = await fetchCheckoutOffer(offerId);
@@ -105,21 +165,40 @@ export default function CheckoutPage() {
   }
 
   async function confirmMockPayment() {
+    if (paying) return;
+
     setMessage("");
 
     if (!offer) return;
 
-    if (Number(offer.quantity || 0) <= 0) {
+    if (!rulesAccepted) {
       setMessageTone("warning");
-      setMessage("This offer has sold out.");
+      setMessage(
+        "Please confirm that you understand the pickup and cancellation rules."
+      );
+      return;
+    }
+
+    if (!isOfferReservable(offer)) {
+      setMessageTone("warning");
+      setMessage("This offer is no longer available for reservation.");
       await refreshOffer();
       return;
     }
 
-    const { data: userData } = await supabase.auth.getUser();
+    const authResult = await getConfirmedUser();
 
-    if (!userData.user) {
-      router.push("/login");
+    if (authResult.status === "signed_out") {
+      setCheckoutBlocked(true);
+      setMessageTone("warning");
+      setMessage("Please sign in first.");
+      return;
+    }
+
+    if (authResult.status === "unverified") {
+      setCheckoutBlocked(true);
+      setMessageTone("warning");
+      setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
       return;
     }
 
@@ -131,7 +210,7 @@ export default function CheckoutPage() {
 
     if (error) {
       setMessageTone("error");
-      setMessage(error.message || "Mock payment could not be completed.");
+      setMessage(getReservationErrorMessage(error.message));
       setPaying(false);
       await refreshOffer();
       return;
@@ -158,14 +237,14 @@ export default function CheckoutPage() {
         <div className="mx-auto max-w-5xl">
           <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-10">
             <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-              Secure mock checkout
+              Secure demo checkout
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               Confirm your rescue box.
             </h1>
             <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
-              This demo uses the new payment-first flow. The order is created
-              only after mock payment succeeds.
+              The order is created only after demo payment succeeds, so this
+              behaves like a real paid reservation step.
             </p>
           </div>
 
@@ -219,7 +298,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="mt-6 grid gap-3 font-semibold text-gray-700">
-                    <p>Pickup: {offer.pickup_start} - {offer.pickup_end}</p>
+                    <p>Pickup: {formatPickupWindow(offer)}</p>
                     <p>
                       Address:{" "}
                       {offer.businesses?.address || "Address unavailable"}
@@ -229,7 +308,7 @@ export default function CheckoutPage() {
               </div>
 
               <aside className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
-                <h2 className="text-2xl font-black">Payment summary</h2>
+                <h2 className="text-2xl font-black">Order summary</h2>
 
                 <div className="mt-6 grid gap-4">
                   <div className="flex items-center justify-between border-b pb-3">
@@ -239,6 +318,33 @@ export default function CheckoutPage() {
                     <span className="text-3xl font-black text-green-700">
                       ₾{offer.price}
                     </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-gray-600">
+                      Quantity remaining
+                    </span>
+                    <span className="font-black text-gray-950">
+                      {offer.quantity}
+                    </span>
+                  </div>
+
+                  <div className="rounded-2xl bg-green-50 p-4">
+                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      Cancellation policy
+                    </p>
+                    <p className="mt-2 text-sm font-bold text-green-900">
+                      You can cancel up to 2 hours before pickup for a full refund.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-yellow-50 p-4">
+                    <p className="text-sm font-black uppercase tracking-widest text-yellow-700">
+                      No-show warning
+                    </p>
+                    <p className="mt-2 text-sm font-bold text-yellow-900">
+                      If you do not pick up your order, it may count as a no-show.
+                    </p>
                   </div>
 
                   {offer.old_price && (
@@ -254,25 +360,55 @@ export default function CheckoutPage() {
 
                   <div className="rounded-2xl bg-[#F7F6EF] p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-gray-500">
-                      Provider
+                      Payment method
                     </p>
                     <p className="mt-1 font-black text-gray-950">
-                      Mock online payment
+                      Demo online payment
                     </p>
                   </div>
+
+                  <label className="flex items-start gap-3 rounded-2xl border border-green-100 bg-white p-4 font-bold text-gray-800">
+                    <input
+                      type="checkbox"
+                      checked={rulesAccepted}
+                      onChange={(event) =>
+                        setRulesAccepted(event.target.checked)
+                      }
+                      className="mt-1 h-5 w-5 shrink-0 accent-green-700"
+                    />
+                    <span>
+                      I understand the pickup and cancellation rules.
+                    </span>
+                  </label>
                 </div>
 
                 <button
                   onClick={confirmMockPayment}
-                  disabled={paying || Number(offer.quantity || 0) <= 0}
+                  disabled={
+                    paying ||
+                    checkoutBlocked ||
+                    !rulesAccepted ||
+                    !isOfferReservable(offer)
+                  }
                   className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {paying
-                    ? "Processing..."
-                    : Number(offer.quantity || 0) <= 0
-                    ? "Sold out"
-                    : "Confirm mock payment"}
+                    ? "Reserving..."
+                    : !isOfferReservable(offer)
+                    ? Number(offer.quantity || 0) <= 0
+                      ? "Sold Out"
+                      : "Unavailable"
+                    : "Pay and reserve"}
                 </button>
+
+                {checkoutBlocked && (
+                  <Link
+                    href="/login"
+                    className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 py-3 font-black text-green-700 ring-1 ring-green-100 transition hover:bg-green-50"
+                  >
+                    Sign in first
+                  </Link>
+                )}
 
                 <Link
                   href="/offers"

@@ -1,5 +1,30 @@
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
+import type { User } from "@supabase/supabase-js";
+
+export const SIGNUP_CONFIRM_EMAIL_MESSAGE =
+  "Check your email to confirm your account before signing in.";
+
+export const VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE =
+  "Please confirm your email before using this page.";
+
+export const VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE =
+  "Please confirm your email before signing in.";
+
+export type ConfirmedUserResult =
+  | { status: "confirmed"; user: User }
+  | { status: "signed_out"; user: null }
+  | { status: "unverified"; user: User };
+
+export type ConfirmedProfileResult =
+  | { status: "confirmed"; user: User; profile: Profile }
+  | { status: "missing_profile"; user: User; profile: null }
+  | { status: "signed_out"; user: null; profile: null }
+  | { status: "unverified"; user: User; profile: null };
+
+export function isEmailConfirmed(user: User | null | undefined) {
+  return Boolean(user?.email_confirmed_at || user?.confirmed_at);
+}
 
 export async function getCurrentUser() {
   const {
@@ -13,8 +38,51 @@ export async function getCurrentProfile() {
   const user = await getCurrentUser();
 
   if (!user) return null;
+  if (!isEmailConfirmed(user)) return null;
 
   return getProfileById(user.id);
+}
+
+export async function getConfirmedUser(): Promise<ConfirmedUserResult> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { status: "signed_out", user: null };
+  }
+
+  if (!isEmailConfirmed(user)) {
+    return { status: "unverified", user };
+  }
+
+  return { status: "confirmed", user };
+}
+
+export async function getConfirmedProfile(
+  retries = 3
+): Promise<ConfirmedProfileResult> {
+  const authResult = await getConfirmedUser();
+
+  if (authResult.status !== "confirmed") {
+    return { ...authResult, profile: null };
+  }
+
+  const profile = await getProfileById(authResult.user.id, retries);
+
+  if (!profile) {
+    return {
+      status: "missing_profile",
+      user: authResult.user,
+      profile: null,
+    };
+  }
+
+  return {
+    status: "confirmed",
+    user: authResult.user,
+    profile,
+  };
 }
 
 function wait(ms: number) {
@@ -25,7 +93,16 @@ export async function getProfileById(userId: string, retries = 0) {
   for (let attempt = 0; attempt <= retries; attempt += 1) {
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, email, role")
+      .select(`
+        id,
+        email,
+        role,
+        reliability_score,
+        reliability_status,
+        no_show_count,
+        completed_pickup_count,
+        cancelled_order_count
+      `)
       .eq("id", userId)
       .maybeSingle();
 

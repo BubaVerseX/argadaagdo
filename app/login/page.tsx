@@ -2,7 +2,12 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { getProfileById } from "@/lib/auth";
+import {
+  getProfileById,
+  isEmailConfirmed,
+  SIGNUP_CONFIRM_EMAIL_MESSAGE,
+  VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
+} from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import type { UserRole } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -54,24 +59,13 @@ export default function LoginPage() {
       return;
     }
 
-    if (data.session && data.user) {
-      await getProfileById(data.user.id, 4);
-      setSubmitting(false);
-      setMessageTone("success");
-      setMessage("Account created. Redirecting...");
-
-      router.push(role === "business" ? "/business/register" : "/offers");
-      router.refresh();
-      return;
+    if (data.session) {
+      await supabase.auth.signOut();
     }
 
     setSubmitting(false);
     setMessageTone("success");
-    setMessage(
-      role === "business"
-        ? "Business account created. Check your email if confirmation is required, then sign in to submit your business."
-        : "Account created. Check your email if confirmation is required, then sign in."
-    );
+    setMessage(SIGNUP_CONFIRM_EMAIL_MESSAGE);
   }
 
   async function signIn() {
@@ -103,6 +97,14 @@ export default function LoginPage() {
       setSubmitting(false);
       setMessageTone("error");
       setMessage(error.message);
+      return;
+    }
+
+    if (!authData.user || !isEmailConfirmed(authData.user)) {
+      await supabase.auth.signOut();
+      setSubmitting(false);
+      setMessageTone("warning");
+      setMessage(VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE);
       return;
     }
 

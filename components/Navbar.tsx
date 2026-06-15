@@ -1,7 +1,12 @@
 "use client";
 
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { getCurrentRole, getCurrentUser, logoutUser } from "@/lib/auth";
+import {
+  getConfirmedProfile,
+  getCurrentUser,
+  isEmailConfirmed,
+  logoutUser,
+} from "@/lib/auth";
 import { useLanguage } from "@/lib/useLanguage";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
@@ -18,30 +23,27 @@ export default function Navbar() {
   const [role, setRole] = useState("");
   const [showBusinessDashboard, setShowBusinessDashboard] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
     let active = true;
 
     async function loadNavbar() {
       const currentUser = await getCurrentUser();
-      const currentRole = await getCurrentRole();
-      let ownsBusiness = false;
-
-      if (currentUser && currentRole !== "business" && currentRole !== "admin") {
-        const { data } = await supabase
-          .from("businesses")
-          .select("id")
-          .eq("owner_id", currentUser.id)
-          .limit(1);
-
-        ownsBusiness = Boolean(data?.length);
-      }
+      const isVerified = isEmailConfirmed(currentUser);
+      const profileResult =
+        currentUser && isVerified ? await getConfirmedProfile(2) : null;
+      const currentRole =
+        profileResult?.status === "confirmed"
+          ? profileResult.profile.role || ""
+          : "";
 
       if (!active) return;
 
       setUser(currentUser);
       setRole(currentRole);
-      setShowBusinessDashboard(currentRole === "business" || ownsBusiness);
+      setShowBusinessDashboard(currentRole === "business");
+      setAuthReady(true);
     }
 
     void loadNavbar();
@@ -63,8 +65,9 @@ export default function Navbar() {
     setUser(null);
     setRole("");
     setShowBusinessDashboard(false);
+    setAuthReady(true);
     setMobileMenu(false);
-    router.push("/");
+    router.replace("/");
     router.refresh();
   }
 
@@ -143,7 +146,9 @@ export default function Navbar() {
             <LanguageSwitcher />
           </div>
 
-          {user ? (
+          {!authReady ? (
+            <div className="hidden h-11 w-24 rounded-full bg-white/60 md:block" />
+          ) : user ? (
             <button
               onClick={handleLogout}
               className="hidden rounded-full bg-red-600 px-5 py-2.5 font-black text-white transition hover:bg-red-700 md:block"
@@ -239,7 +244,9 @@ export default function Navbar() {
             )}
 
             <div className="mt-3 border-t pt-4">
-              {user ? (
+              {!authReady ? (
+                <div className="min-h-12 w-full rounded-full bg-white" />
+              ) : user ? (
                 <button
                   onClick={handleLogout}
                   className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white"

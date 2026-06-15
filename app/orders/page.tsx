@@ -3,8 +3,15 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import StatCard from "@/components/StatCard";
+import {
+  getConfirmedUser,
+  getProfileById,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { notifyOrderCancelled } from "@/lib/notifications";
+import { formatPickupWindow } from "@/lib/offerLifecycle";
 import {
   getInactiveOrderMessage,
   getOrderStatusClassName,
@@ -12,14 +19,33 @@ import {
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
-import type { Order } from "@/lib/types";
+import type { Order, Profile } from "@/lib/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+function getCancellationErrorMessage(message?: string) {
+  const normalizedMessage = (message || "").toLowerCase();
+
+  if (normalizedMessage.includes("cancellation window has closed")) {
+    return "Cancellation deadline has passed. You can cancel only up to 2 hours before pickup.";
+  }
+
+  if (normalizedMessage.includes("only reserved orders")) {
+    return "Only confirmed reservations can be cancelled.";
+  }
+
+  if (normalizedMessage.includes("order not found")) {
+    return "This order could not be found or no longer belongs to your account.";
+  }
+
+  return message || "Order could not be cancelled. Please try again.";
+}
+
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -28,10 +54,13 @@ export default function OrdersPage() {
   const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(
     null
   );
+  const [ratingOrderId, setRatingOrderId] = useState<number | null>(null);
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function loadOrders(userId: string, showLoading = false) {
     if (showLoading) setLoading(true);
+    await processExpiredMarketplace();
+
     const { data, error } = await supabase
       .from("orders")
       .select(
@@ -40,6 +69,7 @@ export default function OrdersPage() {
         offers(
           id,
           title,
+          pickup_date,
           pickup_start,
           pickup_end,
           price,
@@ -63,38 +93,70 @@ export default function OrdersPage() {
     setLoading(false);
   }
 
+  async function rateOrder(order: Order, rating: number) {
+    if (ratingOrderId !== null || order.status !== "completed" || order.rated_at) {
+      return;
+    }
+
+    setRatingOrderId(order.id);
+    setMessage("");
+
+    const { error } = await supabase.rpc("rate_business", {
+      p_order_id: order.id,
+      p_rating: rating,
+      p_comment: null,
+    });
+
+    if (error) {
+      setMessageTone("error");
+      setMessage(error.message || "Rating could not be saved.");
+      setRatingOrderId(null);
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Thanks. Your rating was saved.");
+    setOrders((currentOrders) =>
+      currentOrders.map((item) =>
+        item.id === order.id
+          ? { ...item, rated_at: new Date().toISOString() }
+          : item
+      )
+    );
+    setRatingOrderId(null);
+    await loadOrders(order.user_id);
+  }
+
   async function cancelOrder(order: Order) {
     if (!isConfirmedOrderStatus(order.status)) return;
+    if (cancellingOrderId !== null) return;
 
     setCancellingOrderId(order.id);
     setMessage("");
-    setOrders((currentOrders) =>
-      currentOrders.map((item) =>
-        item.id === order.id ? { ...item, status: "refunded" } : item
-      )
-    );
 
     const { error: orderError } = await supabase.rpc("cancel_paid_order", {
       p_order_id: order.id,
     });
 
     if (orderError) {
-      setCancellingOrderId(null);
       setMessageTone("error");
-      setMessage(orderError.message);
+      setMessage(getCancellationErrorMessage(orderError.message));
       await loadOrders(order.user_id);
+      setCancellingOrderId(null);
       return;
     }
 
     setMessageTone("success");
-    setMessage("Order refunded. Quantity restored.");
+    setMessage(
+      "Order refunded. Quantity was restored by the reservation system."
+    );
     notifyOrderCancelled({
       orderId: order.id,
       offerTitle: order.offers?.title,
       businessName: order.offers?.businesses?.name,
     });
-    setCancellingOrderId(null);
     await loadOrders(order.user_id);
+    setCancellingOrderId(null);
   }
 
   useEffect(() => {
@@ -102,16 +164,27 @@ export default function OrdersPage() {
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function initialiseOrders() {
-      const { data: userData } = await supabase.auth.getUser();
+      const authResult = await getConfirmedUser();
 
       if (!active) return;
 
-      if (!userData.user) {
+      if (authResult.status === "signed_out") {
         router.replace("/login");
         return;
       }
 
-      const userId = userData.user.id;
+      if (authResult.status === "unverified") {
+        setMessageTone("warning");
+        setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+
+      const userId = authResult.user.id;
+      const currentProfile = await getProfileById(userId, 3);
+      if (active) setProfile(currentProfile);
+
       await loadOrders(userId, true);
 
       if (!active) return;
@@ -150,6 +223,13 @@ export default function OrdersPage() {
   const cancelledCount = orders.filter((order) => order.status === "cancelled").length;
   const refundedCount = orders.filter((order) => order.status === "refunded").length;
   const noShowCount = orders.filter((order) => order.status === "no_show").length;
+  const reliabilityStatus = profile?.reliability_status || "good";
+  const reliabilityTone =
+    reliabilityStatus === "excellent" || reliabilityStatus === "good"
+      ? "green"
+      : reliabilityStatus === "warning"
+      ? "yellow"
+      : "red";
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -169,12 +249,22 @@ export default function OrdersPage() {
             Show your pickup code at the business during pickup time.
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-7">
             <StatCard title="Confirmed" value={confirmedCount} tone="yellow" />
             <StatCard title="Completed" value={completedCount} tone="green" />
             <StatCard title="Cancelled" value={cancelledCount} tone="red" />
             <StatCard title="Refunded" value={refundedCount} />
             <StatCard title="No-show" value={noShowCount} tone="red" />
+            <StatCard
+              title="Reliability"
+              value={profile?.reliability_score ?? "--"}
+              tone={reliabilityTone}
+            />
+            <StatCard
+              title="Status"
+              value={reliabilityStatus}
+              tone={reliabilityTone}
+            />
           </div>
         </div>
 
@@ -269,8 +359,10 @@ export default function OrdersPage() {
                       </div>
 
                       <p className="font-medium">
-                        ⏰ Pickup: {order.offers?.pickup_start} -{" "}
-                        {order.offers?.pickup_end}
+                        ⏰ Pickup:{" "}
+                        {order.offers
+                          ? formatPickupWindow(order.offers)
+                          : "Time unavailable"}
                       </p>
 
                       <p className="font-black text-green-700">
@@ -295,6 +387,11 @@ export default function OrdersPage() {
                         <p className="mt-3 text-sm font-bold text-gray-600">
                           Show this code at pickup.
                         </p>
+
+                        <p className="mt-2 text-xs font-bold text-gray-500">
+                          You can cancel up to 2 hours before pickup for a full
+                          refund.
+                        </p>
                       </>
                     ) : (
                       <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-gray-600 shadow-sm">
@@ -312,6 +409,35 @@ export default function OrdersPage() {
                           ? "Cancelling..."
                           : "Cancel Order"}
                       </button>
+                    )}
+
+                    {order.status === "completed" && (
+                      <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-sm">
+                        {order.rated_at ? (
+                          <p className="text-center font-black text-green-700">
+                            Business rated
+                          </p>
+                        ) : (
+                          <>
+                            <p className="text-center text-sm font-black text-gray-700">
+                              Rate this pickup
+                            </p>
+                            <div className="mt-3 grid grid-cols-5 gap-2">
+                              {[1, 2, 3, 4, 5].map((rating) => (
+                                <button
+                                  key={rating}
+                                  type="button"
+                                  onClick={() => void rateOrder(order, rating)}
+                                  disabled={ratingOrderId !== null}
+                                  className="min-h-10 rounded-full bg-yellow-50 font-black text-yellow-800 transition hover:bg-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                  {rating}
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

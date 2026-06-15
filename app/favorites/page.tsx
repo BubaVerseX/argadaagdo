@@ -4,8 +4,14 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import StatCard from "@/components/StatCard";
-import { getProfileById } from "@/lib/auth";
+import {
+  getConfirmedUser,
+  getProfileById,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { formatPickupWindow, isOfferReservable } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Favorite } from "@/lib/types";
 import Link from "next/link";
@@ -27,6 +33,8 @@ export default function FavoritesPage() {
 
   const loadFavorites = useCallback(
     async (userId: string) => {
+      await processExpiredMarketplace();
+
       const { data, error } = await supabase
         .from("favorites")
         .select(
@@ -43,6 +51,7 @@ export default function FavoritesPage() {
             price,
             old_price,
             quantity,
+            pickup_date,
             pickup_start,
             pickup_end,
             active,
@@ -95,20 +104,29 @@ export default function FavoritesPage() {
     let active = true;
 
     async function initialiseFavorites() {
-      const { data: userData } = await supabase.auth.getUser();
+      const authResult = await getConfirmedUser();
 
       if (!active) return;
 
-      if (!userData.user) {
+      if (authResult.status === "signed_out") {
         router.replace("/login");
         return;
       }
 
-      const profile = await getProfileById(userData.user.id, 4);
+      if (authResult.status === "unverified") {
+        setCurrentUserId(null);
+        setMessageTone("warning");
+        setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+        setLoading(false);
+        return;
+      }
+
+      const userId = authResult.user.id;
+      const profile = await getProfileById(userId, 4);
 
       if (!active) return;
 
-      setCurrentUserId(userData.user.id);
+      setCurrentUserId(userId);
 
       if (profile?.role !== "customer") {
         setMessageTone("warning");
@@ -117,7 +135,7 @@ export default function FavoritesPage() {
         return;
       }
 
-      await loadFavorites(userData.user.id);
+      await loadFavorites(userId);
     }
 
     void initialiseFavorites();
@@ -128,8 +146,7 @@ export default function FavoritesPage() {
   }, [loadFavorites, router]);
 
   const availableFavorites = favorites.filter(
-    (favorite) =>
-      favorite.offers?.active && Number(favorite.offers.quantity || 0) > 0
+    (favorite) => favorite.offers && isOfferReservable(favorite.offers)
   );
   const unavailableFavorites = favorites.length - availableFavorites.length;
 
@@ -207,8 +224,7 @@ export default function FavoritesPage() {
         <div className="mt-6 grid gap-5 sm:mt-8 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
           {favorites.map((favorite) => {
             const offer = favorite.offers;
-            const isAvailable =
-              offer?.active && Number(offer.quantity || 0) > 0;
+            const isAvailable = Boolean(offer && isOfferReservable(offer));
             const mapsUrl = offer
               ? createMapsSearchUrl(
                   offer.businesses?.address,
@@ -276,8 +292,7 @@ export default function FavoritesPage() {
 
                     {offer && (
                       <p>
-                        Pickup: {offer.pickup_start || "--"} -{" "}
-                        {offer.pickup_end || "--"}
+                        Pickup: {formatPickupWindow(offer)}
                       </p>
                     )}
                   </div>
@@ -310,12 +325,12 @@ export default function FavoritesPage() {
                           : "Remove"}
                       </button>
 
-                      {isAvailable && (
+                      {isAvailable && offer && (
                         <Link
                           href={`/checkout/${offer.id}`}
                           className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
                         >
-                          Reserve
+                          Continue to checkout
                         </Link>
                       )}
                     </div>

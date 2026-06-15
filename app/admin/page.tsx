@@ -4,9 +4,11 @@ import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import StatCard from "@/components/StatCard";
-import { getProfileById } from "@/lib/auth";
+import { getConfirmedProfile } from "@/lib/auth";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { getEffectiveOfferStatus } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
-import type { Business, Offer, Order } from "@/lib/types";
+import type { Business, Offer, Order, Profile } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -20,38 +22,58 @@ export default function AdminPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [message, setMessage] = useState("");
-  const [messageTone, setMessageTone] = useState<"success" | "error">(
-    "success"
-  );
+  const [messageTone, setMessageTone] = useState<
+    "success" | "error" | "warning"
+  >("success");
   const [loading, setLoading] = useState(true);
+  const [realtimeReady, setRealtimeReady] = useState(false);
   const [updatingBusinessId, setUpdatingBusinessId] = useState<number | null>(
     null
   );
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const checkAdminAndLoadData = useCallback(async () => {
-    const { data: userData } = await supabase.auth.getUser();
+    const profileResult = await getConfirmedProfile(4);
 
-    if (!userData.user) {
-      router.replace("/login");
+    if (
+      profileResult.status !== "confirmed" ||
+      profileResult.profile.role !== "admin"
+    ) {
+      setRealtimeReady(false);
+      router.replace("/");
       return;
     }
 
-    const profile = await getProfileById(userData.user.id, 4);
+    await processExpiredMarketplace();
 
-    if (!profile || profile.role !== "admin") {
-      router.replace("/offers");
-      return;
-    }
+    const [businessResult, offerResult, orderResult, profilesResult] =
+      await Promise.all([
+        supabase
+          .from("businesses")
+          .select("*")
+          .order("id", { ascending: false }),
+        supabase.from("offers").select("*"),
+        supabase.from("orders").select("*"),
+        supabase.from("profiles").select(`
+          id,
+          email,
+          role,
+          reliability_score,
+          reliability_status,
+          no_show_count,
+          completed_pickup_count,
+          cancelled_order_count
+        `),
+      ]);
 
-    const [businessResult, offerResult, orderResult] = await Promise.all([
-      supabase.from("businesses").select("*").order("id", { ascending: false }),
-      supabase.from("offers").select("*"),
-      supabase.from("orders").select("*"),
-    ]);
-
-    if (businessResult.error || offerResult.error || orderResult.error) {
+    if (
+      businessResult.error ||
+      offerResult.error ||
+      orderResult.error ||
+      profilesResult.error
+    ) {
       setMessageTone("error");
       setMessage(
         "Admin data could not be loaded. Check that your admin database policies allow this view."
@@ -63,6 +85,8 @@ export default function AdminPage() {
     setBusinesses((businessResult.data || []) as Business[]);
     setOffers((offerResult.data || []) as Offer[]);
     setOrders((orderResult.data || []) as Order[]);
+    setProfiles((profilesResult.data || []) as Profile[]);
+    setRealtimeReady(true);
     setLoading(false);
   }, [router]);
 
@@ -120,6 +144,15 @@ export default function AdminPage() {
       0
     );
 
+    return () => {
+      window.clearTimeout(initialLoad);
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    };
+  }, [checkAdminAndLoadData]);
+
+  useEffect(() => {
+    if (!realtimeReady) return;
+
     const channel = supabase
       .channel("admin-dashboard-live-updates")
       .on(
@@ -140,18 +173,61 @@ export default function AdminPage() {
       .subscribe();
 
     return () => {
-      window.clearTimeout(initialLoad);
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
       supabase.removeChannel(channel);
     };
-  }, [checkAdminAndLoadData, scheduleRefresh]);
+  }, [realtimeReady, scheduleRefresh]);
 
   const pendingBusinesses = businesses.filter((business) => !business.approved);
   const approvedBusinesses = businesses.filter((business) => business.approved);
-  const activeOffers = offers.filter((offer) => offer.active);
+  const activeOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "active"
+  );
+  const soldOutOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "sold_out"
+  );
+  const expiredOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "expired"
+  );
+  const inactiveOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "inactive"
+  );
   const reservedOrders = orders.filter((order) => order.status === "reserved");
   const completedOrders = orders.filter((order) => order.status === "completed");
-  const cancelledOrders = orders.filter((order) => order.status === "cancelled");
+  const cancelledOrders = orders.filter(
+    (order) => order.status === "cancelled" || order.status === "refunded"
+  );
+  const noShowOrders = orders.filter((order) => order.status === "no_show");
+  const excellentProfiles = profiles.filter(
+    (profile) => profile.reliability_status === "excellent"
+  );
+  const warningProfiles = profiles.filter(
+    (profile) => profile.reliability_status === "warning"
+  );
+  const restrictedProfiles = profiles.filter(
+    (profile) => profile.reliability_status === "restricted"
+  );
+  const averageReliability =
+    profiles.length > 0
+      ? Math.round(
+          profiles.reduce(
+            (total, profile) => total + Number(profile.reliability_score || 0),
+            0
+          ) / profiles.length
+        )
+      : 0;
+  const totalProfileCompletedPickups = profiles.reduce(
+    (total, profile) => total + Number(profile.completed_pickup_count || 0),
+    0
+  );
+  const totalProfileCancellations = profiles.reduce(
+    (total, profile) => total + Number(profile.cancelled_order_count || 0),
+    0
+  );
+  const totalProfileNoShows = profiles.reduce(
+    (total, profile) => total + Number(profile.no_show_count || 0),
+    0
+  );
   const adminAnalytics = [
     {
       title: "Reservations",
@@ -217,15 +293,42 @@ export default function AdminPage() {
           </div>
         )}
 
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 md:grid-cols-4 xl:grid-cols-8">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 md:grid-cols-4 xl:grid-cols-12">
           <StatCard title="Businesses" value={businesses.length} />
           <StatCard title="Pending" value={pendingBusinesses.length} tone="yellow" />
           <StatCard title="Approved" value={approvedBusinesses.length} tone="green" />
           <StatCard title="Active offers" value={activeOffers.length} tone="green" />
+          <StatCard title="Sold out" value={soldOutOffers.length} tone="yellow" />
+          <StatCard title="Expired" value={expiredOffers.length} tone="red" />
+          <StatCard title="Inactive" value={inactiveOffers.length} />
           <StatCard title="Total orders" value={orders.length} />
           <StatCard title="Reserved" value={reservedOrders.length} tone="yellow" />
           <StatCard title="Completed pickups" value={completedOrders.length} tone="green" />
           <StatCard title="Cancelled orders" value={cancelledOrders.length} tone="red" />
+          <StatCard title="No-show" value={noShowOrders.length} tone="red" />
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-8">
+          <StatCard title="Profiles" value={profiles.length} />
+          <StatCard title="Avg score" value={averageReliability} tone="green" />
+          <StatCard title="Excellent" value={excellentProfiles.length} tone="green" />
+          <StatCard title="Warning" value={warningProfiles.length} tone="yellow" />
+          <StatCard title="Restricted" value={restrictedProfiles.length} tone="red" />
+          <StatCard
+            title="Profile pickups"
+            value={totalProfileCompletedPickups}
+            tone="green"
+          />
+          <StatCard
+            title="Profile cancels"
+            value={totalProfileCancellations}
+            tone="yellow"
+          />
+          <StatCard
+            title="Profile no-shows"
+            value={totalProfileNoShows}
+            tone="red"
+          />
         </div>
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">

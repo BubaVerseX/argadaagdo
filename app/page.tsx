@@ -7,27 +7,54 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import {
+  compareMarketplaceOffers,
+  formatPickupWindow,
+  getRatingLabel,
+  type RatingSummary,
+} from "@/lib/offerLifecycle";
+import { loadBusinessRatingSummaries } from "@/lib/ratings";
 
 export default function Home() {
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [ratingSummaries, setRatingSummaries] = useState<
+    Record<number, RatingSummary>
+  >({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
 
-    supabase
-      .from("offers")
-      .select("*, businesses(name, address, business_type)")
-      .eq("active", true)
-      .gt("quantity", 0)
-      .order("id", { ascending: false })
-      .limit(3)
-      .then(({ data }) => {
-        if (!active) return;
+    async function loadFeaturedOffers() {
+      await processExpiredMarketplace();
 
-        setOffers((data || []) as Offer[]);
-        setLoading(false);
-      });
+      const [{ data }, summaries] = await Promise.all([
+        supabase
+          .from("offers")
+          .select("*, businesses(name, address, business_type)")
+          .eq("active", true)
+          .eq("status", "active")
+          .gt("quantity", 0)
+          .order("id", { ascending: false })
+          .limit(6),
+        loadBusinessRatingSummaries(),
+      ]);
+
+      if (!active) return;
+
+      setRatingSummaries(summaries);
+      setOffers(
+        ((data || []) as Offer[])
+          .sort((firstOffer, secondOffer) =>
+            compareMarketplaceOffers(firstOffer, secondOffer, summaries)
+          )
+          .slice(0, 3)
+      );
+      setLoading(false);
+    }
+
+    void loadFeaturedOffers();
 
     return () => {
       active = false;
@@ -101,7 +128,7 @@ export default function Home() {
                     ₾
                   </p>
                   <p className="mt-1 text-xs font-bold text-gray-600 sm:text-base">
-                    cash on pickup
+                    online payment
                   </p>
                 </div>
               </div>
@@ -149,7 +176,7 @@ export default function Home() {
                             {offer.businesses?.name}
                           </p>
                           <p className="text-sm font-semibold text-gray-500">
-                            {offer.pickup_start} - {offer.pickup_end}
+                            {formatPickupWindow(offer)}
                           </p>
                         </div>
 
@@ -159,6 +186,9 @@ export default function Home() {
                           </p>
                           <p className="text-xs font-bold text-gray-500">
                             {offer.quantity} left
+                          </p>
+                          <p className="text-xs font-bold text-yellow-700">
+                            {getRatingLabel(ratingSummaries[offer.business_id])}
                           </p>
                         </div>
                       </div>
@@ -271,6 +301,9 @@ export default function Home() {
                       <p className="mt-2 font-bold text-gray-700">
                         {offer.businesses?.name}
                       </p>
+                      <p className="mt-1 text-sm font-black text-yellow-700">
+                        Rating: {getRatingLabel(ratingSummaries[offer.business_id])}
+                      </p>
                     </div>
 
                     <div className="rounded-2xl bg-green-50 px-4 py-3 text-center">
@@ -288,7 +321,7 @@ export default function Home() {
                   </p>
 
                   <p className="mt-2 font-semibold text-gray-600">
-                    ⏰ {offer.pickup_start} - {offer.pickup_end}
+                    ⏰ {formatPickupWindow(offer)}
                   </p>
 
                   <div className="mt-6 flex flex-col gap-4 sm:mt-7 sm:flex-row sm:items-center sm:justify-between">
@@ -308,7 +341,7 @@ export default function Home() {
                       href={`/checkout/${offer.id}`}
                       className="min-h-12 rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800"
                     >
-                      Reserve
+                      Continue to checkout
                     </Link>
                   </div>
                 </div>

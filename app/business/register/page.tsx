@@ -2,10 +2,14 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { getProfileById } from "@/lib/auth";
+import {
+  getConfirmedUser,
+  getProfileById,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function BusinessRegisterPage() {
   const router = useRouter();
@@ -14,16 +18,55 @@ export default function BusinessRegisterPage() {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  const [messageTone, setMessageTone] = useState<"success" | "error">(
-    "success"
-  );
+  const [messageTone, setMessageTone] = useState<
+    "success" | "error" | "warning"
+  >("success");
   const [submitting, setSubmitting] = useState(false);
+  const [accessReady, setAccessReady] = useState(false);
+  const [canRegister, setCanRegister] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function checkAccess() {
+      const authResult = await getConfirmedUser();
+
+      if (!active) return;
+
+      if (authResult.status === "signed_out") {
+        router.replace("/login");
+        return;
+      }
+
+      if (authResult.status === "unverified") {
+        setMessageTone("warning");
+        setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+        setCanRegister(false);
+        setAccessReady(true);
+        return;
+      }
+
+      setCanRegister(true);
+      setAccessReady(true);
+    }
+
+    void checkAccess();
+
+    return () => {
+      active = false;
+    };
+  }, [router]);
 
   async function registerBusiness() {
     if (submitting) return;
 
     setMessage("");
     setMessageTone("error");
+
+    if (!canRegister) {
+      setMessage("Please sign in first.");
+      return;
+    }
 
     if (!name.trim()) {
       setMessage("Business name is required.");
@@ -41,15 +84,23 @@ export default function BusinessRegisterPage() {
     }
 
     setSubmitting(true);
-    const { data: userData } = await supabase.auth.getUser();
+    const authResult = await getConfirmedUser();
 
-    if (!userData.user) {
+    if (authResult.status === "signed_out") {
       setSubmitting(false);
       router.push("/login");
       return;
     }
 
-    const profile = await getProfileById(userData.user.id, 4);
+    if (authResult.status === "unverified") {
+      setSubmitting(false);
+      setMessageTone("warning");
+      setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+      return;
+    }
+
+    const userId = authResult.user.id;
+    const profile = await getProfileById(userId, 4);
 
     if (!profile) {
       setSubmitting(false);
@@ -60,7 +111,7 @@ export default function BusinessRegisterPage() {
     }
 
     const { error } = await supabase.from("businesses").insert({
-      owner_id: userData.user.id,
+      owner_id: userId,
       name: name.trim(),
       business_type: businessType,
       address: address.trim(),
@@ -183,10 +234,14 @@ export default function BusinessRegisterPage() {
                 <button
                   type="button"
                   onClick={registerBusiness}
-                  disabled={submitting}
+                  disabled={submitting || !accessReady || !canRegister}
                   className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
                 >
-                  {submitting ? "Submitting..." : "Submit for Approval"}
+                  {submitting
+                    ? "Submitting..."
+                    : !accessReady
+                    ? "Checking account..."
+                    : "Submit for Approval"}
                 </button>
 
                 {message && (

@@ -3,8 +3,23 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
-import { getProfileById } from "@/lib/auth";
+import {
+  getConfirmedUser,
+  getProfileById,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import {
+  compareMarketplaceOffers,
+  formatPickupWindow,
+  getOfferGroup,
+  getRatingLabel,
+  isOfferReservable,
+  type OfferGroup,
+  type RatingSummary,
+} from "@/lib/offerLifecycle";
+import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -31,6 +46,9 @@ export default function OffersPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [canUseFavorites, setCanUseFavorites] = useState(false);
   const [favoriteOfferIds, setFavoriteOfferIds] = useState<number[]>([]);
+  const [ratingSummaries, setRatingSummaries] = useState<
+    Record<number, RatingSummary>
+  >({});
   const [updatingFavoriteId, setUpdatingFavoriteId] = useState<number | null>(
     null
   );
@@ -53,10 +71,14 @@ export default function OffersPage() {
   }, []);
 
   const loadOffers = useCallback(async () => {
+    await processExpiredMarketplace();
+
     const { data, error } = await supabase
       .from("offers")
       .select("*, businesses(name, address, business_type)")
       .eq("active", true)
+      .eq("status", "active")
+      .gt("quantity", 0)
       .order("id", { ascending: false });
 
     if (error) {
@@ -66,6 +88,8 @@ export default function OffersPage() {
       return;
     }
 
+    const summaries = await loadBusinessRatingSummaries();
+    setRatingSummaries(summaries);
     setOffers((data || []) as Offer[]);
     setLoading(false);
   }, []);
@@ -76,17 +100,36 @@ export default function OffersPage() {
   }, [loadOffers]);
 
   function openCheckout(offer: Offer) {
+    if (!isOfferReservable(offer)) {
+      setMessageTone("warning");
+      setMessage(
+        Number(offer.quantity || 0) <= 0
+          ? "Offer is sold out."
+          : "This offer is no longer available."
+      );
+      return;
+    }
+
     router.push(`/checkout/${offer.id}`);
   }
-
 
   async function toggleFavorite(offer: Offer) {
     setMessage("");
 
-    if (!currentUserId) {
+    const authResult = await getConfirmedUser();
+
+    if (authResult.status === "signed_out") {
       router.push("/login");
       return;
     }
+
+    if (authResult.status === "unverified") {
+      setMessageTone("warning");
+      setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+      return;
+    }
+
+    const userId = authResult.user.id;
 
     if (!canUseFavorites) {
       setMessageTone("warning");
@@ -106,13 +149,13 @@ export default function OffersPage() {
       const { error } = await supabase
         .from("favorites")
         .delete()
-        .eq("user_id", currentUserId)
+        .eq("user_id", userId)
         .eq("offer_id", offer.id);
 
       if (error) {
         setMessageTone("error");
         setMessage("Favorite could not be removed. Please try again.");
-        await loadFavorites(currentUserId);
+        await loadFavorites(userId);
       }
 
       setUpdatingFavoriteId(null);
@@ -122,14 +165,14 @@ export default function OffersPage() {
     setFavoriteOfferIds((currentFavorites) => [...currentFavorites, offer.id]);
 
     const { error } = await supabase.from("favorites").insert({
-      user_id: currentUserId,
+      user_id: userId,
       offer_id: offer.id,
     });
 
     if (error) {
       setMessageTone("error");
       setMessage("Favorite could not be saved. Please try again.");
-      await loadFavorites(currentUserId);
+      await loadFavorites(userId);
     }
 
     setUpdatingFavoriteId(null);
@@ -163,27 +206,28 @@ export default function OffersPage() {
     let active = true;
 
     async function initialiseFavorites() {
-      const { data: userData } = await supabase.auth.getUser();
+      const authResult = await getConfirmedUser();
 
       if (!active) return;
 
-      if (!userData.user) {
+      if (authResult.status !== "confirmed") {
         setCurrentUserId(null);
         setCanUseFavorites(false);
         setFavoriteOfferIds([]);
         return;
       }
 
-      const profile = await getProfileById(userData.user.id, 3);
+      const userId = authResult.user.id;
+      const profile = await getProfileById(userId, 3);
       const isCustomer = profile?.role === "customer";
 
       if (!active) return;
 
-      setCurrentUserId(userData.user.id);
+      setCurrentUserId(userId);
       setCanUseFavorites(isCustomer);
 
       if (isCustomer) {
-        await loadFavorites(userData.user.id);
+        await loadFavorites(userId);
       } else {
         setFavoriteOfferIds([]);
       }
@@ -227,8 +271,7 @@ export default function OffersPage() {
       const matchesSearch = text.includes(search.toLowerCase());
       const matchesCategory =
         selectedCategory === "all" || category === selectedCategory;
-      const matchesAvailability =
-        !availableOnly || Number(offer.quantity || 0) > 0;
+      const matchesAvailability = !availableOnly || isOfferReservable(offer);
 
       return matchesSearch && matchesCategory && matchesAvailability;
     });
@@ -239,9 +282,32 @@ export default function OffersPage() {
 
       if (priceSort === "price-asc") return firstPrice - secondPrice;
       if (priceSort === "price-desc") return secondPrice - firstPrice;
-      return secondOffer.id - firstOffer.id;
+      return compareMarketplaceOffers(firstOffer, secondOffer, ratingSummaries);
     });
-  }, [availableOnly, offers, priceSort, search, selectedCategory]);
+  }, [availableOnly, offers, priceSort, ratingSummaries, search, selectedCategory]);
+
+  const groupedOffers = useMemo<Record<OfferGroup, Offer[]>>(
+    () => ({
+      today: filteredOffers.filter((offer) => getOfferGroup(offer) === "today"),
+      tomorrow: filteredOffers.filter(
+        (offer) => getOfferGroup(offer) === "tomorrow"
+      ),
+      upcoming: filteredOffers.filter(
+        (offer) => getOfferGroup(offer) === "upcoming"
+      ),
+    }),
+    [filteredOffers]
+  );
+
+  const offerSections = [
+    { key: "today" as const, title: "Today", offers: groupedOffers.today },
+    {
+      key: "tomorrow" as const,
+      title: "Tomorrow",
+      offers: groupedOffers.tomorrow,
+    },
+    { key: "upcoming" as const, title: "Upcoming", offers: groupedOffers.upcoming },
+  ];
 
   const categoryOptions = useMemo(() => {
     return Array.from(new Set(offers.map(getOfferCategory))).sort();
@@ -389,128 +455,158 @@ export default function OffersPage() {
             </div>
           )}
 
-          <div className="mt-6 grid gap-5 sm:mt-8 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {filteredOffers.map((offer) => {
-              const businessAddress = offer.businesses?.address || "Tbilisi";
-              const mapsUrl = createMapsSearchUrl(
-                offer.businesses?.address,
-                offer.businesses?.name
-              );
-              const discount =
-                offer.old_price &&
-                Number(offer.old_price) > Number(offer.price)
-                  ? Math.round(
-                      ((Number(offer.old_price) - Number(offer.price)) /
-                        Number(offer.old_price)) *
-                        100
-                    )
-                  : null;
+          <div className="mt-6 grid gap-8 sm:mt-8 sm:gap-10">
+            {offerSections.map((section) => {
+              if (section.offers.length === 0) return null;
 
               return (
-                <div
-                  key={offer.id}
-                  className="group overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:rounded-[2rem]"
-                >
-                  <div className="relative h-52 overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 sm:h-56 md:h-60">
-                    <OfferImage
-                      src={offer.image_url}
-                      alt={offer.title}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                      className="transition duration-500 group-hover:scale-105"
-                    />
-
-                    <div className="absolute left-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
-                      {offer.businesses?.business_type || "Food"}
-                    </div>
-
-                    {discount && (
-                      <div className="absolute right-4 top-4 rounded-full bg-red-600 px-4 py-2 text-sm font-black text-white shadow-sm">
-                        -{discount}%
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-4 sm:p-5 md:p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h4 className="text-xl font-black leading-tight sm:text-2xl">
-                          {offer.title}
-                        </h4>
-
-                        <p className="mt-2 text-lg font-bold text-gray-800">
-                          {offer.businesses?.name}
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl bg-green-50 px-4 py-3 text-center">
-                        <p className="text-xs font-black text-green-700">
-                          LEFT
-                        </p>
-                        <p className="text-2xl font-black text-green-800">
-                          {offer.quantity}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="font-semibold text-gray-600">
-                        📍 {businessAddress}
+                <section key={section.key}>
+                  <div className="flex items-end justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-black sm:text-2xl">
+                        {section.title}
+                      </h3>
+                      <p className="mt-1 text-sm font-semibold text-gray-600">
+                        {section.offers.length} available offer(s)
                       </p>
-
-                      <a
-                        href={mapsUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Open map for ${offer.businesses?.name || offer.title}`}
-                        className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
-                      >
-                        Open map
-                      </a>
-                    </div>
-
-                    <p className="mt-2 font-semibold text-gray-600">
-                      ⏰ {offer.pickup_start} - {offer.pickup_end}
-                    </p>
-
-                    <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <span className="text-4xl font-black text-green-700">
-                          ₾{offer.price}
-                        </span>
-
-                        {offer.old_price && (
-                          <span className="ml-3 font-bold text-gray-400 line-through">
-                            ₾{offer.old_price}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col gap-3 sm:flex-row">
-                        <button
-                          onClick={() => toggleFavorite(offer)}
-                          disabled={updatingFavoriteId !== null}
-                          className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                        >
-                          {updatingFavoriteId === offer.id
-                            ? "Saving..."
-                            : favoriteOfferIds.includes(offer.id)
-                            ? "Saved"
-                            : "Save"}
-                        </button>
-
-                        <button
-                          onClick={() => openCheckout(offer)}
-                          disabled={Number(offer.quantity || 0) <= 0}
-                          className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                        >
-                          {Number(offer.quantity || 0) <= 0
-                            ? "Sold out"
-                            : "Reserve"}
-                        </button>
-                      </div>
                     </div>
                   </div>
-                </div>
+
+                  <div className="mt-4 grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {section.offers.map((offer) => {
+                      const businessAddress =
+                        offer.businesses?.address || "Tbilisi";
+                      const mapsUrl = createMapsSearchUrl(
+                        offer.businesses?.address,
+                        offer.businesses?.name
+                      );
+                      const discount =
+                        offer.old_price &&
+                        Number(offer.old_price) > Number(offer.price)
+                          ? Math.round(
+                              ((Number(offer.old_price) - Number(offer.price)) /
+                                Number(offer.old_price)) *
+                                100
+                            )
+                          : null;
+                      const rating = ratingSummaries[offer.business_id];
+                      const reservable = isOfferReservable(offer);
+
+                      return (
+                        <div
+                          key={offer.id}
+                          className="group overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:rounded-[2rem]"
+                        >
+                          <div className="relative h-52 overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 sm:h-56 md:h-60">
+                            <OfferImage
+                              src={offer.image_url}
+                              alt={offer.title}
+                              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                              className="transition duration-500 group-hover:scale-105"
+                            />
+
+                            <div className="absolute left-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
+                              {offer.businesses?.business_type || "Food"}
+                            </div>
+
+                            {discount && (
+                              <div className="absolute right-4 top-4 rounded-full bg-red-600 px-4 py-2 text-sm font-black text-white shadow-sm">
+                                -{discount}%
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="p-4 sm:p-5 md:p-6">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <h4 className="text-xl font-black leading-tight sm:text-2xl">
+                                  {offer.title}
+                                </h4>
+
+                                <p className="mt-2 text-lg font-bold text-gray-800">
+                                  {offer.businesses?.name}
+                                </p>
+
+                                <p className="mt-1 text-sm font-black text-yellow-700">
+                                  Rating: {getRatingLabel(rating)}
+                                </p>
+                              </div>
+
+                              <div className="rounded-2xl bg-green-50 px-4 py-3 text-center">
+                                <p className="text-xs font-black text-green-700">
+                                  LEFT
+                                </p>
+                                <p className="text-2xl font-black text-green-800">
+                                  {offer.quantity}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                              <p className="font-semibold text-gray-600">
+                                📍 {businessAddress}
+                              </p>
+
+                              <a
+                                href={mapsUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label={`Open map for ${offer.businesses?.name || offer.title}`}
+                                className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
+                              >
+                                Open map
+                              </a>
+                            </div>
+
+                            <p className="mt-2 font-semibold text-gray-600">
+                              ⏰ {formatPickupWindow(offer)}
+                            </p>
+
+                            <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                              <div>
+                                <span className="text-4xl font-black text-green-700">
+                                  ₾{offer.price}
+                                </span>
+
+                                {offer.old_price && (
+                                  <span className="ml-3 font-bold text-gray-400 line-through">
+                                    ₾{offer.old_price}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex flex-col gap-3 sm:flex-row">
+                                <button
+                                  onClick={() => toggleFavorite(offer)}
+                                  disabled={updatingFavoriteId !== null}
+                                  className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                                >
+                                  {updatingFavoriteId === offer.id
+                                    ? "Saving..."
+                                    : favoriteOfferIds.includes(offer.id)
+                                    ? "Saved"
+                                    : "Save"}
+                                </button>
+
+                                <button
+                                  onClick={() => openCheckout(offer)}
+                                  disabled={!reservable}
+                                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                                >
+                                  {reservable
+                                    ? "View details"
+                                    : Number(offer.quantity || 0) <= 0
+                                    ? "Sold Out"
+                                    : "Unavailable"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
               );
             })}
           </div>

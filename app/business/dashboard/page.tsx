@@ -4,16 +4,29 @@ import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
-import { getProfileById } from "@/lib/auth";
+import { getConfirmedProfile } from "@/lib/auth";
+import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyPickupCompleted } from "@/lib/notifications";
 import {
   getOrderStatusClassName,
   getOrderStatusLabel,
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
+import {
+  formatPickupWindow,
+  getEffectiveOfferStatus,
+  getOfferStatusClassName,
+  getOfferStatusLabel,
+  getRatingLabel,
+  getTbilisiDateKey,
+  isOrderPastPickupEnd,
+  type RatingSummary,
+} from "@/lib/offerLifecycle";
+import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 function createImageFileName(file: File) {
@@ -22,10 +35,30 @@ function createImageFileName(file: File) {
 }
 
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
+const maxImageSizeBytes = 5 * 1024 * 1024;
 
 function getPercentage(value: number, total: number) {
   if (total <= 0) return 0;
   return Math.round((value / total) * 100);
+}
+
+function getImageValidationError(file: File) {
+  if (file.size > maxImageSizeBytes) return "File too large";
+  if (!allowedImageTypes.includes(file.type)) return "Invalid file type";
+  return "";
+}
+
+function formatCreatedDate(value: string | null | undefined) {
+  if (!value) return "Date unavailable";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
 }
 
 export default function BusinessDashboardPage() {
@@ -43,6 +76,7 @@ export default function BusinessDashboardPage() {
   const [price, setPrice] = useState("");
   const [oldPrice, setOldPrice] = useState("");
   const [quantity, setQuantity] = useState("1");
+  const [pickupDate, setPickupDate] = useState(getTbilisiDateKey());
   const [pickupStart, setPickupStart] = useState("");
   const [pickupEnd, setPickupEnd] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -54,24 +88,36 @@ export default function BusinessDashboardPage() {
   const [publishing, setPublishing] = useState(false);
   const [updatingOfferId, setUpdatingOfferId] = useState<number | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
+  const [editingOfferId, setEditingOfferId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editOldPrice, setEditOldPrice] = useState("");
+  const [editQuantity, setEditQuantity] = useState("");
+  const [editPickupStart, setEditPickupStart] = useState("");
+  const [editPickupEnd, setEditPickupEnd] = useState("");
+  const [ratingSummaries, setRatingSummaries] = useState<
+    Record<number, RatingSummary>
+  >({});
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadDashboard = useCallback(async () => {
-    const { data: userData } = await supabase.auth.getUser();
+    const profileResult = await getConfirmedProfile(4);
 
-    if (!userData.user) {
-      router.replace("/login");
+    if (
+      profileResult.status !== "confirmed" ||
+      profileResult.profile.role !== "business"
+    ) {
+      router.replace("/");
       return;
     }
 
-    const profile = await getProfileById(userData.user.id, 4);
-    const canUseBusinessTools =
-      profile?.role === "business" || profile?.role === "admin";
+    const userId = profileResult.user.id;
+    await processExpiredMarketplace();
 
     const { data: myBusinesses, error: businessError } = await supabase
       .from("businesses")
       .select("*")
-      .eq("owner_id", userData.user.id)
+      .eq("owner_id", userId)
       .order("id", { ascending: false });
 
     if (businessError) {
@@ -83,11 +129,6 @@ export default function BusinessDashboardPage() {
 
     const allBusinesses = (myBusinesses || []) as Business[];
     const approved = allBusinesses.filter((business) => business.approved);
-
-    if (!canUseBusinessTools && allBusinesses.length === 0) {
-      router.replace("/business/register");
-      return;
-    }
 
     setApprovedBusinesses(approved);
 
@@ -113,11 +154,16 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const { data: myOffers, error: offerError } = await supabase
-      .from("offers")
-      .select("*, businesses(name)")
-      .in("business_id", businessIds)
-      .order("id", { ascending: false });
+    const [{ data: myOffers, error: offerError }, summaries] = await Promise.all([
+      supabase
+        .from("offers")
+        .select("*, businesses(name)")
+        .in("business_id", businessIds)
+        .order("id", { ascending: false }),
+      loadBusinessRatingSummaries(),
+    ]);
+
+    setRatingSummaries(summaries);
 
     if (offerError) {
       setMessageTone("error");
@@ -137,8 +183,8 @@ export default function BusinessDashboardPage() {
         .from("orders")
         .select(`
           *,
-          offers(title, price),
-          profiles(email)
+          offers(title, price, pickup_date, pickup_start, pickup_end),
+          profiles(email, reliability_score, reliability_status)
         `)
         .in("offer_id", offerIds)
         .order("id", { ascending: false });
@@ -163,18 +209,36 @@ export default function BusinessDashboardPage() {
     refreshTimer.current = setTimeout(() => void loadDashboard(), 150);
   }, [loadDashboard]);
 
+  function handleImageFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const selectedFile = event.target.files?.[0] || null;
+    setMessage("");
+
+    if (!selectedFile) {
+      setImageFile(null);
+      return;
+    }
+
+    const validationError = getImageValidationError(selectedFile);
+
+    if (validationError) {
+      setImageFile(null);
+      event.target.value = "";
+      setMessageTone("error");
+      setMessage(validationError);
+      return;
+    }
+
+    setImageFile(selectedFile);
+  }
+
   async function uploadImage(): Promise<string | null> {
     if (!imageFile) return "";
 
-    if (imageFile.size > 5 * 1024 * 1024) {
-      setMessageTone("error");
-      setMessage("Image must be smaller than 5 MB.");
-      return null;
-    }
+    const validationError = getImageValidationError(imageFile);
 
-    if (!allowedImageTypes.includes(imageFile.type)) {
+    if (validationError) {
       setMessageTone("error");
-      setMessage("Image must be a PNG, JPG, or WebP file.");
+      setMessage(validationError);
       return null;
     }
 
@@ -189,7 +253,7 @@ export default function BusinessDashboardPage() {
 
     if (error) {
       setMessageTone("error");
-      setMessage(`Image upload failed: ${error.message}`);
+      setMessage("Upload failed");
       return null;
     }
 
@@ -244,8 +308,8 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    if (!pickupStart || !pickupEnd) {
-      setMessage("Pickup time required.");
+    if (!pickupDate || !pickupStart || !pickupEnd) {
+      setMessage("Pickup date and time required.");
       return;
     }
 
@@ -266,10 +330,12 @@ export default function BusinessDashboardPage() {
       price: priceValue,
       old_price: oldPriceValue,
       quantity: quantityValue,
+      pickup_date: pickupDate,
       pickup_start: pickupStart,
       pickup_end: pickupEnd,
       category: "Food",
       active: true,
+      status: "active",
       image_url: imageUrl,
     });
 
@@ -288,6 +354,7 @@ export default function BusinessDashboardPage() {
     setPrice("");
     setOldPrice("");
     setQuantity("1");
+    setPickupDate(getTbilisiDateKey());
     setPickupStart("");
     setPickupEnd("");
     setImageFile(null);
@@ -298,15 +365,89 @@ export default function BusinessDashboardPage() {
     await loadDashboard();
   }
 
-  async function deactivateOffer(offerId: number) {
-    setUpdatingOfferId(offerId);
+  function startEditingOffer(offer: Offer) {
+    setMessage("");
+    setEditingOfferId(offer.id);
+    setEditTitle(offer.title);
+    setEditPrice(String(offer.price ?? ""));
+    setEditOldPrice(offer.old_price ? String(offer.old_price) : "");
+    setEditQuantity(String(offer.quantity ?? 0));
+    setEditPickupStart(offer.pickup_start || "");
+    setEditPickupEnd(offer.pickup_end || "");
+  }
+
+  function cancelEditingOffer() {
+    setEditingOfferId(null);
+    setEditTitle("");
+    setEditPrice("");
+    setEditOldPrice("");
+    setEditQuantity("");
+    setEditPickupStart("");
+    setEditPickupEnd("");
+  }
+
+  async function saveOfferEdits(offer: Offer) {
+    setMessage("");
+    setMessageTone("error");
+
+    if (!ownedBusinessIds.includes(offer.business_id)) {
+      setMessage("You can only edit offers from your own business.");
+      return;
+    }
+
+    if (!editTitle.trim()) {
+      setMessage("Offer title required.");
+      return;
+    }
+
+    const priceValue = Number(editPrice);
+    const oldPriceValue = editOldPrice ? Number(editOldPrice) : null;
+    const quantityValue = Number(editQuantity);
+
+    if (!Number.isFinite(priceValue) || priceValue <= 0) {
+      setMessage("Price must be greater than 0.");
+      return;
+    }
+
+    if (
+      oldPriceValue !== null &&
+      (!Number.isFinite(oldPriceValue) || oldPriceValue <= 0)
+    ) {
+      setMessage("Old price must be greater than 0.");
+      return;
+    }
+
+    if (!Number.isInteger(quantityValue) || quantityValue < 0) {
+      setMessage("Quantity must be 0 or greater.");
+      return;
+    }
+
+    if (!editPickupStart || !editPickupEnd) {
+      setMessage("Pickup start and end time are required.");
+      return;
+    }
+
+    const nextActive = quantityValue > 0 ? offer.active : false;
+    const nextStatus =
+      quantityValue <= 0 ? "sold_out" : nextActive ? "active" : "inactive";
+
+    setUpdatingOfferId(offer.id);
 
     const { data, error } = await supabase
       .from("offers")
-      .update({ active: false })
-      .eq("id", offerId)
-      .eq("active", true)
-      .select("id")
+      .update({
+        title: editTitle.trim(),
+        price: priceValue,
+        old_price: oldPriceValue,
+        quantity: quantityValue,
+        pickup_start: editPickupStart,
+        pickup_end: editPickupEnd,
+        active: nextActive,
+        status: nextStatus,
+      })
+      .eq("id", offer.id)
+      .in("business_id", ownedBusinessIds)
+      .select("*")
       .maybeSingle();
 
     if (error) {
@@ -319,24 +460,137 @@ export default function BusinessDashboardPage() {
     if (!data) {
       setUpdatingOfferId(null);
       setMessageTone("warning");
-      setMessage("This offer was already inactive.");
+      setMessage("Offer could not be updated.");
+      return;
+    }
+
+    setOffers((currentOffers) =>
+      currentOffers.map((currentOffer) =>
+        currentOffer.id === offer.id ? (data as Offer) : currentOffer
+      )
+    );
+    cancelEditingOffer();
+    setUpdatingOfferId(null);
+    setMessageTone("success");
+    setMessage("Offer updated.");
+    await loadDashboard();
+  }
+
+  async function toggleOfferActive(offer: Offer) {
+    setMessage("");
+    setMessageTone("error");
+
+    if (!ownedBusinessIds.includes(offer.business_id)) {
+      setMessage("You can only update offers from your own business.");
+      return;
+    }
+
+    const nextActive = !offer.active;
+
+    if (nextActive && Number(offer.quantity || 0) <= 0) {
+      setMessage("Quantity must be greater than 0 before activating an offer.");
+      return;
+    }
+
+    setUpdatingOfferId(offer.id);
+
+    const { data, error } = await supabase
+      .from("offers")
+      .update({
+        active: nextActive,
+        status: nextActive ? "active" : "inactive",
+      })
+      .eq("id", offer.id)
+      .in("business_id", ownedBusinessIds)
+      .select("*")
+      .maybeSingle();
+
+    if (error) {
+      setUpdatingOfferId(null);
+      setMessageTone("error");
+      setMessage(error.message);
+      return;
+    }
+
+    if (!data) {
+      setUpdatingOfferId(null);
+      setMessageTone("warning");
+      setMessage("Offer could not be updated.");
       await loadDashboard();
       return;
     }
 
     setOffers((currentOffers) =>
       currentOffers.map((offer) =>
-        offer.id === offerId ? { ...offer, active: false } : offer
+        offer.id === data.id ? (data as Offer) : offer
       )
     );
     setUpdatingOfferId(null);
     setMessageTone("success");
-    setMessage("Offer deactivated.");
+    setMessage(nextActive ? "Offer activated." : "Offer set inactive.");
+    await loadDashboard();
+  }
+
+  async function deleteOffer(offer: Offer) {
+    setMessage("");
+    setMessageTone("error");
+
+    if (!ownedBusinessIds.includes(offer.business_id)) {
+      setMessage("You can only delete offers from your own business.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Delete this offer? This cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    setUpdatingOfferId(offer.id);
+
+    const { data, error } = await supabase
+      .from("offers")
+      .delete()
+      .eq("id", offer.id)
+      .in("business_id", ownedBusinessIds)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      setUpdatingOfferId(null);
+      setMessageTone("error");
+      setMessage(
+        error.message.toLowerCase().includes("foreign key")
+          ? "This offer has reservations, so it cannot be deleted. Set it inactive instead."
+          : error.message
+      );
+      return;
+    }
+
+    if (!data) {
+      setUpdatingOfferId(null);
+      setMessageTone("warning");
+      setMessage("Offer could not be deleted.");
+      await loadDashboard();
+      return;
+    }
+
+    setOffers((currentOffers) =>
+      currentOffers.filter((currentOffer) => currentOffer.id !== offer.id)
+    );
+    setUpdatingOfferId(null);
+    setMessageTone("success");
+    setMessage("Offer deleted.");
     await loadDashboard();
   }
 
   async function completeOrder(orderId: number, pickupCodeValue: string) {
     const completedOrder = orders.find((order) => order.id === orderId);
+
+    if (completedOrder && isOrderPastPickupEnd(completedOrder.offers)) {
+      await markNoShow(completedOrder);
+      return false;
+    }
 
     if (!pickupCodeValue.trim()) {
       setMessageTone("error");
@@ -370,6 +624,28 @@ export default function BusinessDashboardPage() {
         order.id === orderId ? { ...order, status: "completed" } : order
       )
     );
+    await loadDashboard();
+    return true;
+  }
+
+  async function markNoShow(order: Order) {
+    setUpdatingOrderId(order.id);
+    setMessage("");
+
+    const { error } = await supabase.rpc("mark_order_no_show", {
+      p_order_id: order.id,
+    });
+
+    if (error) {
+      setMessageTone("error");
+      setMessage(error.message || "Order could not be marked no-show.");
+      setUpdatingOrderId(null);
+      return false;
+    }
+
+    setMessageTone("success");
+    setMessage("Order marked as no-show.");
+    setUpdatingOrderId(null);
     await loadDashboard();
     return true;
   }
@@ -445,11 +721,14 @@ export default function BusinessDashboardPage() {
     };
   }, [businessFilter, offerFilter, scheduleRefresh]);
 
-  const activeOffers = offers.filter((offer) => offer.active);
+  const activeOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "active"
+  );
   const completedOrders = orders.filter((order) => order.status === "completed");
   const reservedOrders = orders.filter((order) =>
     isConfirmedOrderStatus(order.status)
   );
+  const noShowOrders = orders.filter((order) => order.status === "no_show");
   const cancelledOrders = orders.filter(
     (order) => order.status === "cancelled" || order.status === "refunded"
   );
@@ -470,9 +749,12 @@ export default function BusinessDashboardPage() {
     },
     {
       title: "Cancelled orders",
-      value: cancelledOrders.length,
-      caption: `${cancelledOrders.length} cancelled of ${orders.length} total reservations`,
-      percentage: getPercentage(cancelledOrders.length, orders.length),
+      value: cancelledOrders.length + noShowOrders.length,
+      caption: `${cancelledOrders.length} cancelled, ${noShowOrders.length} no-show`,
+      percentage: getPercentage(
+        cancelledOrders.length + noShowOrders.length,
+        orders.length
+      ),
       tone: "red" as const,
     },
     {
@@ -521,18 +803,18 @@ export default function BusinessDashboardPage() {
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Reserved</p>
+              <p className="text-sm font-black text-green-100">Total Offers</p>
+              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{offers.length}</h2>
+            </div>
+
+            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
+              <p className="text-sm font-black text-green-100">Total Reservations</p>
+              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{orders.length}</h2>
+            </div>
+
+            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
+              <p className="text-sm font-black text-green-100">Reserved Now</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{reservedOrders.length}</h2>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Completed Pickups</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{completedOrders.length}</h2>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Cancelled Orders</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{cancelledOrders.length}</h2>
             </div>
           </div>
         </div>
@@ -547,10 +829,10 @@ export default function BusinessDashboardPage() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Pickup performance
+                Section 1
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Analytics snapshot
+                Business stats
               </h2>
             </div>
 
@@ -567,33 +849,6 @@ export default function BusinessDashboardPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <h2 className="text-2xl font-black sm:text-3xl">Verify pickup code</h2>
-
-          <p className="mt-2 font-semibold text-gray-600">
-            Ask customer for the 6-digit pickup code from their Orders page.
-          </p>
-
-          <div className="mt-6 flex flex-col gap-4 md:flex-row">
-            <input
-              value={pickupCode}
-              onChange={(e) => setPickupCode(e.target.value)}
-              placeholder="Enter pickup code"
-              inputMode="numeric"
-              maxLength={6}
-              className="min-h-12 w-full rounded-2xl border bg-white p-3 font-mono text-xl font-black tracking-widest outline-none sm:p-4 md:max-w-sm"
-            />
-
-            <button
-              onClick={verifyPickupCode}
-              disabled={updatingOrderId !== null}
-              className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
-            >
-              {updatingOrderId !== null ? "Completing..." : "Verify pickup"}
-            </button>
-          </div>
-        </div>
-
         {approvedBusinesses.length === 0 && (
           <div className="mt-6 rounded-3xl bg-yellow-100 p-5 sm:mt-8 sm:p-8">
             <h2 className="text-xl font-black text-yellow-800 sm:text-2xl">
@@ -607,7 +862,12 @@ export default function BusinessDashboardPage() {
 
         {approvedBusinesses.length > 0 && (
           <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-            <h2 className="text-2xl font-black sm:text-3xl">Create offer</h2>
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              Section 2
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              Create offer
+            </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <select
@@ -663,6 +923,15 @@ export default function BusinessDashboardPage() {
               />
 
               <input
+                value={pickupDate}
+                onChange={(e) => setPickupDate(e.target.value)}
+                type="date"
+                min={getTbilisiDateKey()}
+                className="rounded-2xl border p-4 font-semibold"
+                aria-label="Pickup date"
+              />
+
+              <input
                 value={pickupStart}
                 onChange={(e) => setPickupStart(e.target.value)}
                 type="time"
@@ -680,11 +949,17 @@ export default function BusinessDashboardPage() {
 
               <input
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
-                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
+                onChange={handleImageFileChange}
                 className="rounded-2xl border bg-white p-4 font-semibold"
               />
             </div>
+
+            {imageFile && (
+              <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
+                Selected image: {imageFile.name}
+              </p>
+            )}
 
             <button
               onClick={createOffer}
@@ -697,7 +972,10 @@ export default function BusinessDashboardPage() {
         )}
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <h2 className="text-2xl font-black sm:text-3xl">My offers</h2>
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Section 3
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">My offers</h2>
 
           <div className="mt-6 grid gap-4">
             {offers.length === 0 && (
@@ -705,64 +983,172 @@ export default function BusinessDashboardPage() {
             )}
 
             {offers.map((offer) => {
-              const statusLabel = offer.active
-                ? "Active"
-                : offer.quantity <= 0
-                ? "Sold out"
-                : "Inactive";
-              const statusClass = offer.active
-                ? "bg-green-100 text-green-700"
-                : offer.quantity <= 0
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-gray-100 text-gray-700";
+              const statusLabel = getOfferStatusLabel(offer);
+              const statusClass = getOfferStatusClassName(offer);
+              const rating = ratingSummaries[offer.business_id];
+              const isEditing = editingOfferId === offer.id;
 
               return (
                 <div
                   key={offer.id}
-                  className="flex flex-col gap-4 rounded-2xl border p-5 md:flex-row md:items-center md:justify-between"
+                  className="grid gap-5 rounded-2xl border p-5"
                 >
-                  <div className="flex gap-3 sm:gap-4">
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
-                      <OfferImage
-                        src={offer.image_url}
-                        alt={offer.title}
-                        sizes="96px"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-xl font-black">{offer.title}</h3>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
-                        >
-                          {statusLabel}
-                        </span>
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex gap-3 sm:gap-4">
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
+                        <OfferImage
+                          src={offer.image_url}
+                          alt={offer.title}
+                          sizes="96px"
+                        />
                       </div>
 
-                      <p className="font-medium text-gray-700">
-                        ₾{offer.price} · Quantity: {offer.quantity}
-                      </p>
-                      <p className="text-gray-600">
-                        Pickup: {offer.pickup_start} - {offer.pickup_end}
-                      </p>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-xl font-black">{offer.title}</h3>
+                          <span
+                            className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
+                          >
+                            {statusLabel}
+                          </span>
+                        </div>
+
+                        <p className="font-medium text-gray-700">
+                          ₾{offer.price} · Quantity: {offer.quantity}
+                        </p>
+                        <p className="text-gray-600">
+                          Pickup: {formatPickupWindow(offer)}
+                        </p>
+                        <p className="text-sm font-bold text-yellow-700">
+                          Rating: {getRatingLabel(rating)}
+                        </p>
+                        <p className="mt-1 text-xs font-bold text-gray-500">
+                          Created: {formatCreatedDate(offer.created_at)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
+                      <button
+                        onClick={() =>
+                          isEditing
+                            ? cancelEditingOffer()
+                            : startEditingOffer(offer)
+                        }
+                        disabled={
+                          updatingOfferId !== null &&
+                          updatingOfferId !== offer.id
+                        }
+                        className="min-h-12 rounded-full border border-green-200 bg-green-50 px-5 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {isEditing ? "Cancel" : "Edit"}
+                      </button>
+
+                      <button
+                        onClick={() => void toggleOfferActive(offer)}
+                        disabled={updatingOfferId !== null}
+                        aria-label={`Toggle ${offer.title} active status`}
+                        className={`min-h-12 rounded-full px-5 py-3 font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                          offer.active
+                            ? "bg-green-700 hover:bg-green-800"
+                            : "bg-gray-600 hover:bg-gray-700"
+                        }`}
+                      >
+                        {updatingOfferId === offer.id
+                          ? "Updating..."
+                          : offer.active
+                          ? "Active"
+                          : "Inactive"}
+                      </button>
+
+                      <button
+                        onClick={() => void deleteOffer(offer)}
+                        disabled={updatingOfferId !== null}
+                        className="min-h-12 rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
+                      </button>
                     </div>
                   </div>
 
-                  {offer.active ? (
-                    <button
-                      onClick={() => deactivateOffer(offer.id)}
-                      disabled={updatingOfferId !== null}
-                      className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                    >
-                      {updatingOfferId === offer.id
-                        ? "Deactivating..."
-                        : "Deactivate"}
-                    </button>
-                  ) : (
-                    <span className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gray-100 px-5 py-3 font-bold text-gray-600 sm:w-auto">
-                      No longer public
-                    </span>
+                  {isEditing && (
+                    <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input
+                          value={editTitle}
+                          onChange={(event) => setEditTitle(event.target.value)}
+                          className="rounded-2xl border bg-white p-4 font-semibold"
+                          placeholder="Offer title"
+                        />
+
+                        <input
+                          value={editPrice}
+                          onChange={(event) => setEditPrice(event.target.value)}
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          inputMode="decimal"
+                          className="rounded-2xl border bg-white p-4 font-semibold"
+                          placeholder="Price"
+                        />
+
+                        <input
+                          value={editOldPrice}
+                          onChange={(event) =>
+                            setEditOldPrice(event.target.value)
+                          }
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          inputMode="decimal"
+                          className="rounded-2xl border bg-white p-4 font-semibold"
+                          placeholder="Old price"
+                        />
+
+                        <input
+                          value={editQuantity}
+                          onChange={(event) =>
+                            setEditQuantity(event.target.value)
+                          }
+                          type="number"
+                          min="0"
+                          step="1"
+                          inputMode="numeric"
+                          className="rounded-2xl border bg-white p-4 font-semibold"
+                          placeholder="Quantity"
+                        />
+
+                        <input
+                          value={editPickupStart}
+                          onChange={(event) =>
+                            setEditPickupStart(event.target.value)
+                          }
+                          type="time"
+                          className="rounded-2xl border bg-white p-4 font-semibold"
+                          aria-label="Pickup start"
+                        />
+
+                        <input
+                          value={editPickupEnd}
+                          onChange={(event) =>
+                            setEditPickupEnd(event.target.value)
+                          }
+                          type="time"
+                          className="rounded-2xl border bg-white p-4 font-semibold"
+                          aria-label="Pickup end"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => void saveOfferEdits(offer)}
+                        disabled={updatingOfferId !== null}
+                        className="mt-4 min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                      >
+                        {updatingOfferId === offer.id
+                          ? "Saving..."
+                          : "Save changes"}
+                      </button>
+                    </div>
                   )}
                 </div>
               );
@@ -771,7 +1157,39 @@ export default function BusinessDashboardPage() {
         </div>
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <h2 className="text-2xl font-black sm:text-3xl">Reservations</h2>
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Section 4
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Reservations
+          </h2>
+
+          <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-4 sm:p-5">
+            <h3 className="text-xl font-black">Verify pickup code</h3>
+
+            <p className="mt-2 font-semibold text-gray-600">
+              Ask customer for the 6-digit pickup code from their Orders page.
+            </p>
+
+            <div className="mt-5 flex flex-col gap-4 md:flex-row">
+              <input
+                value={pickupCode}
+                onChange={(e) => setPickupCode(e.target.value)}
+                placeholder="Enter pickup code"
+                inputMode="numeric"
+                maxLength={6}
+                className="min-h-12 w-full rounded-2xl border bg-white p-3 font-mono text-xl font-black tracking-widest outline-none sm:p-4 md:max-w-sm"
+              />
+
+              <button
+                onClick={verifyPickupCode}
+                disabled={updatingOrderId !== null}
+                className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
+              >
+                {updatingOrderId !== null ? "Completing..." : "Verify pickup"}
+              </button>
+            </div>
+          </div>
 
           <div className="mt-6 grid gap-4">
             {orders.length === 0 && (
@@ -784,14 +1202,32 @@ export default function BusinessDashboardPage() {
                 className="flex flex-col gap-5 rounded-2xl border p-5 lg:flex-row lg:items-center lg:justify-between"
               >
                 <div>
-                  <h3 className="text-xl font-black sm:text-2xl">{order.offers?.title}</h3>
+                  <h3 className="text-xl font-black sm:text-2xl">
+                    {order.offers?.title || "Offer unavailable"}
+                  </h3>
 
                   <p className="mt-2 font-semibold text-gray-700">
-                    Customer: {order.profiles?.email}
+                    Customer: {order.profiles?.email || "Email unavailable"}
+                  </p>
+
+                  <p className="mt-1 font-semibold text-gray-600">
+                    Created: {formatCreatedDate(order.created_at)}
                   </p>
 
                   <p className="mt-1 font-black text-green-700">
                     ₾{order.offers?.price}
+                  </p>
+
+                  <p className="mt-1 font-semibold text-gray-600">
+                    Pickup:{" "}
+                    {order.offers
+                      ? formatPickupWindow(order.offers)
+                      : "Time unavailable"}
+                  </p>
+
+                  <p className="mt-1 text-sm font-bold text-gray-500">
+                    Reliability: {order.profiles?.reliability_score ?? "--"} ·{" "}
+                    {order.profiles?.reliability_status || "unknown"}
                   </p>
 
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -808,17 +1244,33 @@ export default function BusinessDashboardPage() {
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
-                  <button
-                    onClick={() =>
-                      void completeOrder(order.id, order.pickup_code || "")
-                    }
-                    disabled={updatingOrderId !== null}
-                    className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                  >
-                    {updatingOrderId === order.id
-                      ? "Completing..."
-                      : "Complete manually"}
-                  </button>
+                  <div className="flex flex-col gap-3 lg:flex-row">
+                    {isOrderPastPickupEnd(order.offers) && (
+                      <button
+                        onClick={() => void markNoShow(order)}
+                        disabled={updatingOrderId !== null}
+                        className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      >
+                        {updatingOrderId === order.id
+                          ? "Updating..."
+                          : "Mark no-show"}
+                      </button>
+                    )}
+
+                    {!isOrderPastPickupEnd(order.offers) && (
+                      <button
+                        onClick={() =>
+                          void completeOrder(order.id, order.pickup_code || "")
+                        }
+                        disabled={updatingOrderId !== null}
+                        className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      >
+                        {updatingOrderId === order.id
+                          ? "Completing..."
+                          : "Complete manually"}
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             ))}

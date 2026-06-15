@@ -11,6 +11,11 @@ export type Profile = {
   id: string;
   email: string | null;
   role: UserRole | null;
+  reliability_score?: number | null;
+  reliability_status?: "excellent" | "good" | "warning" | "restricted" | null;
+  no_show_count?: number | null;
+  completed_pickup_count?: number | null;
+  cancelled_order_count?: number | null;
 };
 
 export type Business = {
@@ -26,15 +31,17 @@ export type Business = {
 export type Offer = {
   id: number;
   business_id: number;
+  created_at?: string | null;
   title: string;
   category: string | null;
   price: number | string;
   old_price: number | string | null;
   quantity: number;
+  pickup_date?: string | null;
   pickup_start: string | null;
   pickup_end: string | null;
   active: boolean;
-  status?: "active" | "inactive" | "sold_out" | null;
+  status?: "active" | "inactive" | "sold_out" | "expired" | null;
   description?: string | null;
   allergens?: string | null;
   image_url: string | null;
@@ -53,6 +60,7 @@ export type Order = {
   id: number;
   user_id: string;
   offer_id: number;
+  created_at?: string | null;
   status: OrderStatus;
   payment_method: string | null;
   pickup_code: string | null;
@@ -70,6 +78,7 @@ export type Order = {
     | "id"
     | "title"
     | "pickup_start"
+    | "pickup_date"
     | "pickup_end"
     | "price"
     | "quantity"
@@ -77,5 +86,15 @@ export type Order = {
   > & {
     businesses?: Pick<Business, "name" | "address" | "business_type"> | null;
   }) | null;
-  profiles?: Pick<Profile, "email"> | null;
+  profiles?: Pick<Profile, "email" | "reliability_score" | "reliability_status"> | null;
+};
+
+export type BusinessRating = {
+  id: number;
+  order_id: number;
+  business_id: number;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string | null;
 };
