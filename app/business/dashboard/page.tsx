@@ -10,6 +10,8 @@ import { notifyPickupCompleted } from "@/lib/notifications";
 import {
   getOrderStatusClassName,
   getOrderStatusLabel,
+  isCancelledOrderStatus,
+  isCollectedOrderStatus,
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import {
@@ -36,6 +38,7 @@ function createImageFileName(file: File) {
 
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
 const maxImageSizeBytes = 5 * 1024 * 1024;
+type ReservationFilter = "all" | "reserved" | "collected" | "cancelled";
 
 function getPercentage(value: number, total: number) {
   if (total <= 0) return 0;
@@ -89,6 +92,8 @@ export default function BusinessDashboardPage() {
   const [updatingOfferId, setUpdatingOfferId] = useState<number | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
   const [editingOfferId, setEditingOfferId] = useState<number | null>(null);
+  const [reservationFilter, setReservationFilter] =
+    useState<ReservationFilter>("all");
   const [editTitle, setEditTitle] = useState("");
   const [editPrice, setEditPrice] = useState("");
   const [editOldPrice, setEditOldPrice] = useState("");
@@ -613,7 +618,7 @@ export default function BusinessDashboardPage() {
 
     setUpdatingOrderId(null);
     setMessageTone("success");
-    setMessage("Order completed.");
+    setMessage("Reservation marked collected.");
     notifyPickupCompleted({
       orderId,
       offerTitle: completedOrder?.offers?.title,
@@ -621,7 +626,7 @@ export default function BusinessDashboardPage() {
     });
     setOrders((currentOrders) =>
       currentOrders.map((order) =>
-        order.id === orderId ? { ...order, status: "completed" } : order
+        order.id === orderId ? { ...order, status: "collected" } : order
       )
     );
     await loadDashboard();
@@ -724,38 +729,36 @@ export default function BusinessDashboardPage() {
   const activeOffers = offers.filter(
     (offer) => getEffectiveOfferStatus(offer) === "active"
   );
-  const completedOrders = orders.filter((order) => order.status === "completed");
+  const collectedOrders = orders.filter((order) =>
+    isCollectedOrderStatus(order.status)
+  );
   const reservedOrders = orders.filter((order) =>
     isConfirmedOrderStatus(order.status)
   );
-  const noShowOrders = orders.filter((order) => order.status === "no_show");
-  const cancelledOrders = orders.filter(
-    (order) => order.status === "cancelled" || order.status === "refunded"
+  const cancelledOrders = orders.filter((order) =>
+    isCancelledOrderStatus(order.status)
   );
+  const filteredOrders = orders.filter((order) => {
+    if (reservationFilter === "reserved") {
+      return isConfirmedOrderStatus(order.status);
+    }
+
+    if (reservationFilter === "collected") {
+      return isCollectedOrderStatus(order.status);
+    }
+
+    if (reservationFilter === "cancelled") {
+      return isCancelledOrderStatus(order.status);
+    }
+
+    return true;
+  });
   const businessAnalytics = [
     {
-      title: "Reservations",
-      value: reservedOrders.length,
-      caption: `${reservedOrders.length} active of ${orders.length} total reservations`,
-      percentage: getPercentage(reservedOrders.length, orders.length),
-      tone: "yellow" as const,
-    },
-    {
-      title: "Completed pickups",
-      value: completedOrders.length,
-      caption: `${completedOrders.length} completed of ${orders.length} total reservations`,
-      percentage: getPercentage(completedOrders.length, orders.length),
-      tone: "green" as const,
-    },
-    {
-      title: "Cancelled orders",
-      value: cancelledOrders.length + noShowOrders.length,
-      caption: `${cancelledOrders.length} cancelled, ${noShowOrders.length} no-show`,
-      percentage: getPercentage(
-        cancelledOrders.length + noShowOrders.length,
-        orders.length
-      ),
-      tone: "red" as const,
+      title: "Total offers",
+      value: offers.length,
+      caption: `${offers.length} offer(s) created`,
+      percentage: getPercentage(offers.length, Math.max(offers.length, 1)),
     },
     {
       title: "Active offers",
@@ -763,6 +766,27 @@ export default function BusinessDashboardPage() {
       caption: `${activeOffers.length} public of ${offers.length} total offers`,
       percentage: getPercentage(activeOffers.length, offers.length),
       tone: "green" as const,
+    },
+    {
+      title: "Reserved orders",
+      value: reservedOrders.length,
+      caption: `${reservedOrders.length} active reservation(s)`,
+      percentage: getPercentage(reservedOrders.length, orders.length),
+      tone: "yellow" as const,
+    },
+    {
+      title: "Collected orders",
+      value: collectedOrders.length,
+      caption: `${collectedOrders.length} collected of ${orders.length} reservation(s)`,
+      percentage: getPercentage(collectedOrders.length, orders.length),
+      tone: "green" as const,
+    },
+    {
+      title: "Cancelled orders",
+      value: cancelledOrders.length,
+      caption: `${cancelledOrders.length} cancelled reservation(s)`,
+      percentage: getPercentage(cancelledOrders.length, orders.length),
+      tone: "red" as const,
     },
   ];
 
@@ -796,25 +820,30 @@ export default function BusinessDashboardPage() {
             when customers arrive.
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-4">
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Active Offers</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{activeOffers.length}</h2>
-            </div>
-
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
               <p className="text-sm font-black text-green-100">Total Offers</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{offers.length}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Total Reservations</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{orders.length}</h2>
+              <p className="text-sm font-black text-green-100">Active Offers</p>
+              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{activeOffers.length}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Reserved Now</p>
+              <p className="text-sm font-black text-green-100">Reserved Orders</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{reservedOrders.length}</h2>
+            </div>
+
+            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
+              <p className="text-sm font-black text-green-100">Collected Orders</p>
+              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{collectedOrders.length}</h2>
+            </div>
+
+            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
+              <p className="text-sm font-black text-green-100">Cancelled Orders</p>
+              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{cancelledOrders.length}</h2>
             </div>
           </div>
         </div>
@@ -837,7 +866,7 @@ export default function BusinessDashboardPage() {
             </div>
 
             <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              A quick view of reservations, completed pickups, cancellations,
+              A quick view of reservations, collected pickups, cancellations,
               and active offers for your approved businesses.
             </p>
           </div>
@@ -1191,12 +1220,40 @@ export default function BusinessDashboardPage() {
             </div>
           </div>
 
+          <div className="mt-6 flex flex-wrap gap-3">
+            {[
+              { value: "all", label: "All" },
+              { value: "reserved", label: "Reserved" },
+              { value: "collected", label: "Collected" },
+              { value: "cancelled", label: "Cancelled" },
+            ].map((filter) => {
+              const isActive = reservationFilter === filter.value;
+
+              return (
+                <button
+                  key={filter.value}
+                  type="button"
+                  onClick={() =>
+                    setReservationFilter(filter.value as ReservationFilter)
+                  }
+                  className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
+                    isActive
+                      ? "bg-green-700 text-white"
+                      : "bg-green-50 text-green-800 hover:bg-green-100"
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="mt-6 grid gap-4">
-            {orders.length === 0 && (
+            {filteredOrders.length === 0 && (
               <p className="font-medium text-gray-600">No reservations yet.</p>
             )}
 
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div
                 key={order.id}
                 className="flex flex-col gap-5 rounded-2xl border p-5 lg:flex-row lg:items-center lg:justify-between"
@@ -1267,7 +1324,7 @@ export default function BusinessDashboardPage() {
                       >
                         {updatingOrderId === order.id
                           ? "Completing..."
-                          : "Complete manually"}
+                          : "Mark Collected"}
                       </button>
                     )}
                   </div>

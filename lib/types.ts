@@ -2,6 +2,7 @@ export type UserRole = "customer" | "business" | "admin";
 export type OrderStatus =
   | "reserved"
   | "confirmed"
+  | "collected"
   | "completed"
   | "cancelled"
   | "refunded"

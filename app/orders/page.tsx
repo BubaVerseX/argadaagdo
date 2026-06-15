@@ -14,6 +14,8 @@ import { notifyOrderCancelled } from "@/lib/notifications";
 import { formatPickupWindow } from "@/lib/offerLifecycle";
 import {
   getInactiveOrderMessage,
+  isCancelledOrderStatus,
+  isCollectedOrderStatus,
   getOrderStatusClassName,
   getOrderStatusLabel,
   isConfirmedOrderStatus,
@@ -94,7 +96,11 @@ export default function OrdersPage() {
   }
 
   async function rateOrder(order: Order, rating: number) {
-    if (ratingOrderId !== null || order.status !== "completed" || order.rated_at) {
+    if (
+      ratingOrderId !== null ||
+      !isCollectedOrderStatus(order.status) ||
+      order.rated_at
+    ) {
       return;
     }
 
@@ -147,8 +153,11 @@ export default function OrdersPage() {
     }
 
     setMessageTone("success");
-    setMessage(
-      "Order refunded. Quantity was restored by the reservation system."
+    setMessage("Reservation cancelled.");
+    setOrders((currentOrders) =>
+      currentOrders.map((item) =>
+        item.id === order.id ? { ...item, status: "cancelled" } : item
+      )
     );
     notifyOrderCancelled({
       orderId: order.id,
@@ -219,10 +228,12 @@ export default function OrdersPage() {
   const confirmedCount = orders.filter((order) =>
     isConfirmedOrderStatus(order.status)
   ).length;
-  const completedCount = orders.filter((order) => order.status === "completed").length;
-  const cancelledCount = orders.filter((order) => order.status === "cancelled").length;
-  const refundedCount = orders.filter((order) => order.status === "refunded").length;
-  const noShowCount = orders.filter((order) => order.status === "no_show").length;
+  const collectedCount = orders.filter((order) =>
+    isCollectedOrderStatus(order.status)
+  ).length;
+  const cancelledCount = orders.filter((order) =>
+    isCancelledOrderStatus(order.status)
+  ).length;
   const reliabilityStatus = profile?.reliability_status || "good";
   const reliabilityTone =
     reliabilityStatus === "excellent" || reliabilityStatus === "good"
@@ -249,12 +260,10 @@ export default function OrdersPage() {
             Show your pickup code at the business during pickup time.
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-7">
-            <StatCard title="Confirmed" value={confirmedCount} tone="yellow" />
-            <StatCard title="Completed" value={completedCount} tone="green" />
+          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
+            <StatCard title="Reserved" value={confirmedCount} tone="yellow" />
+            <StatCard title="Collected" value={collectedCount} tone="green" />
             <StatCard title="Cancelled" value={cancelledCount} tone="red" />
-            <StatCard title="Refunded" value={refundedCount} />
-            <StatCard title="No-show" value={noShowCount} tone="red" />
             <StatCard
               title="Reliability"
               value={profile?.reliability_score ?? "--"}
@@ -407,11 +416,11 @@ export default function OrdersPage() {
                       >
                         {cancellingOrderId === order.id
                           ? "Cancelling..."
-                          : "Cancel Order"}
+                          : "Cancel Reservation"}
                       </button>
                     )}
 
-                    {order.status === "completed" && (
+                    {isCollectedOrderStatus(order.status) && (
                       <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-sm">
                         {order.rated_at ? (
                           <p className="text-center font-black text-green-700">

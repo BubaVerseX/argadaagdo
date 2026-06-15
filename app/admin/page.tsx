@@ -7,6 +7,7 @@ import StatCard from "@/components/StatCard";
 import { getConfirmedProfile } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { getEffectiveOfferStatus } from "@/lib/offerLifecycle";
+import { isCollectedOrderStatus } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Profile } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -193,7 +194,9 @@ export default function AdminPage() {
     (offer) => getEffectiveOfferStatus(offer) === "inactive"
   );
   const reservedOrders = orders.filter((order) => order.status === "reserved");
-  const completedOrders = orders.filter((order) => order.status === "completed");
+  const completedOrders = orders.filter((order) =>
+    isCollectedOrderStatus(order.status)
+  );
   const cancelledOrders = orders.filter(
     (order) => order.status === "cancelled" || order.status === "refunded"
   );
@@ -237,9 +240,9 @@ export default function AdminPage() {
       tone: "yellow" as const,
     },
     {
-      title: "Completed pickups",
+      title: "Collected pickups",
       value: completedOrders.length,
-      caption: `${completedOrders.length} completed of ${orders.length} total orders`,
+      caption: `${completedOrders.length} collected of ${orders.length} total orders`,
       percentage: getPercentage(completedOrders.length, orders.length),
       tone: "green" as const,
     },
@@ -303,7 +306,7 @@ export default function AdminPage() {
           <StatCard title="Inactive" value={inactiveOffers.length} />
           <StatCard title="Total orders" value={orders.length} />
           <StatCard title="Reserved" value={reservedOrders.length} tone="yellow" />
-          <StatCard title="Completed pickups" value={completedOrders.length} tone="green" />
+          <StatCard title="Collected pickups" value={completedOrders.length} tone="green" />
           <StatCard title="Cancelled orders" value={cancelledOrders.length} tone="red" />
           <StatCard title="No-show" value={noShowOrders.length} tone="red" />
         </div>
