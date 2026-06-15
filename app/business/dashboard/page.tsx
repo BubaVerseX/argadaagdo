@@ -4,6 +4,7 @@ import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
+import StatCard from "@/components/StatCard";
 import { getConfirmedProfile } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyPickupCompleted } from "@/lib/notifications";
@@ -26,7 +27,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
-import type { Business, Offer, Order } from "@/lib/types";
+import type { Business, Offer, Order, Rating } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -71,6 +72,7 @@ export default function BusinessDashboardPage() {
   const [approvedBusinesses, setApprovedBusinesses] = useState<Business[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [reviews, setReviews] = useState<Rating[]>([]);
   const [ownedBusinessIds, setOwnedBusinessIds] = useState<number[]>([]);
   const [ownedOfferIds, setOwnedOfferIds] = useState<number[]>([]);
 
@@ -154,21 +156,32 @@ export default function BusinessDashboardPage() {
     if (businessIds.length === 0) {
       setOffers([]);
       setOrders([]);
+      setReviews([]);
       setOwnedOfferIds([]);
       setLoading(false);
       return;
     }
 
-    const [{ data: myOffers, error: offerError }, summaries] = await Promise.all([
+    const [
+      { data: myOffers, error: offerError },
+      summaries,
+      { data: myReviews, error: reviewError },
+    ] = await Promise.all([
       supabase
         .from("offers")
         .select("*, businesses(name)")
         .in("business_id", businessIds)
         .order("id", { ascending: false }),
       loadBusinessRatingSummaries(),
+      supabase
+        .from("ratings")
+        .select("id, user_id, business_id, order_id, rating, review, created_at")
+        .in("business_id", businessIds)
+        .order("created_at", { ascending: false }),
     ]);
 
     setRatingSummaries(summaries);
+    setReviews(reviewError ? [] : ((myReviews || []) as Rating[]));
 
     if (offerError) {
       setMessageTone("error");
@@ -703,6 +716,16 @@ export default function BusinessDashboardPage() {
           filter: `business_id=in.(${businessFilter})`,
         },
         scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "ratings",
+          filter: `business_id=in.(${businessFilter})`,
+        },
+        scheduleRefresh
       );
 
     if (offerFilter) {
@@ -728,6 +751,24 @@ export default function BusinessDashboardPage() {
 
   const activeOffers = offers.filter(
     (offer) => getEffectiveOfferStatus(offer) === "active"
+  );
+  const totalReviews = reviews.length;
+  const averageRating =
+    totalReviews > 0
+      ? Math.round(
+          (reviews.reduce((total, review) => total + Number(review.rating), 0) /
+            totalReviews) *
+            10
+        ) / 10
+      : 0;
+  const averageRatingLabel =
+    totalReviews > 0 ? `${averageRating.toFixed(1)} ⭐` : "No ratings";
+  const businessNameById = approvedBusinesses.reduce<Record<number, string>>(
+    (businessMap, business) => {
+      businessMap[business.id] = business.name;
+      return businessMap;
+    },
+    {}
   );
   const collectedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
@@ -869,6 +910,15 @@ export default function BusinessDashboardPage() {
               A quick view of reservations, collected pickups, cancellations,
               and active offers for your approved businesses.
             </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <StatCard
+              title="Average Rating"
+              value={averageRatingLabel}
+              tone={totalReviews > 0 ? "yellow" : "neutral"}
+            />
+            <StatCard title="Total Reviews" value={totalReviews} />
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -1049,7 +1099,7 @@ export default function BusinessDashboardPage() {
                           Pickup: {formatPickupWindow(offer)}
                         </p>
                         <p className="text-sm font-bold text-yellow-700">
-                          Rating: {getRatingLabel(rating)}
+                          ⭐ {getRatingLabel(rating)}
                         </p>
                         <p className="mt-1 text-xs font-bold text-gray-500">
                           Created: {formatCreatedDate(offer.created_at)}
@@ -1329,6 +1379,55 @@ export default function BusinessDashboardPage() {
                     )}
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Section 5
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Business reviews
+          </h2>
+
+          <p className="mt-2 font-semibold text-gray-600">
+            Customer reviews from collected orders for your approved
+            businesses.
+          </p>
+
+          <div className="mt-6 grid gap-4">
+            {reviews.length === 0 && (
+              <p className="font-medium text-gray-600">
+                No customer reviews yet.
+              </p>
+            )}
+
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="rounded-2xl border bg-[#F7F6EF] p-5"
+              >
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-xl font-black text-yellow-700">
+                      {review.rating} ⭐
+                    </p>
+                    <p className="mt-1 font-bold text-gray-700">
+                      {businessNameById[Number(review.business_id)] ||
+                        "Business"}
+                    </p>
+                  </div>
+
+                  <p className="text-sm font-bold text-gray-500">
+                    {formatCreatedDate(review.created_at)}
+                  </p>
+                </div>
+
+                <p className="mt-4 font-semibold text-gray-700">
+                  {review.review?.trim() || "No written review."}
+                </p>
               </div>
             ))}
           </div>

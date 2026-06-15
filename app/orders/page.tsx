@@ -57,6 +57,8 @@ export default function OrdersPage() {
     null
   );
   const [ratingOrderId, setRatingOrderId] = useState<number | null>(null);
+  const [ratingValues, setRatingValues] = useState<Record<number, number>>({});
+  const [reviewTexts, setReviewTexts] = useState<Record<number, string>>({});
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function loadOrders(userId: string, showLoading = false) {
@@ -95,7 +97,9 @@ export default function OrdersPage() {
     setLoading(false);
   }
 
-  async function rateOrder(order: Order, rating: number) {
+  async function rateOrder(order: Order) {
+    const selectedRating = ratingValues[order.id];
+
     if (
       ratingOrderId !== null ||
       !isCollectedOrderStatus(order.status) ||
@@ -104,13 +108,19 @@ export default function OrdersPage() {
       return;
     }
 
+    if (!selectedRating) {
+      setMessageTone("warning");
+      setMessage("Choose a star rating before submitting your review.");
+      return;
+    }
+
     setRatingOrderId(order.id);
     setMessage("");
 
     const { error } = await supabase.rpc("rate_business", {
       p_order_id: order.id,
-      p_rating: rating,
-      p_comment: null,
+      p_rating: selectedRating,
+      p_comment: reviewTexts[order.id]?.trim() || null,
     });
 
     if (error) {
@@ -121,7 +131,7 @@ export default function OrdersPage() {
     }
 
     setMessageTone("success");
-    setMessage("Thanks. Your rating was saved.");
+    setMessage("Thanks. Your review was saved.");
     setOrders((currentOrders) =>
       currentOrders.map((item) =>
         item.id === order.id
@@ -129,6 +139,16 @@ export default function OrdersPage() {
           : item
       )
     );
+    setRatingValues((currentRatings) => {
+      const nextRatings = { ...currentRatings };
+      delete nextRatings[order.id];
+      return nextRatings;
+    });
+    setReviewTexts((currentReviews) => {
+      const nextReviews = { ...currentReviews };
+      delete nextReviews[order.id];
+      return nextReviews;
+    });
     setRatingOrderId(null);
     await loadOrders(order.user_id);
   }
@@ -322,6 +342,8 @@ export default function OrdersPage() {
             );
             const statusClass = getOrderStatusClassName(order.status);
             const isConfirmed = isConfirmedOrderStatus(order.status);
+            const selectedRating = ratingValues[order.id] || 0;
+            const reviewText = reviewTexts[order.id] || "";
 
             return (
               <div
@@ -436,14 +458,47 @@ export default function OrdersPage() {
                                 <button
                                   key={rating}
                                   type="button"
-                                  onClick={() => void rateOrder(order, rating)}
+                                  onClick={() =>
+                                    setRatingValues((currentRatings) => ({
+                                      ...currentRatings,
+                                      [order.id]: rating,
+                                    }))
+                                  }
                                   disabled={ratingOrderId !== null}
-                                  className="min-h-10 rounded-full bg-yellow-50 font-black text-yellow-800 transition hover:bg-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                  className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                                    selectedRating === rating
+                                      ? "bg-yellow-400 text-yellow-950"
+                                      : "bg-yellow-50 text-yellow-800 hover:bg-yellow-100"
+                                  }`}
                                 >
-                                  {rating}
+                                  ⭐ {rating}
                                 </button>
                               ))}
                             </div>
+
+                            <textarea
+                              value={reviewText}
+                              onChange={(event) =>
+                                setReviewTexts((currentReviews) => ({
+                                  ...currentReviews,
+                                  [order.id]: event.target.value,
+                                }))
+                              }
+                              maxLength={500}
+                              placeholder="Optional review for the business"
+                              className="mt-3 min-h-24 w-full rounded-2xl border bg-white p-3 text-sm font-semibold text-gray-800 outline-none focus:border-green-600"
+                            />
+
+                            <button
+                              type="button"
+                              onClick={() => void rateOrder(order)}
+                              disabled={ratingOrderId !== null || !selectedRating}
+                              className="mt-3 min-h-11 w-full rounded-full bg-green-700 px-5 py-2.5 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                              {ratingOrderId === order.id
+                                ? "Saving review..."
+                                : "Submit review"}
+                            </button>
                           </>
                         )}
                       </div>

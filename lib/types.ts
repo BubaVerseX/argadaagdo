@@ -99,3 +99,13 @@ export type BusinessRating = {
   comment: string | null;
   created_at: string | null;
 };
+
+export type Rating = {
+  id: number;
+  user_id: string;
+  business_id: number;
+  order_id: number;
+  rating: number;
+  review: string | null;
+  created_at: string | null;
+};

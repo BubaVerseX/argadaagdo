@@ -193,6 +193,11 @@ export default function OffersPage() {
         { event: "*", schema: "public", table: "businesses" },
         scheduleRefresh
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "ratings" },
+        scheduleRefresh
+      )
       .subscribe();
 
     return () => {
@@ -528,7 +533,7 @@ export default function OffersPage() {
                                 </p>
 
                                 <p className="mt-1 text-sm font-black text-yellow-700">
-                                  Rating: {getRatingLabel(rating)}
+                                  ⭐ {getRatingLabel(rating)}
                                 </p>
                               </div>
 
@@ -579,13 +584,18 @@ export default function OffersPage() {
                                 <button
                                   onClick={() => toggleFavorite(offer)}
                                   disabled={updatingFavoriteId !== null}
+                                  aria-label={
+                                    favoriteOfferIds.includes(offer.id)
+                                      ? `Remove ${offer.title} from favorites`
+                                      : `Add ${offer.title} to favorites`
+                                  }
                                   className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                                 >
                                   {updatingFavoriteId === offer.id
-                                    ? "Saving..."
+                                    ? "Updating..."
                                     : favoriteOfferIds.includes(offer.id)
-                                    ? "Saved"
-                                    : "Save"}
+                                    ? "❤️ Remove Favorite"
+                                    : "❤️ Add Favorite"}
                                 </button>
 
                                 <button

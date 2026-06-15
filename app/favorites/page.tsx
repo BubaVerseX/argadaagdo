@@ -318,11 +318,12 @@ export default function FavoritesPage() {
                       <button
                         onClick={() => removeFavorite(favorite)}
                         disabled={removingFavoriteId !== null}
+                        aria-label={`Remove ${offer?.title || "offer"} from favorites`}
                         className="min-h-12 rounded-full border border-red-200 bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {removingFavoriteId === favorite.id
                           ? "Removing..."
-                          : "Remove"}
+                          : "❤️ Remove Favorite"}
                       </button>
 
                       {isAvailable && offer && (

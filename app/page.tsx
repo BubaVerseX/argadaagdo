@@ -188,7 +188,7 @@ export default function Home() {
                             {offer.quantity} left
                           </p>
                           <p className="text-xs font-bold text-yellow-700">
-                            {getRatingLabel(ratingSummaries[offer.business_id])}
+                            ⭐ {getRatingLabel(ratingSummaries[offer.business_id])}
                           </p>
                         </div>
                       </div>
@@ -302,7 +302,7 @@ export default function Home() {
                         {offer.businesses?.name}
                       </p>
                       <p className="mt-1 text-sm font-black text-yellow-700">
-                        Rating: {getRatingLabel(ratingSummaries[offer.business_id])}
+                        ⭐ {getRatingLabel(ratingSummaries[offer.business_id])}
                       </p>
                     </div>
 
