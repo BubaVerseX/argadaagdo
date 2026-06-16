@@ -71,6 +71,7 @@ export default function BusinessDashboardPage() {
   const { language, t } = useLanguage();
   const [loading, setLoading] = useState(true);
 
+  const [businesses, setBusinesses] = useState<Business[]>([]);
   const [approvedBusinesses, setApprovedBusinesses] = useState<Business[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -139,23 +140,29 @@ export default function BusinessDashboardPage() {
     const allBusinesses = (myBusinesses || []) as Business[];
     const approved = allBusinesses.filter((business) => business.approved);
 
+    setBusinesses(allBusinesses);
     setApprovedBusinesses(approved);
 
     setBusinessId((currentBusinessId) => {
+      const businessOptions = approved.length > 0 ? approved : allBusinesses;
+
       if (
         currentBusinessId &&
-        approved.some((business) => String(business.id) === currentBusinessId)
+        businessOptions.some(
+          (business) => String(business.id) === currentBusinessId
+        )
       ) {
         return currentBusinessId;
       }
 
-      return approved[0] ? String(approved[0].id) : "";
+      return businessOptions[0] ? String(businessOptions[0].id) : "";
     });
 
     const businessIds = allBusinesses.map((business) => business.id);
     setOwnedBusinessIds(businessIds);
 
     if (businessIds.length === 0) {
+      setBusinesses([]);
       setOffers([]);
       setOrders([]);
       setReviews([]);
@@ -289,7 +296,7 @@ export default function BusinessDashboardPage() {
     setMessageTone("error");
 
     if (!businessId) {
-      setMessage("No approved business found.");
+      setMessage("No business found.");
       return;
     }
 
@@ -303,10 +310,8 @@ export default function BusinessDashboardPage() {
     const oldPriceValue = oldPrice ? Number(oldPrice) : null;
     const quantityValue = Number(quantity);
 
-    if (
-      !approvedBusinesses.some((business) => business.id === selectedBusinessId)
-    ) {
-      setMessage("Choose an approved business before publishing.");
+    if (!businesses.some((business) => business.id === selectedBusinessId)) {
+      setMessage("Choose one of your businesses before publishing.");
       return;
     }
 
@@ -773,6 +778,9 @@ export default function BusinessDashboardPage() {
     {}
   );
   const canCreateOffers = approvedBusinesses.length > 0;
+  const createOfferBusinesses =
+    approvedBusinesses.length > 0 ? approvedBusinesses : businesses;
+  const canShowCreateOfferForm = createOfferBusinesses.length > 0;
   const collectedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
   );
@@ -949,14 +957,14 @@ export default function BusinessDashboardPage() {
             {t("businessDashboard.createOffer")}
           </h2>
 
-          {canCreateOffers ? (
+          {canShowCreateOfferForm ? (
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <select
                 value={businessId}
                 onChange={(e) => setBusinessId(e.target.value)}
                 className="rounded-2xl border p-4 font-semibold"
               >
-                {approvedBusinesses.map((business) => (
+                {createOfferBusinesses.map((business) => (
                   <option key={business.id} value={business.id}>
                     {business.name}
                   </option>
@@ -1042,13 +1050,13 @@ export default function BusinessDashboardPage() {
             </div>
           )}
 
-          {canCreateOffers && imageFile && (
+          {canShowCreateOfferForm && imageFile && (
               <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
                 Selected image: {imageFile.name}
               </p>
           )}
 
-          {canCreateOffers && (
+          {canShowCreateOfferForm && (
             <button
               onClick={createOffer}
               disabled={publishing}
