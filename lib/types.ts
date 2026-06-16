@@ -4,6 +4,7 @@ export type OrderStatus =
   | "confirmed"
   | "collected"
   | "completed"
+  | "expired"
   | "cancelled"
   | "refunded"
   | "no_show";

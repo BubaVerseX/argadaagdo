@@ -13,6 +13,7 @@ import { createMapsSearchUrl } from "@/lib/maps";
 import { notifyOrderCancelled } from "@/lib/notifications";
 import { formatPickupWindow } from "@/lib/offerLifecycle";
 import {
+  getEffectiveOrderStatus,
   getInactiveOrderMessage,
   isCancelledOrderStatus,
   isCollectedOrderStatus,
@@ -156,7 +157,7 @@ export default function OrdersPage() {
   }
 
   async function cancelOrder(order: Order) {
-    if (!isConfirmedOrderStatus(order.status)) return;
+    if (!isConfirmedOrderStatus(getEffectiveOrderStatus(order))) return;
     if (cancellingOrderId !== null) return;
 
     setCancellingOrderId(order.id);
@@ -248,13 +249,13 @@ export default function OrdersPage() {
   }, [router]);
 
   const confirmedCount = orders.filter((order) =>
-    isConfirmedOrderStatus(order.status)
+    isConfirmedOrderStatus(getEffectiveOrderStatus(order))
   ).length;
   const collectedCount = orders.filter((order) =>
-    isCollectedOrderStatus(order.status)
+    isCollectedOrderStatus(getEffectiveOrderStatus(order))
   ).length;
   const cancelledCount = orders.filter((order) =>
-    isCancelledOrderStatus(order.status)
+    isCancelledOrderStatus(getEffectiveOrderStatus(order))
   ).length;
   const reliabilityStatus = profile?.reliability_status || "good";
   const reliabilityTone =
@@ -342,8 +343,9 @@ export default function OrdersPage() {
               order.offers?.businesses?.address,
               order.offers?.businesses?.name
             );
-            const statusClass = getOrderStatusClassName(order.status);
-            const isConfirmed = isConfirmedOrderStatus(order.status);
+            const displayStatus = getEffectiveOrderStatus(order);
+            const statusClass = getOrderStatusClassName(displayStatus);
+            const isConfirmed = isConfirmedOrderStatus(displayStatus);
             const selectedRating = ratingValues[order.id] || 0;
             const reviewText = reviewTexts[order.id] || "";
 
@@ -358,7 +360,7 @@ export default function OrdersPage() {
                       <span
                         className={`rounded-full px-4 py-2 text-sm font-black ${statusClass}`}
                       >
-                        {getOrderStatusLabel(order.status, language)}
+                        {getOrderStatusLabel(displayStatus, language)}
                       </span>
 
                       <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700">
@@ -427,7 +429,7 @@ export default function OrdersPage() {
                       </>
                     ) : (
                       <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-gray-600 shadow-sm">
-                        {getInactiveOrderMessage(order.status, language)}
+                        {getInactiveOrderMessage(displayStatus, language)}
                       </div>
                     )}
 
@@ -443,7 +445,7 @@ export default function OrdersPage() {
                       </button>
                     )}
 
-                    {isCollectedOrderStatus(order.status) && (
+                    {isCollectedOrderStatus(displayStatus) && (
                       <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-sm">
                         {order.rated_at ? (
                           <p className="text-center font-black text-green-700">

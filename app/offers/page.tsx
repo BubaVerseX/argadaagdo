@@ -79,7 +79,6 @@ export default function OffersPage() {
       .from("offers")
       .select("*, businesses(name, address, business_type)")
       .eq("active", true)
-      .eq("status", "active")
       .gt("quantity", 0)
       .order("id", { ascending: false });
 

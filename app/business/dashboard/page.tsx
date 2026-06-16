@@ -41,19 +41,6 @@ function createImageFileName(file: File) {
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
 const maxImageSizeBytes = 5 * 1024 * 1024;
 type ReservationFilter = "all" | "reserved" | "collected" | "cancelled";
-type DashboardDebugBusiness = Pick<
-  Business,
-  "id" | "owner_id" | "name" | "approved"
->;
-
-type DashboardDebugInfo = {
-  authStatus: string;
-  userId: string;
-  profileRole: string;
-  businessQueryError: string;
-  businessRecords: DashboardDebugBusiness[];
-  approvedValues: string[];
-};
 
 function isApprovedBusiness(business: Business) {
   return business.approved === true || String(business.approved) === "true";
@@ -95,14 +82,6 @@ export default function BusinessDashboardPage() {
   const [reviews, setReviews] = useState<Rating[]>([]);
   const [ownedBusinessIds, setOwnedBusinessIds] = useState<number[]>([]);
   const [ownedOfferIds, setOwnedOfferIds] = useState<number[]>([]);
-  const [debugInfo, setDebugInfo] = useState<DashboardDebugInfo>({
-    authStatus: "loading",
-    userId: "",
-    profileRole: "",
-    businessQueryError: "",
-    businessRecords: [],
-    approvedValues: [],
-  });
 
   const [businessId, setBusinessId] = useState("");
   const [title, setTitle] = useState("");
@@ -138,23 +117,7 @@ export default function BusinessDashboardPage() {
   const loadDashboard = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
 
-    setDebugInfo((currentDebugInfo) => ({
-      ...currentDebugInfo,
-      authStatus: profileResult.status,
-      userId:
-        "user" in profileResult && profileResult.user
-          ? profileResult.user.id
-          : "",
-      profileRole:
-        "profile" in profileResult && profileResult.profile
-          ? profileResult.profile.role || ""
-          : "",
-    }));
-
-    if (
-      profileResult.status !== "confirmed" ||
-      profileResult.profile.role !== "business"
-    ) {
+    if (profileResult.status !== "confirmed") {
       router.replace("/");
       return;
     }
@@ -164,42 +127,29 @@ export default function BusinessDashboardPage() {
 
     const { data: myBusinesses, error: businessError } = await supabase
       .from("businesses")
-      .select("*")
-      .eq("owner_id", userId)
+      .select("id, owner_id, name, business_type, address, phone, approved")
+      .or(`owner_id.eq.${userId},approved.eq.true`)
       .order("id", { ascending: false });
 
     if (businessError) {
-      setDebugInfo((currentDebugInfo) => ({
-        ...currentDebugInfo,
-        businessQueryError: businessError.message,
-        businessRecords: [],
-        approvedValues: [],
-      }));
       setMessageTone("error");
       setMessage("Your business information could not be loaded.");
       setLoading(false);
       return;
     }
 
-    const allBusinesses = (myBusinesses || []) as Business[];
+    const allBusinesses = ((myBusinesses || []) as Business[]).filter(
+      (business) => business.owner_id === userId
+    );
     const approved = allBusinesses.filter(isApprovedBusiness);
 
-    setDebugInfo((currentDebugInfo) => ({
-      ...currentDebugInfo,
-      businessQueryError: "",
-      businessRecords: allBusinesses.map((business) => ({
-        id: business.id,
-        owner_id: business.owner_id,
-        name: business.name,
-        approved: business.approved,
-      })),
-      approvedValues: allBusinesses.map(
-        (business) =>
-          `${business.name} (#${business.id}): approved=${String(
-            business.approved
-          )}, type=${typeof business.approved}`
-      ),
-    }));
+    if (
+      profileResult.profile.role !== "business" &&
+      allBusinesses.length === 0
+    ) {
+      router.replace("/");
+      return;
+    }
 
     setBusinesses(allBusinesses);
     setApprovedBusinesses(approved);
@@ -371,8 +321,10 @@ export default function BusinessDashboardPage() {
     const oldPriceValue = oldPrice ? Number(oldPrice) : null;
     const quantityValue = Number(quantity);
 
-    if (!businesses.some((business) => business.id === selectedBusinessId)) {
-      setMessage("Choose one of your businesses before publishing.");
+    if (
+      !approvedBusinesses.some((business) => business.id === selectedBusinessId)
+    ) {
+      setMessage("Your business is not approved yet.");
       return;
     }
 
@@ -839,10 +791,10 @@ export default function BusinessDashboardPage() {
     {}
   );
   const canCreateOffers = approvedBusinesses.length > 0;
-  const createOfferBusinesses =
-    approvedBusinesses.length > 0 ? approvedBusinesses : businesses;
-  const exactCreateOfferVisibilityCondition =
-    "previously: canShowCreateOfferForm = createOfferBusinesses.length > 0";
+  const businessStatusMessage =
+    businesses.length === 0
+      ? "Register your business first."
+      : "Your business is not approved yet.";
   const collectedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
   );
@@ -967,45 +919,6 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-3xl border border-yellow-200 bg-yellow-50 p-5 text-sm font-semibold text-yellow-950 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-6">
-          <p className="text-xs font-black uppercase tracking-widest text-yellow-700">
-            Temporary dashboard debug
-          </p>
-          <div className="mt-4 grid gap-2">
-            <p>Authenticated user id: {debugInfo.userId || "not loaded"}</p>
-            <p>Auth status: {debugInfo.authStatus}</p>
-            <p>Profile role: {debugInfo.profileRole || "not loaded"}</p>
-            <p>
-              Business records found for this user: {businesses.length}
-            </p>
-            <p>
-              Approved values:{" "}
-              {debugInfo.approvedValues.length > 0
-                ? debugInfo.approvedValues.join(" | ")
-                : "none"}
-            </p>
-            <p>approvedBusinesses length: {approvedBusinesses.length}</p>
-            <p>createOfferBusinesses length: {createOfferBusinesses.length}</p>
-            <p>selected businessId: {businessId || "none"}</p>
-            <p>
-              Exact condition controlling Create Offer visibility:{" "}
-              {exactCreateOfferVisibilityCondition}
-            </p>
-            <p>
-              Current fix: form fields render unconditionally; Supabase/RLS and
-              createOffer validation still protect publishing.
-            </p>
-            {debugInfo.businessQueryError && (
-              <p>Business query error: {debugInfo.businessQueryError}</p>
-            )}
-            {debugInfo.businessRecords.length > 0 && (
-              <pre className="mt-2 overflow-x-auto rounded-2xl bg-white p-4 text-xs">
-                {JSON.stringify(debugInfo.businessRecords, null, 2)}
-              </pre>
-            )}
-          </div>
-        </div>
-
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -1042,10 +955,12 @@ export default function BusinessDashboardPage() {
         {!canCreateOffers && (
           <div className="mt-6 rounded-3xl bg-yellow-100 p-5 sm:mt-8 sm:p-8">
             <h2 className="text-xl font-black text-yellow-800 sm:text-2xl">
-              Waiting for approval
+              {businessStatusMessage}
             </h2>
             <p className="mt-3 font-medium text-yellow-700">
-              Your business must be approved before publishing offers.
+              {businesses.length === 0
+                ? "Create a business profile before publishing food rescue offers."
+                : "Your business exists, but it must be approved before publishing offers."}
             </p>
           </div>
         )}
@@ -1058,108 +973,113 @@ export default function BusinessDashboardPage() {
             {t("businessDashboard.createOffer")}
           </h2>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <select
-              value={businessId}
-              onChange={(e) => setBusinessId(e.target.value)}
-              className="rounded-2xl border p-4 font-semibold"
-            >
-              {createOfferBusinesses.length === 0 && (
-                <option value="">No business loaded</option>
+          {canCreateOffers ? (
+            <>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <select
+                  value={businessId}
+                  onChange={(e) => setBusinessId(e.target.value)}
+                  className="rounded-2xl border p-4 font-semibold"
+                >
+                  {approvedBusinesses.map((business) => (
+                    <option key={business.id} value={business.id}>
+                      {business.name}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="rounded-2xl border p-4 font-semibold"
+                  placeholder="Offer title"
+                />
+
+                <input
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  inputMode="decimal"
+                  className="rounded-2xl border p-4 font-semibold"
+                  placeholder="Price"
+                />
+
+                <input
+                  value={oldPrice}
+                  onChange={(e) => setOldPrice(e.target.value)}
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  inputMode="decimal"
+                  className="rounded-2xl border p-4 font-semibold"
+                  placeholder="Old price"
+                />
+
+                <input
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  type="number"
+                  min="1"
+                  step="1"
+                  inputMode="numeric"
+                  className="rounded-2xl border p-4 font-semibold"
+                  placeholder="Quantity"
+                />
+
+                <input
+                  value={pickupDate}
+                  onChange={(e) => setPickupDate(e.target.value)}
+                  type="date"
+                  min={getTbilisiDateKey()}
+                  className="rounded-2xl border p-4 font-semibold"
+                  aria-label="Pickup date"
+                />
+
+                <input
+                  value={pickupStart}
+                  onChange={(e) => setPickupStart(e.target.value)}
+                  type="time"
+                  className="rounded-2xl border p-4 font-semibold"
+                  placeholder="Pickup start"
+                />
+
+                <input
+                  value={pickupEnd}
+                  onChange={(e) => setPickupEnd(e.target.value)}
+                  type="time"
+                  className="rounded-2xl border p-4 font-semibold"
+                  placeholder="Pickup end"
+                />
+
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
+                  onChange={handleImageFileChange}
+                  className="rounded-2xl border bg-white p-4 font-semibold"
+                />
+              </div>
+
+              {imageFile && (
+                <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
+                  Selected image: {imageFile.name}
+                </p>
               )}
-              {createOfferBusinesses.map((business) => (
-                <option key={business.id} value={business.id}>
-                  {business.name}
-                </option>
-              ))}
-            </select>
 
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="rounded-2xl border p-4 font-semibold"
-              placeholder="Offer title"
-            />
-
-            <input
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              type="number"
-              min="0.01"
-              step="0.01"
-              inputMode="decimal"
-              className="rounded-2xl border p-4 font-semibold"
-              placeholder="Price"
-            />
-
-            <input
-              value={oldPrice}
-              onChange={(e) => setOldPrice(e.target.value)}
-              type="number"
-              min="0.01"
-              step="0.01"
-              inputMode="decimal"
-              className="rounded-2xl border p-4 font-semibold"
-              placeholder="Old price"
-            />
-
-            <input
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              type="number"
-              min="1"
-              step="1"
-              inputMode="numeric"
-              className="rounded-2xl border p-4 font-semibold"
-              placeholder="Quantity"
-            />
-
-            <input
-              value={pickupDate}
-              onChange={(e) => setPickupDate(e.target.value)}
-              type="date"
-              min={getTbilisiDateKey()}
-              className="rounded-2xl border p-4 font-semibold"
-              aria-label="Pickup date"
-            />
-
-            <input
-              value={pickupStart}
-              onChange={(e) => setPickupStart(e.target.value)}
-              type="time"
-              className="rounded-2xl border p-4 font-semibold"
-              placeholder="Pickup start"
-            />
-
-            <input
-              value={pickupEnd}
-              onChange={(e) => setPickupEnd(e.target.value)}
-              type="time"
-              className="rounded-2xl border p-4 font-semibold"
-              placeholder="Pickup end"
-            />
-
-            <input
-              type="file"
-              accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
-              onChange={handleImageFileChange}
-              className="rounded-2xl border bg-white p-4 font-semibold"
-            />
-          </div>
-
-          {imageFile && (
-            <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
-              Selected image: {imageFile.name}
-            </p>
+              <button
+                onClick={createOffer}
+                disabled={publishing}
+                className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
+              >
+                {publishing ? "Publishing..." : "Publish offer"}
+              </button>
+            </>
+          ) : (
+            <div className="mt-6 rounded-2xl bg-yellow-50 p-5 font-bold text-yellow-800">
+              {businessStatusMessage}
+            </div>
           )}
-
-          <button
-            onClick={createOffer}
-            disabled={publishing}
-            className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
-          >
-            {publishing ? "Publishing..." : "Publish offer"}
-          </button>
         </div>
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">

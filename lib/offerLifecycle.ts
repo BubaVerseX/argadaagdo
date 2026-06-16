@@ -43,6 +43,15 @@ export function getTbilisiDateKey(date = new Date()) {
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
+export function getTbilisiDateKeyFromValue(value: string | null | undefined) {
+  if (!value) return null;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return getTbilisiDateKey(date);
+}
+
 export function getTomorrowDateKey() {
   const now = new Date();
   now.setDate(now.getDate() + 1);
@@ -69,12 +78,21 @@ function normalizeTime(value: string | null | undefined, fallback: string) {
   return value.slice(0, 5);
 }
 
-export function getOfferDateKey(offer: OfferTiming) {
-  return offer.pickup_date || getTbilisiDateKey();
+export function getOfferDateKey(
+  offer: OfferTiming,
+  fallbackDate?: string | null
+) {
+  return offer.pickup_date || fallbackDate || getTbilisiDateKey();
 }
 
-export function getOfferEndKey(offer: OfferTiming) {
-  return `${getOfferDateKey(offer)}T${normalizeTime(offer.pickup_end, "23:59")}`;
+export function getOfferEndKey(
+  offer: OfferTiming,
+  fallbackDate?: string | null
+) {
+  return `${getOfferDateKey(offer, fallbackDate)}T${normalizeTime(
+    offer.pickup_end,
+    "23:59"
+  )}`;
 }
 
 export function getOfferStartKey(offer: OfferTiming) {
@@ -84,7 +102,9 @@ export function getOfferStartKey(offer: OfferTiming) {
 export function getEffectiveOfferStatus(offer: Offer): OfferLifecycleStatus {
   if (offer.status === "inactive") return "inactive";
   if (offer.status === "expired") return "expired";
-  if (getOfferEndKey(offer) < getTbilisiDateTimeKey()) return "expired";
+  if (offer.pickup_date && getOfferEndKey(offer) < getTbilisiDateTimeKey()) {
+    return "expired";
+  }
   if (offer.status === "sold_out" || Number(offer.quantity || 0) <= 0) {
     return "sold_out";
   }
@@ -137,9 +157,12 @@ export function formatPickupWindow(offer: OfferTiming, language: Language = "en"
   )} - ${normalizeTime(offer.pickup_end, "--:--")}`;
 }
 
-export function isOrderPastPickupEnd(offer: OfferTiming | null | undefined) {
+export function isOrderPastPickupEnd(
+  offer: OfferTiming | null | undefined,
+  fallbackDate?: string | null
+) {
   if (!offer) return false;
-  return getOfferEndKey(offer) < getTbilisiDateTimeKey();
+  return getOfferEndKey(offer, fallbackDate) < getTbilisiDateTimeKey();
 }
 
 export function getRatingLabel(

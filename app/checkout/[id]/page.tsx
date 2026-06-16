@@ -46,7 +46,7 @@ async function fetchCheckoutOffer(
     .select("*, businesses(name, address, business_type)")
     .eq("id", offerId)
     .eq("active", true)
-    .eq("status", "active")
+    .gt("quantity", 0)
     .maybeSingle();
 
   if (error) {
@@ -63,7 +63,16 @@ async function fetchCheckoutOffer(
     };
   }
 
-  return { status: "success", offer: data as CheckoutOffer };
+  const offer = data as CheckoutOffer;
+
+  if (!isOfferReservable(offer)) {
+    return {
+      status: "warning",
+      message: "This offer is no longer available for checkout.",
+    };
+  }
+
+  return { status: "success", offer };
 }
 
 function getReservationErrorMessage(message?: string) {

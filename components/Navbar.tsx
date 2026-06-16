@@ -14,6 +14,15 @@ import type { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
+type NavbarBusiness = {
+  owner_id: string;
+  approved: boolean | string | null;
+};
+
+function isApprovedValue(value: boolean | string | null) {
+  return value === true || String(value) === "true";
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -37,12 +46,32 @@ export default function Navbar() {
         profileResult?.status === "confirmed"
           ? profileResult.profile.role || ""
           : "";
+      let ownsBusiness = false;
+      let ownsApprovedBusiness = false;
+
+      if (currentUser && isVerified) {
+        const { data } = await supabase
+          .from("businesses")
+          .select("owner_id, approved")
+          .or(`owner_id.eq.${currentUser.id},approved.eq.true`);
+
+        const ownedBusinesses = ((data || []) as NavbarBusiness[]).filter(
+          (business) => business.owner_id === currentUser.id
+        );
+
+        ownsBusiness = ownedBusinesses.length > 0;
+        ownsApprovedBusiness = ownedBusinesses.some((business) =>
+          isApprovedValue(business.approved)
+        );
+      }
 
       if (!active) return;
 
       setUser(currentUser);
       setRole(currentRole);
-      setShowBusinessDashboard(currentRole === "business");
+      setShowBusinessDashboard(
+        currentRole === "business" || ownsBusiness || ownsApprovedBusiness
+      );
       setAuthReady(true);
     }
 
@@ -121,7 +150,7 @@ export default function Navbar() {
               href="/business/dashboard"
               className={linkClass("/business/dashboard")}
             >
-              {t("nav.dashboard")}
+              Business Dashboard
             </Link>
           )}
 
@@ -219,7 +248,7 @@ export default function Navbar() {
                 onClick={() => setMobileMenu(false)}
                 className={linkClass("/business/dashboard")}
               >
-                {t("nav.dashboard")}
+                Business Dashboard
               </Link>
             )}
 
