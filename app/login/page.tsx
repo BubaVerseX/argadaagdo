@@ -134,7 +134,17 @@ export default function LoginPage() {
     }
 
     if (resolvedRole === "business") {
-      router.push("/business/dashboard");
+      const { data: ownedBusinesses } = await supabase
+        .from("businesses")
+        .select("id")
+        .eq("owner_id", authData.user.id)
+        .limit(1);
+
+      router.push(
+        ownedBusinesses && ownedBusinesses.length > 0
+          ? "/business/dashboard"
+          : "/business/register"
+      );
       router.refresh();
       return;
     }

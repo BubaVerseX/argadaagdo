@@ -31,6 +31,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState("");
   const [showBusinessDashboard, setShowBusinessDashboard] = useState(false);
+  const [showBusinessRegister, setShowBusinessRegister] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
@@ -53,11 +54,9 @@ export default function Navbar() {
         const { data } = await supabase
           .from("businesses")
           .select("owner_id, approved")
-          .or(`owner_id.eq.${currentUser.id},approved.eq.true`);
+          .eq("owner_id", currentUser.id);
 
-        const ownedBusinesses = ((data || []) as NavbarBusiness[]).filter(
-          (business) => business.owner_id === currentUser.id
-        );
+        const ownedBusinesses = (data || []) as NavbarBusiness[];
 
         ownsBusiness = ownedBusinesses.length > 0;
         ownsApprovedBusiness = ownedBusinesses.some((business) =>
@@ -69,8 +68,9 @@ export default function Navbar() {
 
       setUser(currentUser);
       setRole(currentRole);
-      setShowBusinessDashboard(
-        currentRole === "business" || ownsBusiness || ownsApprovedBusiness
+      setShowBusinessDashboard(ownsBusiness || ownsApprovedBusiness);
+      setShowBusinessRegister(
+        currentRole === "business" && !ownsBusiness && !ownsApprovedBusiness
       );
       setAuthReady(true);
     }
@@ -94,6 +94,7 @@ export default function Navbar() {
     setUser(null);
     setRole("");
     setShowBusinessDashboard(false);
+    setShowBusinessRegister(false);
     setAuthReady(true);
     setMobileMenu(false);
     router.replace("/");
@@ -151,6 +152,15 @@ export default function Navbar() {
               className={linkClass("/business/dashboard")}
             >
               Business Dashboard
+            </Link>
+          )}
+
+          {showBusinessRegister && (
+            <Link
+              href="/business/register"
+              className={linkClass("/business/register")}
+            >
+              {t("nav.forBusiness")}
             </Link>
           )}
 
@@ -249,6 +259,16 @@ export default function Navbar() {
                 className={linkClass("/business/dashboard")}
               >
                 Business Dashboard
+              </Link>
+            )}
+
+            {showBusinessRegister && (
+              <Link
+                href="/business/register"
+                onClick={() => setMobileMenu(false)}
+                className={linkClass("/business/register")}
+              >
+                {t("nav.forBusiness")}
               </Link>
             )}
 

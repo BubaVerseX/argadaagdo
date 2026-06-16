@@ -128,7 +128,7 @@ export default function BusinessDashboardPage() {
     const { data: myBusinesses, error: businessError } = await supabase
       .from("businesses")
       .select("id, owner_id, name, business_type, address, phone, approved")
-      .or(`owner_id.eq.${userId},approved.eq.true`)
+      .eq("owner_id", userId)
       .order("id", { ascending: false });
 
     if (businessError) {
@@ -138,9 +138,7 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const allBusinesses = ((myBusinesses || []) as Business[]).filter(
-      (business) => business.owner_id === userId
-    );
+    const allBusinesses = (myBusinesses || []) as Business[];
     const approved = allBusinesses.filter(isApprovedBusiness);
 
     if (
