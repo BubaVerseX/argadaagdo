@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { useLanguage } from "@/lib/useLanguage";
 
 export default function NotFound() {
+  const { t } = useLanguage();
+
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
       <Navbar />
@@ -13,18 +18,18 @@ export default function NotFound() {
           </div>
 
           <h1 className="mt-5 text-3xl font-black sm:mt-6 sm:text-5xl">
-            Page not found
+            {t("notFound.title")}
           </h1>
 
           <p className="mt-4 font-semibold text-gray-600">
-            This page does not exist or the link is incorrect.
+            {t("notFound.text")}
           </p>
 
           <Link
             href="/offers"
             className="mt-7 inline-block min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 sm:mt-8 sm:w-auto sm:py-4"
           >
-            Browse Offers
+            {t("common.browseOffers")}
           </Link>
         </div>
       </section>

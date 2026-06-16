@@ -28,6 +28,7 @@ import {
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -67,6 +68,7 @@ function formatCreatedDate(value: string | null | undefined) {
 
 export default function BusinessDashboardPage() {
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [loading, setLoading] = useState(true);
 
   const [approvedBusinesses, setApprovedBusinesses] = useState<Business[]>([]);
@@ -853,37 +855,36 @@ export default function BusinessDashboardPage() {
           </p>
 
           <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-            Manage offers and pickups.
+            {t("businessDashboard.title")}
           </h1>
 
           <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:mt-4 sm:text-lg">
-            Publish rescue boxes, track reservations, and verify pickup codes
-            when customers arrive.
+            {t("businessDashboard.subtitle")}
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Total Offers</p>
+              <p className="text-sm font-black text-green-100">{t("businessDashboard.myOffers")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{offers.length}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Active Offers</p>
+              <p className="text-sm font-black text-green-100">{t("businessProfile.activeOffers")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{activeOffers.length}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Reserved Orders</p>
+              <p className="text-sm font-black text-green-100">{t("orders.reserved")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{reservedOrders.length}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Collected Orders</p>
+              <p className="text-sm font-black text-green-100">{t("orders.collected")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{collectedOrders.length}</h2>
             </div>
 
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">Cancelled Orders</p>
+              <p className="text-sm font-black text-green-100">{t("orders.cancelled")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{cancelledOrders.length}</h2>
             </div>
           </div>
@@ -902,7 +903,7 @@ export default function BusinessDashboardPage() {
                 Section 1
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Business stats
+                {t("businessDashboard.stats")}
               </h2>
             </div>
 
@@ -914,11 +915,11 @@ export default function BusinessDashboardPage() {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <StatCard
-              title="Average Rating"
+              title={t("businessDashboard.averageRating")}
               value={averageRatingLabel}
               tone={totalReviews > 0 ? "yellow" : "neutral"}
             />
-            <StatCard title="Total Reviews" value={totalReviews} />
+            <StatCard title={t("businessDashboard.totalReviews")} value={totalReviews} />
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -945,7 +946,7 @@ export default function BusinessDashboardPage() {
               Section 2
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              Create offer
+              {t("businessDashboard.createOffer")}
             </h2>
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -1054,15 +1055,15 @@ export default function BusinessDashboardPage() {
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
             Section 3
           </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">My offers</h2>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">{t("businessDashboard.myOffers")}</h2>
 
           <div className="mt-6 grid gap-4">
             {offers.length === 0 && (
-              <p className="font-medium text-gray-600">No offers created yet.</p>
+              <p className="font-medium text-gray-600">{t("businessDashboard.noOffers")}</p>
             )}
 
             {offers.map((offer) => {
-              const statusLabel = getOfferStatusLabel(offer);
+              const statusLabel = getOfferStatusLabel(offer, language);
               const statusClass = getOfferStatusClassName(offer);
               const rating = ratingSummaries[offer.business_id];
               const isEditing = editingOfferId === offer.id;
@@ -1096,10 +1097,10 @@ export default function BusinessDashboardPage() {
                           ₾{offer.price} · Quantity: {offer.quantity}
                         </p>
                         <p className="text-gray-600">
-                          Pickup: {formatPickupWindow(offer)}
+                          {t("common.pickup")}: {formatPickupWindow(offer, language)}
                         </p>
                         <p className="text-sm font-bold text-yellow-700">
-                          ⭐ {getRatingLabel(rating)}
+                          ⭐ {getRatingLabel(rating, language)}
                         </p>
                         <p className="mt-1 text-xs font-bold text-gray-500">
                           Created: {formatCreatedDate(offer.created_at)}
@@ -1240,7 +1241,7 @@ export default function BusinessDashboardPage() {
             Section 4
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-            Reservations
+            {t("businessDashboard.reservations")}
           </h2>
 
           <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-4 sm:p-5">
@@ -1300,7 +1301,7 @@ export default function BusinessDashboardPage() {
 
           <div className="mt-6 grid gap-4">
             {filteredOrders.length === 0 && (
-              <p className="font-medium text-gray-600">No reservations yet.</p>
+              <p className="font-medium text-gray-600">{t("businessDashboard.noReservations")}</p>
             )}
 
             {filteredOrders.map((order) => (
@@ -1326,9 +1327,9 @@ export default function BusinessDashboardPage() {
                   </p>
 
                   <p className="mt-1 font-semibold text-gray-600">
-                    Pickup:{" "}
+                    {t("common.pickup")}:{" "}
                     {order.offers
-                      ? formatPickupWindow(order.offers)
+                      ? formatPickupWindow(order.offers, language)
                       : "Time unavailable"}
                   </p>
 
@@ -1341,7 +1342,7 @@ export default function BusinessDashboardPage() {
                     <span
                       className={`rounded-full px-4 py-2 text-sm font-black ${getOrderStatusClassName(order.status)}`}
                     >
-                      {getOrderStatusLabel(order.status)}
+                      {getOrderStatusLabel(order.status, language)}
                     </span>
 
                     <span className="rounded-full bg-gray-100 px-4 py-2 font-mono text-sm font-black text-gray-700">
@@ -1389,7 +1390,7 @@ export default function BusinessDashboardPage() {
             Section 5
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-            Business reviews
+            {t("businessDashboard.businessReviews")}
           </h2>
 
           <p className="mt-2 font-semibold text-gray-600">
@@ -1400,7 +1401,7 @@ export default function BusinessDashboardPage() {
           <div className="mt-6 grid gap-4">
             {reviews.length === 0 && (
               <p className="font-medium text-gray-600">
-                No customer reviews yet.
+                {t("businessDashboard.noReviews")}
               </p>
             )}
 
@@ -1426,7 +1427,7 @@ export default function BusinessDashboardPage() {
                 </div>
 
                 <p className="mt-4 font-semibold text-gray-700">
-                  {review.review?.trim() || "No written review."}
+                  {review.review?.trim() || t("common.noWrittenReview")}
                 </p>
               </div>
             ))}

@@ -10,11 +10,13 @@ import {
 } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import type { UserRole } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("customer");
@@ -149,16 +151,15 @@ export default function LoginPage() {
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
           <div className="rounded-3xl bg-green-800 p-6 text-white shadow-sm sm:rounded-[2rem] sm:p-8 md:p-12">
             <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-              Welcome back
+              {t("login.title")}
             </p>
 
             <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-6xl">
-              Sign in and rescue food in Tbilisi
+              {t("login.signIn")} · ArGadaagdo
             </h1>
 
             <p className="mt-4 text-base font-medium leading-7 text-green-50 sm:mt-5 sm:text-lg sm:leading-8">
-              Customers can reserve food offers. Businesses can publish leftover
-              food boxes after admin approval.
+              {t("home.subtitle")}
             </p>
 
             <div className="mt-8 grid gap-4">
@@ -180,11 +181,11 @@ export default function LoginPage() {
 
           <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 md:p-10">
             <h2 className="text-2xl font-black text-gray-950 sm:text-3xl">
-              Sign In / Register
+              {t("login.signIn")} / {t("login.signUp")}
             </h2>
 
             <p className="mt-2 font-medium text-gray-600">
-              Use the same form to create an account or sign in.
+              {t("login.formHint")}
             </p>
 
             <div className="mt-6 grid gap-4">
@@ -193,7 +194,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 aria-label="Email address"
-                placeholder="Email"
+                placeholder={t("login.email")}
                 className="rounded-2xl border bg-white p-4 font-medium outline-none"
               />
 
@@ -202,13 +203,13 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 type="password"
                 aria-label="Password"
-                placeholder="Password"
+                placeholder={t("login.password")}
                 className="rounded-2xl border bg-white p-4 font-medium outline-none"
               />
 
               <div>
                 <p className="mb-3 font-black text-gray-800">
-                  Account type
+                  {t("login.accountType")}
                 </p>
 
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -222,9 +223,9 @@ export default function LoginPage() {
                     }`}
                   >
                     <div className="text-2xl">🥡</div>
-                    <p className="mt-2">Customer</p>
+                    <p className="mt-2">{t("login.customer")}</p>
                     <p className="mt-1 text-sm font-medium">
-                      Reserve food offers
+                      {t("login.customerHint")}
                     </p>
                   </button>
 
@@ -238,9 +239,9 @@ export default function LoginPage() {
                     }`}
                   >
                     <div className="text-2xl">🏪</div>
-                    <p className="mt-2">Business</p>
+                    <p className="mt-2">{t("login.business")}</p>
                     <p className="mt-1 text-sm font-medium">
-                      Publish food offers
+                      {t("login.businessHint")}
                     </p>
                   </button>
                 </div>
@@ -252,7 +253,7 @@ export default function LoginPage() {
                 disabled={submitting}
                 className="min-h-12 rounded-full bg-green-700 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
-                Sign In
+                {t("login.signIn")}
               </button>
 
               <button
@@ -261,7 +262,7 @@ export default function LoginPage() {
                 disabled={submitting}
                 className="min-h-12 rounded-full border border-gray-300 bg-white py-3 font-black text-gray-900 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
-                Create Account
+                {t("login.signUp")}
               </button>
 
               {message && (

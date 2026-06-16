@@ -22,6 +22,7 @@ import {
 } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Order, Profile } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -46,6 +47,7 @@ function getCancellationErrorMessage(message?: string) {
 
 export default function OrdersPage() {
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [message, setMessage] = useState("");
@@ -269,28 +271,28 @@ export default function OrdersPage() {
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-6 md:p-10">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            My reservations
+            {t("orders.reserved")}
           </p>
 
           <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-            Your pickup orders
+            {t("orders.title")}
           </h1>
 
           <p className="mt-4 max-w-2xl text-base font-semibold text-gray-700 md:text-lg">
-            Show your pickup code at the business during pickup time.
+            {t("orders.subtitle")}
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
-            <StatCard title="Reserved" value={confirmedCount} tone="yellow" />
-            <StatCard title="Collected" value={collectedCount} tone="green" />
-            <StatCard title="Cancelled" value={cancelledCount} tone="red" />
+            <StatCard title={t("orders.reserved")} value={confirmedCount} tone="yellow" />
+            <StatCard title={t("orders.collected")} value={collectedCount} tone="green" />
+            <StatCard title={t("orders.cancelled")} value={cancelledCount} tone="red" />
             <StatCard
-              title="Reliability"
+              title={t("orders.reliability")}
               value={profile?.reliability_score ?? "--"}
               tone={reliabilityTone}
             />
             <StatCard
-              title="Status"
+              title={t("orders.status")}
               value={reliabilityStatus}
               tone={reliabilityTone}
             />
@@ -305,7 +307,7 @@ export default function OrdersPage() {
 
         {loading && (
           <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
-            <p className="font-semibold text-gray-600">Loading orders...</p>
+            <p className="font-semibold text-gray-600">{t("orders.loading")}</p>
           </div>
         )}
 
@@ -316,18 +318,18 @@ export default function OrdersPage() {
             </div>
 
             <h2 className="mt-5 text-3xl font-black">
-              No orders yet
+              {t("orders.emptyTitle")}
             </h2>
 
             <p className="mt-3 font-medium text-gray-600">
-              Reserve your first food offer and it will appear here.
+              {t("orders.emptyHint")}
             </p>
 
             <Link
               href="/offers"
               className="mt-6 inline-block min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white sm:py-4"
             >
-              Browse Offers
+              {t("common.browseOffers")}
             </Link>
           </div>
         )}
@@ -335,7 +337,7 @@ export default function OrdersPage() {
         <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5">
           {orders.map((order) => {
             const businessAddress =
-              order.offers?.businesses?.address || "Address unavailable";
+              order.offers?.businesses?.address || t("common.addressUnavailable");
             const mapsUrl = createMapsSearchUrl(
               order.offers?.businesses?.address,
               order.offers?.businesses?.name
@@ -356,11 +358,11 @@ export default function OrdersPage() {
                       <span
                         className={`rounded-full px-4 py-2 text-sm font-black ${statusClass}`}
                       >
-                        {getOrderStatusLabel(order.status)}
+                        {getOrderStatusLabel(order.status, language)}
                       </span>
 
                       <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700">
-                        {order.offers?.businesses?.business_type || "Food"}
+                        {order.offers?.businesses?.business_type || t("common.food")}
                       </span>
                     </div>
 
@@ -381,30 +383,30 @@ export default function OrdersPage() {
                             href={mapsUrl}
                             target="_blank"
                             rel="noreferrer"
-                            aria-label={`Open map for ${order.offers?.businesses?.name || order.offers?.title || "pickup location"}`}
+                            aria-label={`${t("common.openMap")} ${order.offers?.businesses?.name || order.offers?.title || "pickup location"}`}
                             className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
                           >
-                            Open map
+                            {t("common.openMap")}
                           </a>
                         )}
                       </div>
 
                       <p className="font-medium">
-                        ⏰ Pickup:{" "}
+                        ⏰ {t("common.pickup")}:{" "}
                         {order.offers
-                          ? formatPickupWindow(order.offers)
+                          ? formatPickupWindow(order.offers, language)
                           : "Time unavailable"}
                       </p>
 
                       <p className="font-black text-green-700">
-                        Price: ₾{order.offers?.price}
+                        {t("common.price")}: ₾{order.offers?.price}
                       </p>
                     </div>
                   </div>
 
                   <div className="rounded-3xl bg-[#F7F6EF] p-4 text-center sm:rounded-[2rem] sm:p-5 lg:min-w-[240px]">
                     <p className="text-sm font-black uppercase tracking-widest text-gray-500">
-                      Pickup Code
+                      {t("orders.pickupCode")}
                     </p>
 
                     {isConfirmed ? (
@@ -416,17 +418,16 @@ export default function OrdersPage() {
                         </div>
 
                         <p className="mt-3 text-sm font-bold text-gray-600">
-                          Show this code at pickup.
+                          {t("orders.showCode")}
                         </p>
 
                         <p className="mt-2 text-xs font-bold text-gray-500">
-                          You can cancel up to 2 hours before pickup for a full
-                          refund.
+                          {t("orders.cancelPolicy")}
                         </p>
                       </>
                     ) : (
                       <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-gray-600 shadow-sm">
-                        {getInactiveOrderMessage(order.status)}
+                        {getInactiveOrderMessage(order.status, language)}
                       </div>
                     )}
 
@@ -438,7 +439,7 @@ export default function OrdersPage() {
                       >
                         {cancellingOrderId === order.id
                           ? "Cancelling..."
-                          : "Cancel Reservation"}
+                          : t("orders.cancelReservation")}
                       </button>
                     )}
 
@@ -451,7 +452,7 @@ export default function OrdersPage() {
                         ) : (
                           <>
                             <p className="text-center text-sm font-black text-gray-700">
-                              Rate this pickup
+                              {t("orders.ratePickup")}
                             </p>
                             <div className="mt-3 grid grid-cols-5 gap-2">
                               {[1, 2, 3, 4, 5].map((rating) => (
@@ -485,7 +486,7 @@ export default function OrdersPage() {
                                 }))
                               }
                               maxLength={500}
-                              placeholder="Optional review for the business"
+                              placeholder={t("orders.reviewPlaceholder")}
                               className="mt-3 min-h-24 w-full rounded-2xl border bg-white p-3 text-sm font-semibold text-gray-800 outline-none focus:border-green-600"
                             />
 
@@ -497,7 +498,7 @@ export default function OrdersPage() {
                             >
                               {ratingOrderId === order.id
                                 ? "Saving review..."
-                                : "Submit review"}
+                                : t("orders.submitReview")}
                             </button>
                           </>
                         )}

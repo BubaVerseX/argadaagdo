@@ -269,12 +269,38 @@ as $$
   group by ratings.business_id;
 $$;
 
+create or replace function public.get_public_business_reviews(p_business_id bigint)
+returns table(
+  id bigint,
+  business_id bigint,
+  rating integer,
+  review text,
+  created_at timestamp with time zone
+)
+language sql
+security definer
+set search_path = ''
+as $$
+  select
+    ratings.id,
+    ratings.business_id,
+    ratings.rating,
+    ratings.review,
+    ratings.created_at
+  from public.ratings
+  where ratings.business_id = p_business_id
+  order by ratings.created_at desc;
+$$;
+
 revoke all on function public.rate_business(bigint, integer, text)
 from public, anon, authenticated;
 revoke all on function public.get_business_rating_summary()
 from public, anon, authenticated;
+revoke all on function public.get_public_business_reviews(bigint)
+from public, anon, authenticated;
 
 grant execute on function public.rate_business(bigint, integer, text) to authenticated;
 grant execute on function public.get_business_rating_summary() to anon, authenticated;
+grant execute on function public.get_public_business_reviews(bigint) to anon, authenticated;
 
 commit;

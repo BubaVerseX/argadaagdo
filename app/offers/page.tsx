@@ -22,6 +22,7 @@ import {
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -33,6 +34,7 @@ function getOfferCategory(offer: Offer) {
 
 export default function OffersPage() {
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -99,18 +101,8 @@ export default function OffersPage() {
     refreshTimer.current = setTimeout(() => void loadOffers(), 150);
   }, [loadOffers]);
 
-  function openCheckout(offer: Offer) {
-    if (!isOfferReservable(offer)) {
-      setMessageTone("warning");
-      setMessage(
-        Number(offer.quantity || 0) <= 0
-          ? "Offer is sold out."
-          : "This offer is no longer available."
-      );
-      return;
-    }
-
-    router.push(`/checkout/${offer.id}`);
+  function openOfferDetails(offer: Offer) {
+    router.push(`/offers/${offer.id}`);
   }
 
   async function toggleFavorite(offer: Offer) {
@@ -305,13 +297,13 @@ export default function OffersPage() {
   );
 
   const offerSections = [
-    { key: "today" as const, title: "Today", offers: groupedOffers.today },
+    { key: "today" as const, title: t("common.today"), offers: groupedOffers.today },
     {
       key: "tomorrow" as const,
-      title: "Tomorrow",
+      title: t("common.tomorrow"),
       offers: groupedOffers.tomorrow,
     },
-    { key: "upcoming" as const, title: "Upcoming", offers: groupedOffers.upcoming },
+    { key: "upcoming" as const, title: t("common.upcoming"), offers: groupedOffers.upcoming },
   ];
 
   const categoryOptions = useMemo(() => {
@@ -331,22 +323,22 @@ export default function OffersPage() {
         <div className="relative mx-auto max-w-7xl">
           <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-6 md:rounded-[2.5rem] md:p-12">
             <p className="text-xs font-black uppercase tracking-widest text-green-100 md:text-sm">
-              Live offers in Tbilisi
+              {t("offers.badge")}
             </p>
 
             <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-7xl">
-              Rescue food boxes near you.
+              {t("offers.title")}
             </h1>
 
             <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-green-50 md:text-lg">
-              Search live rescue deals, reserve online, and pick up in store.
+              {t("offers.subtitle")}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:mt-7 md:flex-row">
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search food, business, address..."
+                placeholder={t("offers.search")}
                 className="min-h-12 w-full rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4 md:max-w-xl"
               />
 
@@ -359,7 +351,7 @@ export default function OffersPage() {
                 }}
                 className="min-h-12 rounded-2xl bg-white/15 px-6 py-3 font-black text-white hover:bg-white/20 sm:py-4"
               >
-                Reset
+                {t("offers.reset")}
               </button>
             </div>
 
@@ -370,7 +362,7 @@ export default function OffersPage() {
                 aria-label="Filter offers by category"
                 className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
               >
-                <option value="all">All categories</option>
+                <option value="all">{t("offers.allCategories")}</option>
                 {categoryOptions.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -384,9 +376,9 @@ export default function OffersPage() {
                 aria-label="Sort offers by price"
                 className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
               >
-                <option value="newest">Newest first</option>
-                <option value="price-asc">Lowest price</option>
-                <option value="price-desc">Highest price</option>
+                <option value="newest">{t("offers.sortNewest")}</option>
+                <option value="price-asc">{t("offers.sortLowest")}</option>
+                <option value="price-desc">{t("offers.sortHighest")}</option>
               </select>
 
               <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl bg-white/15 px-5 py-3 font-black text-white md:justify-start">
@@ -396,23 +388,29 @@ export default function OffersPage() {
                   onChange={(event) => setAvailableOnly(event.target.checked)}
                   className="h-5 w-5 accent-green-600"
                 />
-                Available only
+                {t("offers.availableOnly")}
               </label>
             </div>
 
             <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-7 sm:gap-3">
               <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-                <p className="text-sm font-black text-green-100">Offers</p>
+                <p className="text-sm font-black text-green-100">
+                  {t("nav.offers")}
+                </p>
                 <h2 className="text-3xl font-black sm:text-4xl">{offers.length}</h2>
               </div>
 
               <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-                <p className="text-sm font-black text-green-100">Boxes left</p>
+                <p className="text-sm font-black text-green-100">
+                  {t("offers.boxesLeft")}
+                </p>
                 <h2 className="text-3xl font-black sm:text-4xl">{totalAvailable}</h2>
               </div>
 
               <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-                <p className="text-sm font-black text-green-100">Pickup</p>
+                <p className="text-sm font-black text-green-100">
+                  {t("common.pickup")}
+                </p>
                 <h2 className="text-3xl font-black sm:text-4xl">100%</h2>
               </div>
             </div>
@@ -426,10 +424,10 @@ export default function OffersPage() {
 
           <div className="mt-8 sm:mt-10">
             <h2 className="text-2xl font-black sm:text-3xl md:text-4xl">
-              Food rescue offers
+              {t("offers.heading")}
             </h2>
             <p className="mt-2 font-semibold text-gray-700">
-              {filteredOffers.length} offer(s) match your filters.
+              {filteredOffers.length} {t("offers.matches")}
             </p>
           </div>
 
@@ -450,12 +448,12 @@ export default function OffersPage() {
                 🥡
               </div>
               <h3 className="mt-5 text-3xl font-black">
-                {offers.length === 0 ? "No offers found" : "No matching offers"}
+                {offers.length === 0 ? t("offers.noOffers") : t("offers.noMatching")}
               </h3>
               <p className="mt-3 font-semibold text-gray-600">
                 {offers.length === 0
-                  ? "Check back later for new rescue boxes."
-                  : "Try changing the category, price sort, or availability filter."}
+                  ? t("offers.noOffersHint")
+                  : t("offers.noMatchingHint")}
               </p>
             </div>
           )}
@@ -511,7 +509,7 @@ export default function OffersPage() {
                             />
 
                             <div className="absolute left-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
-                              {offer.businesses?.business_type || "Food"}
+                              {offer.businesses?.business_type || t("common.food")}
                             </div>
 
                             {discount && (
@@ -533,13 +531,13 @@ export default function OffersPage() {
                                 </p>
 
                                 <p className="mt-1 text-sm font-black text-yellow-700">
-                                  ⭐ {getRatingLabel(rating)}
+                                  ⭐ {getRatingLabel(rating, language)}
                                 </p>
                               </div>
 
                               <div className="rounded-2xl bg-green-50 px-4 py-3 text-center">
                                 <p className="text-xs font-black text-green-700">
-                                  LEFT
+                                  {t("offers.boxesLeft")}
                                 </p>
                                 <p className="text-2xl font-black text-green-800">
                                   {offer.quantity}
@@ -556,15 +554,15 @@ export default function OffersPage() {
                                 href={mapsUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                aria-label={`Open map for ${offer.businesses?.name || offer.title}`}
+                                aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
                                 className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
                               >
-                                Open map
+                                {t("common.openMap")}
                               </a>
                             </div>
 
                             <p className="mt-2 font-semibold text-gray-600">
-                              ⏰ {formatPickupWindow(offer)}
+                              ⏰ {formatPickupWindow(offer, language)}
                             </p>
 
                             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -592,22 +590,21 @@ export default function OffersPage() {
                                   className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                                 >
                                   {updatingFavoriteId === offer.id
-                                    ? "Updating..."
+                                    ? t("offers.updatingFavorite")
                                     : favoriteOfferIds.includes(offer.id)
-                                    ? "❤️ Remove Favorite"
-                                    : "❤️ Add Favorite"}
+                                    ? t("offers.removeFavorite")
+                                    : t("offers.addFavorite")}
                                 </button>
 
                                 <button
-                                  onClick={() => openCheckout(offer)}
-                                  disabled={!reservable}
+                                  onClick={() => openOfferDetails(offer)}
                                   className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                                 >
                                   {reservable
-                                    ? "View details"
+                                    ? t("common.viewDetails")
                                     : Number(offer.quantity || 0) <= 0
-                                    ? "Sold Out"
-                                    : "Unavailable"}
+                                    ? t("common.soldOut")
+                                    : t("common.unavailable")}
                                 </button>
                               </div>
                             </div>

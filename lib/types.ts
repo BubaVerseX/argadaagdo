@@ -109,3 +109,8 @@ export type Rating = {
   review: string | null;
   created_at: string | null;
 };
+
+export type PublicBusinessReview = Pick<
+  Rating,
+  "id" | "business_id" | "rating" | "review" | "created_at"
+>;

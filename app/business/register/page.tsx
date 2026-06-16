@@ -8,11 +8,13 @@ import {
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function BusinessRegisterPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [businessType, setBusinessType] = useState("Cafe");
   const [address, setAddress] = useState("");
@@ -148,44 +150,42 @@ export default function BusinessRegisterPage() {
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                For local businesses
+                {t("businessRegister.badge")}
               </p>
 
               <h1 className="mt-3 text-3xl font-black text-gray-950 sm:text-4xl md:text-6xl">
-                Register your food business
+                {t("businessRegister.title")}
               </h1>
 
               <p className="mt-4 text-base font-medium leading-7 text-gray-700 sm:mt-5 sm:text-lg sm:leading-8">
-                Join ArGadaagdo and sell leftover food boxes to customers in
-                Tbilisi. After admin approval, you can publish offers from your
-                dashboard.
+                {t("businessRegister.subtitle")}
               </p>
 
               <div className="mt-8 grid gap-4">
                 <div className="rounded-3xl bg-green-50 p-5">
                   <h3 className="text-xl font-black text-green-800">
-                    1. Submit business
+                    {t("businessRegister.step1")}
                   </h3>
                   <p className="mt-2 font-medium text-green-700">
-                    Add your name, type, address and phone number.
+                    {t("businessRegister.step1Text")}
                   </p>
                 </div>
 
                 <div className="rounded-3xl bg-yellow-50 p-5">
                   <h3 className="text-xl font-black text-yellow-800">
-                    2. Wait for approval
+                    {t("businessRegister.step2")}
                   </h3>
                   <p className="mt-2 font-medium text-yellow-700">
-                    Admin reviews and approves your business.
+                    {t("businessRegister.step2Text")}
                   </p>
                 </div>
 
                 <div className="rounded-3xl bg-green-50 p-5">
                   <h3 className="text-xl font-black text-green-800">
-                    3. Publish offers
+                    {t("businessRegister.step3")}
                   </h3>
                   <p className="mt-2 font-medium text-green-700">
-                    Create pickup-only food rescue offers.
+                    {t("businessRegister.step3Text")}
                   </p>
                 </div>
               </div>
@@ -193,14 +193,14 @@ export default function BusinessRegisterPage() {
 
             <div className="rounded-3xl border bg-[#F7F6EF] p-5 sm:rounded-[2rem] sm:p-6">
               <h2 className="text-2xl font-black text-gray-950">
-                Business details
+                {t("businessRegister.details")}
               </h2>
 
               <div className="mt-6 grid gap-4">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Business name"
+                  placeholder={t("businessRegister.name")}
                   className="rounded-2xl border bg-white p-4 font-medium outline-none"
                 />
 
@@ -220,14 +220,14 @@ export default function BusinessRegisterPage() {
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Address in Tbilisi"
+                  placeholder={t("businessRegister.address")}
                   className="rounded-2xl border bg-white p-4 font-medium outline-none"
                 />
 
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Phone number"
+                  placeholder={t("businessRegister.phone")}
                   className="rounded-2xl border bg-white p-4 font-medium outline-none"
                 />
 
@@ -238,10 +238,10 @@ export default function BusinessRegisterPage() {
                   className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
                 >
                   {submitting
-                    ? "Submitting..."
+                    ? t("businessRegister.submitting")
                     : !accessReady
-                    ? "Checking account..."
-                    : "Submit for Approval"}
+                    ? t("businessRegister.checking")
+                    : t("businessRegister.submit")}
                 </button>
 
                 {message && (

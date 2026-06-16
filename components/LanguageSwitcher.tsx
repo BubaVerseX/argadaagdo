@@ -2,7 +2,6 @@
 
 import {
   languageNames,
-  languageShortNames,
   supportedLanguages,
 } from "@/lib/i18n";
 import { useLanguage } from "@/lib/useLanguage";
@@ -32,7 +31,7 @@ export default function LanguageSwitcher() {
                 : "text-gray-600 hover:bg-green-50 hover:text-green-800"
             }`}
           >
-            {languageShortNames[option]}
+            {languageNames[option]}
           </button>
         );
       })}

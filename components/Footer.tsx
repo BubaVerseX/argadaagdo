@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/lib/useLanguage";
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="mt-12 border-t border-black/5 bg-white sm:mt-16">
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-6 md:grid-cols-[1.2fr_0.8fr_0.8fr] md:px-12 md:py-12">
@@ -15,48 +20,47 @@ export default function Footer() {
                 ArGadaagdo
               </h2>
               <p className="font-bold text-gray-500">
-                Food rescue marketplace
+                {t("brand.tagline")}
               </p>
             </div>
           </div>
 
           <p className="mt-5 max-w-md font-semibold leading-7 text-gray-700">
-            Helping Tbilisi save good food, support local businesses, and reduce
-            daily food waste.
+            {t("home.subtitle")}
           </p>
 
           <Link
             href="/business/register"
             className="mt-6 inline-block rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
           >
-            Register your business
+            {t("home.joinBusiness")}
           </Link>
         </div>
 
         <div>
-          <h3 className="text-lg font-black text-gray-950">Explore</h3>
+          <h3 className="text-lg font-black text-gray-950">ArGadaagdo</h3>
 
           <div className="mt-4 grid gap-3 font-bold text-gray-600">
             <Link href="/offers" className="hover:text-green-700">
-              Offers
+              {t("nav.offers")}
             </Link>
 
             <Link href="/orders" className="hover:text-green-700">
-              My Orders
+              {t("nav.orders")}
             </Link>
 
             <Link href="/business/register" className="hover:text-green-700">
-              For Business
+              {t("nav.forBusiness")}
             </Link>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-black text-gray-950">Platform</h3>
+          <h3 className="text-lg font-black text-gray-950">{t("home.stats")}</h3>
 
           <div className="mt-4 grid gap-3 font-bold text-gray-600">
-            <p>Pickup only</p>
-            <p>Cash on pickup</p>
+            <p>{t("home.pickupOnly")}</p>
+            <p>{t("home.onlinePayment")}</p>
             <p>Tbilisi first</p>
             <p>Supabase powered</p>
           </div>

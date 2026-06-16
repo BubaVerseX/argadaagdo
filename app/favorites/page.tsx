@@ -14,12 +14,14 @@ import { createMapsSearchUrl } from "@/lib/maps";
 import { formatPickupWindow, isOfferReservable } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Favorite } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function FavoritesPage() {
   const router = useRouter();
+  const { language, t } = useLanguage();
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -157,27 +159,26 @@ export default function FavoritesPage() {
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
           <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-            Saved offers
+            {t("favorites.badge")}
           </p>
 
           <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-            Your favorite rescue boxes.
+            {t("favorites.title")}
           </h1>
 
           <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
-            Keep interesting offers in one place and come back when you are
-            ready to reserve.
+            {t("favorites.subtitle")}
           </p>
 
           <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-8 sm:gap-4">
-            <StatCard title="Saved" value={favorites.length} />
+            <StatCard title={t("favorites.saved")} value={favorites.length} />
             <StatCard
-              title="Available"
+              title={t("common.available")}
               value={availableFavorites.length}
               tone="green"
             />
             <StatCard
-              title="Unavailable"
+              title={t("common.unavailable")}
               value={unavailableFavorites}
               tone="yellow"
             />
@@ -193,7 +194,7 @@ export default function FavoritesPage() {
         {loading && (
           <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
             <p className="font-semibold text-gray-600">
-              Loading your favorites...
+              {t("favorites.loading")}
             </p>
           </div>
         )}
@@ -205,18 +206,18 @@ export default function FavoritesPage() {
             </div>
 
             <h2 className="mt-5 text-3xl font-black">
-              No favorites saved yet
+              {t("favorites.emptyTitle")}
             </h2>
 
             <p className="mt-3 font-medium text-gray-600">
-              Save offers from the marketplace and they will appear here.
+              {t("favorites.emptyHint")}
             </p>
 
             <Link
               href="/offers"
               className="mt-6 inline-block min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white sm:py-4"
             >
-              Browse Offers
+              {t("common.browseOffers")}
             </Link>
           </div>
         )}
@@ -257,7 +258,7 @@ export default function FavoritesPage() {
                         : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
-                    {isAvailable ? "Available" : "Unavailable"}
+                    {isAvailable ? t("common.available") : t("common.unavailable")}
                   </div>
                 </div>
 
@@ -282,17 +283,17 @@ export default function FavoritesPage() {
                           href={mapsUrl}
                           target="_blank"
                           rel="noreferrer"
-                          aria-label={`Open map for ${offer.businesses?.name || offer.title}`}
+                          aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
                           className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
                         >
-                          Open map
+                          {t("common.openMap")}
                         </a>
                       )}
                     </div>
 
                     {offer && (
                       <p>
-                        Pickup: {formatPickupWindow(offer)}
+                        {t("common.pickup")}: {formatPickupWindow(offer, language)}
                       </p>
                     )}
                   </div>
@@ -323,7 +324,7 @@ export default function FavoritesPage() {
                       >
                         {removingFavoriteId === favorite.id
                           ? "Removing..."
-                          : "❤️ Remove Favorite"}
+                          : t("offers.removeFavorite")}
                       </button>
 
                       {isAvailable && offer && (
@@ -331,7 +332,7 @@ export default function FavoritesPage() {
                           href={`/checkout/${offer.id}`}
                           className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
                         >
-                          Continue to checkout
+                          {t("common.continueCheckout")}
                         </Link>
                       )}
                     </div>

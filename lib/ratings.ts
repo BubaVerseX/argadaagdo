@@ -1,5 +1,6 @@
 import type { RatingSummary } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
+import type { PublicBusinessReview } from "@/lib/types";
 
 export async function loadBusinessRatingSummaries() {
   const { data, error } = await supabase.rpc("get_business_rating_summary");
@@ -19,4 +20,14 @@ export async function loadBusinessRatingSummaries() {
     },
     {}
   );
+}
+
+export async function loadPublicBusinessReviews(businessId: number) {
+  const { data, error } = await supabase.rpc("get_public_business_reviews", {
+    p_business_id: businessId,
+  });
+
+  if (error) return [] as PublicBusinessReview[];
+
+  return (data || []) as PublicBusinessReview[];
 }

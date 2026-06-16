@@ -1,4 +1,5 @@
 import type { Offer } from "@/lib/types";
+import type { Language } from "@/lib/i18n";
 
 export type OfferLifecycleStatus =
   | "active"
@@ -95,10 +96,12 @@ export function isOfferReservable(offer: Offer) {
   return getEffectiveOfferStatus(offer) === "active";
 }
 
-export function getOfferStatusLabel(offer: Offer) {
+export function getOfferStatusLabel(offer: Offer, language: Language = "en") {
   const status = getEffectiveOfferStatus(offer);
-  if (status === "sold_out") return "Sold out";
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  if (status === "active") return language === "ka" ? "აქტიური" : "Active";
+  if (status === "sold_out") return language === "ka" ? "გაყიდულია" : "Sold out";
+  if (status === "expired") return language === "ka" ? "ვადაგასული" : "Expired";
+  return language === "ka" ? "არააქტიური" : "Inactive";
 }
 
 export function getOfferStatusClassName(offer: Offer) {
@@ -109,10 +112,14 @@ export function getOfferStatusClassName(offer: Offer) {
   return "bg-gray-100 text-gray-700";
 }
 
-export function getOfferDateLabel(offer: OfferTiming) {
+export function getOfferDateLabel(offer: OfferTiming, language: Language = "en") {
   const offerDate = getOfferDateKey(offer);
-  if (offerDate === getTbilisiDateKey()) return "Today";
-  if (offerDate === getTomorrowDateKey()) return "Tomorrow";
+  if (offerDate === getTbilisiDateKey()) {
+    return language === "ka" ? "დღეს" : "Today";
+  }
+  if (offerDate === getTomorrowDateKey()) {
+    return language === "ka" ? "ხვალ" : "Tomorrow";
+  }
   return offerDate;
 }
 
@@ -123,8 +130,8 @@ export function getOfferGroup(offer: Offer): OfferGroup {
   return "upcoming";
 }
 
-export function formatPickupWindow(offer: OfferTiming) {
-  return `${getOfferDateLabel(offer)} · ${normalizeTime(
+export function formatPickupWindow(offer: OfferTiming, language: Language = "en") {
+  return `${getOfferDateLabel(offer, language)} · ${normalizeTime(
     offer.pickup_start,
     "--:--"
   )} - ${normalizeTime(offer.pickup_end, "--:--")}`;
@@ -135,8 +142,13 @@ export function isOrderPastPickupEnd(offer: OfferTiming | null | undefined) {
   return getOfferEndKey(offer) < getTbilisiDateTimeKey();
 }
 
-export function getRatingLabel(summary: RatingSummary | undefined) {
-  if (!summary || summary.rating_count <= 0) return "No ratings yet";
+export function getRatingLabel(
+  summary: RatingSummary | undefined,
+  language: Language = "en"
+) {
+  if (!summary || summary.rating_count <= 0) {
+    return language === "ka" ? "შეფასებები ჯერ არ არის" : "No ratings yet";
+  }
   return `${summary.average_rating.toFixed(1)} / 5 (${summary.rating_count})`;
 }
 

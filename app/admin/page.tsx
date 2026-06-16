@@ -10,6 +10,7 @@ import { getEffectiveOfferStatus } from "@/lib/offerLifecycle";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Profile } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -20,6 +21,7 @@ function getPercentage(value: number, total: number) {
 
 export default function AdminPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -280,13 +282,13 @@ export default function AdminPage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-12">
         <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-12">
           <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-            Platform overview
+            {t("admin.analytics")}
           </p>
           <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-            Admin dashboard
+            {t("admin.title")}
           </h1>
           <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
-            Review business approvals and monitor the food-rescue marketplace.
+            {t("admin.subtitle")}
           </p>
         </div>
 
@@ -300,14 +302,14 @@ export default function AdminPage() {
           <StatCard title="Businesses" value={businesses.length} />
           <StatCard title="Pending" value={pendingBusinesses.length} tone="yellow" />
           <StatCard title="Approved" value={approvedBusinesses.length} tone="green" />
-          <StatCard title="Active offers" value={activeOffers.length} tone="green" />
+          <StatCard title={t("businessProfile.activeOffers")} value={activeOffers.length} tone="green" />
           <StatCard title="Sold out" value={soldOutOffers.length} tone="yellow" />
           <StatCard title="Expired" value={expiredOffers.length} tone="red" />
           <StatCard title="Inactive" value={inactiveOffers.length} />
           <StatCard title="Total orders" value={orders.length} />
-          <StatCard title="Reserved" value={reservedOrders.length} tone="yellow" />
-          <StatCard title="Collected pickups" value={completedOrders.length} tone="green" />
-          <StatCard title="Cancelled orders" value={cancelledOrders.length} tone="red" />
+          <StatCard title={t("orders.reserved")} value={reservedOrders.length} tone="yellow" />
+          <StatCard title={t("orders.collected")} value={completedOrders.length} tone="green" />
+          <StatCard title={t("orders.cancelled")} value={cancelledOrders.length} tone="red" />
           <StatCard title="No-show" value={noShowOrders.length} tone="red" />
         </div>
 
@@ -341,7 +343,7 @@ export default function AdminPage() {
                 Live marketplace health
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Analytics snapshot
+                {t("admin.analytics")}
               </h2>
             </div>
 
@@ -360,7 +362,7 @@ export default function AdminPage() {
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-black sm:text-2xl">Pending businesses</h2>
+            <h2 className="text-xl font-black sm:text-2xl">{t("admin.pendingBusinesses")}</h2>
             <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-bold text-yellow-800">
               {pendingBusinesses.length} waiting
             </span>
