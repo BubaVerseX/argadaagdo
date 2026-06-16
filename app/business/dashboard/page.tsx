@@ -772,6 +772,7 @@ export default function BusinessDashboardPage() {
     },
     {}
   );
+  const canCreateOffers = approvedBusinesses.length > 0;
   const collectedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
   );
@@ -929,7 +930,7 @@ export default function BusinessDashboardPage() {
           </div>
         </div>
 
-        {approvedBusinesses.length === 0 && (
+        {!canCreateOffers && (
           <div className="mt-6 rounded-3xl bg-yellow-100 p-5 sm:mt-8 sm:p-8">
             <h2 className="text-xl font-black text-yellow-800 sm:text-2xl">
               Waiting for approval
@@ -940,15 +941,15 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        {approvedBusinesses.length > 0 && (
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              Section 2
-            </p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              {t("businessDashboard.createOffer")}
-            </h2>
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Section 2
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            {t("businessDashboard.createOffer")}
+          </h2>
 
+          {canCreateOffers ? (
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <select
                 value={businessId}
@@ -1034,13 +1035,20 @@ export default function BusinessDashboardPage() {
                 className="rounded-2xl border bg-white p-4 font-semibold"
               />
             </div>
+          ) : (
+            <div className="mt-6 rounded-2xl bg-yellow-50 p-5 font-bold text-yellow-800">
+              Your business must be approved before publishing offers. The form
+              will appear here automatically after admin approval.
+            </div>
+          )}
 
-            {imageFile && (
+          {canCreateOffers && imageFile && (
               <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
                 Selected image: {imageFile.name}
               </p>
-            )}
+          )}
 
+          {canCreateOffers && (
             <button
               onClick={createOffer}
               disabled={publishing}
@@ -1048,8 +1056,8 @@ export default function BusinessDashboardPage() {
             >
               {publishing ? "Publishing..." : "Publish offer"}
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
