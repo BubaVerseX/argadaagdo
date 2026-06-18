@@ -50,7 +50,7 @@ export default function Navbar() {
       let ownsBusiness = false;
       let ownsApprovedBusiness = false;
 
-      if (currentUser && isVerified) {
+      if (currentUser && isVerified && currentRole === "business") {
         const { data } = await supabase
           .from("businesses")
           .select("owner_id, approved")
@@ -68,7 +68,7 @@ export default function Navbar() {
 
       setUser(currentUser);
       setRole(currentRole);
-      setShowBusinessDashboard(ownsBusiness || ownsApprovedBusiness);
+      setShowBusinessDashboard(currentRole === "business" && ownsBusiness);
       setShowBusinessRegister(
         currentRole === "business" && !ownsBusiness && !ownsApprovedBusiness
       );

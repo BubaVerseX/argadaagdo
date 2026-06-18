@@ -48,6 +48,28 @@ export default function BusinessRegisterPage() {
         return;
       }
 
+      const profile = await getProfileById(authResult.user.id, 4);
+
+      if (!active) return;
+
+      if (!profile) {
+        setMessageTone("warning");
+        setMessage(
+          "Your account profile is still being created. Please wait a moment and try again."
+        );
+        setCanRegister(false);
+        setAccessReady(true);
+        return;
+      }
+
+      if (profile.role !== "business") {
+        setMessageTone("warning");
+        setMessage("Only business accounts can register a business.");
+        setCanRegister(false);
+        setAccessReady(true);
+        return;
+      }
+
       setCanRegister(true);
       setAccessReady(true);
     }
@@ -109,6 +131,13 @@ export default function BusinessRegisterPage() {
       setMessage(
         "Your account profile is still being created. Please wait a moment and try again."
       );
+      return;
+    }
+
+    if (profile.role !== "business") {
+      setSubmitting(false);
+      setMessageTone("warning");
+      setMessage("Only business accounts can register a business.");
       return;
     }
 

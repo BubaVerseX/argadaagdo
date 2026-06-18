@@ -123,6 +123,12 @@ export default function BusinessDashboardPage() {
     }
 
     const userId = profileResult.user.id;
+
+    if (profileResult.profile.role !== "business") {
+      router.replace("/");
+      return;
+    }
+
     await processExpiredMarketplace();
 
     const { data: myBusinesses, error: businessError } = await supabase
@@ -140,14 +146,6 @@ export default function BusinessDashboardPage() {
 
     const allBusinesses = (myBusinesses || []) as Business[];
     const approved = allBusinesses.filter(isApprovedBusiness);
-
-    if (
-      profileResult.profile.role !== "business" &&
-      allBusinesses.length === 0
-    ) {
-      router.replace("/");
-      return;
-    }
 
     setBusinesses(allBusinesses);
     setApprovedBusinesses(approved);
