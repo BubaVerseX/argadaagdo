@@ -192,8 +192,10 @@ export default function BusinessDashboardPage() {
         .order("id", { ascending: false }),
       loadBusinessRatingSummaries(),
       supabase
-        .from("ratings")
-        .select("id, user_id, business_id, order_id, rating, review, created_at")
+        .from("business_ratings")
+        .select(
+          "id, user_id, business_id, order_id, rating, review:comment, created_at"
+        )
         .in("business_id", businessIds)
         .order("created_at", { ascending: false }),
     ]);
@@ -740,7 +742,7 @@ export default function BusinessDashboardPage() {
         {
           event: "*",
           schema: "public",
-          table: "ratings",
+          table: "business_ratings",
           filter: `business_id=in.(${businessFilter})`,
         },
         scheduleRefresh

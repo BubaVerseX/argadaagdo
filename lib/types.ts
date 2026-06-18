@@ -107,6 +107,7 @@ export type Rating = {
   business_id: number;
   order_id: number;
   rating: number;
+  comment?: string | null;
   review: string | null;
   created_at: string | null;
 };

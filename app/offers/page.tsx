@@ -186,7 +186,7 @@ export default function OffersPage() {
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "ratings" },
+        { event: "*", schema: "public", table: "business_ratings" },
         scheduleRefresh
       )
       .subscribe();
