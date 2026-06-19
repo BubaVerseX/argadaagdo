@@ -10,12 +10,24 @@ import type { Offer } from "@/lib/types";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
   compareMarketplaceOffers,
+  formatMoney,
   formatPickupWindow,
+  getOfferDateLabel,
   getRatingLabel,
   type RatingSummary,
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { useLanguage } from "@/lib/useLanguage";
+import type { Language } from "@/lib/i18n";
+
+function formatOfferCount(count: number, language: Language) {
+  if (language === "ka") return `${count} შეთავაზება`;
+  return count === 1 ? "1 offer" : `${count} offers`;
+}
+
+function formatFriendlyMetric(value: number, fallback: string) {
+  return value > 0 ? String(value) : fallback;
+}
 
 export default function Home() {
   const { language, t } = useLanguage();
@@ -89,6 +101,50 @@ export default function Home() {
       .slice(0, 3);
   }, [offers, ratingSummaries, t]);
 
+  const activeBusinessCount = useMemo(
+    () => new Set(offers.map((offer) => offer.business_id)).size,
+    [offers]
+  );
+  const firstFeaturedOffer = featuredOffers[0];
+  const featuredPickupLabel = firstFeaturedOffer
+    ? `${t("common.pickup")} ${getOfferDateLabel(firstFeaturedOffer, language)}`
+    : t("home.pickupWindows");
+  const trustStripItems = [
+    t("home.trustVerifiedBusinesses"),
+    t("home.trustEasyPickupProcess"),
+    t("home.trustReduceFoodWaste"),
+    t("home.trustLocalTbilisiBusinesses"),
+  ];
+  const missionHighlights = [
+    t("home.missionCustomer"),
+    t("home.missionBusiness"),
+    t("home.missionWaste"),
+  ];
+  const impactStats = [
+    {
+      label: t("home.activeBusinesses"),
+      value: loading
+        ? t("common.loading")
+        : formatFriendlyMetric(activeBusinessCount, t("home.launchingSoon")),
+    },
+    {
+      label: t("home.activeOffers"),
+      value: loading
+        ? t("common.loading")
+        : formatFriendlyMetric(offers.length, t("home.checkBackSoon")),
+    },
+    {
+      label: t("home.ordersCompleted"),
+      value: t("home.trackingSoon"),
+    },
+  ];
+  const customerOnboardingSteps = [
+    t("customerOnboarding.stepBrowse"),
+    t("customerOnboarding.stepReserve"),
+    t("customerOnboarding.stepCollect"),
+    t("customerOnboarding.stepEnjoy"),
+  ];
+
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
       <Navbar />
@@ -104,7 +160,7 @@ export default function Home() {
                 {t("home.badge")}
               </div>
 
-              <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[0.98] tracking-tight sm:mt-7 sm:text-5xl md:text-7xl">
+              <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:mt-7 sm:text-5xl md:text-7xl">
                 {t("home.title1")}
                 <span className="block text-green-700">{t("home.title2")}</span>
                 {t("home.title3")}
@@ -119,24 +175,39 @@ export default function Home() {
                   href="/offers"
                   className="min-h-12 rounded-full bg-green-700 px-8 py-3 text-center font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-green-800 sm:py-4"
                 >
-                  {t("home.explore")}
+                  {t("common.browseOffers")}
                 </Link>
 
                 <Link
                   href="/business/register"
                   className="min-h-12 rounded-full border border-gray-300 bg-white px-8 py-3 text-center font-black text-gray-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-gray-50 sm:py-4"
                 >
-                  {t("home.joinBusiness")}
+                  {t("nav.forBusiness")}
                 </Link>
+              </div>
+
+              <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:max-w-2xl">
+                {trustStripItems.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-2xl bg-white/85 px-4 py-3 text-sm font-black text-green-900 shadow-sm ring-1 ring-green-100"
+                  >
+                    ✓ {item}
+                  </div>
+                ))}
               </div>
 
               <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-4">
                 <div className="rounded-2xl bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
-                  <p className="text-3xl font-black text-green-700">
-                    {loading ? "–" : offers.length}
+                  <p className="text-2xl font-black text-green-700 sm:text-3xl">
+                    {loading
+                      ? t("common.loading")
+                      : offers.length > 0
+                        ? formatOfferCount(offers.length, language)
+                        : t("home.checkBackSoon")}
                   </p>
                   <p className="mt-1 text-xs font-bold text-gray-600 sm:text-base">
-                    {t("home.liveOffers")}
+                    {t("home.availableNow")}
                   </p>
                 </div>
 
@@ -169,10 +240,14 @@ export default function Home() {
                         {t("home.featuredOffer")}
                       </p>
                       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                        {t("offers.title")}
+                        {!loading && offers.length === 0
+                          ? t("home.noSurpriseBags")
+                          : t("offers.title")}
                       </h2>
                       <p className="mt-2 font-semibold text-gray-600">
-                        {t("common.pickup")} {t("common.today")} · Tbilisi
+                        {!loading && offers.length === 0
+                          ? t("home.publishLater")
+                          : `${featuredPickupLabel} · Tbilisi`}
                       </p>
                     </div>
                     <div className="text-4xl sm:text-6xl">🥡</div>
@@ -208,7 +283,7 @@ export default function Home() {
 
                         <div className="text-right">
                           <p className="text-xl font-black text-green-700">
-                            ₾{offer.price}
+                            {formatMoney(offer.price)}
                           </p>
                           <p className="text-xs font-bold text-gray-500">
                             {offer.quantity} {t("offers.boxesLeft")}
@@ -221,54 +296,183 @@ export default function Home() {
                     ))}
 
                     {!loading && offers.length === 0 && (
-                      <>
-                        <div className="flex items-center gap-4 rounded-3xl bg-[#F7F6EF] p-4">
-                          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-green-100 text-4xl">
-                            🥐
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-black">Bakery box</h3>
-                            <p className="text-sm font-semibold text-gray-600">
-                              {t("home.noFeatured")}
-                            </p>
-                          </div>
-                          <p className="text-xl font-black text-green-700">
-                            ₾6
-                          </p>
+                      <div className="rounded-3xl bg-[#F7F6EF] p-5 text-center">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-3xl">
+                          ✓
                         </div>
-
-                        <div className="flex items-center gap-4 rounded-3xl bg-[#F7F6EF] p-4">
-                          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-yellow-100 text-4xl">
-                            🥗
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-black">Lunch box</h3>
-                            <p className="text-sm font-semibold text-gray-600">
-                              {t("businessDashboard.createOffer")}
-                            </p>
-                          </div>
-                          <p className="text-xl font-black text-green-700">
-                            ₾8
-                          </p>
-                        </div>
-                      </>
+                        <h3 className="mt-4 text-xl font-black">
+                          {t("home.noSurpriseBags")}
+                        </h3>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+                          {t("home.publishLater")}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-white p-4 shadow-xl sm:absolute sm:-bottom-6 sm:-left-4 sm:mt-0 sm:rounded-3xl sm:p-5 md:-left-8">
+              <div className="mt-4 rounded-2xl bg-white p-4 shadow-xl sm:absolute sm:-bottom-6 sm:-left-4 sm:mt-0 sm:w-64 sm:rounded-3xl sm:p-5 md:-left-8">
                 <p className="text-sm font-black text-gray-500">
                   {t("home.stats")}
                 </p>
-                <p className="mt-1 text-3xl font-black text-green-700">
-                  {loading ? "–" : offers.reduce(
-                    (total, offer) => total + Number(offer.quantity || 0),
-                    0
-                  )}
-                </p>
+                <div className="mt-3 grid gap-3">
+                  {[
+                    {
+                      label: t("home.mealsRescued"),
+                      value: t("home.trackingSoon"),
+                    },
+                    {
+                      label: t("home.activeBusinesses"),
+                      value: loading
+                        ? t("common.loading")
+                        : formatFriendlyMetric(
+                            activeBusinessCount,
+                            t("home.launchingSoon")
+                          ),
+                    },
+                    {
+                      label: t("home.ordersCompleted"),
+                      value: t("home.trackingSoon"),
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="flex items-center justify-between gap-3 rounded-2xl bg-[#F7F6EF] px-3 py-2"
+                    >
+                      <p className="text-xs font-black text-gray-600">
+                        {item.label}
+                      </p>
+                      <p className="text-sm font-black text-green-700">
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-6 sm:px-6 sm:py-8 md:px-12">
+        <div className="mx-auto max-w-7xl rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                {t("customerOnboarding.title")}
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                {t("home.howItWorks")}
+              </h2>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[640px] lg:grid-cols-4">
+              {customerOnboardingSteps.map((step, index) => (
+                <div
+                  key={step}
+                  className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
+                >
+                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
+                    {index + 1}
+                  </span>
+                  {step}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-8 sm:px-6 sm:py-10 md:px-12">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-stretch">
+          <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8 md:p-10">
+            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              {t("home.missionBadge")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black leading-tight text-gray-950 sm:text-4xl">
+              {t("home.missionTitle")}
+            </h2>
+            <p className="mt-5 text-xl font-black text-green-800">
+              {t("home.missionIntro")}
+            </p>
+            <p className="mt-4 max-w-3xl font-semibold leading-7 text-gray-700 sm:text-lg sm:leading-8">
+              {t("home.missionText")}
+            </p>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {missionHighlights.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl bg-[#F7F6EF] px-4 py-4 font-black text-gray-800"
+                >
+                  ✓ {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] bg-green-800 p-6 text-white shadow-sm sm:p-8 md:p-10">
+            <p className="text-sm font-black uppercase tracking-widest text-green-100">
+              {t("home.impactBadge")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">
+              {t("home.impactTitle")}
+            </h2>
+
+            <div className="mt-6 grid gap-3">
+              {impactStats.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/15"
+                >
+                  <p className="break-words text-3xl font-black text-white">
+                    {item.value}
+                  </p>
+                  <p className="mt-1 font-bold text-green-50">{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-8 sm:px-6 sm:py-10 md:px-12">
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-2">
+          <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              {t("home.businessCtaBadge")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">
+              {t("home.businessCtaTitle")}
+            </h2>
+            <p className="mt-4 font-semibold leading-7 text-gray-700">
+              {t("home.businessCtaText")}
+            </p>
+            <Link
+              href="/business/register"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800 sm:w-auto"
+            >
+              {t("home.registerBusiness")}
+            </Link>
+          </div>
+
+          <div className="rounded-[2rem] bg-yellow-50 p-6 shadow-sm ring-1 ring-yellow-100 sm:p-8">
+            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              {t("home.customerCtaBadge")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">
+              {t("home.customerCtaTitle")}
+            </h2>
+            <p className="mt-4 font-semibold leading-7 text-gray-700">
+              {t("home.customerCtaText")}
+            </p>
+            <Link
+              href="/offers"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 py-3 text-center font-black text-green-800 shadow-sm transition hover:bg-green-50 sm:w-auto"
+            >
+              {t("common.browseOffers")}
+            </Link>
           </div>
         </div>
       </section>
@@ -353,12 +557,12 @@ export default function Home() {
                   <div className="mt-6 flex flex-col gap-4 sm:mt-7 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <span className="text-4xl font-black text-green-700">
-                        ₾{offer.price}
+                        {formatMoney(offer.price)}
                       </span>
 
                       {offer.old_price && (
                         <span className="ml-3 font-bold text-gray-400 line-through">
-                          ₾{offer.old_price}
+                          {formatMoney(offer.old_price)}
                         </span>
                       )}
                     </div>
@@ -377,13 +581,13 @@ export default function Home() {
             {!loading && offers.length === 0 && (
               <div className="rounded-[2rem] bg-white p-10 text-center shadow-sm md:col-span-3">
                 <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
-                  🥡
+                  +
                 </div>
                 <h3 className="mt-5 text-3xl font-black">
-                  {t("offers.noOffers")}
+                  {t("home.noSurpriseBags")}
                 </h3>
                 <p className="mt-3 font-semibold text-gray-600">
-                  {t("offers.noOffersHint")}
+                  {t("home.publishLater")}
                 </p>
               </div>
             )}
@@ -438,47 +642,120 @@ export default function Home() {
 
       <section className="px-4 py-10 sm:px-6 sm:py-16 md:px-12">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-6">
+          <div className="mb-6 sm:mb-8">
             <p className="text-sm font-black uppercase tracking-widest text-green-700">
               ArGadaagdo
             </p>
             <h3 className="mt-2 text-3xl font-black">
               {t("home.howItWorks")}
             </h3>
+            <p className="mt-3 max-w-2xl font-semibold leading-7 text-gray-700">
+              {t("home.howItWorksIntro")}
+            </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-          {[
-            {
-              icon: "📍",
-              title: t("home.step1"),
-              text: t("offers.subtitle"),
-            },
-            {
-              icon: "💸",
-              title: t("home.step2"),
-              text: t("orders.cancelPolicy"),
-            },
-            {
-              icon: "🥡",
-              title: t("home.step3"),
-              text: t("orders.showCode"),
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:rounded-[2rem] sm:p-8"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-4xl">
-                {item.icon}
+          <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              {
+                number: "1",
+                title: t("home.step1"),
+                text: t("home.step1Text"),
+              },
+              {
+                number: "2",
+                title: t("home.step2"),
+                text: t("home.step2Text"),
+              },
+              {
+                number: "3",
+                title: t("home.step3"),
+                text: t("home.step3Text"),
+              },
+              {
+                number: "4",
+                title: t("home.step4"),
+                text: t("home.step4Text"),
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:rounded-[2rem] sm:p-8"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-2xl font-black text-green-800">
+                  {item.number}
+                </div>
+                <h4 className="mt-6 text-2xl font-black">{item.title}</h4>
+                <p className="mt-3 font-semibold leading-7 text-gray-700">
+                  {item.text}
+                </p>
               </div>
-              <h4 className="mt-6 text-2xl font-black">{item.title}</h4>
-              <p className="mt-3 font-semibold leading-7 text-gray-700">
-                {item.text}
-              </p>
-            </div>
-          ))}
+            ))}
           </div>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
+            <div className="rounded-[2rem] bg-green-800 p-6 text-white shadow-sm sm:p-8">
+              <p className="text-sm font-black uppercase tracking-widest text-green-100">
+                {t("home.trustBadge")}
+              </p>
+              <h3 className="mt-3 text-3xl font-black">
+                {t("home.trustTitle")}
+              </h3>
+              <p className="mt-4 font-semibold leading-7 text-green-50">
+                {t("home.trustMessage")}
+              </p>
+              <Link
+                href="/contact"
+                className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 py-3 text-center font-black text-green-800 transition hover:bg-green-50 sm:w-auto"
+              >
+                {t("contact.cta")}
+              </Link>
+            </div>
+
+            <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
+              <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                {t("home.whyBadge")}
+              </p>
+              <h3 className="mt-3 text-3xl font-black">
+                {t("home.whyUse")}
+              </h3>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                {[
+                  t("home.whySaveMoney"),
+                  t("home.whyReduceWaste"),
+                  t("home.whySupportLocal"),
+                  t("home.whyDiscoverTbilisi"),
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-2xl bg-[#F7F6EF] px-4 py-4 font-black text-gray-800"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-12 sm:px-6 sm:pb-16 md:px-12">
+        <div className="mx-auto max-w-7xl rounded-[2rem] bg-green-800 p-6 text-center text-white shadow-sm sm:p-10 md:p-12">
+          <p className="text-sm font-black uppercase tracking-widest text-green-100">
+            ArGadaagdo
+          </p>
+          <h2 className="mt-3 text-3xl font-black leading-tight sm:text-5xl">
+            {t("home.finalCtaTitle")}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl font-semibold leading-7 text-green-50 sm:text-lg">
+            {t("home.finalCtaText")}
+          </p>
+          <Link
+            href="/offers"
+            className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-8 py-3 text-center font-black text-green-800 transition hover:bg-green-50 sm:w-auto"
+          >
+            {t("common.browseOffers")}
+          </Link>
         </div>
       </section>
 

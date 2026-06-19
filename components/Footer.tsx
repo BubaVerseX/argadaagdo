@@ -5,6 +5,16 @@ import { useLanguage } from "@/lib/useLanguage";
 
 export default function Footer() {
   const { t } = useLanguage();
+  const currentYear = new Date().getFullYear();
+  const platformLinks = [
+    { href: "/", label: t("nav.home") },
+    { href: "/offers", label: t("nav.offers") },
+    { href: "/faq", label: t("nav.faq") },
+    { href: "/contact", label: t("nav.contact") },
+    { href: "/about", label: t("nav.about") },
+    { href: "/privacy", label: t("nav.privacy") },
+    { href: "/terms", label: t("nav.terms") },
+  ];
 
   return (
     <footer className="mt-12 border-t border-black/5 bg-white sm:mt-16">
@@ -38,20 +48,20 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-lg font-black text-gray-950">ArGadaagdo</h3>
+          <h3 className="text-lg font-black text-gray-950">
+            {t("footer.platform")}
+          </h3>
 
           <div className="mt-4 grid gap-3 font-bold text-gray-600">
-            <Link href="/offers" className="hover:text-green-700">
-              {t("nav.offers")}
-            </Link>
-
-            <Link href="/orders" className="hover:text-green-700">
-              {t("nav.orders")}
-            </Link>
-
-            <Link href="/business/register" className="hover:text-green-700">
-              {t("nav.forBusiness")}
-            </Link>
+            {platformLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="hover:text-green-700"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -61,15 +71,16 @@ export default function Footer() {
           <div className="mt-4 grid gap-3 font-bold text-gray-600">
             <p>{t("home.pickupOnly")}</p>
             <p>{t("home.onlinePayment")}</p>
-            <p>Tbilisi first</p>
-            <p>Supabase powered</p>
+            <p>{t("footer.tbilisiFirst")}</p>
+            <p>{t("footer.reduceWaste")}</p>
           </div>
         </div>
       </div>
 
       <div className="border-t border-black/5 px-5 py-6 sm:px-6 md:px-12">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm font-bold text-gray-500 md:flex-row md:items-center md:justify-between">
-          <p>© 2026 ArGadaagdo. Built for reducing food waste in Georgia.</p>
+          <p>© ArGadaagdo {currentYear}</p>
+          <p>{t("footer.reduceWasteGeorgia")}</p>
           <p>Made with Next.js, Supabase and Tailwind CSS.</p>
         </div>
       </div>

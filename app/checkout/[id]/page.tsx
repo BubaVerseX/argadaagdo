@@ -9,7 +9,11 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyReservationConfirmed } from "@/lib/notifications";
-import { formatPickupWindow, isOfferReservable } from "@/lib/offerLifecycle";
+import {
+  formatMoney,
+  formatPickupWindow,
+  isOfferReservable,
+} from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -98,7 +102,7 @@ function getReservationErrorMessage(message?: string) {
     return "Only customer accounts in good standing can reserve offers.";
   }
 
-  return message || "Demo payment could not be completed.";
+  return "Reservation could not be completed. Please try again.";
 }
 
 export default function CheckoutPage() {
@@ -326,7 +330,7 @@ export default function CheckoutPage() {
                       {t("checkout.rescueBox")}
                     </span>
                     <span className="text-3xl font-black text-green-700">
-                      ₾{offer.price}
+                      {formatMoney(offer.price)}
                     </span>
                   </div>
 
@@ -344,7 +348,7 @@ export default function CheckoutPage() {
                       {t("checkout.cancellationPolicy")}
                     </p>
                     <p className="mt-2 text-sm font-bold text-green-900">
-                      {t("orders.cancelPolicy")}
+                      {t("checkout.cancelReminder")}
                     </p>
                   </div>
 
@@ -357,13 +361,22 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
+                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                      {t("checkout.afterConfirmation")}
+                    </p>
+                    <p className="mt-2 text-sm font-bold text-gray-800">
+                      {t("checkout.ordersReminder")}
+                    </p>
+                  </div>
+
                   {offer.old_price && (
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-gray-600">
                         {t("checkout.regularPrice")}
                       </span>
                       <span className="font-black text-gray-400 line-through">
-                        ₾{offer.old_price}
+                        {formatMoney(offer.old_price)}
                       </span>
                     </div>
                   )}
@@ -390,6 +403,12 @@ export default function CheckoutPage() {
                       {t("checkout.rules")}
                     </span>
                   </label>
+
+                  <div className="rounded-2xl bg-green-50 p-4">
+                    <p className="text-sm font-bold leading-6 text-green-900">
+                      {t("checkout.ratingReminder")}
+                    </p>
+                  </div>
                 </div>
 
                 <button
@@ -427,6 +446,62 @@ export default function CheckoutPage() {
                   {t("offerDetail.back")}
                 </Link>
               </aside>
+
+              <section className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 lg:col-span-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      {t("checkout.pickupGuideBadge")}
+                    </p>
+                    <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                      {t("checkout.pickupGuideTitle")}
+                    </h2>
+                  </div>
+                  <p className="max-w-md text-sm font-semibold leading-6 text-gray-600 sm:text-right">
+                    {t("checkout.pickupGuideIntro")}
+                  </p>
+                </div>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    {
+                      number: "1",
+                      title: t("checkout.pickupStep1"),
+                      text: t("checkout.pickupStep1Text"),
+                    },
+                    {
+                      number: "2",
+                      title: t("checkout.pickupStep2"),
+                      text: t("checkout.pickupStep2Text"),
+                    },
+                    {
+                      number: "3",
+                      title: t("checkout.pickupStep3"),
+                      text: t("checkout.pickupStep3Text"),
+                    },
+                    {
+                      number: "4",
+                      title: t("checkout.pickupStep4"),
+                      text: t("checkout.pickupStep4Text"),
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.title}
+                      className="rounded-3xl bg-[#F7F6EF] p-5"
+                    >
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-xl font-black text-green-800">
+                        {item.number}
+                      </div>
+                      <h3 className="mt-4 text-lg font-black text-gray-950">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2 text-sm font-semibold leading-6 text-gray-700">
+                        {item.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </section>
             </div>
           )}
         </div>

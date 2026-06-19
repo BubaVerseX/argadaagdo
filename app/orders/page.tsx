@@ -11,18 +11,20 @@ import {
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { notifyOrderCancelled } from "@/lib/notifications";
-import { formatPickupWindow } from "@/lib/offerLifecycle";
+import {
+  formatMoney,
+  formatPickupTimeRange,
+  getOfferDateLabel,
+} from "@/lib/offerLifecycle";
 import {
   getEffectiveOrderStatus,
-  getInactiveOrderMessage,
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   getOrderStatusClassName,
-  getOrderStatusLabel,
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
-import type { Order, Profile } from "@/lib/types";
+import type { Order, OrderStatus, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,6 +46,72 @@ function getCancellationErrorMessage(message?: string) {
   }
 
   return message || "Order could not be cancelled. Please try again.";
+}
+
+function normalizeTime(value: string | null | undefined) {
+  return value ? value.slice(0, 5) : "";
+}
+
+function getTbilisiDateTimeKey(date = new Date()) {
+  const dateParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tbilisi",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const timeParts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Tbilisi",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+
+  const year = dateParts.find((part) => part.type === "year")?.value || "1970";
+  const month = dateParts.find((part) => part.type === "month")?.value || "01";
+  const day = dateParts.find((part) => part.type === "day")?.value || "01";
+  const hour = timeParts.find((part) => part.type === "hour")?.value || "00";
+  const minute = timeParts.find((part) => part.type === "minute")?.value || "00";
+
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+}
+
+function getCancellationDeadlineKey(order: Order) {
+  const offer = order.offers;
+  if (!offer?.pickup_date || !offer.pickup_start) return null;
+
+  const pickupDate = new Date(
+    `${offer.pickup_date}T${normalizeTime(offer.pickup_start)}:00+04:00`
+  );
+
+  if (Number.isNaN(pickupDate.getTime())) return null;
+
+  pickupDate.setHours(pickupDate.getHours() - 2);
+  return getTbilisiDateTimeKey(pickupDate);
+}
+
+function canShowCancellationAvailable(order: Order) {
+  const deadline = getCancellationDeadlineKey(order);
+  if (!deadline) return true;
+  return getTbilisiDateTimeKey() <= deadline;
+}
+
+function getCustomerStatusLabel(status: OrderStatus, language: "en" | "ka") {
+  if (isConfirmedOrderStatus(status)) {
+    return language === "ka" ? "წაღების მოლოდინში" : "Waiting for pickup";
+  }
+  if (isCollectedOrderStatus(status)) {
+    return language === "ka" ? "წაღებულია" : "Collected";
+  }
+  if (status === "no_show") {
+    return language === "ka" ? "წაღება გამოტოვებულია" : "Missed Pickup";
+  }
+  if (status === "expired") {
+    return language === "ka" ? "ვადაგასულია" : "Expired";
+  }
+  if (isCancelledOrderStatus(status)) {
+    return language === "ka" ? "გაუქმებულია" : "Cancelled";
+  }
+  return language === "ka" ? "უცნობი" : "Unknown";
 }
 
 export default function OrdersPage() {
@@ -128,7 +196,7 @@ export default function OrdersPage() {
 
     if (error) {
       setMessageTone("error");
-      setMessage(error.message || "Rating could not be saved.");
+      setMessage("Your review could not be saved. Please try again.");
       setRatingOrderId(null);
       return;
     }
@@ -201,7 +269,7 @@ export default function OrdersPage() {
       if (!active) return;
 
       if (authResult.status === "signed_out") {
-        router.replace("/login");
+        router.replace("/login?redirect=orders");
         return;
       }
 
@@ -264,6 +332,8 @@ export default function OrdersPage() {
       : reliabilityStatus === "warning"
       ? "yellow"
       : "red";
+  const shouldShowRatingEducation =
+    !loading && orders.length > 0 && collectedCount === 0;
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -289,7 +359,7 @@ export default function OrdersPage() {
             <StatCard title={t("orders.cancelled")} value={cancelledCount} tone="red" />
             <StatCard
               title={t("orders.reliability")}
-              value={profile?.reliability_score ?? "--"}
+              value={profile?.reliability_score ?? t("common.unavailable")}
               tone={reliabilityTone}
             />
             <StatCard
@@ -306,6 +376,17 @@ export default function OrdersPage() {
           </div>
         )}
 
+        {shouldShowRatingEducation && (
+          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+            <p className="text-lg font-black text-green-800">
+              {t("orders.ratingEducationTitle")}
+            </p>
+            <p className="mt-2 font-semibold leading-7 text-gray-600">
+              {t("orders.ratingEducationText")}
+            </p>
+          </div>
+        )}
+
         {loading && (
           <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
             <p className="font-semibold text-gray-600">{t("orders.loading")}</p>
@@ -318,11 +399,28 @@ export default function OrdersPage() {
               🥡
             </div>
 
-            <h2 className="mt-5 text-3xl font-black">
+            <p className="mt-5 text-sm font-black uppercase tracking-widest text-green-700">
               {t("orders.emptyTitle")}
+            </p>
+
+            <h2 className="mt-2 text-3xl font-black">
+              {t("orders.educationTitle")}
             </h2>
 
-            <p className="mt-3 font-medium text-gray-600">
+            <p className="mx-auto mt-3 max-w-xl font-medium leading-7 text-gray-600">
+              {t("orders.educationText")}
+            </p>
+
+            <div className="mx-auto mt-5 max-w-xl rounded-3xl bg-green-50 p-4 text-left">
+              <p className="font-black text-green-800">
+                {t("orders.ratingEducationTitle")}
+              </p>
+              <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                {t("orders.ratingEducationText")}
+              </p>
+            </div>
+
+            <p className="mt-4 text-sm font-bold text-gray-500">
               {t("orders.emptyHint")}
             </p>
 
@@ -346,6 +444,23 @@ export default function OrdersPage() {
             const displayStatus = getEffectiveOrderStatus(order);
             const statusClass = getOrderStatusClassName(displayStatus);
             const isConfirmed = isConfirmedOrderStatus(displayStatus);
+            const isCancellationAvailable =
+              isConfirmed && canShowCancellationAvailable(order);
+            const pickupDateLabel = order.offers
+              ? getOfferDateLabel(order.offers, language)
+              : t("orders.pickupUnavailable");
+            const pickupTimeLabel = order.offers
+              ? formatPickupTimeRange(order.offers, language)
+              : t("orders.pickupUnavailable");
+            const inactiveOrderMessage = isCollectedOrderStatus(displayStatus)
+              ? t("orders.collectedMessage")
+              : displayStatus === "no_show"
+              ? t("orders.noShowMessage")
+              : displayStatus === "expired"
+              ? t("orders.expiredMessage")
+              : isCancelledOrderStatus(displayStatus)
+              ? t("orders.cancelledMessage")
+              : t("orders.pickupCodeAvailable");
             const selectedRating = ratingValues[order.id] || 0;
             const reviewText = reviewTexts[order.id] || "";
 
@@ -360,7 +475,7 @@ export default function OrdersPage() {
                       <span
                         className={`rounded-full px-4 py-2 text-sm font-black ${statusClass}`}
                       >
-                        {getOrderStatusLabel(displayStatus, language)}
+                        {getCustomerStatusLabel(displayStatus, language)}
                       </span>
 
                       <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700">
@@ -369,53 +484,94 @@ export default function OrdersPage() {
                     </div>
 
                     <h2 className="mt-4 text-2xl font-black sm:text-3xl">
-                      {order.offers?.title || "Offer deleted"}
+                      {order.offers?.title || t("common.offerUnavailable")}
                     </h2>
 
                     <p className="mt-2 text-lg font-bold text-gray-800">
-                      {order.offers?.businesses?.name || "Business unavailable"}
+                      {order.offers?.businesses?.name || t("common.businessUnavailable")}
                     </p>
 
-                    <div className="mt-4 grid gap-2 text-gray-700">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                        <p className="font-medium">📍 {businessAddress}</p>
-
-                        {order.offers?.businesses?.address && (
-                          <a
-                            href={mapsUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label={`${t("common.openMap")} ${order.offers?.businesses?.name || order.offers?.title || "pickup location"}`}
-                            className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
-                          >
-                            {t("common.openMap")}
-                          </a>
-                        )}
-                      </div>
-
-                      <p className="font-medium">
-                        ⏰ {t("common.pickup")}:{" "}
-                        {order.offers
-                          ? formatPickupWindow(order.offers, language)
-                          : "Time unavailable"}
+                    <div className="mt-4 rounded-3xl bg-[#F7F6EF] p-4">
+                      <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                        {t("orders.pickupReminder")}
                       </p>
 
-                      <p className="font-black text-green-700">
-                        {t("common.price")}: ₾{order.offers?.price}
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("orders.pickupDate")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {pickupDateLabel}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("orders.pickupTime")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {pickupTimeLabel}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("orders.businessName")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {order.offers?.businesses?.name ||
+                              t("common.businessUnavailable")}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("orders.businessAddress")}
+                          </p>
+                          <p className="mt-1 font-semibold text-gray-700">
+                            {businessAddress}
+                          </p>
+                          {order.offers?.businesses?.address && (
+                            <a
+                              href={mapsUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`${t("common.openMap")} ${
+                                order.offers?.businesses?.name ||
+                                order.offers?.title ||
+                                "pickup location"
+                              }`}
+                              className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
+                            >
+                              {t("common.openMap")}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="mt-3 font-black text-green-700">
+                        {t("common.price")}:{" "}
+                        {order.offers
+                          ? formatMoney(order.offers.price)
+                          : t("common.unavailable")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="rounded-3xl bg-[#F7F6EF] p-4 text-center sm:rounded-[2rem] sm:p-5 lg:min-w-[240px]">
+                  <div className="rounded-3xl bg-[#F7F6EF] p-4 text-center sm:rounded-[2rem] sm:p-5 lg:min-w-[280px]">
                     <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("orders.pickupCode")}
                     </p>
 
                     {isConfirmed ? (
                       <>
-                        <div className="mt-3 rounded-2xl bg-white px-4 py-4 shadow-sm sm:rounded-3xl sm:px-6 sm:py-5">
+                        <div className="mt-3 rounded-2xl border-2 border-green-200 bg-white px-4 py-5 shadow-sm sm:rounded-3xl sm:px-6 sm:py-6">
+                          <p className="text-sm font-black text-green-700">
+                            {t("orders.pickupCode")}:
+                          </p>
                           <p className="font-mono text-3xl font-black tracking-[0.18em] text-green-700 sm:text-4xl">
-                            {order.pickup_code || "------"}
+                            {order.pickup_code || t("common.pending")}
                           </p>
                         </div>
 
@@ -423,17 +579,30 @@ export default function OrdersPage() {
                           {t("orders.showCode")}
                         </p>
 
-                        <p className="mt-2 text-xs font-bold text-gray-500">
-                          {t("orders.cancelPolicy")}
-                        </p>
+                        <div className="mt-4 rounded-2xl bg-green-50 p-4 text-left">
+                          <p className="text-sm font-black leading-6 text-green-900">
+                            {t("orders.activePickupReminder")}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-sm">
+                          <p className="text-sm font-black text-gray-800">
+                            {isCancellationAvailable
+                              ? t("orders.cancelAvailable")
+                              : t("orders.cancelUnavailable")}
+                          </p>
+                          <p className="mt-2 text-sm font-semibold text-gray-600">
+                            {t("orders.ratingBeforePickup")}
+                          </p>
+                        </div>
                       </>
                     ) : (
                       <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-gray-600 shadow-sm">
-                        {getInactiveOrderMessage(displayStatus, language)}
+                        {inactiveOrderMessage}
                       </div>
                     )}
 
-                    {isConfirmed && (
+                    {isConfirmed && isCancellationAvailable && (
                       <button
                         onClick={() => cancelOrder(order)}
                         disabled={cancellingOrderId !== null}
@@ -449,12 +618,15 @@ export default function OrdersPage() {
                       <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-sm">
                         {order.rated_at ? (
                           <p className="text-center font-black text-green-700">
-                            Business rated
+                            {t("orders.reviewThanks")}
                           </p>
                         ) : (
                           <>
-                            <p className="text-center text-sm font-black text-gray-700">
+                            <p className="text-center text-base font-black text-green-800">
                               {t("orders.ratePickup")}
+                            </p>
+                            <p className="mt-1 text-center text-sm font-semibold text-gray-600">
+                              {t("orders.ratingAvailable")}
                             </p>
                             <div className="mt-3 grid grid-cols-5 gap-2">
                               {[1, 2, 3, 4, 5].map((rating) => (

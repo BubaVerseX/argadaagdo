@@ -4,7 +4,6 @@ import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
-import StatCard from "@/components/StatCard";
 import { getConfirmedProfile } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyPickupCompleted } from "@/lib/notifications";
@@ -16,6 +15,8 @@ import {
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import {
+  formatDisplayDateTime,
+  formatMoney,
   formatPickupWindow,
   getEffectiveOfferStatus,
   getOfferStatusClassName,
@@ -41,6 +42,28 @@ function createImageFileName(file: File) {
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
 const maxImageSizeBytes = 5 * 1024 * 1024;
 type ReservationFilter = "all" | "reserved" | "collected" | "cancelled";
+type MetricTone = "neutral" | "green" | "yellow";
+
+const metricToneStyles: Record<
+  MetricTone,
+  { card: string; label: string; value: string }
+> = {
+  neutral: {
+    card: "bg-gray-50 text-gray-950",
+    label: "text-gray-600",
+    value: "text-gray-950",
+  },
+  green: {
+    card: "bg-green-50 text-green-950",
+    label: "text-green-700",
+    value: "text-green-800",
+  },
+  yellow: {
+    card: "bg-yellow-50 text-yellow-950",
+    label: "text-yellow-800",
+    value: "text-yellow-800",
+  },
+};
 
 function isApprovedBusiness(business: Business) {
   return business.approved === true || String(business.approved) === "true";
@@ -55,19 +78,6 @@ function getImageValidationError(file: File) {
   if (file.size > maxImageSizeBytes) return "File too large";
   if (!allowedImageTypes.includes(file.type)) return "Invalid file type";
   return "";
-}
-
-function formatCreatedDate(value: string | null | undefined) {
-  if (!value) return "Date unavailable";
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return "Date unavailable";
-
-  return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
 }
 
 export default function BusinessDashboardPage() {
@@ -381,7 +391,7 @@ export default function BusinessDashboardPage() {
       setMessage(
         error.message.includes("row-level security")
           ? "Offer creation was blocked by security rules. Please make sure this business is approved."
-          : error.message
+          : "Offer could not be published. Please check the details and try again."
       );
       return;
     }
@@ -489,7 +499,7 @@ export default function BusinessDashboardPage() {
     if (error) {
       setUpdatingOfferId(null);
       setMessageTone("error");
-      setMessage(error.message);
+      setMessage("Offer changes could not be saved. Please try again.");
       return;
     }
 
@@ -544,7 +554,7 @@ export default function BusinessDashboardPage() {
     if (error) {
       setUpdatingOfferId(null);
       setMessageTone("error");
-      setMessage(error.message);
+      setMessage("Offer status could not be updated. Please try again.");
       return;
     }
 
@@ -598,7 +608,7 @@ export default function BusinessDashboardPage() {
       setMessage(
         error.message.toLowerCase().includes("foreign key")
           ? "This offer has reservations, so it cannot be deleted. Set it inactive instead."
-          : error.message
+          : "Offer could not be deleted. Please try again."
       );
       return;
     }
@@ -643,7 +653,7 @@ export default function BusinessDashboardPage() {
     if (error) {
       setUpdatingOrderId(null);
       setMessageTone("error");
-      setMessage(error.message);
+      setMessage("Pickup could not be completed. Please check the pickup code and try again.");
       return false;
     }
 
@@ -674,7 +684,7 @@ export default function BusinessDashboardPage() {
 
     if (error) {
       setMessageTone("error");
-      setMessage(error.message || "Order could not be marked no-show.");
+      setMessage("Order could not be marked no-show. Please try again.");
       setUpdatingOrderId(null);
       return false;
     }
@@ -780,7 +790,13 @@ export default function BusinessDashboardPage() {
         ) / 10
       : 0;
   const averageRatingLabel =
-    totalReviews > 0 ? `${averageRating.toFixed(1)} ⭐` : "No ratings";
+    totalReviews > 0 ? `${averageRating.toFixed(1)} ⭐` : t("common.noRatings");
+  const selectedBusiness =
+    approvedBusinesses.find((business) => String(business.id) === businessId) ||
+    approvedBusinesses[0] ||
+    businesses[0];
+  const dashboardBusinessName =
+    selectedBusiness?.name || t("businessDashboard.businessOwner");
   const businessNameById = approvedBusinesses.reduce<Record<number, string>>(
     (businessMap, business) => {
       businessMap[business.id] = business.name;
@@ -802,6 +818,96 @@ export default function BusinessDashboardPage() {
   const cancelledOrders = orders.filter((order) =>
     isCancelledOrderStatus(order.status)
   );
+  const noShowOrders = orders.filter((order) => order.status === "no_show");
+  const hasAnalyticsActivity =
+    offers.length > 0 || orders.length > 0 || totalReviews > 0;
+  const isNewBusinessOnboarding = offers.length === 0 && orders.length === 0;
+  const onboardingChecklist = [
+    {
+      label: t("businessOnboarding.checkCreateOffer"),
+      completed: offers.length > 0,
+    },
+    {
+      label: t("businessOnboarding.checkFirstReservation"),
+      completed: orders.length > 0,
+    },
+    {
+      label: t("businessOnboarding.checkFirstPickup"),
+      completed: collectedOrders.length > 0,
+    },
+    {
+      label: t("businessOnboarding.checkFirstRating"),
+      completed: reviews.length > 0,
+    },
+  ];
+  const businessTips = [
+    t("businessOnboarding.tipPublishEarly"),
+    t("businessOnboarding.tipClearNames"),
+    t("businessOnboarding.tipAccurateTimes"),
+    t("businessOnboarding.tipPromptPickup"),
+  ];
+  const firstOfferGuidance = [
+    {
+      label: t("businessOnboarding.recommendedQuantity"),
+      value: t("businessOnboarding.recommendedQuantityValue"),
+    },
+    {
+      label: t("businessOnboarding.recommendedPickupWindow"),
+      value: t("businessOnboarding.recommendedPickupWindowValue"),
+    },
+    {
+      label: t("businessOnboarding.recommendedTitle"),
+      value: t("businessOnboarding.recommendedTitleValue"),
+    },
+  ];
+  const overviewStats = [
+    {
+      title: t("businessDashboard.activeOffersMetric"),
+      value: activeOffers.length,
+      helper: t("businessDashboard.activeOffersHelper"),
+      tone: "green" as const,
+    },
+    {
+      title: t("businessDashboard.totalReservationsMetric"),
+      value: orders.length,
+      helper: t("businessDashboard.totalReservationsHelper"),
+      tone: "neutral" as const,
+    },
+    {
+      title: t("businessDashboard.completedPickupsMetric"),
+      value: collectedOrders.length,
+      helper: t("businessDashboard.completedPickupsHelper"),
+      tone: "green" as const,
+    },
+    {
+      title: t("businessDashboard.averageRating"),
+      value: averageRatingLabel,
+      helper: t("businessDashboard.averageRatingHelper"),
+      tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
+    },
+  ];
+  const reservationSummary = [
+    {
+      label: t("orders.reserved"),
+      value: reservedOrders.length,
+      className: "bg-green-50 text-green-800",
+    },
+    {
+      label: t("orders.collected"),
+      value: collectedOrders.length,
+      className: "bg-yellow-50 text-yellow-800",
+    },
+    {
+      label: t("orders.cancelled"),
+      value: cancelledOrders.length,
+      className: "bg-red-50 text-red-700",
+    },
+    {
+      label: t("businessDashboard.noShow"),
+      value: noShowOrders.length,
+      className: "bg-gray-100 text-gray-700",
+    },
+  ];
   const filteredOrders = orders.filter((order) => {
     if (reservationFilter === "reserved") {
       return isConfirmedOrderStatus(order.status);
@@ -819,36 +925,36 @@ export default function BusinessDashboardPage() {
   });
   const businessAnalytics = [
     {
-      title: "Total offers",
+      title: t("businessDashboard.totalOffersMetric"),
       value: offers.length,
-      caption: `${offers.length} offer(s) created`,
+      caption: t("businessDashboard.totalOffersHelper"),
       percentage: getPercentage(offers.length, Math.max(offers.length, 1)),
     },
     {
-      title: "Active offers",
+      title: t("businessDashboard.activeOffersMetric"),
       value: activeOffers.length,
-      caption: `${activeOffers.length} public of ${offers.length} total offers`,
+      caption: t("businessDashboard.activeOffersHelper"),
       percentage: getPercentage(activeOffers.length, offers.length),
       tone: "green" as const,
     },
     {
-      title: "Reserved orders",
-      value: reservedOrders.length,
-      caption: `${reservedOrders.length} active reservation(s)`,
-      percentage: getPercentage(reservedOrders.length, orders.length),
+      title: t("businessDashboard.totalReservationsMetric"),
+      value: orders.length,
+      caption: t("businessDashboard.totalReservationsHelper"),
+      percentage: getPercentage(orders.length, Math.max(orders.length, 1)),
       tone: "yellow" as const,
     },
     {
-      title: "Collected orders",
+      title: t("businessDashboard.completedPickupsMetric"),
       value: collectedOrders.length,
-      caption: `${collectedOrders.length} collected of ${orders.length} reservation(s)`,
+      caption: t("businessDashboard.completedPickupsHelper"),
       percentage: getPercentage(collectedOrders.length, orders.length),
       tone: "green" as const,
     },
     {
-      title: "Cancelled orders",
+      title: t("businessDashboard.cancelledReservationsMetric"),
       value: cancelledOrders.length,
-      caption: `${cancelledOrders.length} cancelled reservation(s)`,
+      caption: t("businessDashboard.cancelledReservationsHelper"),
       percentage: getPercentage(cancelledOrders.length, orders.length),
       tone: "red" as const,
     },
@@ -876,11 +982,11 @@ export default function BusinessDashboardPage() {
           </p>
 
           <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-            {t("businessDashboard.title")}
+            {t("businessDashboard.welcome")}, {dashboardBusinessName}
           </h1>
 
           <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:mt-4 sm:text-lg">
-            {t("businessDashboard.subtitle")}
+            {t("businessDashboard.welcomeText")}
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
@@ -917,11 +1023,89 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+        {isNewBusinessOnboarding && (
+          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              {t("businessOnboarding.badge")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black text-gray-950 sm:text-4xl">
+              {t("businessOnboarding.welcomeTitle")}
+            </h2>
+            <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-700">
+              {t("businessOnboarding.welcomeText")}
+            </p>
+            <a
+              href="#create-offer"
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800 sm:w-auto"
+            >
+              {t("businessOnboarding.createFirstBag")}
+            </a>
+          </div>
+        )}
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              {t("businessOnboarding.checklistBadge")}
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              {t("businessOnboarding.checklistTitle")}
+            </h2>
+
+            <div className="mt-5 grid gap-3">
+              {onboardingChecklist.map((item) => (
+                <div
+                  key={item.label}
+                  className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
+                    item.completed
+                      ? "bg-green-50 text-green-800"
+                      : "bg-[#F7F6EF] text-gray-700"
+                  }`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
+                      item.completed
+                        ? "bg-green-700 text-white"
+                        : "bg-white text-gray-500"
+                    }`}
+                  >
+                    {item.completed ? "✓" : "□"}
+                  </span>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-sm sm:rounded-[2rem] sm:p-8">
+            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+              {t("businessOnboarding.tipsBadge")}
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              {t("businessOnboarding.tipsTitle")}
+            </h2>
+            <div className="mt-5 grid gap-3">
+              {businessTips.map((tip) => (
+                <div
+                  key={tip}
+                  className="rounded-2xl bg-white/10 p-4 font-semibold leading-7 text-green-50 ring-1 ring-white/10"
+                >
+                  • {tip}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="create-offer"
+          className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
+        >
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Section 1
+                Dashboard Overview
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
                 {t("businessDashboard.stats")}
@@ -929,18 +1113,37 @@ export default function BusinessDashboardPage() {
             </div>
 
             <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              A quick view of reservations, collected pickups, cancellations,
-              and active offers for your approved businesses.
+              {t("businessDashboard.statsIntro")}
             </p>
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <StatCard
-              title={t("businessDashboard.averageRating")}
-              value={averageRatingLabel}
-              tone={totalReviews > 0 ? "yellow" : "neutral"}
-            />
-            <StatCard title={t("businessDashboard.totalReviews")} value={totalReviews} />
+          {!hasAnalyticsActivity && (
+            <div className="mt-6 rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-5 text-center font-bold text-green-800 sm:p-6">
+              {t("businessDashboard.emptyAnalytics")}
+            </div>
+          )}
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {overviewStats.map((metric) => {
+              const styles = metricToneStyles[metric.tone];
+
+              return (
+                <div
+                  key={metric.title}
+                  className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${styles.card}`}
+                >
+                  <p className={`text-sm font-black ${styles.label}`}>
+                    {metric.title}
+                  </p>
+                  <p className={`mt-2 text-3xl font-black sm:text-4xl ${styles.value}`}>
+                    {metric.value}
+                  </p>
+                  <p className="mt-3 text-sm font-semibold leading-6 opacity-75">
+                    {metric.helper}
+                  </p>
+                </div>
+              );
+            })}
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -965,7 +1168,7 @@ export default function BusinessDashboardPage() {
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Section 2
+            Offer Management
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             {t("businessDashboard.createOffer")}
@@ -973,6 +1176,27 @@ export default function BusinessDashboardPage() {
 
           {canCreateOffers ? (
             <>
+              <div className="mt-5 rounded-3xl bg-green-50 p-5 sm:p-6">
+                <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                  {t("businessOnboarding.firstOfferGuidanceTitle")}
+                </p>
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                  {firstOfferGuidance.map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-2xl bg-white p-4 shadow-sm"
+                    >
+                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                        {item.label}
+                      </p>
+                      <p className="mt-2 font-black text-gray-950">
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <select
                   value={businessId}
@@ -1070,7 +1294,7 @@ export default function BusinessDashboardPage() {
                 disabled={publishing}
                 className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
               >
-                {publishing ? "Publishing..." : "Publish offer"}
+                {publishing ? "Publishing..." : "Create Offer"}
               </button>
             </>
           ) : (
@@ -1082,13 +1306,29 @@ export default function BusinessDashboardPage() {
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Section 3
+            Offer History
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">{t("businessDashboard.myOffers")}</h2>
 
           <div className="mt-6 grid gap-4">
             {offers.length === 0 && (
-              <p className="font-medium text-gray-600">{t("businessDashboard.noOffers")}</p>
+              <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
+                  +
+                </div>
+                <h3 className="mt-4 text-2xl font-black text-gray-950">
+                  {t("businessDashboard.noOffers")}
+                </h3>
+                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+                  {t("businessDashboard.noOffersHint")}
+                </p>
+                <a
+                  href="#create-offer"
+                  className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
+                >
+                  {t("businessDashboard.createFirstOffer")}
+                </a>
+              </div>
             )}
 
             {offers.map((offer) => {
@@ -1123,7 +1363,7 @@ export default function BusinessDashboardPage() {
                         </div>
 
                         <p className="font-medium text-gray-700">
-                          ₾{offer.price} · Quantity: {offer.quantity}
+                          {formatMoney(offer.price)} · Quantity: {offer.quantity}
                         </p>
                         <p className="text-gray-600">
                           {t("common.pickup")}: {formatPickupWindow(offer, language)}
@@ -1132,7 +1372,7 @@ export default function BusinessDashboardPage() {
                           ⭐ {getRatingLabel(rating, language)}
                         </p>
                         <p className="mt-1 text-xs font-bold text-gray-500">
-                          Created: {formatCreatedDate(offer.created_at)}
+                          Created: {formatDisplayDateTime(offer.created_at, language)}
                         </p>
                       </div>
                     </div>
@@ -1267,11 +1507,20 @@ export default function BusinessDashboardPage() {
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Section 4
+            Pickup Operations
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             {t("businessDashboard.reservations")}
           </h2>
+
+          <div className="mt-5 rounded-3xl bg-green-50 p-5 sm:p-6">
+            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              {t("businessOnboarding.reservationGuidanceTitle")}
+            </p>
+            <p className="mt-2 font-semibold leading-7 text-green-900">
+              {t("businessOnboarding.reservationGuidanceText")}
+            </p>
+          </div>
 
           <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-4 sm:p-5">
             <h3 className="text-xl font-black">Verify pickup code</h3>
@@ -1295,10 +1544,41 @@ export default function BusinessDashboardPage() {
                 disabled={updatingOrderId !== null}
                 className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
-                {updatingOrderId !== null ? "Completing..." : "Verify pickup"}
+                {updatingOrderId !== null ? "Completing..." : "Verify Pickup"}
               </button>
             </div>
           </div>
+
+          {orders.length > 0 && (
+            <div className="mt-6 rounded-3xl border border-green-100 bg-green-50/60 p-5 sm:p-6">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-green-700">
+                    {t("businessDashboard.reservationSummary")}
+                  </p>
+                  <h3 className="mt-2 text-2xl font-black text-gray-950">
+                    {t("businessDashboard.totalReservationsMetric")}:{" "}
+                    {orders.length}
+                  </h3>
+                </div>
+                <p className="max-w-lg text-sm font-semibold leading-6 text-gray-700 sm:text-right">
+                  {t("businessDashboard.reservationSummaryHint")}
+                </p>
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {reservationSummary.map((item) => (
+                  <div
+                    key={item.label}
+                    className={`rounded-2xl p-4 shadow-sm ${item.className}`}
+                  >
+                    <p className="text-sm font-black">{item.label}</p>
+                    <p className="mt-2 text-3xl font-black">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="mt-6 flex flex-wrap gap-3">
             {[
@@ -1330,7 +1610,17 @@ export default function BusinessDashboardPage() {
 
           <div className="mt-6 grid gap-4">
             {filteredOrders.length === 0 && (
-              <p className="font-medium text-gray-600">{t("businessDashboard.noReservations")}</p>
+              <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
+                  ✓
+                </div>
+                <h3 className="mt-4 text-2xl font-black text-gray-950">
+                  {t("businessDashboard.noReservations")}
+                </h3>
+                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+                  {t("businessDashboard.noReservationsHint")}
+                </p>
+              </div>
             )}
 
             {filteredOrders.map((order) => (
@@ -1340,31 +1630,34 @@ export default function BusinessDashboardPage() {
               >
                 <div>
                   <h3 className="text-xl font-black sm:text-2xl">
-                    {order.offers?.title || "Offer unavailable"}
+                    {order.offers?.title || t("common.offerUnavailable")}
                   </h3>
 
                   <p className="mt-2 font-semibold text-gray-700">
-                    Customer: {order.profiles?.email || "Email unavailable"}
+                    Customer: {order.profiles?.email || t("common.unavailable")}
                   </p>
 
                   <p className="mt-1 font-semibold text-gray-600">
-                    Created: {formatCreatedDate(order.created_at)}
+                    Created: {formatDisplayDateTime(order.created_at, language)}
                   </p>
 
                   <p className="mt-1 font-black text-green-700">
-                    ₾{order.offers?.price}
+                    {order.offers
+                      ? formatMoney(order.offers.price)
+                      : t("common.unavailable")}
                   </p>
 
                   <p className="mt-1 font-semibold text-gray-600">
                     {t("common.pickup")}:{" "}
                     {order.offers
                       ? formatPickupWindow(order.offers, language)
-                      : "Time unavailable"}
+                      : t("orders.pickupUnavailable")}
                   </p>
 
                   <p className="mt-1 text-sm font-bold text-gray-500">
-                    Reliability: {order.profiles?.reliability_score ?? "--"} ·{" "}
-                    {order.profiles?.reliability_status || "unknown"}
+                    Reliability:{" "}
+                    {order.profiles?.reliability_score ?? t("common.unavailable")} ·{" "}
+                    {order.profiles?.reliability_status || t("common.unavailable")}
                   </p>
 
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -1375,7 +1668,7 @@ export default function BusinessDashboardPage() {
                     </span>
 
                     <span className="rounded-full bg-gray-100 px-4 py-2 font-mono text-sm font-black text-gray-700">
-                      Code: {order.pickup_code || "------"}
+                      Code: {order.pickup_code || t("common.pending")}
                     </span>
                   </div>
                 </div>
@@ -1390,7 +1683,7 @@ export default function BusinessDashboardPage() {
                       >
                         {updatingOrderId === order.id
                           ? "Updating..."
-                          : "Mark no-show"}
+                          : "Mark No-Show"}
                       </button>
                     )}
 
@@ -1416,7 +1709,7 @@ export default function BusinessDashboardPage() {
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Section 5
+            Customer Feedback
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             {t("businessDashboard.businessReviews")}
@@ -1427,11 +1720,28 @@ export default function BusinessDashboardPage() {
             businesses.
           </p>
 
+          <div className="mt-5 rounded-3xl bg-yellow-50 p-5 sm:p-6">
+            <p className="text-sm font-black uppercase tracking-widest text-yellow-800">
+              {t("businessOnboarding.ratingsGuidanceTitle")}
+            </p>
+            <p className="mt-2 font-semibold leading-7 text-yellow-950">
+              {t("businessOnboarding.ratingsGuidanceText")}
+            </p>
+          </div>
+
           <div className="mt-6 grid gap-4">
             {reviews.length === 0 && (
-              <p className="font-medium text-gray-600">
-                {t("businessDashboard.noReviews")}
-              </p>
+              <div className="rounded-3xl border border-dashed border-yellow-200 bg-yellow-50/70 p-6 text-center sm:p-8">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
+                  ⭐
+                </div>
+                <h3 className="mt-4 text-2xl font-black text-gray-950">
+                  {t("businessDashboard.noReviews")}
+                </h3>
+                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+                  {t("businessDashboard.noReviewsHint")}
+                </p>
+              </div>
             )}
 
             {reviews.map((review) => (
@@ -1451,7 +1761,7 @@ export default function BusinessDashboardPage() {
                   </div>
 
                   <p className="text-sm font-bold text-gray-500">
-                    {formatCreatedDate(review.created_at)}
+                    {formatDisplayDateTime(review.created_at, language)}
                   </p>
                 </div>
 

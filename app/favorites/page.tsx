@@ -11,13 +11,71 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { formatPickupWindow, isOfferReservable } from "@/lib/offerLifecycle";
+import type { TranslationKey } from "@/lib/i18n";
+import {
+  formatMoney,
+  formatPickupTimeRange,
+  getEffectiveOfferStatus,
+  getOfferDateLabel,
+  isOfferReservable,
+} from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
-import type { Favorite } from "@/lib/types";
+import type { Favorite, Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+
+function toNumber(value: number | string | null | undefined) {
+  const numberValue = Number(value || 0);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
+function getSavingsAmount(offer: Offer) {
+  const currentPrice = toNumber(offer.price);
+  const originalPrice = toNumber(offer.old_price);
+  return originalPrice > currentPrice ? originalPrice - currentPrice : 0;
+}
+
+function getFavoriteAvailability(
+  offer: Offer | null | undefined,
+  t: (key: TranslationKey) => string
+) {
+  if (!offer) {
+    return {
+      label: t("common.unavailable"),
+      className: "bg-gray-100 text-gray-700",
+    };
+  }
+
+  const status = getEffectiveOfferStatus(offer);
+
+  if (status === "active") {
+    return {
+      label: t("common.available"),
+      className: "bg-green-50 text-green-700",
+    };
+  }
+
+  if (status === "sold_out") {
+    return {
+      label: t("common.soldOut"),
+      className: "bg-yellow-100 text-yellow-800",
+    };
+  }
+
+  if (status === "expired") {
+    return {
+      label: t("common.expired"),
+      className: "bg-red-100 text-red-700",
+    };
+  }
+
+  return {
+    label: t("common.unavailable"),
+    className: "bg-gray-100 text-gray-700",
+  };
+}
 
 export default function FavoritesPage() {
   const router = useRouter();
@@ -57,6 +115,7 @@ export default function FavoritesPage() {
             pickup_start,
             pickup_end,
             active,
+            status,
             image_url,
             businesses(name, address, business_type)
           )
@@ -111,7 +170,7 @@ export default function FavoritesPage() {
       if (!active) return;
 
       if (authResult.status === "signed_out") {
-        router.replace("/login");
+        router.replace("/login?redirect=favorites");
         return;
       }
 
@@ -202,14 +261,22 @@ export default function FavoritesPage() {
         {!loading && favorites.length === 0 && !message && (
           <div className="mt-8 rounded-[2rem] bg-white p-10 text-center shadow-sm">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
-              Save
+              ♥
             </div>
 
-            <h2 className="mt-5 text-3xl font-black">
+            <p className="mt-5 text-sm font-black uppercase tracking-widest text-green-700">
               {t("favorites.emptyTitle")}
+            </p>
+
+            <h2 className="mt-2 text-3xl font-black">
+              {t("favorites.educationTitle")}
             </h2>
 
-            <p className="mt-3 font-medium text-gray-600">
+            <p className="mx-auto mt-3 max-w-xl font-medium leading-7 text-gray-600">
+              {t("favorites.educationText")}
+            </p>
+
+            <p className="mt-4 text-sm font-bold text-gray-500">
               {t("favorites.emptyHint")}
             </p>
 
@@ -222,10 +289,19 @@ export default function FavoritesPage() {
           </div>
         )}
 
+        {!loading && favorites.length > 0 && (
+          <div className="mt-6 rounded-3xl border border-green-100 bg-white p-5 shadow-sm sm:p-6">
+            <p className="font-black text-green-800">
+              {t("favorites.trustReminder")}
+            </p>
+          </div>
+        )}
+
         <div className="mt-6 grid gap-5 sm:mt-8 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
           {favorites.map((favorite) => {
             const offer = favorite.offers;
-            const isAvailable = Boolean(offer && isOfferReservable(offer));
+            const availability = getFavoriteAvailability(offer, t);
+            const savings = offer ? getSavingsAmount(offer) : 0;
             const mapsUrl = offer
               ? createMapsSearchUrl(
                   offer.businesses?.address,
@@ -247,18 +323,14 @@ export default function FavoritesPage() {
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-center text-xl font-black text-green-800">
-                      Offer unavailable
+                      {t("common.offerUnavailable")}
                     </div>
                   )}
 
                   <div
-                    className={`absolute left-4 top-4 rounded-full px-4 py-2 text-sm font-black shadow-sm ${
-                      isAvailable
-                        ? "bg-green-50 text-green-700"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
+                    className={`absolute left-4 top-4 rounded-full px-4 py-2 text-sm font-black shadow-sm ${availability.className}`}
                   >
-                    {isAvailable ? t("common.available") : t("common.unavailable")}
+                    {availability.label}
                   </div>
                 </div>
 
@@ -268,54 +340,87 @@ export default function FavoritesPage() {
                   </h2>
 
                   <p className="mt-2 text-lg font-bold text-gray-800">
-                    {offer?.businesses?.name || "Business unavailable"}
+                    {offer?.businesses?.name || t("common.businessUnavailable")}
                   </p>
 
                   <div className="mt-4 grid gap-3 font-semibold text-gray-600">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <p>
-                        {offer?.businesses?.address ||
-                          "This offer may have ended or become private."}
-                      </p>
+                    <div className="grid gap-3 rounded-3xl bg-[#F7F6EF] p-4">
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("offerDetail.pickupDate")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {offer
+                              ? getOfferDateLabel(offer, language)
+                              : t("common.unavailable")}
+                          </p>
+                        </div>
 
-                      {offer?.businesses?.address && (
-                        <a
-                          href={mapsUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                          className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
-                        >
-                          {t("common.openMap")}
-                        </a>
-                      )}
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("offerDetail.pickupTime")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {offer
+                              ? formatPickupTimeRange(offer, language)
+                              : t("common.unavailable")}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p>
+                          {offer?.businesses?.address ||
+                            "This offer may have ended or become private."}
+                        </p>
+
+                        {offer?.businesses?.address && (
+                          <a
+                            href={mapsUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`${t("common.openMap")} ${
+                              offer.businesses?.name || offer.title
+                            }`}
+                            className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
+                          >
+                            {t("common.openMap")}
+                          </a>
+                        )}
+                      </div>
                     </div>
-
-                    {offer && (
-                      <p>
-                        {t("common.pickup")}: {formatPickupWindow(offer, language)}
-                      </p>
-                    )}
                   </div>
 
-                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
+                  <div className="mt-6 flex flex-col gap-4">
+                    <div className="rounded-3xl bg-green-50 p-4">
                       {offer && (
                         <>
-                          <span className="text-4xl font-black text-green-700">
-                            ₾{offer.price}
-                          </span>
-
-                          {offer.old_price && (
-                            <span className="ml-3 font-bold text-gray-400 line-through">
-                              ₾{offer.old_price}
+                          <p className="text-xs font-black uppercase tracking-wide text-green-700">
+                            {t("common.price")}
+                          </p>
+                          <div className="mt-1 flex flex-wrap items-end gap-3">
+                            <span className="text-4xl font-black text-green-700">
+                              {formatMoney(offer.price)}
                             </span>
-                          )}
+
+                            {offer.old_price && (
+                              <span className="pb-1 font-bold text-gray-400 line-through">
+                                {formatMoney(offer.old_price)}
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-2 text-sm font-black text-green-800">
+                            {t("offerDetail.savings")}:{" "}
+                            {savings > 0
+                              ? formatMoney(savings)
+                              : t("offerDetail.noSavingsListed")}
+                          </p>
                         </>
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <button
                         onClick={() => removeFavorite(favorite)}
                         disabled={removingFavoriteId !== null}
@@ -327,12 +432,12 @@ export default function FavoritesPage() {
                           : t("offers.removeFavorite")}
                       </button>
 
-                      {isAvailable && offer && (
+                      {offer && (
                         <Link
-                          href={`/checkout/${offer.id}`}
+                          href={`/offers/${offer.id}`}
                           className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
                         >
-                          {t("common.continueCheckout")}
+                          {t("favorites.viewOffer")}
                         </Link>
                       )}
                     </div>

@@ -155,7 +155,7 @@ export default function BusinessRegisterPage() {
       setMessage(
         error.message.includes("row-level security")
           ? "Business registration was blocked by security rules. Please make sure you are signed in and try again."
-          : error.message
+          : "Business registration could not be submitted. Please check the details and try again."
       );
       return;
     }

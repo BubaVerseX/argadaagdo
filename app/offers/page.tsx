@@ -12,6 +12,7 @@ import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import {
   compareMarketplaceOffers,
+  formatMoney,
   formatPickupWindow,
   getOfferGroup,
   getRatingLabel,
@@ -23,6 +24,7 @@ import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -30,6 +32,16 @@ type PriceSort = "newest" | "price-asc" | "price-desc";
 
 function getOfferCategory(offer: Offer) {
   return offer.category || offer.businesses?.business_type || "Food";
+}
+
+function formatOfferMatches(count: number, language: "en" | "ka") {
+  if (language === "ka") return `${count} შეთავაზება ემთხვევა ფილტრებს.`;
+  return `${count} ${count === 1 ? "offer matches" : "offers match"} your filters.`;
+}
+
+function formatAvailableOfferCount(count: number, language: "en" | "ka") {
+  if (language === "ka") return `${count} ხელმისაწვდომი შეთავაზება`;
+  return `${count} ${count === 1 ? "available offer" : "available offers"}`;
 }
 
 export default function OffersPage() {
@@ -309,10 +321,29 @@ export default function OffersPage() {
     return Array.from(new Set(offers.map(getOfferCategory))).sort();
   }, [offers]);
 
+  const customerOnboardingSteps = [
+    t("customerOnboarding.stepBrowse"),
+    t("customerOnboarding.stepReserve"),
+    t("customerOnboarding.stepCollect"),
+    t("customerOnboarding.stepEnjoy"),
+  ];
+
   const totalAvailable = offers.reduce(
     (total, offer) => total + Number(offer.quantity || 0),
     0
   );
+  const filtersAreActive =
+    search.trim() !== "" ||
+    selectedCategory !== "all" ||
+    priceSort !== "newest" ||
+    !availableOnly;
+
+  function resetFilters() {
+    setSearch("");
+    setSelectedCategory("all");
+    setPriceSort("newest");
+    setAvailableOnly(true);
+  }
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -342,12 +373,7 @@ export default function OffersPage() {
               />
 
               <button
-                onClick={() => {
-                  setSearch("");
-                  setSelectedCategory("all");
-                  setPriceSort("newest");
-                  setAvailableOnly(true);
-                }}
+                onClick={resetFilters}
                 className="min-h-12 rounded-2xl bg-white/15 px-6 py-3 font-black text-white hover:bg-white/20 sm:py-4"
               >
                 {t("offers.reset")}
@@ -421,12 +447,39 @@ export default function OffersPage() {
             </div>
           )}
 
+          <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:mt-8 sm:p-6">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                  {t("customerOnboarding.title")}
+                </p>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                  {t("home.howItWorks")}
+                </h2>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[640px] lg:grid-cols-4">
+                {customerOnboardingSteps.map((step, index) => (
+                  <div
+                    key={step}
+                    className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
+                  >
+                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
+                      {index + 1}
+                    </span>
+                    {step}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="mt-8 sm:mt-10">
             <h2 className="text-2xl font-black sm:text-3xl md:text-4xl">
               {t("offers.heading")}
             </h2>
             <p className="mt-2 font-semibold text-gray-700">
-              {filteredOffers.length} {t("offers.matches")}
+              {formatOfferMatches(filteredOffers.length, language)}
             </p>
           </div>
 
@@ -442,18 +495,49 @@ export default function OffersPage() {
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="mt-8 rounded-[2rem] bg-white p-10 text-center shadow-sm">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
-                🥡
+            <div className="mt-8 overflow-hidden rounded-[2rem] bg-white shadow-sm">
+              <div className="bg-gradient-to-br from-green-50 via-white to-yellow-50 px-5 py-10 text-center sm:px-8 sm:py-12">
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl shadow-sm">
+                  🥡
+                </div>
+
+                <h3 className="mt-5 text-2xl font-black text-gray-950 sm:text-3xl">
+                  {offers.length === 0
+                    ? t("offers.noOffers")
+                    : t("offers.noMatching")}
+                </h3>
+
+                <p className="mx-auto mt-3 max-w-xl text-base font-semibold leading-7 text-gray-600 sm:text-lg">
+                  {offers.length === 0
+                    ? t("offers.noOffersHint")
+                    : t("offers.noMatchingHint")}
+                </p>
+
+                {offers.length === 0 && (
+                  <p className="mx-auto mt-3 max-w-xl text-sm font-bold leading-6 text-green-700 sm:text-base">
+                    {t("offers.checkBackSoon")}
+                  </p>
+                )}
+
+                <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                  {filtersAreActive && (
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="min-h-12 rounded-full bg-green-700 px-7 py-3 font-black text-white transition hover:bg-green-800"
+                    >
+                      {t("offers.clearFilters")}
+                    </button>
+                  )}
+
+                  <Link
+                    href="/"
+                    className="min-h-12 rounded-full border border-green-200 bg-white px-7 py-3 text-center font-black text-green-800 transition hover:bg-green-50"
+                  >
+                    {t("offers.backHome")}
+                  </Link>
+                </div>
               </div>
-              <h3 className="mt-5 text-3xl font-black">
-                {offers.length === 0 ? t("offers.noOffers") : t("offers.noMatching")}
-              </h3>
-              <p className="mt-3 font-semibold text-gray-600">
-                {offers.length === 0
-                  ? t("offers.noOffersHint")
-                  : t("offers.noMatchingHint")}
-              </p>
             </div>
           )}
 
@@ -469,7 +553,7 @@ export default function OffersPage() {
                         {section.title}
                       </h3>
                       <p className="mt-1 text-sm font-semibold text-gray-600">
-                        {section.offers.length} available offer(s)
+                        {formatAvailableOfferCount(section.offers.length, language)}
                       </p>
                     </div>
                   </div>
@@ -567,12 +651,12 @@ export default function OffersPage() {
                             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                               <div>
                                 <span className="text-4xl font-black text-green-700">
-                                  ₾{offer.price}
+                                  {formatMoney(offer.price)}
                                 </span>
 
                                 {offer.old_price && (
                                   <span className="ml-3 font-bold text-gray-400 line-through">
-                                    ₾{offer.old_price}
+                                    {formatMoney(offer.old_price)}
                                   </span>
                                 )}
                               </div>

@@ -12,11 +12,56 @@ import { supabase } from "@/lib/supabase";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+
+type LoginRedirectReason = "orders" | "favorites" | null;
+
+function getAuthErrorMessage(message?: string) {
+  const normalizedMessage = (message || "").toLowerCase();
+
+  if (normalizedMessage.includes("invalid login credentials")) {
+    return "Email or password is incorrect. Please try again.";
+  }
+
+  if (normalizedMessage.includes("email not confirmed")) {
+    return VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE;
+  }
+
+  if (
+    normalizedMessage.includes("already registered") ||
+    normalizedMessage.includes("user already registered")
+  ) {
+    return "This email may already have an account. Try signing in or checking your confirmation email.";
+  }
+
+  return "Authentication could not be completed. Please try again.";
+}
+
+function subscribeToRedirectChanges() {
+  return () => {};
+}
+
+function readRedirectReason(): LoginRedirectReason {
+  if (typeof window === "undefined") return null;
+
+  const redirectReason = new URLSearchParams(window.location.search).get(
+    "redirect"
+  );
+
+  return redirectReason === "orders" || redirectReason === "favorites"
+    ? redirectReason
+    : null;
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const redirectReason = useSyncExternalStore(
+    subscribeToRedirectChanges,
+    readRedirectReason,
+    () => null
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("customer");
@@ -57,7 +102,7 @@ export default function LoginPage() {
     if (error) {
       setSubmitting(false);
       setMessageTone("error");
-      setMessage(error.message);
+      setMessage(getAuthErrorMessage(error.message));
       return;
     }
 
@@ -98,7 +143,7 @@ export default function LoginPage() {
     if (error) {
       setSubmitting(false);
       setMessageTone("error");
-      setMessage(error.message);
+      setMessage(getAuthErrorMessage(error.message));
       return;
     }
 
@@ -153,6 +198,13 @@ export default function LoginPage() {
     router.refresh();
   }
 
+  const redirectMessage =
+    redirectReason === "orders"
+      ? t("login.redirectOrders")
+      : redirectReason === "favorites"
+        ? t("login.redirectFavorites")
+        : "";
+
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-900">
       <Navbar />
@@ -191,21 +243,29 @@ export default function LoginPage() {
 
           <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 md:p-10">
             <h2 className="text-2xl font-black text-gray-950 sm:text-3xl">
-              {t("login.signIn")} / {t("login.signUp")}
+              {authMode === "login"
+                ? t("login.signInTitle")
+                : t("login.signUpTitle")}
             </h2>
 
-            <p className="mt-2 font-medium text-gray-600">
-              {t("login.formHint")}
+            <p className="mt-2 text-sm font-medium leading-6 text-gray-600 sm:text-base">
+              {authMode === "login"
+                ? t("login.signInHint")
+                : t("login.signUpHint")}
             </p>
 
-            <div className="mt-6 grid gap-4">
+            <div className="mt-6 grid gap-4 sm:gap-5">
+              {authMode === "login" && redirectMessage && !message && (
+                <Notice tone="warning">{redirectMessage}</Notice>
+              )}
+
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 aria-label="Email address"
                 placeholder={t("login.email")}
-                className="rounded-2xl border bg-white p-4 font-medium outline-none"
+                className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
               />
 
               <input
@@ -214,66 +274,77 @@ export default function LoginPage() {
                 type="password"
                 aria-label="Password"
                 placeholder={t("login.password")}
-                className="rounded-2xl border bg-white p-4 font-medium outline-none"
+                className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
               />
 
-              <div>
-                <p className="mb-3 font-black text-gray-800">
-                  {t("login.accountType")}
-                </p>
+              {authMode === "signup" && (
+                <div>
+                  <p className="mb-3 font-black text-gray-800">
+                    {t("login.accountType")}
+                  </p>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() => setRole("customer")}
-                    className={`rounded-2xl border p-4 text-left font-bold ${
-                      role === "customer"
-                        ? "border-green-700 bg-green-50 text-green-800"
-                        : "bg-white text-gray-700"
-                    }`}
-                  >
-                    <div className="text-2xl">🥡</div>
-                    <p className="mt-2">{t("login.customer")}</p>
-                    <p className="mt-1 text-sm font-medium">
-                      {t("login.customerHint")}
-                    </p>
-                  </button>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => setRole("customer")}
+                      className={`rounded-2xl border p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        role === "customer"
+                          ? "border-green-700 bg-green-50 text-green-800"
+                          : "bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="text-2xl">🥡</div>
+                      <p className="mt-2">{t("login.customer")}</p>
+                      <p className="mt-1 text-sm font-medium leading-5 text-gray-600">
+                        {t("login.customerHint")}
+                      </p>
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setRole("business")}
-                    className={`rounded-2xl border p-4 text-left font-bold ${
-                      role === "business"
-                        ? "border-green-700 bg-green-50 text-green-800"
-                        : "bg-white text-gray-700"
-                    }`}
-                  >
-                    <div className="text-2xl">🏪</div>
-                    <p className="mt-2">{t("login.business")}</p>
-                    <p className="mt-1 text-sm font-medium">
-                      {t("login.businessHint")}
-                    </p>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole("business")}
+                      className={`rounded-2xl border p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                        role === "business"
+                          ? "border-green-700 bg-green-50 text-green-800"
+                          : "bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="text-2xl">🏪</div>
+                      <p className="mt-2">{t("login.business")}</p>
+                      <p className="mt-1 text-sm font-medium leading-5 text-gray-600">
+                        {t("login.businessHint")}
+                      </p>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <button
                 type="button"
-                onClick={signIn}
+                onClick={authMode === "login" ? signIn : createAccount}
                 disabled={submitting}
                 className="min-h-12 rounded-full bg-green-700 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
-                {t("login.signIn")}
+                {authMode === "login" ? t("login.signIn") : t("login.signUp")}
               </button>
 
-              <button
-                type="button"
-                onClick={createAccount}
-                disabled={submitting}
-                className="min-h-12 rounded-full border border-gray-300 bg-white py-3 font-black text-gray-900 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
-              >
-                {t("login.signUp")}
-              </button>
+              <div className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-center text-sm font-bold text-gray-700 sm:text-base">
+                {authMode === "login"
+                  ? t("login.dontHaveAccount")
+                  : t("login.alreadyHaveAccount")}{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMessage("");
+                    setAuthMode(authMode === "login" ? "signup" : "login");
+                  }}
+                  className="font-black text-green-700 underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-green-200"
+                >
+                  {authMode === "login"
+                    ? t("login.signUp")
+                    : t("login.signIn")}
+                </button>
+              </div>
 
               {message && (
                 <Notice tone={messageTone}>{message}</Notice>

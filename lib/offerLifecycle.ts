@@ -78,6 +78,46 @@ function normalizeTime(value: string | null | undefined, fallback: string) {
   return value.slice(0, 5);
 }
 
+export function formatMoney(value: number | string | null | undefined) {
+  const numberValue = Number(value || 0);
+  const safeValue = Number.isFinite(numberValue) ? numberValue : 0;
+  return `₾ ${safeValue.toFixed(2)}`;
+}
+
+export function formatDisplayDateTime(
+  value: string | null | undefined,
+  language: Language = "en"
+) {
+  if (!value) return language === "ka" ? "თარიღი მიუწვდომელია" : "Date unavailable";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return language === "ka" ? "თარიღი მიუწვდომელია" : "Date unavailable";
+  }
+
+  return new Intl.DateTimeFormat(language === "ka" ? "ka-GE" : "en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+export function formatReviewDate(
+  value: string | null | undefined,
+  language: Language = "en"
+) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat(language === "ka" ? "ka-GE" : "en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 export function getOfferDateKey(
   offer: OfferTiming,
   fallbackDate?: string | null
@@ -150,11 +190,25 @@ export function getOfferGroup(offer: Offer): OfferGroup {
   return "upcoming";
 }
 
+export function formatPickupTimeRange(
+  offer: OfferTiming,
+  language: Language = "en"
+) {
+  const start = normalizeTime(offer.pickup_start, "");
+  const end = normalizeTime(offer.pickup_end, "");
+
+  if (!start || !end) {
+    return language === "ka" ? "დრო მიუწვდომელია" : "Time unavailable";
+  }
+
+  return `${start} - ${end}`;
+}
+
 export function formatPickupWindow(offer: OfferTiming, language: Language = "en") {
-  return `${getOfferDateLabel(offer, language)} · ${normalizeTime(
-    offer.pickup_start,
-    "--:--"
-  )} - ${normalizeTime(offer.pickup_end, "--:--")}`;
+  return `${getOfferDateLabel(offer, language)} · ${formatPickupTimeRange(
+    offer,
+    language
+  )}`;
 }
 
 export function isOrderPastPickupEnd(
