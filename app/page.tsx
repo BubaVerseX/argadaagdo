@@ -18,16 +18,6 @@ import {
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { useLanguage } from "@/lib/useLanguage";
-import type { Language } from "@/lib/i18n";
-
-function formatOfferCount(count: number, language: Language) {
-  if (language === "ka") return `${count} შეთავაზება`;
-  return count === 1 ? "1 offer" : `${count} offers`;
-}
-
-function formatFriendlyMetric(value: number, fallback: string) {
-  return value > 0 ? String(value) : fallback;
-}
 
 export default function Home() {
   const { language, t } = useLanguage();
@@ -101,10 +91,6 @@ export default function Home() {
       .slice(0, 3);
   }, [offers, ratingSummaries, t]);
 
-  const activeBusinessCount = useMemo(
-    () => new Set(offers.map((offer) => offer.business_id)).size,
-    [offers]
-  );
   const firstFeaturedOffer = featuredOffers[0];
   const featuredPickupLabel = firstFeaturedOffer
     ? `${t("common.pickup")} ${getOfferDateLabel(firstFeaturedOffer, language)}`
@@ -120,22 +106,22 @@ export default function Home() {
     t("home.missionBusiness"),
     t("home.missionWaste"),
   ];
-  const impactStats = [
+  const trustCards = [
     {
-      label: t("home.activeBusinesses"),
-      value: loading
-        ? t("common.loading")
-        : formatFriendlyMetric(activeBusinessCount, t("home.launchingSoon")),
+      title: t("home.trustCardVerifiedTitle"),
+      text: t("home.trustCardVerifiedText"),
     },
     {
-      label: t("home.activeOffers"),
-      value: loading
-        ? t("common.loading")
-        : formatFriendlyMetric(offers.length, t("home.checkBackSoon")),
+      title: t("home.trustCardPickupTitle"),
+      text: t("home.trustCardPickupText"),
     },
     {
-      label: t("home.ordersCompleted"),
-      value: t("home.trackingSoon"),
+      title: t("home.trustCardLocalTitle"),
+      text: t("home.trustCardLocalText"),
+    },
+    {
+      title: t("home.trustCardWasteTitle"),
+      text: t("home.trustCardWasteText"),
     },
   ];
   const customerOnboardingSteps = [
@@ -197,37 +183,20 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="mt-8 grid grid-cols-3 gap-2 sm:mt-10 sm:gap-4">
-                <div className="rounded-2xl bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
-                  <p className="text-2xl font-black text-green-700 sm:text-3xl">
-                    {loading
-                      ? t("common.loading")
-                      : offers.length > 0
-                        ? formatOfferCount(offers.length, language)
-                        : t("home.checkBackSoon")}
-                  </p>
-                  <p className="mt-1 text-xs font-bold text-gray-600 sm:text-base">
-                    {t("home.availableNow")}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
-                  <p className="text-3xl font-black text-green-700">
-                    100%
-                  </p>
-                  <p className="mt-1 text-xs font-bold text-gray-600 sm:text-base">
-                    {t("home.pickupOnly")}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-white p-3 shadow-sm sm:rounded-3xl sm:p-5">
-                  <p className="text-3xl font-black text-green-700">
-                    ₾
-                  </p>
-                  <p className="mt-1 text-xs font-bold text-gray-600 sm:text-base">
-                    {t("home.onlinePayment")}
-                  </p>
-                </div>
+              <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 lg:grid-cols-4">
+                {trustCards.map((card) => (
+                  <div
+                    key={card.title}
+                    className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5"
+                  >
+                    <p className="text-base font-black text-green-800 sm:text-lg">
+                      {card.title}
+                    </p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-gray-600">
+                      {card.text}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -314,37 +283,19 @@ export default function Home() {
 
               <div className="mt-4 rounded-2xl bg-white p-4 shadow-xl sm:absolute sm:-bottom-6 sm:-left-4 sm:mt-0 sm:w-64 sm:rounded-3xl sm:p-5 md:-left-8">
                 <p className="text-sm font-black text-gray-500">
-                  {t("home.stats")}
+                  {t("home.trustBadge")}
                 </p>
                 <div className="mt-3 grid gap-3">
-                  {[
-                    {
-                      label: t("home.mealsRescued"),
-                      value: t("home.trackingSoon"),
-                    },
-                    {
-                      label: t("home.activeBusinesses"),
-                      value: loading
-                        ? t("common.loading")
-                        : formatFriendlyMetric(
-                            activeBusinessCount,
-                            t("home.launchingSoon")
-                          ),
-                    },
-                    {
-                      label: t("home.ordersCompleted"),
-                      value: t("home.trackingSoon"),
-                    },
-                  ].map((item) => (
+                  {trustCards.slice(0, 3).map((item) => (
                     <div
-                      key={item.label}
+                      key={item.title}
                       className="flex items-center justify-between gap-3 rounded-2xl bg-[#F7F6EF] px-3 py-2"
                     >
                       <p className="text-xs font-black text-gray-600">
-                        {item.label}
+                        {item.title}
                       </p>
                       <p className="text-sm font-black text-green-700">
-                        {item.value}
+                        ✓
                       </p>
                     </div>
                   ))}
@@ -414,22 +365,24 @@ export default function Home() {
 
           <div className="rounded-[2rem] bg-green-800 p-6 text-white shadow-sm sm:p-8 md:p-10">
             <p className="text-sm font-black uppercase tracking-widest text-green-100">
-              {t("home.impactBadge")}
+              {t("home.trustBadge")}
             </p>
             <h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">
-              {t("home.impactTitle")}
+              {t("home.trustTitle")}
             </h2>
 
-            <div className="mt-6 grid gap-3">
-              {impactStats.map((item) => (
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {trustCards.map((item) => (
                 <div
-                  key={item.label}
+                  key={item.title}
                   className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/15"
                 >
-                  <p className="break-words text-3xl font-black text-white">
-                    {item.value}
+                  <p className="break-words text-xl font-black text-white">
+                    {item.title}
                   </p>
-                  <p className="mt-1 font-bold text-green-50">{item.label}</p>
+                  <p className="mt-2 font-bold leading-6 text-green-50">
+                    {item.text}
+                  </p>
                 </div>
               ))}
             </div>
