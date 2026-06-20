@@ -105,11 +105,22 @@ function getReservationErrorMessage(message?: string) {
   return "Reservation could not be completed. Please try again.";
 }
 
+function getLoginRedirectUrl(path: string) {
+  return `/login?redirect=${encodeURIComponent(path)}`;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const { language, t } = useLanguage();
   const offerId = useMemo(() => Number(params.id), [params.id]);
+  const checkoutPath = useMemo(
+    () =>
+      Number.isFinite(offerId) && offerId > 0
+        ? `/checkout/${offerId}`
+        : "/offers",
+    [offerId]
+  );
 
   const [offer, setOffer] = useState<CheckoutOffer | null>(null);
   const [loading, setLoading] = useState(true);
@@ -131,8 +142,7 @@ export default function CheckoutPage() {
 
       if (authResult.status === "signed_out") {
         setCheckoutBlocked(true);
-        setMessageTone("warning");
-        setMessage("Please sign in first.");
+        router.replace(getLoginRedirectUrl(checkoutPath));
         return;
       }
 
@@ -169,7 +179,7 @@ export default function CheckoutPage() {
     return () => {
       isCurrent = false;
     };
-  }, [offerId, router]);
+  }, [checkoutPath, offerId, router]);
 
   async function refreshOffer() {
     const result = await fetchCheckoutOffer(offerId);
@@ -205,8 +215,7 @@ export default function CheckoutPage() {
 
     if (authResult.status === "signed_out") {
       setCheckoutBlocked(true);
-      setMessageTone("warning");
-      setMessage("Please sign in first.");
+      router.replace(getLoginRedirectUrl(checkoutPath));
       return;
     }
 

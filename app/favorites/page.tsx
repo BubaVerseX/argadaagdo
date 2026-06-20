@@ -77,6 +77,10 @@ function getFavoriteAvailability(
   };
 }
 
+function getLoginRedirectUrl(path: string) {
+  return `/login?redirect=${encodeURIComponent(path)}`;
+}
+
 export default function FavoritesPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
@@ -170,7 +174,7 @@ export default function FavoritesPage() {
       if (!active) return;
 
       if (authResult.status === "signed_out") {
-        router.replace("/login?redirect=favorites");
+        router.replace(getLoginRedirectUrl("/favorites"));
         return;
       }
 

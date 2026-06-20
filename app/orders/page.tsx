@@ -48,6 +48,10 @@ function getCancellationErrorMessage(message?: string) {
   return message || "Order could not be cancelled. Please try again.";
 }
 
+function getLoginRedirectUrl(path: string) {
+  return `/login?redirect=${encodeURIComponent(path)}`;
+}
+
 function normalizeTime(value: string | null | undefined) {
   return value ? value.slice(0, 5) : "";
 }
@@ -269,7 +273,7 @@ export default function OrdersPage() {
       if (!active) return;
 
       if (authResult.status === "signed_out") {
-        router.replace("/login?redirect=orders");
+        router.replace(getLoginRedirectUrl("/orders"));
         return;
       }
 

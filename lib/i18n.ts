@@ -390,6 +390,7 @@ const translations = {
     "login.signUpHint": "Choose how you want to use ArGadaagdo.",
     "login.alreadyHaveAccount": "Already have an account?",
     "login.dontHaveAccount": "Don't have an account?",
+    "login.redirectCheckout": "Please sign in to reserve this offer.",
     "login.redirectOrders":
       "Please sign in to view your orders and pickup codes.",
     "login.redirectFavorites": "Please sign in to view your saved offers.",
@@ -987,6 +988,8 @@ const translations = {
     "login.signUpHint": "აირჩიე, როგორ გამოიყენებ ArGadaagdo-ს.",
     "login.alreadyHaveAccount": "უკვე გაქვს ანგარიში?",
     "login.dontHaveAccount": "არ გაქვს ანგარიში?",
+    "login.redirectCheckout":
+      "ამ შეთავაზების დასაჯავშნად, გთხოვ, შეხვიდე ანგარიშში.",
     "login.redirectOrders":
       "შეკვეთებისა და წაღების კოდების სანახავად, გთხოვ, შეხვიდე ანგარიშში.",
     "login.redirectFavorites":

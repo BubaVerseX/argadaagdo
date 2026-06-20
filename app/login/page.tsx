@@ -9,12 +9,11 @@ import {
   VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
 } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
+import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
-
-type LoginRedirectReason = "orders" | "favorites" | null;
 
 function getAuthErrorMessage(message?: string) {
   const normalizedMessage = (message || "").toLowerCase();
@@ -41,25 +40,57 @@ function subscribeToRedirectChanges() {
   return () => {};
 }
 
-function readRedirectReason(): LoginRedirectReason {
+function getSafeInternalRedirectPath(value: string | null) {
+  if (!value) return null;
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue.startsWith("/")) return null;
+  if (trimmedValue.startsWith("//")) return null;
+  if (trimmedValue.toLowerCase().startsWith("http://")) return null;
+  if (trimmedValue.toLowerCase().startsWith("https://")) return null;
+
+  return trimmedValue;
+}
+
+function readRedirectPath() {
   if (typeof window === "undefined") return null;
 
-  const redirectReason = new URLSearchParams(window.location.search).get(
+  const redirectPath = new URLSearchParams(window.location.search).get(
     "redirect"
   );
 
-  return redirectReason === "orders" || redirectReason === "favorites"
-    ? redirectReason
-    : null;
+  return getSafeInternalRedirectPath(redirectPath);
+}
+
+function getRedirectMessage(
+  path: string | null,
+  t: (key: TranslationKey) => string
+) {
+  if (!path) return "";
+
+  if (path.startsWith("/checkout/")) {
+    return t("login.redirectCheckout");
+  }
+
+  if (path === "/orders" || path.startsWith("/orders?")) {
+    return t("login.redirectOrders");
+  }
+
+  if (path === "/favorites" || path.startsWith("/favorites?")) {
+    return t("login.redirectFavorites");
+  }
+
+  return "";
 }
 
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useLanguage();
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const redirectReason = useSyncExternalStore(
+  const redirectPath = useSyncExternalStore(
     subscribeToRedirectChanges,
-    readRedirectReason,
+    readRedirectPath,
     () => null
   );
   const [email, setEmail] = useState("");
@@ -172,6 +203,12 @@ export default function LoginPage() {
       );
     }
 
+    if (redirectPath) {
+      router.push(redirectPath);
+      router.refresh();
+      return;
+    }
+
     if (resolvedRole === "admin") {
       router.push("/admin");
       router.refresh();
@@ -198,12 +235,7 @@ export default function LoginPage() {
     router.refresh();
   }
 
-  const redirectMessage =
-    redirectReason === "orders"
-      ? t("login.redirectOrders")
-      : redirectReason === "favorites"
-        ? t("login.redirectFavorites")
-        : "";
+  const redirectMessage = getRedirectMessage(redirectPath, t);
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-900">
