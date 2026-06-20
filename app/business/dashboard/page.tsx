@@ -866,18 +866,22 @@ export default function BusinessDashboardPage() {
   const isNewBusinessOnboarding = offers.length === 0 && orders.length === 0;
   const onboardingChecklist = [
     {
+      step: 1,
       label: t("businessOnboarding.checkCreateOffer"),
       completed: offers.length > 0,
     },
     {
+      step: 2,
       label: t("businessOnboarding.checkFirstReservation"),
       completed: orders.length > 0,
     },
     {
+      step: 3,
       label: t("businessOnboarding.checkFirstPickup"),
       completed: collectedOrders.length > 0,
     },
     {
+      step: 4,
       label: t("businessOnboarding.checkFirstRating"),
       completed: reviews.length > 0,
     },
@@ -1098,7 +1102,7 @@ export default function BusinessDashboardPage() {
               {onboardingChecklist.map((item) => (
                 <div
                   key={item.label}
-                  className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
+                  className={`flex items-start gap-3 rounded-2xl p-4 font-bold ${
                     item.completed
                       ? "bg-green-50 text-green-800"
                       : "bg-[#F7F6EF] text-gray-700"
@@ -1114,7 +1118,12 @@ export default function BusinessDashboardPage() {
                   >
                     {item.completed ? "✓" : "□"}
                   </span>
-                  <span>{item.label}</span>
+                  <span>
+                    <span className="block text-xs uppercase tracking-widest text-gray-500">
+                      {t("businessOnboarding.step")} {item.step}
+                    </span>
+                    <span className="mt-1 block">{item.label}</span>
+                  </span>
                 </div>
               ))}
             </div>
@@ -1677,10 +1686,14 @@ export default function BusinessDashboardPage() {
                   ✓
                 </div>
                 <h3 className="mt-4 text-2xl font-black text-gray-950">
-                  {t("businessDashboard.noReservations")}
+                  {orders.length === 0
+                    ? t("businessDashboard.noReservations")
+                    : t("businessDashboard.noFilteredReservations")}
                 </h3>
                 <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-                  {t("businessDashboard.noReservationsHint")}
+                  {orders.length === 0
+                    ? t("businessDashboard.noReservationsHint")
+                    : t("businessDashboard.noFilteredReservationsHint")}
                 </p>
               </div>
             )}
