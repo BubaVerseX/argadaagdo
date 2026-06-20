@@ -108,7 +108,6 @@ export default function BusinessDashboardPage() {
   const [pickupStart, setPickupStart] = useState("");
   const [pickupEnd, setPickupEnd] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [pickupCode, setPickupCode] = useState("");
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -116,6 +115,10 @@ export default function BusinessDashboardPage() {
   const [publishing, setPublishing] = useState(false);
   const [updatingOfferId, setUpdatingOfferId] = useState<number | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
+  const [pickupVerificationOrder, setPickupVerificationOrder] =
+    useState<Order | null>(null);
+  const [pickupVerificationCode, setPickupVerificationCode] = useState("");
+  const [pickupVerificationError, setPickupVerificationError] = useState("");
   const [editingOfferId, setEditingOfferId] = useState<number | null>(null);
   const [reservationFilter, setReservationFilter] =
     useState<ReservationFilter>("all");
@@ -682,7 +685,7 @@ export default function BusinessDashboardPage() {
 
     setUpdatingOrderId(null);
     setMessageTone("success");
-    setMessage("Reservation marked collected.");
+    setMessage("Pickup completed successfully.");
     notifyPickupCompleted({
       orderId,
       offerTitle: completedOrder?.offers?.title,
@@ -695,6 +698,47 @@ export default function BusinessDashboardPage() {
     );
     await loadDashboard();
     return true;
+  }
+
+  function openPickupVerification(order: Order) {
+    setMessage("");
+    setPickupVerificationOrder(order);
+    setPickupVerificationCode("");
+    setPickupVerificationError("");
+  }
+
+  function closePickupVerification() {
+    if (updatingOrderId !== null) return;
+
+    setPickupVerificationOrder(null);
+    setPickupVerificationCode("");
+    setPickupVerificationError("");
+  }
+
+  async function submitPickupVerification() {
+    if (!pickupVerificationOrder) return;
+
+    const enteredCode = pickupVerificationCode.trim();
+    const expectedCode = String(pickupVerificationOrder.pickup_code || "").trim();
+
+    if (!enteredCode) {
+      setPickupVerificationError("Pickup code is required.");
+      return;
+    }
+
+    if (!expectedCode || enteredCode !== expectedCode) {
+      setPickupVerificationError("Pickup code does not match.");
+      return;
+    }
+
+    setPickupVerificationError("");
+    const completed = await completeOrder(pickupVerificationOrder.id, enteredCode);
+
+    if (completed) {
+      setPickupVerificationOrder(null);
+      setPickupVerificationCode("");
+      setPickupVerificationError("");
+    }
   }
 
   async function markNoShow(order: Order) {
@@ -717,31 +761,6 @@ export default function BusinessDashboardPage() {
     setUpdatingOrderId(null);
     await loadDashboard();
     return true;
-  }
-
-  async function verifyPickupCode() {
-    setMessage("");
-
-    if (!pickupCode.trim()) {
-      setMessageTone("error");
-      setMessage("Enter pickup code.");
-      return;
-    }
-
-    const order = orders.find(
-      (item) =>
-        item.pickup_code === pickupCode.trim() &&
-        isConfirmedOrderStatus(item.status)
-    );
-
-    if (!order) {
-      setMessageTone("error");
-      setMessage("Invalid pickup code or order already completed.");
-      return;
-    }
-
-    const completed = await completeOrder(order.id, pickupCode.trim());
-    if (completed) setPickupCode("");
   }
 
   useEffect(() => {
@@ -1583,30 +1602,13 @@ export default function BusinessDashboardPage() {
           </div>
 
           <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-4 sm:p-5">
-            <h3 className="text-xl font-black">Verify pickup code</h3>
+            <h3 className="text-xl font-black">Pickup verification</h3>
 
-            <p className="mt-2 font-semibold text-gray-600">
-              Ask customer for the 6-digit pickup code from their Orders page.
+            <p className="mt-2 font-semibold leading-7 text-gray-600">
+              Ask the customer for their pickup code before completing
+              collection. Use the reservation card button to verify the code and
+              complete the pickup.
             </p>
-
-            <div className="mt-5 flex flex-col gap-4 md:flex-row">
-              <input
-                value={pickupCode}
-                onChange={(e) => setPickupCode(e.target.value)}
-                placeholder="Enter pickup code"
-                inputMode="numeric"
-                maxLength={6}
-                className="min-h-12 w-full rounded-2xl border bg-white p-3 font-mono text-xl font-black tracking-widest outline-none sm:p-4 md:max-w-sm"
-              />
-
-              <button
-                onClick={verifyPickupCode}
-                disabled={updatingOrderId !== null}
-                className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
-              >
-                {updatingOrderId !== null ? "Completing..." : "Verify Pickup"}
-              </button>
-            </div>
           </div>
 
           {orders.length > 0 && (
@@ -1727,9 +1729,11 @@ export default function BusinessDashboardPage() {
                       {getOrderStatusLabel(order.status, language)}
                     </span>
 
-                    <span className="rounded-full bg-gray-100 px-4 py-2 font-mono text-sm font-black text-gray-700">
-                      Code: {order.pickup_code || t("common.pending")}
-                    </span>
+                    {isConfirmedOrderStatus(order.status) && (
+                      <span className="rounded-full bg-gray-100 px-4 py-2 text-sm font-black text-gray-700">
+                        Pickup code hidden for customer verification
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -1749,15 +1753,13 @@ export default function BusinessDashboardPage() {
 
                     {!isOrderPastPickupEnd(order.offers) && (
                       <button
-                        onClick={() =>
-                          void completeOrder(order.id, order.pickup_code || "")
-                        }
+                        onClick={() => openPickupVerification(order)}
                         disabled={updatingOrderId !== null}
                         className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                       >
                         {updatingOrderId === order.id
                           ? "Completing..."
-                          : "Mark Collected"}
+                          : "Verify & Complete Pickup"}
                       </button>
                     )}
                   </div>
@@ -1766,6 +1768,123 @@ export default function BusinessDashboardPage() {
             ))}
           </div>
         </div>
+
+        {pickupVerificationOrder && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-950/60 px-4 py-6 sm:py-10">
+            <div className="mx-auto flex min-h-full max-w-lg items-center">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="pickup-verification-title"
+                className="w-full rounded-[2rem] bg-white p-5 shadow-2xl sm:p-7"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-green-700">
+                      Pickup Operations
+                    </p>
+                    <h3
+                      id="pickup-verification-title"
+                      className="mt-2 text-2xl font-black text-gray-950"
+                    >
+                      Verify Customer Pickup Code
+                    </h3>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={closePickupVerification}
+                    disabled={updatingOrderId !== null}
+                    aria-label="Close pickup verification"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 font-black text-gray-700 transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="mt-5 rounded-3xl bg-[#F7F6EF] p-4">
+                  <p className="text-lg font-black text-gray-950">
+                    {pickupVerificationOrder.offers?.title ||
+                      t("common.offerUnavailable")}
+                  </p>
+                  <p className="mt-2 font-semibold text-gray-700">
+                    Customer:{" "}
+                    {pickupVerificationOrder.profiles?.email ||
+                      t("common.unavailable")}
+                  </p>
+                  <p className="mt-1 font-semibold text-gray-600">
+                    {t("common.pickup")}:{" "}
+                    {pickupVerificationOrder.offers
+                      ? formatPickupWindow(
+                          pickupVerificationOrder.offers,
+                          language
+                        )
+                      : t("orders.pickupUnavailable")}
+                  </p>
+                </div>
+
+                <p className="mt-5 font-semibold leading-7 text-gray-700">
+                  Ask the customer to show the pickup code from their Orders
+                  page. Enter it here before handing over the order.
+                </p>
+
+                <label
+                  htmlFor="pickup-verification-code"
+                  className="mt-5 block text-sm font-black uppercase tracking-wide text-gray-600"
+                >
+                  Pickup Code
+                </label>
+                <input
+                  id="pickup-verification-code"
+                  value={pickupVerificationCode}
+                  onChange={(event) => {
+                    setPickupVerificationCode(event.target.value);
+                    setPickupVerificationError("");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void submitPickupVerification();
+                    }
+                  }}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  className="mt-2 min-h-12 w-full rounded-2xl border bg-white p-4 font-mono text-2xl font-black tracking-widest text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  placeholder="123456"
+                />
+
+                {pickupVerificationError && (
+                  <p className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700">
+                    {pickupVerificationError}
+                  </p>
+                )}
+
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={closePickupVerification}
+                    disabled={updatingOrderId !== null}
+                    className="min-h-12 rounded-full border border-green-200 bg-white px-6 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void submitPickupVerification()}
+                    disabled={updatingOrderId !== null}
+                    className="min-h-12 rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {updatingOrderId === pickupVerificationOrder.id
+                      ? "Completing..."
+                      : "Verify & Complete Pickup"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
