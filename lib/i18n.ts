@@ -82,7 +82,7 @@ const translations = {
     "home.liveOffers": "live offers",
     "home.availableNow": "available now",
     "home.pickupOnly": "pickup only",
-    "home.onlinePayment": "online payment",
+    "home.onlinePayment": "pilot reservations",
     "home.trustVerified": "Verified businesses",
     "home.trustEasyPickup": "Easy pickup",
     "home.trustLocalBusinesses": "Local businesses",
@@ -417,8 +417,9 @@ const translations = {
     "businessRegister.checking": "Checking account...",
     "businessRegister.submit": "Submit for Approval",
 
-    "checkout.title": "Confirm your rescue box.",
-    "checkout.subtitle": "The order is created only after demo payment succeeds.",
+    "checkout.title": "Reservation Confirmation",
+    "checkout.subtitle":
+      "Your reservation will be confirmed immediately. Please collect your order during the pickup window shown below.",
     "checkout.summary": "Order summary",
     "checkout.rescueBox": "Rescue box",
     "checkout.quantityRemaining": "Quantity remaining",
@@ -426,11 +427,14 @@ const translations = {
     "checkout.noShowWarning": "No-show warning",
     "checkout.noShowText": "If you do not pick up your order, it may count as a no-show.",
     "checkout.regularPrice": "Regular price",
-    "checkout.paymentMethod": "Payment method",
-    "checkout.demoPayment": "Online payment (demo mode)",
+    "checkout.paymentMethod": "Reservation method",
+    "checkout.pilotReservationMethod":
+      "Reservations are processed directly through ArGadaagdo during the pilot phase.",
     "checkout.rules": "I understand the pickup and cancellation rules.",
-    "checkout.payReserve": "Pay and reserve",
+    "checkout.payReserve": "Confirm reservation",
     "checkout.reserving": "Reserving...",
+    "checkout.successMessage":
+      "Reservation confirmed. Your pickup code is in Orders.",
     "checkout.address": "Address",
     "checkout.afterConfirmation": "After confirmation",
     "checkout.ordersReminder":
@@ -677,7 +681,7 @@ const translations = {
     "home.liveOffers": "ცოცხალი შეთავაზება",
     "home.availableNow": "ახლა ხელმისაწვდომია",
     "home.pickupOnly": "მხოლოდ წაღება",
-    "home.onlinePayment": "ონლაინ გადახდა",
+    "home.onlinePayment": "პილოტური ჯავშნები",
     "home.trustVerified": "დამოწმებული ბიზნესები",
     "home.trustEasyPickup": "მარტივი წაღება",
     "home.trustLocalBusinesses": "ადგილობრივი ბიზნესები",
@@ -1020,11 +1024,14 @@ const translations = {
     "checkout.noShowWarning": "არ გამოცხადების გაფრთხილება",
     "checkout.noShowText": "თუ შეკვეთას არ წაიღებ, ეს შეიძლება ჩაითვალოს არ გამოცხადებად.",
     "checkout.regularPrice": "სტანდარტული ფასი",
-    "checkout.paymentMethod": "გადახდის მეთოდი",
-    "checkout.demoPayment": "ონლაინ გადახდა (დემო რეჟიმი)",
+    "checkout.paymentMethod": "დაჯავშნის მეთოდი",
+    "checkout.pilotReservationMethod":
+      "ჯავშნები პილოტის პერიოდში პირდაპირ ArGadaagdo-ს სისტემით მუშავდება.",
     "checkout.rules": "მესმის წაღებისა და გაუქმების წესები.",
-    "checkout.payReserve": "გადახდა და დაჯავშნა",
+    "checkout.payReserve": "ჯავშნის დადასტურება",
     "checkout.reserving": "იჯავშნება...",
+    "checkout.successMessage":
+      "ჯავშანი დადასტურდა. წაღების კოდი შეკვეთებშია.",
     "checkout.address": "მისამართი",
     "checkout.afterConfirmation": "დადასტურების შემდეგ",
     "checkout.ordersReminder":

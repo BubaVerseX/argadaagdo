@@ -179,7 +179,7 @@ export default function CheckoutPage() {
     }
   }
 
-  async function confirmMockPayment() {
+  async function confirmPilotReservation() {
     if (paying) return;
 
     setMessage("");
@@ -240,7 +240,7 @@ export default function CheckoutPage() {
     });
 
     setMessageTone("success");
-    setMessage("Payment confirmed. Your pickup code is in Orders.");
+    setMessage(t("checkout.successMessage"));
     router.push("/orders");
   }
 
@@ -386,7 +386,7 @@ export default function CheckoutPage() {
                       {t("checkout.paymentMethod")}
                     </p>
                     <p className="mt-1 font-black text-gray-950">
-                      {t("checkout.demoPayment")}
+                      {t("checkout.pilotReservationMethod")}
                     </p>
                   </div>
 
@@ -412,7 +412,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <button
-                  onClick={confirmMockPayment}
+                  onClick={confirmPilotReservation}
                   disabled={
                     paying ||
                     checkoutBlocked ||
