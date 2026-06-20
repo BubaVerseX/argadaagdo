@@ -421,8 +421,13 @@ const translations = {
     "checkout.title": "Reservation Confirmation",
     "checkout.subtitle":
       "Your reservation will be confirmed immediately. Please collect your order during the pickup window shown below.",
-    "checkout.summary": "Order summary",
+    "checkout.summary": "Reservation summary",
     "checkout.rescueBox": "Rescue box",
+    "checkout.offerTitle": "Offer",
+    "checkout.businessName": "Business",
+    "checkout.pickupDate": "Pickup date",
+    "checkout.pickupWindow": "Pickup window",
+    "checkout.price": "Price",
     "checkout.quantityRemaining": "Quantity remaining",
     "checkout.cancellationPolicy": "Cancellation policy",
     "checkout.noShowWarning": "No-show warning",
@@ -443,6 +448,11 @@ const translations = {
     "checkout.cancelReminder": "You can cancel up to 2 hours before pickup.",
     "checkout.ratingReminder":
       "After pickup, you can rate your experience and help other customers.",
+    "checkout.trustTitle": "Why you can reserve with confidence",
+    "checkout.trustVerifiedBusiness": "Verified business",
+    "checkout.trustSecureReservation": "Secure reservation",
+    "checkout.trustPickupCode": "Pickup code verification",
+    "checkout.trustCustomerRatings": "Customer ratings",
     "checkout.pickupGuideBadge": "Pickup guide",
     "checkout.pickupGuideTitle": "How Pickup Works",
     "checkout.pickupGuideIntro":
@@ -1018,10 +1028,16 @@ const translations = {
     "businessRegister.checking": "ანგარიში მოწმდება...",
     "businessRegister.submit": "დასამტკიცებლად გაგზავნა",
 
-    "checkout.title": "დაადასტურე საკვების ყუთი.",
-    "checkout.subtitle": "შეკვეთა იქმნება მხოლოდ დემო გადახდის წარმატების შემდეგ.",
-    "checkout.summary": "შეკვეთის შეჯამება",
+    "checkout.title": "დაადასტურე საკვების ყუთი",
+    "checkout.subtitle":
+      "შენი ჯავშანი დაუყოვნებლივ დადასტურდება. შეკვეთა წაიღე ქვემოთ მითითებულ ფანჯარაში.",
+    "checkout.summary": "ჯავშნის შეჯამება",
     "checkout.rescueBox": "საკვების ყუთი",
+    "checkout.offerTitle": "შეთავაზება",
+    "checkout.businessName": "ბიზნესი",
+    "checkout.pickupDate": "წაღების თარიღი",
+    "checkout.pickupWindow": "წაღების ფანჯარა",
+    "checkout.price": "ფასი",
     "checkout.quantityRemaining": "დარჩენილი რაოდენობა",
     "checkout.cancellationPolicy": "გაუქმების წესი",
     "checkout.noShowWarning": "არ გამოცხადების გაფრთხილება",
@@ -1042,6 +1058,11 @@ const translations = {
     "checkout.cancelReminder": "შეგიძლია გააუქმო წაღებამდე 2 საათით ადრე.",
     "checkout.ratingReminder":
       "წაღების შემდეგ შეგიძლია შეაფასო გამოცდილება და სხვა მომხმარებლებს დაეხმარო.",
+    "checkout.trustTitle": "რატომ შეგიძლია დაჯავშნა ნდობით",
+    "checkout.trustVerifiedBusiness": "დამოწმებული ბიზნესი",
+    "checkout.trustSecureReservation": "უსაფრთხო ჯავშანი",
+    "checkout.trustPickupCode": "წაღების კოდის შემოწმება",
+    "checkout.trustCustomerRatings": "მომხმარებლების შეფასებები",
     "checkout.pickupGuideBadge": "წაღების გზამკვლევი",
     "checkout.pickupGuideTitle": "როგორ მუშაობს წაღება",
     "checkout.pickupGuideIntro":

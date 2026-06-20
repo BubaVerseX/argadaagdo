@@ -11,7 +11,9 @@ import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyReservationConfirmed } from "@/lib/notifications";
 import {
   formatMoney,
+  formatPickupTimeRange,
   formatPickupWindow,
+  getOfferDateLabel,
   isOfferReservable,
 } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
@@ -26,6 +28,7 @@ type CheckoutOffer = Offer & {
     name: string;
     address: string;
     business_type: string;
+    approved?: boolean | string | null;
   } | null;
 };
 
@@ -47,7 +50,7 @@ async function fetchCheckoutOffer(
 
   const { data, error } = await supabase
     .from("offers")
-    .select("*, businesses(name, address, business_type)")
+    .select("*, businesses(name, address, business_type, approved)")
     .eq("id", offerId)
     .eq("active", true)
     .gt("quantity", 0)
@@ -131,6 +134,34 @@ export default function CheckoutPage() {
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
+  const pickupSteps = [
+    {
+      number: "1",
+      title: t("checkout.pickupStep1"),
+      text: t("checkout.pickupStep1Text"),
+    },
+    {
+      number: "2",
+      title: t("checkout.pickupStep2"),
+      text: t("checkout.pickupStep2Text"),
+    },
+    {
+      number: "3",
+      title: t("checkout.pickupStep3"),
+      text: t("checkout.pickupStep3Text"),
+    },
+    {
+      number: "4",
+      title: t("checkout.pickupStep4"),
+      text: t("checkout.pickupStep4Text"),
+    },
+  ];
+  const trustItems = [
+    t("checkout.trustVerifiedBusiness"),
+    t("checkout.trustSecureReservation"),
+    t("checkout.trustPickupCode"),
+    t("checkout.trustCustomerRatings"),
+  ];
 
   useEffect(() => {
     let isCurrent = true;
@@ -334,13 +365,55 @@ export default function CheckoutPage() {
                 <h2 className="text-2xl font-black">{t("checkout.summary")}</h2>
 
                 <div className="mt-6 grid gap-4">
-                  <div className="flex items-center justify-between border-b pb-3">
-                    <span className="font-semibold text-gray-600">
-                      {t("checkout.rescueBox")}
-                    </span>
-                    <span className="text-3xl font-black text-green-700">
-                      {formatMoney(offer.price)}
-                    </span>
+                  <div className="rounded-3xl bg-[#F7F6EF] p-4">
+                    <div className="grid gap-4">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                          {t("checkout.offerTitle")}
+                        </p>
+                        <p className="mt-1 text-xl font-black text-gray-950">
+                          {offer.title}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                          {t("checkout.businessName")}
+                        </p>
+                        <p className="mt-1 font-black text-gray-950">
+                          {offer.businesses?.name || t("common.business")}
+                        </p>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("checkout.pickupDate")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {getOfferDateLabel(offer, language)}
+                          </p>
+                        </div>
+
+                        <div className="rounded-2xl bg-white p-4">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                            {t("checkout.pickupWindow")}
+                          </p>
+                          <p className="mt-1 font-black text-gray-950">
+                            {formatPickupTimeRange(offer, language)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-end justify-between gap-4 rounded-2xl bg-green-50 p-4">
+                        <span className="font-black text-green-700">
+                          {t("checkout.price")}
+                        </span>
+                        <span className="text-3xl font-black text-green-800">
+                          {formatMoney(offer.price)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -359,6 +432,23 @@ export default function CheckoutPage() {
                     <p className="mt-2 text-sm font-bold text-green-900">
                       {t("checkout.cancelReminder")}
                     </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white p-4 ring-1 ring-green-100">
+                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      {t("checkout.trustTitle")}
+                    </p>
+                    <div className="mt-3 grid gap-2">
+                      {trustItems.map((item) => (
+                        <p
+                          key={item}
+                          className="flex gap-2 text-sm font-bold leading-6 text-gray-700"
+                        >
+                          <span className="font-black text-green-700">✓</span>
+                          <span>{item}</span>
+                        </p>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="rounded-2xl bg-yellow-50 p-4">
@@ -472,28 +562,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {[
-                    {
-                      number: "1",
-                      title: t("checkout.pickupStep1"),
-                      text: t("checkout.pickupStep1Text"),
-                    },
-                    {
-                      number: "2",
-                      title: t("checkout.pickupStep2"),
-                      text: t("checkout.pickupStep2Text"),
-                    },
-                    {
-                      number: "3",
-                      title: t("checkout.pickupStep3"),
-                      text: t("checkout.pickupStep3Text"),
-                    },
-                    {
-                      number: "4",
-                      title: t("checkout.pickupStep4"),
-                      text: t("checkout.pickupStep4Text"),
-                    },
-                  ].map((item) => (
+                  {pickupSteps.map((item) => (
                     <div
                       key={item.title}
                       className="rounded-3xl bg-[#F7F6EF] p-5"
