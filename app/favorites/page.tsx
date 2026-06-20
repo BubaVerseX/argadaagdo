@@ -12,6 +12,7 @@ import {
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import type { TranslationKey } from "@/lib/i18n";
+import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -336,6 +337,12 @@ export default function FavoritesPage() {
                   >
                     {availability.label}
                   </div>
+
+                  {offer && (
+                    <div className="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
+                      {normalizeOfferCategory(offer.category)}
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 sm:p-5 md:p-6">

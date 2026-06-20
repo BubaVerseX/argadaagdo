@@ -5,6 +5,7 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -114,6 +115,7 @@ export default function OfferDetailPage() {
   }, [params.id, notFoundMessage]);
 
   const rating = offer ? ratingSummaries[offer.business_id] : undefined;
+  const offerCategory = offer ? normalizeOfferCategory(offer.category) : "";
   const mapsUrl = offer
     ? createMapsSearchUrl(offer.businesses?.address, offer.businesses?.name)
     : "";
@@ -180,6 +182,9 @@ export default function OfferDetailPage() {
                     <p className="text-xs font-black uppercase tracking-widest text-green-700">
                       {t("offerDetail.title")}
                     </p>
+                    <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800">
+                      {offerCategory}
+                    </span>
                     {verifiedBusiness && (
                       <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800">
                         {t("businessProfile.verified")}
@@ -251,6 +256,12 @@ export default function OfferDetailPage() {
                         {t("offerDetail.pickupTime")}:
                       </span>{" "}
                       {formatPickupTimeRange(offer, language)}
+                    </p>
+                    <p>
+                      <span className="font-black text-gray-950">
+                        Category:
+                      </span>{" "}
+                      {offerCategory}
                     </p>
                     <p>
                       <span className="font-black text-gray-950">

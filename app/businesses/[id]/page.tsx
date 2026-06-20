@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -254,6 +255,9 @@ export default function BusinessProfilePage() {
                           alt={offer.title}
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
+                        <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-green-700 shadow-sm">
+                          {normalizeOfferCategory(offer.category)}
+                        </span>
                       </div>
                       <div className="p-5">
                         <h3 className="text-xl font-black">{offer.title}</h3>

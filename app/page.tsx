@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   compareMarketplaceOffers,
   formatMoney,
@@ -471,7 +472,7 @@ export default function Home() {
                   />
 
                   <div className="absolute left-4 top-4 rounded-full bg-white px-4 py-2 text-sm font-black text-green-700 shadow-sm">
-                    {offer.businesses?.business_type || t("common.food")}
+                    {normalizeOfferCategory(offer.category)}
                   </div>
                 </div>
 

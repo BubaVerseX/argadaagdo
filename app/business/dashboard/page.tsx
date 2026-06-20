@@ -15,6 +15,11 @@ import {
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import {
+  DEFAULT_OFFER_CATEGORY,
+  OFFER_CATEGORIES,
+  normalizeOfferCategory,
+} from "@/lib/offerCategories";
+import {
   formatDisplayDateTime,
   formatMoney,
   formatPickupWindow,
@@ -95,6 +100,7 @@ export default function BusinessDashboardPage() {
 
   const [businessId, setBusinessId] = useState("");
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState(DEFAULT_OFFER_CATEGORY);
   const [price, setPrice] = useState("");
   const [oldPrice, setOldPrice] = useState("");
   const [quantity, setQuantity] = useState("1");
@@ -114,6 +120,7 @@ export default function BusinessDashboardPage() {
   const [reservationFilter, setReservationFilter] =
     useState<ReservationFilter>("all");
   const [editTitle, setEditTitle] = useState("");
+  const [editCategory, setEditCategory] = useState(DEFAULT_OFFER_CATEGORY);
   const [editPrice, setEditPrice] = useState("");
   const [editOldPrice, setEditOldPrice] = useState("");
   const [editQuantity, setEditQuantity] = useState("");
@@ -325,6 +332,7 @@ export default function BusinessDashboardPage() {
     }
 
     const selectedBusinessId = Number(businessId);
+    const selectedCategory = normalizeOfferCategory(category);
     const priceValue = Number(price);
     const oldPriceValue = oldPrice ? Number(oldPrice) : null;
     const quantityValue = Number(quantity);
@@ -354,6 +362,11 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (!selectedCategory) {
+      setMessage("Category required.");
+      return;
+    }
+
     if (!pickupDate || !pickupStart || !pickupEnd) {
       setMessage("Pickup date and time required.");
       return;
@@ -379,7 +392,7 @@ export default function BusinessDashboardPage() {
       pickup_date: pickupDate,
       pickup_start: pickupStart,
       pickup_end: pickupEnd,
-      category: "Food",
+      category: selectedCategory,
       active: true,
       status: "active",
       image_url: imageUrl,
@@ -397,6 +410,7 @@ export default function BusinessDashboardPage() {
     }
 
     setTitle("");
+    setCategory(DEFAULT_OFFER_CATEGORY);
     setPrice("");
     setOldPrice("");
     setQuantity("1");
@@ -415,6 +429,7 @@ export default function BusinessDashboardPage() {
     setMessage("");
     setEditingOfferId(offer.id);
     setEditTitle(offer.title);
+    setEditCategory(normalizeOfferCategory(offer.category));
     setEditPrice(String(offer.price ?? ""));
     setEditOldPrice(offer.old_price ? String(offer.old_price) : "");
     setEditQuantity(String(offer.quantity ?? 0));
@@ -425,6 +440,7 @@ export default function BusinessDashboardPage() {
   function cancelEditingOffer() {
     setEditingOfferId(null);
     setEditTitle("");
+    setEditCategory(DEFAULT_OFFER_CATEGORY);
     setEditPrice("");
     setEditOldPrice("");
     setEditQuantity("");
@@ -447,6 +463,7 @@ export default function BusinessDashboardPage() {
     }
 
     const priceValue = Number(editPrice);
+    const selectedCategory = normalizeOfferCategory(editCategory);
     const oldPriceValue = editOldPrice ? Number(editOldPrice) : null;
     const quantityValue = Number(editQuantity);
 
@@ -468,6 +485,11 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (!selectedCategory) {
+      setMessage("Category required.");
+      return;
+    }
+
     if (!editPickupStart || !editPickupEnd) {
       setMessage("Pickup start and end time are required.");
       return;
@@ -483,6 +505,7 @@ export default function BusinessDashboardPage() {
       .from("offers")
       .update({
         title: editTitle.trim(),
+        category: selectedCategory,
         price: priceValue,
         old_price: oldPriceValue,
         quantity: quantityValue,
@@ -1217,6 +1240,22 @@ export default function BusinessDashboardPage() {
                   placeholder="Offer title"
                 />
 
+                <select
+                  value={category}
+                  onChange={(event) =>
+                    setCategory(normalizeOfferCategory(event.target.value))
+                  }
+                  required
+                  aria-label="Offer category"
+                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold"
+                >
+                  {OFFER_CATEGORIES.map((offerCategory) => (
+                    <option key={offerCategory} value={offerCategory}>
+                      {offerCategory}
+                    </option>
+                  ))}
+                </select>
+
                 <input
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
@@ -1355,6 +1394,9 @@ export default function BusinessDashboardPage() {
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="text-xl font-black">{offer.title}</h3>
+                          <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-700">
+                            {normalizeOfferCategory(offer.category)}
+                          </span>
                           <span
                             className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
                           >
@@ -1429,6 +1471,24 @@ export default function BusinessDashboardPage() {
                           className="rounded-2xl border bg-white p-4 font-semibold"
                           placeholder="Offer title"
                         />
+
+                        <select
+                          value={editCategory}
+                          onChange={(event) =>
+                            setEditCategory(
+                              normalizeOfferCategory(event.target.value)
+                            )
+                          }
+                          required
+                          aria-label="Offer category"
+                          className="min-h-12 rounded-2xl border bg-white p-4 font-semibold"
+                        >
+                          {OFFER_CATEGORIES.map((offerCategory) => (
+                            <option key={offerCategory} value={offerCategory}>
+                              {offerCategory}
+                            </option>
+                          ))}
+                        </select>
 
                         <input
                           value={editPrice}

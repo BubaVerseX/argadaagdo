@@ -10,6 +10,7 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   compareMarketplaceOffers,
   formatMoney,
@@ -31,7 +32,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 type PriceSort = "newest" | "price-asc" | "price-desc";
 
 function getOfferCategory(offer: Offer) {
-  return offer.category || offer.businesses?.business_type || "Food";
+  return normalizeOfferCategory(offer.category);
 }
 
 function formatOfferMatches(count: number, language: "en" | "ka") {
@@ -592,7 +593,7 @@ export default function OffersPage() {
                             />
 
                             <div className="absolute left-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
-                              {offer.businesses?.business_type || t("common.food")}
+                              {getOfferCategory(offer)}
                             </div>
 
                             {discount && (
