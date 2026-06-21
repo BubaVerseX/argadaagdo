@@ -365,6 +365,10 @@ export default function OffersPage() {
               {t("offers.subtitle")}
             </p>
 
+            <p className="mt-4 max-w-2xl text-sm font-black text-green-100">
+              {t("offers.filterHint")}
+            </p>
+
             <div className="mt-6 flex flex-col gap-3 sm:mt-7 md:flex-row">
               <input
                 value={search}
@@ -418,7 +422,7 @@ export default function OffersPage() {
               </label>
             </div>
 
-            <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-7 sm:gap-3">
+            <div className="mt-6 grid gap-2 sm:mt-7 sm:grid-cols-3 sm:gap-3">
               <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
                 <p className="text-sm font-black text-green-100">
                   {t("nav.offers")}
@@ -435,11 +439,22 @@ export default function OffersPage() {
 
               <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
                 <p className="text-sm font-black text-green-100">
-                  {t("common.pickup")}
+                  {t("home.trustPickupOnlyMarketplace")}
                 </p>
-                <h2 className="text-3xl font-black sm:text-4xl">100%</h2>
+                <h2 className="text-2xl font-black sm:text-3xl">
+                  {t("offers.tbilisiPilot")}
+                </h2>
               </div>
             </div>
+          </div>
+
+          <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:mt-8 sm:p-6">
+            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              {t("offers.surpriseBagTitle")}
+            </p>
+            <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-700">
+              {t("offers.surpriseBagText")}
+            </p>
           </div>
 
           {message && (

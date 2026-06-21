@@ -137,6 +137,13 @@ export default function OfferDetailPage() {
     t("offerDetail.afterReservationVisit"),
     t("offerDetail.afterReservationShowCode"),
   ];
+  const trustItems = [
+    t("home.trustVerifiedBusinesses"),
+    t("home.trustPickupCodeVerification"),
+    t("home.trustCustomerRatings"),
+    t("home.trustSecureReservationFlow"),
+    t("home.trustLocalTbilisiBusinesses"),
+  ];
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -259,7 +266,7 @@ export default function OfferDetailPage() {
                     </p>
                     <p>
                       <span className="font-black text-gray-950">
-                        Category:
+                        {t("common.category")}:
                       </span>{" "}
                       {offerCategory}
                     </p>
@@ -300,6 +307,43 @@ export default function OfferDetailPage() {
                         >
                           <span aria-hidden="true">•</span>
                           <span>{step}</span>
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-3xl bg-yellow-50 p-4">
+                      <p className="font-black text-yellow-900">
+                        {t("offerDetail.cancellationReminderTitle")}
+                      </p>
+                      <p className="mt-1 text-sm font-bold leading-6 text-yellow-950">
+                        {t("offerDetail.cancellationReminderText")}
+                      </p>
+                    </div>
+
+                    <div className="rounded-3xl bg-[#F7F6EF] p-4">
+                      <p className="font-black text-gray-950">
+                        {t("offerDetail.ratingReminderTitle")}
+                      </p>
+                      <p className="mt-1 text-sm font-bold leading-6 text-gray-700">
+                        {t("offerDetail.ratingReminderText")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 rounded-3xl bg-white p-4 ring-1 ring-green-100">
+                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      {t("home.trustBadge")}
+                    </p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {trustItems.map((item) => (
+                        <p
+                          key={item}
+                          className="flex gap-2 text-sm font-bold leading-6 text-gray-700"
+                        >
+                          <span className="font-black text-green-700">✓</span>
+                          <span>{item}</span>
                         </p>
                       ))}
                     </div>

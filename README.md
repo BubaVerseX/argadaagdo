@@ -10,9 +10,9 @@ approval, inventory-aware reservations, and realtime updates.
 
 ## Live Demo
 
-The application is deployed on Vercel. Add the public production URL here:
+The application is deployed on Vercel:
 
-`https://your-production-url.vercel.app`
+[`https://argadaagdo.vercel.app`](https://argadaagdo.vercel.app)
 
 ## Core Features
 
@@ -20,8 +20,8 @@ The application is deployed on Vercel. Add the public production URL here:
 - Business registration with an admin approval workflow
 - Live offer marketplace with search and sold-out hiding
 - Discounted offer images stored in Supabase Storage
-- Atomic reservation flow using the `reserve_offer(p_offer_id)` RPC
-- Safe cancellation flow using the `cancel_order(p_order_id)` RPC
+- Pilot reservation flow using the `mock_pay_and_reserve_offer(p_offer_id)` RPC
+- Safe cancellation/refund flow using the `cancel_paid_order(p_order_id)` RPC
 - Pickup-code display for customers and verification for businesses
 - Customer order history and cancellation flow
 - Business dashboard for offer and reservation management
@@ -31,11 +31,11 @@ The application is deployed on Vercel. Add the public production URL here:
 
 ## Screenshots
 
-Add final portfolio screenshots after the production UI is confirmed:
+Add final pilot screenshots after the production UI is confirmed:
 
 | Home / Offers | Customer Orders | Business Dashboard |
 | --- | --- | --- |
-| Screenshot placeholder | Screenshot placeholder | Screenshot placeholder |
+| Add homepage screenshot | Add orders screenshot | Add dashboard screenshot |
 
 ## Tech Stack
 
@@ -50,7 +50,7 @@ Add final portfolio screenshots after the production UI is confirmed:
 1. A customer creates an account and browses active offers.
 2. A business registers and waits for admin approval.
 3. An approved business creates a pickup-only rescue offer.
-4. A customer reserves an offer through the database RPC function.
+4. A customer confirms a pilot reservation through the database RPC function.
 5. The RPC creates an order and pickup code while decreasing quantity
    atomically.
 6. The customer shows their pickup code and the business completes the order.
@@ -64,15 +64,18 @@ The main application tables are:
 | `profiles` | User email and application role |
 | `businesses` | Business ownership, details and approval status |
 | `offers` | Available food boxes, prices, pickup windows and images |
-| `orders` | Reservations, payment method, status and pickup code |
+| `orders` | Reservations, order lifecycle status and pickup code |
+| `payments` | Pilot payment records, platform fee and business amount |
+| `business_ratings` | Customer ratings after completed pickups |
+| `favorites` | Saved offers for customers |
 
 Reservation inventory changes must go through
-`supabase.rpc("reserve_offer", { p_offer_id })`. Customers should never update
-offer quantities directly when reserving.
+`supabase.rpc("mock_pay_and_reserve_offer", { p_offer_id })`. Customers should
+never update offer quantities directly when reserving.
 
 Reservation cancellation must go through
-`supabase.rpc("cancel_order", { p_order_id })` so order status and restored
-offer quantity stay consistent.
+`supabase.rpc("cancel_paid_order", { p_order_id })` so order status, refund
+state and restored offer quantity stay consistent.
 
 ## Local Setup
 
@@ -115,12 +118,12 @@ npm run build
 
 ## Future Improvements
 
-- Georgian and English language switching
-- Hardened and versioned RLS/Storage policy migrations
+- Continue expanding Georgian and English translations
 - Notifications for reserved and expiring pickup orders
 - Business analytics and food-saved reporting
-- Map/location support for Tbilisi discovery
-- Online payments after the pickup-only cash MVP is proven
+- Deeper map/location support for Tbilisi discovery
+- Real bank/card payment provider integration after the pilot reservation flow
+  is proven
 
 ## Product Goal
 

@@ -152,7 +152,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           <div className="flex items-center gap-1 rounded-full bg-white/60 p-1 shadow-sm ring-1 ring-black/5">
             <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
               {showCustomerNavigation
@@ -203,6 +203,14 @@ export default function Navbar() {
             >
               {t("nav.contact")}
             </Link>
+
+            <Link
+              href="/about"
+              className={linkClass("/about")}
+              aria-current={ariaCurrent("/about")}
+            >
+              {t("nav.about")}
+            </Link>
           </div>
 
           {showBusinessNavigation && (
@@ -251,23 +259,23 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <LanguageSwitcher />
           </div>
 
           {!authReady ? (
-            <div className="hidden h-11 w-24 rounded-full bg-white/60 md:block" />
+            <div className="hidden h-11 w-24 rounded-full bg-white/60 lg:block" />
           ) : user ? (
             <button
               onClick={handleLogout}
-              className="hidden rounded-full bg-red-600 px-5 py-2.5 font-black text-white transition hover:bg-red-700 md:block"
+              className="hidden rounded-full bg-red-600 px-5 py-2.5 font-black text-white transition hover:bg-red-700 lg:block"
             >
               {t("nav.logout")}
             </button>
           ) : (
             <Link
               href="/login"
-              className="hidden rounded-full bg-green-700 px-5 py-2.5 font-black text-white transition hover:bg-green-800 md:block"
+              className="hidden rounded-full bg-green-700 px-5 py-2.5 font-black text-white transition hover:bg-green-800 lg:block"
             >
               {t("nav.signIn")}
             </Link>
@@ -275,7 +283,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setMobileMenu(!mobileMenu)}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg font-black text-gray-900 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 md:hidden"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg font-black text-gray-900 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 lg:hidden"
             aria-label={mobileMenu ? t("nav.closeMenu") : t("nav.openMenu")}
             aria-expanded={mobileMenu}
             aria-controls="mobile-navigation"
@@ -288,7 +296,7 @@ export default function Navbar() {
       {mobileMenu && (
         <div
           id="mobile-navigation"
-          className="border-t border-gray-100 bg-[#F7F6EF] px-4 py-4 sm:px-5 sm:py-5 md:hidden"
+          className="border-t border-gray-100 bg-[#F7F6EF] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
         >
           <div className="grid gap-4">
             <div className="rounded-3xl bg-white p-3 shadow-sm">
@@ -345,6 +353,15 @@ export default function Navbar() {
                   aria-current={ariaCurrent("/contact")}
                 >
                   {t("nav.contact")}
+                </Link>
+
+                <Link
+                  href="/about"
+                  onClick={() => setMobileMenu(false)}
+                  className={linkClass("/about", "mobile")}
+                  aria-current={ariaCurrent("/about")}
+                >
+                  {t("nav.about")}
                 </Link>
               </div>
             </div>

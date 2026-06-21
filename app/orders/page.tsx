@@ -372,7 +372,45 @@ export default function OrdersPage() {
               tone={reliabilityTone}
             />
           </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              {
+                title: t("orders.statusGuideReservedTitle"),
+                text: t("orders.statusGuideReservedText"),
+              },
+              {
+                title: t("orders.statusGuideCollectedTitle"),
+                text: t("orders.statusGuideCollectedText"),
+              },
+              {
+                title: t("orders.statusGuideCancelledTitle"),
+                text: t("orders.statusGuideCancelledText"),
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl bg-[#F7F6EF] p-4 text-left"
+              >
+                <p className="font-black text-gray-950">{item.title}</p>
+                <p className="mt-1 text-sm font-semibold leading-6 text-gray-600">
+                  {item.text}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {!loading && orders.length > 0 && (
+          <div className="mt-5 rounded-3xl bg-green-50 p-5 shadow-sm sm:mt-6 sm:p-6">
+            <p className="text-lg font-black text-green-900">
+              {t("orders.pickupInstructionTitle")}
+            </p>
+            <p className="mt-2 font-semibold leading-7 text-green-900">
+              {t("orders.pickupInstructionText")}
+            </p>
+          </div>
+        )}
 
         {message && (
           <div className="mt-5 sm:mt-6">

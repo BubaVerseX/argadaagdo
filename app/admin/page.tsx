@@ -517,6 +517,33 @@ export default function AdminPage() {
             </span>
           </div>
 
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {[
+              {
+                title: "1. Review details",
+                text: "Check the business type, address and phone before approving.",
+              },
+              {
+                title: "2. Approve verified businesses",
+                text: "Approved businesses can open their dashboard and publish offers.",
+              },
+              {
+                title: "3. Monitor pilot activity",
+                text: "Use marketplace health cards to watch offers, orders and ratings.",
+              },
+            ].map((step) => (
+              <div
+                key={step.title}
+                className="rounded-2xl bg-[#F7F6EF] p-4 text-sm"
+              >
+                <p className="font-black text-gray-950">{step.title}</p>
+                <p className="mt-2 font-semibold leading-6 text-gray-600">
+                  {step.text}
+                </p>
+              </div>
+            ))}
+          </div>
+
           <div className="mt-6 grid gap-4">
             {pendingBusinesses.length === 0 && (
               <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-6 text-center sm:p-8">

@@ -174,6 +174,25 @@ export default function BusinessProfilePage() {
                       </p>
                     </div>
 
+                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-3xl border border-green-100 bg-green-50 p-4">
+                        <p className="text-sm font-black text-green-800">
+                          {t("businessProfile.localBusinessTitle")}
+                        </p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                          {t("businessProfile.localBusinessText")}
+                        </p>
+                      </div>
+                      <div className="rounded-3xl border border-yellow-100 bg-yellow-50 p-4">
+                        <p className="text-sm font-black text-yellow-800">
+                          {t("businessProfile.pickupOnlyTitle")}
+                        </p>
+                        <p className="mt-2 text-sm font-semibold leading-6 text-yellow-950">
+                          {t("businessProfile.pickupOnlyText")}
+                        </p>
+                      </div>
+                    </div>
+
                     <div className="mt-6 grid gap-3 sm:grid-cols-3">
                       <div className="rounded-3xl bg-yellow-50 p-5">
                         <p className="text-sm font-black text-yellow-700">
@@ -290,6 +309,9 @@ export default function BusinessProfilePage() {
                 <h2 className="text-2xl font-black">
                   {t("businessProfile.customerReviews")}
                 </h2>
+                <p className="mt-2 max-w-2xl font-semibold leading-7 text-gray-600">
+                  {t("businessProfile.reviewsIntro")}
+                </p>
 
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (

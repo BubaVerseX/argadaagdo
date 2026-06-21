@@ -57,6 +57,7 @@ const translations = {
     "common.pending": "Pending",
     "common.pickup": "Pickup",
     "common.quantity": "Quantity",
+    "common.category": "Category",
     "common.rating": "Rating",
     "common.reviews": "Reviews",
     "common.noRatings": "No ratings yet",
@@ -76,11 +77,9 @@ const translations = {
     "home.title2": "Rescue food.",
     "home.title3": "Support local businesses.",
     "home.subtitle":
-      "Reserve surprise food bags from local cafes, bakeries, restaurants and supermarkets. Pick up easily in Tbilisi and help reduce waste.",
+      "Find discounted surprise bags from verified local businesses in Tbilisi. Reserve online, collect in person, save money and help reduce food waste.",
     "home.explore": "Browse Offers",
     "home.joinBusiness": "For Businesses",
-    "home.liveOffers": "live offers",
-    "home.availableNow": "available now",
     "home.pickupOnly": "pickup only",
     "home.onlinePayment": "pilot reservations",
     "home.trustVerified": "Verified businesses",
@@ -90,11 +89,15 @@ const translations = {
     "home.trustVerifiedBusinesses": "Verified Businesses",
     "home.trustEasyPickupProcess": "Easy Pickup Process",
     "home.trustReduceFoodWaste": "Reduce Food Waste",
+    "home.trustPickupOnlyMarketplace": "Pickup-only marketplace",
+    "home.trustPickupCodeVerification": "Pickup code verification",
+    "home.trustCustomerRatings": "Customer ratings",
+    "home.trustSecureReservationFlow": "Secure reservation flow",
     "home.trustLocalTbilisiBusinesses": "Local Tbilisi Businesses",
     "home.featuredOffer": "Featured offer",
     "home.featuredOffers": "Featured offers",
     "home.topBusinesses": "Top rated businesses",
-    "home.stats": "Impact statistics",
+    "home.stats": "Pilot trust",
     "home.howItWorks": "How ArGadaagdo Works",
     "home.howItWorksIntro":
       "A simple pickup-only flow for discounted food boxes from trusted local businesses.",
@@ -128,13 +131,6 @@ const translations = {
     "home.pickupWindows": "Pickup windows",
     "home.noSurpriseBags": "No surprise bags available right now.",
     "home.publishLater": "Businesses usually publish offers later in the day.",
-    "home.mealsRescued": "Meals rescued",
-    "home.activeBusinesses": "Active businesses",
-    "home.activeOffers": "Active Offers",
-    "home.ordersCompleted": "Orders completed",
-    "home.trackingSoon": "Tracking soon",
-    "home.launchingSoon": "Launching soon",
-    "home.checkBackSoon": "Check back soon",
     "home.missionBadge": "Pilot launch",
     "home.missionTitle": "Why ArGadaagdo?",
     "home.missionIntro": "Every day, good food goes unsold.",
@@ -143,17 +139,18 @@ const translations = {
     "home.missionCustomer": "Customers save money.",
     "home.missionBusiness": "Businesses earn from unsold food.",
     "home.missionWaste": "Less food ends up in the trash.",
-    "home.impactBadge": "Marketplace impact",
-    "home.impactTitle": "Pilot marketplace progress",
     "home.businessCtaBadge": "For businesses",
     "home.businessCtaTitle": "Own a Bakery, Cafe or Restaurant?",
     "home.businessCtaText":
       "Join ArGadaagdo and turn surplus food into additional revenue.",
+    "home.moreBusinessesJoiningSoon": "More businesses joining soon",
+    "home.moreBusinessesJoiningSoonText":
+      "ArGadaagdo is launching carefully with verified local businesses in Tbilisi.",
     "home.registerBusiness": "Register Your Business",
     "home.customerCtaBadge": "For customers",
     "home.customerCtaTitle": "Looking for great food at a great price?",
     "home.customerCtaText":
-      "Browse discounted surprise bags from local businesses and pick up during the pickup window.",
+      "Save money, reduce food waste and support local businesses by reserving discounted surprise bags.",
     "home.finalCtaTitle": "Ready to rescue food?",
     "home.finalCtaText": "Browse today's surprise bags.",
 
@@ -166,6 +163,8 @@ const translations = {
     "offers.badge": "Live offers in Tbilisi",
     "offers.title": "Rescue food boxes near you.",
     "offers.subtitle": "Search live rescue deals, reserve online, and pick up in store.",
+    "offers.filterHint":
+      "Use search, categories and sorting to find the right pickup window.",
     "offers.search": "Search food, business, address...",
     "offers.reset": "Reset",
     "offers.allCategories": "All categories",
@@ -174,6 +173,7 @@ const translations = {
     "offers.sortHighest": "Highest price",
     "offers.availableOnly": "Available only",
     "offers.boxesLeft": "Boxes left",
+    "offers.tbilisiPilot": "Tbilisi pilot",
     "offers.heading": "Food rescue offers",
     "offers.matches": "matches your filters.",
     "offers.noOffers": "No offers available right now.",
@@ -182,6 +182,9 @@ const translations = {
       "Businesses usually publish surprise bags later in the day.",
     "offers.noMatchingHint": "Try changing the category, price sort, or availability filter.",
     "offers.checkBackSoon": "Check back again soon for fresh rescue boxes.",
+    "offers.surpriseBagTitle": "What is a surprise bag?",
+    "offers.surpriseBagText":
+      "A surprise bag is a discounted food box prepared from good surplus food. The exact items may vary, but every offer shows the business, price and pickup window before you reserve.",
     "offers.clearFilters": "Clear filters",
     "offers.backHome": "Back to Home",
     "offers.addFavorite": "❤️ Add Favorite",
@@ -216,6 +219,12 @@ const translations = {
     "offerDetail.afterReservationVisit": "Visit during pickup time.",
     "offerDetail.afterReservationShowCode":
       "Show the pickup code to collect your order.",
+    "offerDetail.cancellationReminderTitle": "Cancellation reminder",
+    "offerDetail.cancellationReminderText":
+      "You can cancel up to 2 hours before pickup if your plans change.",
+    "offerDetail.ratingReminderTitle": "After pickup",
+    "offerDetail.ratingReminderText":
+      "Ratings become available after collection and help other customers choose trusted businesses.",
     "offerDetail.noReviewsHint":
       "Reviews will appear here after customers complete pickups and rate this business.",
     "offerDetail.notFound": "Offer could not be loaded.",
@@ -232,6 +241,14 @@ const translations = {
     "businessProfile.trustTitle": "Approved on ArGadaagdo",
     "businessProfile.trustMessage":
       "This business has been approved to sell offers on ArGadaagdo.",
+    "businessProfile.localBusinessTitle": "Local food business",
+    "businessProfile.localBusinessText":
+      "This profile helps customers understand who prepares the surprise bags.",
+    "businessProfile.pickupOnlyTitle": "Pickup-only offers",
+    "businessProfile.pickupOnlyText":
+      "Customers reserve online and collect directly from the business during the pickup window.",
+    "businessProfile.reviewsIntro":
+      "Reviews come from customers after completed pickups and help future customers choose with confidence.",
     "businessProfile.noActiveOffers": "No active surprise bags right now.",
     "businessProfile.noActiveOffersHint":
       "Check back later for fresh food rescue offers from this business.",
@@ -271,6 +288,18 @@ const translations = {
       "Help other customers by sharing your experience.",
     "orders.activePickupReminder":
       "Remember to collect your order during the pickup window. Bring your pickup code.",
+    "orders.pickupInstructionTitle": "At pickup",
+    "orders.pickupInstructionText":
+      "Open this page, show the pickup code to the business, and collect your surprise bag during the pickup window.",
+    "orders.statusGuideReservedTitle": "Reserved",
+    "orders.statusGuideReservedText":
+      "Your pickup code is active. Visit the business during the pickup window.",
+    "orders.statusGuideCollectedTitle": "Collected",
+    "orders.statusGuideCollectedText":
+      "The business verified your code and completed the pickup.",
+    "orders.statusGuideCancelledTitle": "Cancelled",
+    "orders.statusGuideCancelledText":
+      "Cancelled or refunded reservations remain here for your history.",
     "orders.reviewThanks": "Thank you for your review.",
     "orders.collectedMessage": "This order was collected.",
     "orders.cancelledMessage": "This reservation was cancelled.",
@@ -295,6 +324,9 @@ const translations = {
     "favorites.trustReminder":
       "Offers may sell out quickly. Reserve early if you find something you like.",
     "favorites.viewOffer": "View Offer",
+    "favorites.offerUnavailable": "Offer no longer available",
+    "favorites.offerEndedHint":
+      "This saved offer may have ended, sold out, or become unavailable.",
 
     "businessDashboard.title": "Manage offers and pickups.",
     "businessDashboard.subtitle": "Publish rescue boxes, track reservations, and verify pickup codes when customers arrive.",
@@ -308,6 +340,12 @@ const translations = {
     "businessDashboard.emptyAnalytics":
       "Statistics will appear as customers interact with your offers.",
     "businessDashboard.createOffer": "Create offer",
+    "businessDashboard.createOfferButton": "Create Offer",
+    "businessDashboard.publishing": "Publishing...",
+    "businessDashboard.selectedImage": "Selected image",
+    "businessDashboard.created": "Created",
+    "businessDashboard.customer": "Customer",
+    "businessDashboard.reliability": "Reliability",
     "businessDashboard.myOffers": "My offers",
     "businessDashboard.reservations": "Reservations",
     "businessDashboard.businessReviews": "Business reviews",
@@ -345,11 +383,19 @@ const translations = {
     "businessDashboard.noFilteredReservationsHint":
       "Try another reservation status to see more results.",
     "businessDashboard.createFirstOffer": "Create First Offer",
+    "businessDashboard.viewReservations": "View Reservations",
     "businessOnboarding.badge": "Pilot onboarding",
     "businessOnboarding.welcomeTitle": "Welcome to ArGadaagdo.",
     "businessOnboarding.welcomeText":
       "Create your first surprise bag and start receiving reservations from customers in Tbilisi.",
     "businessOnboarding.createFirstBag": "Create your first surprise bag",
+    "businessOnboarding.workflowBadge": "Business guide",
+    "businessOnboarding.workflowTitle": "How ArGadaagdo Works",
+    "businessOnboarding.workflowCreateOffer": "Create an offer.",
+    "businessOnboarding.workflowReceiveReservations": "Receive reservations.",
+    "businessOnboarding.workflowVerifyPickupCode": "Verify pickup code.",
+    "businessOnboarding.workflowCompletePickup": "Complete pickup.",
+    "businessOnboarding.workflowReceiveRatings": "Receive ratings.",
     "businessOnboarding.checklistBadge": "Quick Start",
     "businessOnboarding.checklistTitle": "Getting Started",
     "businessOnboarding.step": "Step",
@@ -370,9 +416,28 @@ const translations = {
     "businessOnboarding.recommendedPickupWindowValue": "1-2 hours",
     "businessOnboarding.recommendedTitle": "Clear title example",
     "businessOnboarding.recommendedTitleValue": "Bakery Surprise Bag",
+    "businessOnboarding.realExamplesTitle": "Realistic offer examples",
+    "businessOnboarding.realExamplesText":
+      "Try names like Bakery Surprise Bag, Cafe Closing Time Bag, or Restaurant Rescue Box so customers quickly understand the offer.",
+    "businessOnboarding.titleHelper":
+      "Title: use a clear customer-friendly name, for example Bakery Surprise Bag.",
+    "businessOnboarding.quantityHelper":
+      "Quantity: how many customers can reserve this offer.",
+    "businessOnboarding.pickupWindowHelper":
+      "Pickup window: when customers can collect. A clear 1-2 hour window works best.",
+    "businessOnboarding.offerValidationHint":
+      "Before publishing, check the title, category, price, quantity, pickup date, pickup time and image.",
     "businessOnboarding.reservationGuidanceTitle": "How reservations work",
     "businessOnboarding.reservationGuidanceText":
       "Customers receive a pickup code after reservation. Verify the code before handing over food.",
+    "businessOnboarding.reservationCardHint":
+      "Each reservation card shows customer email, status, pickup time and the action needed to verify collection.",
+    "businessOnboarding.pickupVerificationTitle": "Pickup verification",
+    "businessOnboarding.pickupVerificationText":
+      "Ask the customer for their pickup code before completing collection. Use the reservation card button to verify the code and complete the pickup.",
+    "businessOnboarding.pickupStepAskCode": "Ask for the customer code",
+    "businessOnboarding.pickupStepEnterCode": "Enter it in the verification modal",
+    "businessOnboarding.pickupStepComplete": "Complete pickup only after it matches",
     "businessOnboarding.ratingsGuidanceTitle": "Why ratings matter",
     "businessOnboarding.ratingsGuidanceText":
       "Good ratings help customers trust your business and improve future reservations.",
@@ -392,17 +457,24 @@ const translations = {
     "login.signInHint": "Enter your email and password to continue.",
     "login.signUpTitle": "Create your account",
     "login.signUpHint": "Choose how you want to use ArGadaagdo.",
+    "login.signInModeHelper": "Existing account",
+    "login.signUpModeHelper": "New account",
     "login.alreadyHaveAccount": "Already have an account?",
     "login.dontHaveAccount": "Don't have an account?",
     "login.redirectCheckout": "Please sign in to reserve this offer.",
-    "login.redirectOrders":
-      "Please sign in to view your orders and pickup codes.",
+    "login.redirectOrders": "Please sign in to view your orders.",
     "login.redirectFavorites": "Please sign in to view your saved offers.",
     "login.accountType": "Account type",
+    "login.accountTypeHint":
+      "Choose Customer if you want to reserve food offers. Choose Business if you will publish offers for a cafe, bakery, restaurant or shop.",
     "login.customer": "Customer",
     "login.business": "Business",
-    "login.customerHint": "Reserve food and rate businesses",
-    "login.businessHint": "Create offers and manage reservations",
+    "login.customerHint": "Reserve food offers.",
+    "login.businessHint": "Create and manage offers.",
+    "login.forCustomers": "For customers",
+    "login.forCustomersText": "Reserve discounted surprise bags and collect them in person.",
+    "login.forBusinesses": "For businesses",
+    "login.forBusinessesText": "Create pickup-only offers and manage customer reservations.",
 
     "businessRegister.badge": "For local businesses",
     "businessRegister.title": "Register your food business",
@@ -415,6 +487,15 @@ const translations = {
     "businessRegister.step3": "3. Publish offers",
     "businessRegister.step3Text": "Create pickup-only food rescue offers.",
     "businessRegister.details": "Business details",
+    "businessRegister.detailsHint":
+      "Use real information customers and admins can recognize during the Tbilisi pilot.",
+    "businessRegister.requiredInfoTitle": "What you need",
+    "businessRegister.requiredNameType": "Business name and business type",
+    "businessRegister.requiredAddress": "Pickup address in Tbilisi",
+    "businessRegister.requiredPhone": "Phone number for admin follow-up",
+    "businessRegister.expectationsTitle": "What happens next",
+    "businessRegister.expectationsText":
+      "Applications are reviewed manually during the pilot. After approval, your dashboard will let you create surprise bags and manage pickups.",
     "businessRegister.name": "Business name",
     "businessRegister.address": "Address in Tbilisi",
     "businessRegister.phone": "Phone number",
@@ -671,6 +752,7 @@ const translations = {
     "common.pending": "მოლოდინში",
     "common.pickup": "წაღება",
     "common.quantity": "რაოდენობა",
+    "common.category": "კატეგორია",
     "common.rating": "შეფასება",
     "common.reviews": "შეფასებები",
     "common.noRatings": "შეფასებები ჯერ არ არის",
@@ -690,11 +772,9 @@ const translations = {
     "home.title2": "გადაარჩინე საკვები.",
     "home.title3": "მხარი დაუჭირე ადგილობრივ ბიზნესებს.",
     "home.subtitle":
-      "დაჯავშნე სიურპრიზის საკვების ყუთები ადგილობრივი კაფეებიდან, საცხობებიდან, რესტორნებიდან და მარკეტებიდან. მარტივად წაიღე თბილისში და დაეხმარე ნარჩენის შემცირებას.",
+      "იპოვე ფასდაკლებული სიურპრიზის ყუთები თბილისის დამოწმებული ადგილობრივი ბიზნესებიდან. დაჯავშნე ონლაინ, წაიღე ადგილზე, დაზოგე თანხა და შეამცირე საკვების ნარჩენი.",
     "home.explore": "შეთავაზებების ნახვა",
     "home.joinBusiness": "ბიზნესებისთვის",
-    "home.liveOffers": "ცოცხალი შეთავაზება",
-    "home.availableNow": "ახლა ხელმისაწვდომია",
     "home.pickupOnly": "მხოლოდ წაღება",
     "home.onlinePayment": "პილოტური ჯავშნები",
     "home.trustVerified": "დამოწმებული ბიზნესები",
@@ -704,11 +784,15 @@ const translations = {
     "home.trustVerifiedBusinesses": "დამოწმებული ბიზნესები",
     "home.trustEasyPickupProcess": "მარტივი წაღების პროცესი",
     "home.trustReduceFoodWaste": "საკვების ნარჩენის შემცირება",
+    "home.trustPickupOnlyMarketplace": "მხოლოდ ადგილზე წაღების მარკეტი",
+    "home.trustPickupCodeVerification": "წაღების კოდის შემოწმება",
+    "home.trustCustomerRatings": "მომხმარებლის შეფასებები",
+    "home.trustSecureReservationFlow": "უსაფრთხო ჯავშნის პროცესი",
     "home.trustLocalTbilisiBusinesses": "ადგილობრივი თბილისის ბიზნესები",
     "home.featuredOffer": "რჩეული შეთავაზება",
     "home.featuredOffers": "რჩეული შეთავაზებები",
     "home.topBusinesses": "ყველაზე მაღალი შეფასების ბიზნესები",
-    "home.stats": "გავლენის სტატისტიკა",
+    "home.stats": "საპილოტე ნდობა",
     "home.howItWorks": "როგორ მუშაობს ArGadaagdo",
     "home.howItWorksIntro":
       "მარტივი წაღების პროცესი ფასდაკლებული საკვების ყუთებისთვის სანდო ადგილობრივი ბიზნესებიდან.",
@@ -742,13 +826,6 @@ const translations = {
     "home.pickupWindows": "წაღების ფანჯრები",
     "home.noSurpriseBags": "ახლა სიურპრიზის ყუთები ხელმისაწვდომი არ არის.",
     "home.publishLater": "ბიზნესები შეთავაზებებს ხშირად დღის მეორე ნახევარში აქვეყნებენ.",
-    "home.mealsRescued": "გადარჩენილი პორციები",
-    "home.activeBusinesses": "აქტიური ბიზნესები",
-    "home.activeOffers": "აქტიური შეთავაზებები",
-    "home.ordersCompleted": "დასრულებული შეკვეთები",
-    "home.trackingSoon": "მალე აღირიცხება",
-    "home.launchingSoon": "მალე გაეშვება",
-    "home.checkBackSoon": "მალე გადაამოწმე",
     "home.missionBadge": "საპილოტე გაშვება",
     "home.missionTitle": "რატომ ArGadaagdo?",
     "home.missionIntro": "ყოველდღე კარგი საკვები გაუყიდავი რჩება.",
@@ -757,17 +834,18 @@ const translations = {
     "home.missionCustomer": "მომხმარებლები ზოგავენ თანხას.",
     "home.missionBusiness": "ბიზნესები იღებენ შემოსავალს გაუყიდავი საკვებიდან.",
     "home.missionWaste": "ნაკლები საკვები ხვდება ნაგავში.",
-    "home.impactBadge": "მარკეტის გავლენა",
-    "home.impactTitle": "საპილოტე მარკეტის პროგრესი",
     "home.businessCtaBadge": "ბიზნესებისთვის",
     "home.businessCtaTitle": "გაქვს საცხობი, კაფე ან რესტორანი?",
     "home.businessCtaText":
       "შემოუერთდი ArGadaagdo-ს და გადააქციე დარჩენილი საკვები დამატებით შემოსავალად.",
+    "home.moreBusinessesJoiningSoon": "მეტი ბიზნესი მალე შემოგვიერთდება",
+    "home.moreBusinessesJoiningSoonText":
+      "ArGadaagdo ფრთხილად ეშვება დამოწმებულ ადგილობრივ ბიზნესებთან თბილისში.",
     "home.registerBusiness": "დაარეგისტრირე ბიზნესი",
     "home.customerCtaBadge": "მომხმარებლებისთვის",
     "home.customerCtaTitle": "ეძებ კარგ საკვებს კარგ ფასად?",
     "home.customerCtaText":
-      "დაათვალიერე ფასდაკლებული სიურპრიზის ყუთები ადგილობრივი ბიზნესებიდან და წაიღე მითითებულ დროს.",
+      "დაზოგე თანხა, შეამცირე საკვების ნარჩენი და მხარი დაუჭირე ადგილობრივ ბიზნესებს ფასდაკლებული სიურპრიზის ყუთებით.",
     "home.finalCtaTitle": "მზად ხარ საკვების გადასარჩენად?",
     "home.finalCtaText": "დაათვალიერე დღევანდელი სიურპრიზის ყუთები.",
 
@@ -788,6 +866,9 @@ const translations = {
     "offers.sortHighest": "მაღალი ფასი",
     "offers.availableOnly": "მხოლოდ ხელმისაწვდომი",
     "offers.boxesLeft": "დარჩენილი ყუთები",
+    "offers.filterHint":
+      "გამოიყენე ძიება, კატეგორიები და დალაგება სასურველი წაღების ფანჯრის საპოვნელად.",
+    "offers.tbilisiPilot": "თბილისის პილოტი",
     "offers.heading": "საკვების გადარჩენის შეთავაზებები",
     "offers.matches": "ემთხვევა ფილტრებს.",
     "offers.noOffers": "ახლა აქტიური შეთავაზებები არ არის.",
@@ -796,6 +877,9 @@ const translations = {
       "ბიზნესები სიურპრიზის ყუთებს ხშირად დღის მეორე ნახევარში აქვეყნებენ.",
     "offers.noMatchingHint": "სცადე კატეგორიის, ფასის ან ხელმისაწვდომობის ფილტრის შეცვლა.",
     "offers.checkBackSoon": "ახალი საკვების ყუთებისთვის მალე ისევ შეამოწმე.",
+    "offers.surpriseBagTitle": "რა არის სიურპრიზის ყუთი?",
+    "offers.surpriseBagText":
+      "სიურპრიზის ყუთი არის ფასდაკლებული საკვების ყუთი კარგი დარჩენილი საკვებიდან. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ დაჯავშნამდე ყოველთვის ხედავ ბიზნესს, ფასს და წაღების დროს.",
     "offers.clearFilters": "ფილტრების გასუფთავება",
     "offers.backHome": "მთავარზე დაბრუნება",
     "offers.addFavorite": "❤️ რჩეულებში დამატება",
@@ -830,6 +914,12 @@ const translations = {
     "offerDetail.afterReservationVisit": "ეწვიე ბიზნესს წაღების დროს.",
     "offerDetail.afterReservationShowCode":
       "შეკვეთის მისაღებად აჩვენე წაღების კოდი.",
+    "offerDetail.cancellationReminderTitle": "გაუქმების შეხსენება",
+    "offerDetail.cancellationReminderText":
+      "თუ გეგმები შეგეცვლება, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე.",
+    "offerDetail.ratingReminderTitle": "წაღების შემდეგ",
+    "offerDetail.ratingReminderText":
+      "შეფასება ხელმისაწვდომი გახდება წაღების შემდეგ და სხვა მომხმარებლებს სანდო ბიზნესების არჩევაში ეხმარება.",
     "offerDetail.noReviewsHint":
       "შეფასებები აქ გამოჩნდება მას შემდეგ, რაც მომხმარებლები წაღებას დაასრულებენ და ბიზნესს შეაფასებენ.",
     "offerDetail.notFound": "შეთავაზება ვერ ჩაიტვირთა.",
@@ -846,6 +936,14 @@ const translations = {
     "businessProfile.trustTitle": "დამტკიცებულია ArGadaagdo-ზე",
     "businessProfile.trustMessage":
       "ეს ბიზნესი დამტკიცებულია ArGadaagdo-ზე შეთავაზებების გასაყიდად.",
+    "businessProfile.localBusinessTitle": "ადგილობრივი კვების ბიზნესი",
+    "businessProfile.localBusinessText":
+      "ეს პროფილი მომხმარებლებს ეხმარება გაიგონ, ვინ ამზადებს სიურპრიზის ყუთებს.",
+    "businessProfile.pickupOnlyTitle": "მხოლოდ ადგილზე წაღება",
+    "businessProfile.pickupOnlyText":
+      "მომხმარებლები ონლაინ ჯავშნიან და შეკვეთას ბიზნესიდან მითითებულ ფანჯარაში იღებენ.",
+    "businessProfile.reviewsIntro":
+      "შეფასებები მოდის დასრულებული წაღებების შემდეგ და მომავალ მომხმარებლებს ნდობით არჩევაში ეხმარება.",
     "businessProfile.noActiveOffers": "ახლა აქტიური სიურპრიზის ყუთები არ არის.",
     "businessProfile.noActiveOffersHint":
       "ამ ბიზნესის ახალი საკვების გადარჩენის შეთავაზებებისთვის მოგვიანებით შეამოწმე.",
@@ -885,6 +983,18 @@ const translations = {
       "გაუზიარე შენი გამოცდილება და დაეხმარე სხვა მომხმარებლებს.",
     "orders.activePickupReminder":
       "არ დაგავიწყდეს შეკვეთის წაღება მითითებულ ფანჯარაში. თან გქონდეს წაღების კოდი.",
+    "orders.pickupInstructionTitle": "წაღებისას",
+    "orders.pickupInstructionText":
+      "გახსენი ეს გვერდი, აჩვენე წაღების კოდი ბიზნესს და აიღე სიურპრიზის ყუთი მითითებულ ფანჯარაში.",
+    "orders.statusGuideReservedTitle": "დაჯავშნილი",
+    "orders.statusGuideReservedText":
+      "შენი წაღების კოდი აქტიურია. ეწვიე ბიზნესს მითითებულ წაღების ფანჯარაში.",
+    "orders.statusGuideCollectedTitle": "წაღებული",
+    "orders.statusGuideCollectedText":
+      "ბიზნესმა კოდი შეამოწმა და წაღება დაასრულა.",
+    "orders.statusGuideCancelledTitle": "გაუქმებული",
+    "orders.statusGuideCancelledText":
+      "გაუქმებული ან დაბრუნებული ჯავშნები ისტორიაში რჩება.",
     "orders.reviewThanks": "მადლობა შეფასებისთვის.",
     "orders.collectedMessage": "ეს შეკვეთა წაღებულია.",
     "orders.cancelledMessage": "ეს ჯავშანი გაუქმებულია.",
@@ -909,6 +1019,9 @@ const translations = {
     "favorites.trustReminder":
       "შეთავაზებები შეიძლება სწრაფად გაიყიდოს. თუ რამე მოგეწონა, ადრე დაჯავშნე.",
     "favorites.viewOffer": "შეთავაზების ნახვა",
+    "favorites.offerUnavailable": "შეთავაზება აღარ არის ხელმისაწვდომი",
+    "favorites.offerEndedHint":
+      "ეს შენახული შეთავაზება შეიძლება დასრულდა, გაიყიდა ან აღარ არის ხელმისაწვდომი.",
 
     "businessDashboard.title": "მართე შეთავაზებები და წაღებები.",
     "businessDashboard.subtitle": "გამოაქვეყნე საკვების ყუთები, აკონტროლე ჯავშნები და გადაამოწმე წაღების კოდები.",
@@ -922,6 +1035,12 @@ const translations = {
     "businessDashboard.emptyAnalytics":
       "სტატისტიკა გამოჩნდება, როცა მომხმარებლები შენს შეთავაზებებთან ურთიერთობას დაიწყებენ.",
     "businessDashboard.createOffer": "შეთავაზების შექმნა",
+    "businessDashboard.createOfferButton": "შეთავაზების შექმნა",
+    "businessDashboard.publishing": "ქვეყნდება...",
+    "businessDashboard.selectedImage": "არჩეული სურათი",
+    "businessDashboard.created": "შექმნილია",
+    "businessDashboard.customer": "მომხმარებელი",
+    "businessDashboard.reliability": "სანდოობა",
     "businessDashboard.myOffers": "ჩემი შეთავაზებები",
     "businessDashboard.reservations": "ჯავშნები",
     "businessDashboard.businessReviews": "ბიზნესის შეფასებები",
@@ -957,11 +1076,19 @@ const translations = {
     "businessDashboard.noFilteredReservationsHint":
       "სხვა სტატუსი აირჩიე მეტი შედეგის სანახავად.",
     "businessDashboard.createFirstOffer": "პირველი შეთავაზების შექმნა",
+    "businessDashboard.viewReservations": "ჯავშნების ნახვა",
     "businessOnboarding.badge": "საპილოტე ონბორდინგი",
     "businessOnboarding.welcomeTitle": "კეთილი იყოს შენი მობრძანება ArGadaagdo-ში.",
     "businessOnboarding.welcomeText":
       "შექმენი პირველი სიურპრიზის ყუთი და დაიწყე ჯავშნების მიღება თბილისის მომხმარებლებისგან.",
     "businessOnboarding.createFirstBag": "პირველი სიურპრიზის ყუთის შექმნა",
+    "businessOnboarding.workflowBadge": "ბიზნეს გზამკვლევი",
+    "businessOnboarding.workflowTitle": "როგორ მუშაობს ArGadaagdo",
+    "businessOnboarding.workflowCreateOffer": "შექმენი შეთავაზება.",
+    "businessOnboarding.workflowReceiveReservations": "მიიღე ჯავშნები.",
+    "businessOnboarding.workflowVerifyPickupCode": "შეამოწმე წაღების კოდი.",
+    "businessOnboarding.workflowCompletePickup": "დაასრულე წაღება.",
+    "businessOnboarding.workflowReceiveRatings": "მიიღე შეფასებები.",
     "businessOnboarding.checklistBadge": "სწრაფი დაწყება",
     "businessOnboarding.checklistTitle": "დაწყების ნაბიჯები",
     "businessOnboarding.step": "ნაბიჯი",
@@ -982,9 +1109,28 @@ const translations = {
     "businessOnboarding.recommendedPickupWindowValue": "1-2 საათი",
     "businessOnboarding.recommendedTitle": "მკაფიო სათაურის მაგალითი",
     "businessOnboarding.recommendedTitleValue": "საცხობის სიურპრიზის ყუთი",
+    "businessOnboarding.realExamplesTitle": "რეალისტური შეთავაზებების მაგალითები",
+    "businessOnboarding.realExamplesText":
+      "გამოიყენე სახელები, როგორიცაა საცხობის სიურპრიზის ყუთი, კაფეს დახურვის ყუთი ან რესტორნის გადარჩენის ყუთი, რომ მომხმარებელმა შეთავაზება სწრაფად გაიგოს.",
+    "businessOnboarding.titleHelper":
+      "სათაური: გამოიყენე მკაფიო სახელი, მაგალითად საცხობის სიურპრიზის ყუთი.",
+    "businessOnboarding.quantityHelper":
+      "რაოდენობა: რამდენ მომხმარებელს შეუძლია ამ შეთავაზების დაჯავშნა.",
+    "businessOnboarding.pickupWindowHelper":
+      "წაღების ფანჯარა: როდის შეუძლიათ მომხმარებლებს შეკვეთის წაღება. საუკეთესოა მკაფიო 1-2 საათიანი ფანჯარა.",
+    "businessOnboarding.offerValidationHint":
+      "გამოქვეყნებამდე გადაამოწმე სათაური, კატეგორია, ფასი, რაოდენობა, წაღების თარიღი, დრო და სურათი.",
     "businessOnboarding.reservationGuidanceTitle": "როგორ მუშაობს ჯავშნები",
     "businessOnboarding.reservationGuidanceText":
       "ჯავშნის შემდეგ მომხმარებელი იღებს წაღების კოდს. საკვების გადაცემამდე კოდი გადაამოწმე.",
+    "businessOnboarding.reservationCardHint":
+      "ყოველი ჯავშნის ბარათი აჩვენებს მომხმარებლის ელფოსტას, სტატუსს, წაღების დროს და გადაცემის დასადასტურებელ მოქმედებას.",
+    "businessOnboarding.pickupVerificationTitle": "წაღების შემოწმება",
+    "businessOnboarding.pickupVerificationText":
+      "წაღების დასრულებამდე მომხმარებელს ჰკითხე წაღების კოდი. კოდის შესამოწმებლად და წაღების დასასრულებლად გამოიყენე ჯავშნის ბარათის ღილაკი.",
+    "businessOnboarding.pickupStepAskCode": "ჰკითხე მომხმარებელს კოდი",
+    "businessOnboarding.pickupStepEnterCode": "შეიყვანე კოდი შემოწმების ფანჯარაში",
+    "businessOnboarding.pickupStepComplete": "დაასრულე წაღება მხოლოდ დამთხვევის შემდეგ",
     "businessOnboarding.ratingsGuidanceTitle": "რატომ არის შეფასებები მნიშვნელოვანი",
     "businessOnboarding.ratingsGuidanceText":
       "კარგი შეფასებები მომხმარებლებს შენს ბიზნესში ნდობას უჩენს და მომავალ ჯავშნებს ეხმარება.",
@@ -1004,19 +1150,26 @@ const translations = {
     "login.signInHint": "გასაგრძელებლად შეიყვანე ელფოსტა და პაროლი.",
     "login.signUpTitle": "შექმენი ანგარიში",
     "login.signUpHint": "აირჩიე, როგორ გამოიყენებ ArGadaagdo-ს.",
+    "login.signInModeHelper": "არსებული ანგარიში",
+    "login.signUpModeHelper": "ახალი ანგარიში",
     "login.alreadyHaveAccount": "უკვე გაქვს ანგარიში?",
     "login.dontHaveAccount": "არ გაქვს ანგარიში?",
     "login.redirectCheckout":
       "ამ შეთავაზების დასაჯავშნად, გთხოვ, შეხვიდე ანგარიშში.",
-    "login.redirectOrders":
-      "შეკვეთებისა და წაღების კოდების სანახავად, გთხოვ, შეხვიდე ანგარიშში.",
+    "login.redirectOrders": "შეკვეთების სანახავად, გთხოვ, შეხვიდე ანგარიშში.",
     "login.redirectFavorites":
       "შენახული შეთავაზებების სანახავად, გთხოვ, შეხვიდე ანგარიშში.",
     "login.accountType": "ანგარიშის ტიპი",
+    "login.accountTypeHint":
+      "აირჩიე მომხმარებელი, თუ საკვების შეთავაზებების დაჯავშნა გინდა. აირჩიე ბიზნესი, თუ კაფეს, საცხობის, რესტორნის ან მაღაზიის შეთავაზებებს გამოაქვეყნებ.",
     "login.customer": "მომხმარებელი",
     "login.business": "ბიზნესი",
-    "login.customerHint": "დაჯავშნე საკვები და შეაფასე ბიზნესები",
-    "login.businessHint": "შექმენი შეთავაზებები და მართე ჯავშნები",
+    "login.customerHint": "დაჯავშნე საკვების შეთავაზებები.",
+    "login.businessHint": "შექმენი და მართე შეთავაზებები.",
+    "login.forCustomers": "მომხმარებლებისთვის",
+    "login.forCustomersText": "დაჯავშნე ფასდაკლებული სიურპრიზის ყუთები და წაიღე ადგილზე.",
+    "login.forBusinesses": "ბიზნესებისთვის",
+    "login.forBusinessesText": "შექმენი ადგილზე წასაღები შეთავაზებები და მართე მომხმარებლის ჯავშნები.",
 
     "businessRegister.badge": "ადგილობრივი ბიზნესებისთვის",
     "businessRegister.title": "დაარეგისტრირე შენი კვების ბიზნესი",
@@ -1029,6 +1182,15 @@ const translations = {
     "businessRegister.step3": "3. გამოაქვეყნე შეთავაზებები",
     "businessRegister.step3Text": "შექმენი ადგილზე წასაღები საკვების შეთავაზებები.",
     "businessRegister.details": "ბიზნესის დეტალები",
+    "businessRegister.detailsHint":
+      "გამოიყენე რეალური ინფორმაცია, რომელსაც მომხმარებლები და ადმინი თბილისის პილოტის დროს ამოიცნობენ.",
+    "businessRegister.requiredInfoTitle": "რა დაგჭირდება",
+    "businessRegister.requiredNameType": "ბიზნესის სახელი და ტიპი",
+    "businessRegister.requiredAddress": "წაღების მისამართი თბილისში",
+    "businessRegister.requiredPhone": "ტელეფონის ნომერი ადმინთან კომუნიკაციისთვის",
+    "businessRegister.expectationsTitle": "რა ხდება შემდეგ",
+    "businessRegister.expectationsText":
+      "პილოტის პერიოდში განაცხადებს ხელით ვამოწმებთ. დამტკიცების შემდეგ პანელიდან სიურპრიზის ყუთებს შექმნი და წაღებებს მართავ.",
     "businessRegister.name": "ბიზნესის სახელი",
     "businessRegister.address": "მისამართი თბილისში",
     "businessRegister.phone": "ტელეფონის ნომერი",

@@ -886,6 +886,13 @@ export default function BusinessDashboardPage() {
       completed: reviews.length > 0,
     },
   ];
+  const businessWorkflowSteps = [
+    t("businessOnboarding.workflowCreateOffer"),
+    t("businessOnboarding.workflowReceiveReservations"),
+    t("businessOnboarding.workflowVerifyPickupCode"),
+    t("businessOnboarding.workflowCompletePickup"),
+    t("businessOnboarding.workflowReceiveRatings"),
+  ];
   const businessTips = [
     t("businessOnboarding.tipPublishEarly"),
     t("businessOnboarding.tipClearNames"),
@@ -1089,6 +1096,28 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            {t("businessOnboarding.workflowBadge")}
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            {t("businessOnboarding.workflowTitle")}
+          </h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {businessWorkflowSteps.map((step, index) => (
+              <div
+                key={step}
+                className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
+              >
+                <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
+                  {index + 1}
+                </span>
+                {step}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
             <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -1149,10 +1178,7 @@ export default function BusinessDashboardPage() {
           </div>
         </div>
 
-        <div
-          id="create-offer"
-          className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
-        >
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -1217,7 +1243,10 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+        <div
+          id="create-offer"
+          className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
+        >
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
             Offer Management
           </p>
@@ -1246,6 +1275,14 @@ export default function BusinessDashboardPage() {
                     </div>
                   ))}
                 </div>
+                <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
+                  <p className="text-sm font-black text-gray-950">
+                    {t("businessOnboarding.realExamplesTitle")}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-gray-700">
+                    {t("businessOnboarding.realExamplesText")}
+                  </p>
+                </div>
               </div>
 
               <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -1265,7 +1302,8 @@ export default function BusinessDashboardPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="rounded-2xl border p-4 font-semibold"
-                  placeholder="Offer title"
+                  aria-label="Offer title"
+                  placeholder="Bakery Surprise Bag"
                 />
 
                 <select
@@ -1292,7 +1330,8 @@ export default function BusinessDashboardPage() {
                   step="0.01"
                   inputMode="decimal"
                   className="rounded-2xl border p-4 font-semibold"
-                  placeholder="Price"
+                  aria-label="Offer price"
+                  placeholder="5.00"
                 />
 
                 <input
@@ -1303,7 +1342,8 @@ export default function BusinessDashboardPage() {
                   step="0.01"
                   inputMode="decimal"
                   className="rounded-2xl border p-4 font-semibold"
-                  placeholder="Old price"
+                  aria-label="Original price"
+                  placeholder="10.00"
                 />
 
                 <input
@@ -1314,7 +1354,8 @@ export default function BusinessDashboardPage() {
                   step="1"
                   inputMode="numeric"
                   className="rounded-2xl border p-4 font-semibold"
-                  placeholder="Quantity"
+                  aria-label="Quantity"
+                  placeholder="3"
                 />
 
                 <input
@@ -1331,7 +1372,7 @@ export default function BusinessDashboardPage() {
                   onChange={(e) => setPickupStart(e.target.value)}
                   type="time"
                   className="rounded-2xl border p-4 font-semibold"
-                  placeholder="Pickup start"
+                  aria-label="Pickup start"
                 />
 
                 <input
@@ -1339,7 +1380,7 @@ export default function BusinessDashboardPage() {
                   onChange={(e) => setPickupEnd(e.target.value)}
                   type="time"
                   className="rounded-2xl border p-4 font-semibold"
-                  placeholder="Pickup end"
+                  aria-label="Pickup end"
                 />
 
                 <input
@@ -1350,9 +1391,28 @@ export default function BusinessDashboardPage() {
                 />
               </div>
 
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {[
+                  t("businessOnboarding.titleHelper"),
+                  t("businessOnboarding.quantityHelper"),
+                  t("businessOnboarding.pickupWindowHelper"),
+                ].map((helper) => (
+                  <p
+                    key={helper}
+                    className="rounded-2xl bg-[#F7F6EF] p-4 text-sm font-semibold leading-6 text-gray-700"
+                  >
+                    {helper}
+                  </p>
+                ))}
+              </div>
+
+              <p className="mt-4 rounded-2xl bg-yellow-50 px-4 py-3 text-sm font-bold leading-6 text-yellow-900">
+                {t("businessOnboarding.offerValidationHint")}
+              </p>
+
               {imageFile && (
                 <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
-                  Selected image: {imageFile.name}
+                  {t("businessDashboard.selectedImage")}: {imageFile.name}
                 </p>
               )}
 
@@ -1361,7 +1421,9 @@ export default function BusinessDashboardPage() {
                 disabled={publishing}
                 className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
               >
-                {publishing ? "Publishing..." : "Create Offer"}
+                {publishing
+                  ? t("businessDashboard.publishing")
+                  : t("businessDashboard.createOfferButton")}
               </button>
             </>
           ) : (
@@ -1442,7 +1504,8 @@ export default function BusinessDashboardPage() {
                           ⭐ {getRatingLabel(rating, language)}
                         </p>
                         <p className="mt-1 text-xs font-bold text-gray-500">
-                          Created: {formatDisplayDateTime(offer.created_at, language)}
+                          {t("businessDashboard.created")}:{" "}
+                          {formatDisplayDateTime(offer.created_at, language)}
                         </p>
                       </div>
                     </div>
@@ -1497,7 +1560,8 @@ export default function BusinessDashboardPage() {
                           value={editTitle}
                           onChange={(event) => setEditTitle(event.target.value)}
                           className="rounded-2xl border bg-white p-4 font-semibold"
-                          placeholder="Offer title"
+                          aria-label="Offer title"
+                          placeholder="Bakery Surprise Bag"
                         />
 
                         <select
@@ -1526,7 +1590,8 @@ export default function BusinessDashboardPage() {
                           step="0.01"
                           inputMode="decimal"
                           className="rounded-2xl border bg-white p-4 font-semibold"
-                          placeholder="Price"
+                          aria-label="Offer price"
+                          placeholder="5.00"
                         />
 
                         <input
@@ -1539,7 +1604,8 @@ export default function BusinessDashboardPage() {
                           step="0.01"
                           inputMode="decimal"
                           className="rounded-2xl border bg-white p-4 font-semibold"
-                          placeholder="Old price"
+                          aria-label="Original price"
+                          placeholder="10.00"
                         />
 
                         <input
@@ -1552,7 +1618,8 @@ export default function BusinessDashboardPage() {
                           step="1"
                           inputMode="numeric"
                           className="rounded-2xl border bg-white p-4 font-semibold"
-                          placeholder="Quantity"
+                          aria-label="Quantity"
+                          placeholder="3"
                         />
 
                         <input
@@ -1593,7 +1660,10 @@ export default function BusinessDashboardPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+        <div
+          id="reservations"
+          className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
+        >
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
             Pickup Operations
           </p>
@@ -1608,16 +1678,37 @@ export default function BusinessDashboardPage() {
             <p className="mt-2 font-semibold leading-7 text-green-900">
               {t("businessOnboarding.reservationGuidanceText")}
             </p>
+            <p className="mt-3 rounded-2xl bg-white p-4 text-sm font-bold leading-6 text-green-900">
+              {t("businessOnboarding.reservationCardHint")}
+            </p>
           </div>
 
           <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-4 sm:p-5">
-            <h3 className="text-xl font-black">Pickup verification</h3>
+            <h3 className="text-xl font-black">
+              {t("businessOnboarding.pickupVerificationTitle")}
+            </h3>
 
             <p className="mt-2 font-semibold leading-7 text-gray-600">
-              Ask the customer for their pickup code before completing
-              collection. Use the reservation card button to verify the code and
-              complete the pickup.
+              {t("businessOnboarding.pickupVerificationText")}
             </p>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                t("businessOnboarding.pickupStepAskCode"),
+                t("businessOnboarding.pickupStepEnterCode"),
+                t("businessOnboarding.pickupStepComplete"),
+              ].map((step, index) => (
+                <div
+                  key={step}
+                  className="rounded-2xl bg-white p-4 text-sm font-black leading-6 text-gray-800"
+                >
+                  <span className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-700 text-white">
+                    {index + 1}
+                  </span>
+                  {step}
+                </div>
+              ))}
+            </div>
           </div>
 
           {orders.length > 0 && (
@@ -1709,11 +1800,13 @@ export default function BusinessDashboardPage() {
                   </h3>
 
                   <p className="mt-2 font-semibold text-gray-700">
-                    Customer: {order.profiles?.email || t("common.unavailable")}
+                    {t("businessDashboard.customer")}:{" "}
+                    {order.profiles?.email || t("common.unavailable")}
                   </p>
 
                   <p className="mt-1 font-semibold text-gray-600">
-                    Created: {formatDisplayDateTime(order.created_at, language)}
+                    {t("businessDashboard.created")}:{" "}
+                    {formatDisplayDateTime(order.created_at, language)}
                   </p>
 
                   <p className="mt-1 font-black text-green-700">
@@ -1730,7 +1823,7 @@ export default function BusinessDashboardPage() {
                   </p>
 
                   <p className="mt-1 text-sm font-bold text-gray-500">
-                    Reliability:{" "}
+                    {t("businessDashboard.reliability")}:{" "}
                     {order.profiles?.reliability_score ?? t("common.unavailable")} ·{" "}
                     {order.profiles?.reliability_status || t("common.unavailable")}
                   </p>
@@ -1821,7 +1914,7 @@ export default function BusinessDashboardPage() {
                       t("common.offerUnavailable")}
                   </p>
                   <p className="mt-2 font-semibold text-gray-700">
-                    Customer:{" "}
+                    {t("businessDashboard.customer")}:{" "}
                     {pickupVerificationOrder.profiles?.email ||
                       t("common.unavailable")}
                   </p>
@@ -1933,6 +2026,12 @@ export default function BusinessDashboardPage() {
                 <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
                   {t("businessDashboard.noReviewsHint")}
                 </p>
+                <a
+                  href="#reservations"
+                  className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-yellow-500 px-6 py-3 font-black text-yellow-950 transition hover:bg-yellow-400"
+                >
+                  {t("businessDashboard.viewReservations")}
+                </a>
               </div>
             )}
 

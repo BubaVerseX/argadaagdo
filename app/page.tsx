@@ -98,8 +98,10 @@ export default function Home() {
     : t("home.pickupWindows");
   const trustStripItems = [
     t("home.trustVerifiedBusinesses"),
-    t("home.trustEasyPickupProcess"),
-    t("home.trustReduceFoodWaste"),
+    t("home.trustPickupOnlyMarketplace"),
+    t("home.trustPickupCodeVerification"),
+    t("home.trustCustomerRatings"),
+    t("home.trustSecureReservationFlow"),
     t("home.trustLocalTbilisiBusinesses"),
   ];
   const missionHighlights = [
@@ -409,6 +411,9 @@ export default function Home() {
             >
               {t("home.registerBusiness")}
             </Link>
+            <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-black text-green-800">
+              {t("home.moreBusinessesJoiningSoon")}
+            </p>
           </div>
 
           <div className="rounded-[2rem] bg-yellow-50 p-6 shadow-sm ring-1 ring-yellow-100 sm:p-8">
@@ -570,9 +575,14 @@ export default function Home() {
 
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {topBusinesses.length === 0 && (
-              <p className="font-semibold text-gray-600 md:col-span-3">
-                {t("common.noRatings")}
-              </p>
+              <div className="rounded-3xl bg-[#F7F6EF] p-6 md:col-span-3">
+                <h4 className="text-2xl font-black text-gray-950">
+                  {t("home.moreBusinessesJoiningSoon")}
+                </h4>
+                <p className="mt-2 font-semibold leading-7 text-gray-700">
+                  {t("home.moreBusinessesJoiningSoonText")}
+                </p>
+              </div>
             )}
 
             {topBusinesses.map((business) => (

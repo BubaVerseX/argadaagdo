@@ -69,10 +69,11 @@ export default function Footer() {
           <h3 className="text-lg font-black text-gray-950">{t("home.stats")}</h3>
 
           <div className="mt-4 grid gap-3 font-bold text-gray-600">
-            <p>{t("home.pickupOnly")}</p>
-            <p>{t("home.onlinePayment")}</p>
-            <p>{t("footer.tbilisiFirst")}</p>
-            <p>{t("footer.reduceWaste")}</p>
+            <p>{t("home.trustVerifiedBusinesses")}</p>
+            <p>{t("home.trustPickupOnlyMarketplace")}</p>
+            <p>{t("home.trustCustomerRatings")}</p>
+            <p>{t("home.trustSecureReservationFlow")}</p>
+            <p>{t("home.trustLocalTbilisiBusinesses")}</p>
           </div>
         </div>
       </div>

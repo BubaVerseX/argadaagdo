@@ -347,7 +347,7 @@ export default function FavoritesPage() {
 
                 <div className="p-4 sm:p-5 md:p-6">
                   <h2 className="text-xl font-black leading-tight sm:text-2xl">
-                    {offer?.title || "Offer no longer available"}
+                    {offer?.title || t("favorites.offerUnavailable")}
                   </h2>
 
                   <p className="mt-2 text-lg font-bold text-gray-800">
@@ -383,7 +383,7 @@ export default function FavoritesPage() {
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <p>
                           {offer?.businesses?.address ||
-                            "This offer may have ended or become private."}
+                            t("favorites.offerEndedHint")}
                         </p>
 
                         {offer?.businesses?.address && (

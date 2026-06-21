@@ -101,6 +101,18 @@ export default function LoginPage() {
     "success" | "error" | "warning"
   >("success");
   const [submitting, setSubmitting] = useState(false);
+  const authModeOptions = [
+    {
+      value: "login" as const,
+      label: t("login.signIn"),
+      helper: t("login.signInModeHelper"),
+    },
+    {
+      value: "signup" as const,
+      label: t("login.signUp"),
+      helper: t("login.signUpModeHelper"),
+    },
+  ];
 
   async function createAccount() {
     setMessage("");
@@ -258,16 +270,16 @@ export default function LoginPage() {
 
             <div className="mt-8 grid gap-4">
               <div className="rounded-3xl bg-white/10 p-5">
-                <h3 className="text-xl font-black">For customers</h3>
+                <h3 className="text-xl font-black">{t("login.forCustomers")}</h3>
                 <p className="mt-2 font-medium text-green-50">
-                  Browse discounted food and reserve pickup-only offers.
+                  {t("login.forCustomersText")}
                 </p>
               </div>
 
               <div className="rounded-3xl bg-white/10 p-5">
-                <h3 className="text-xl font-black">For businesses</h3>
+                <h3 className="text-xl font-black">{t("login.forBusinesses")}</h3>
                 <p className="mt-2 font-medium text-green-50">
-                  Register your business and publish rescue offers.
+                  {t("login.forBusinessesText")}
                 </p>
               </div>
             </div>
@@ -285,6 +297,37 @@ export default function LoginPage() {
                 ? t("login.signInHint")
                 : t("login.signUpHint")}
             </p>
+
+            <div className="mt-6 grid gap-2 rounded-3xl bg-[#F7F6EF] p-2 sm:grid-cols-2">
+              {authModeOptions.map((option) => {
+                const isActive = authMode === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setMessage("");
+                      setAuthMode(option.value);
+                    }}
+                    className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                      isActive
+                        ? "bg-green-700 text-white shadow-sm"
+                        : "bg-white text-gray-700 hover:bg-green-50"
+                    }`}
+                  >
+                    <span className="block font-black">{option.label}</span>
+                    <span
+                      className={`mt-1 block text-sm font-semibold ${
+                        isActive ? "text-green-50" : "text-gray-500"
+                      }`}
+                    >
+                      {option.helper}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
             <div className="mt-6 grid gap-4 sm:gap-5">
               {authMode === "login" && redirectMessage && !message && (
@@ -313,6 +356,9 @@ export default function LoginPage() {
                 <div>
                   <p className="mb-3 font-black text-gray-800">
                     {t("login.accountType")}
+                  </p>
+                  <p className="mb-4 text-sm font-semibold leading-6 text-gray-600">
+                    {t("login.accountTypeHint")}
                   </p>
 
                   <div className="grid gap-3 sm:grid-cols-2">

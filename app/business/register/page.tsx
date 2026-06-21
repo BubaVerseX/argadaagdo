@@ -224,6 +224,31 @@ export default function BusinessRegisterPage() {
               <h2 className="text-2xl font-black text-gray-950">
                 {t("businessRegister.details")}
               </h2>
+              <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+                {t("businessRegister.detailsHint")}
+              </p>
+
+              <div className="mt-5 grid gap-3">
+                <div className="rounded-2xl bg-white p-4 shadow-sm">
+                  <p className="text-sm font-black text-gray-950">
+                    {t("businessRegister.requiredInfoTitle")}
+                  </p>
+                  <ul className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-gray-700">
+                    <li>{t("businessRegister.requiredNameType")}</li>
+                    <li>{t("businessRegister.requiredAddress")}</li>
+                    <li>{t("businessRegister.requiredPhone")}</li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl bg-green-50 p-4">
+                  <p className="text-sm font-black text-green-800">
+                    {t("businessRegister.expectationsTitle")}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                    {t("businessRegister.expectationsText")}
+                  </p>
+                </div>
+              </div>
 
               <div className="mt-6 grid gap-4">
                 <input
