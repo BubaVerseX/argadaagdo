@@ -3,13 +3,13 @@ import type { Profile } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 
 export const SIGNUP_CONFIRM_EMAIL_MESSAGE =
-  "Check your email to confirm your account before signing in.";
+  "Check your email to verify your account before signing in.";
 
 export const VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE =
-  "Please confirm your email before using this page.";
+  "Please verify your email before using ArGadaagdo.";
 
 export const VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE =
-  "Please confirm your email before signing in.";
+  "Please verify your email before signing in. Check your inbox and spam folder for the confirmation link.";
 
 export type ConfirmedUserResult =
   | { status: "confirmed"; user: User }

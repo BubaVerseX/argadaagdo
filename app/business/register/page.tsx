@@ -36,7 +36,7 @@ export default function BusinessRegisterPage() {
       if (!active) return;
 
       if (authResult.status === "signed_out") {
-        router.replace("/login");
+        router.replace("/login?redirect=/business/register");
         return;
       }
 
@@ -112,7 +112,7 @@ export default function BusinessRegisterPage() {
 
     if (authResult.status === "signed_out") {
       setSubmitting(false);
-      router.push("/login");
+      router.push("/login?redirect=/business/register");
       return;
     }
 

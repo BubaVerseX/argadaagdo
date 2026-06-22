@@ -373,32 +373,6 @@ export default function OrdersPage() {
             />
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {[
-              {
-                title: t("orders.statusGuideReservedTitle"),
-                text: t("orders.statusGuideReservedText"),
-              },
-              {
-                title: t("orders.statusGuideCollectedTitle"),
-                text: t("orders.statusGuideCollectedText"),
-              },
-              {
-                title: t("orders.statusGuideCancelledTitle"),
-                text: t("orders.statusGuideCancelledText"),
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-2xl bg-[#F7F6EF] p-4 text-left"
-              >
-                <p className="font-black text-gray-950">{item.title}</p>
-                <p className="mt-1 text-sm font-semibold leading-6 text-gray-600">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
 
         {!loading && orders.length > 0 && (

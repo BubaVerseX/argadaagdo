@@ -158,7 +158,6 @@ export default function CheckoutPage() {
   ];
   const trustItems = [
     t("checkout.trustVerifiedBusiness"),
-    t("checkout.trustSecureReservation"),
     t("checkout.trustPickupCode"),
     t("checkout.trustCustomerRatings"),
   ];
@@ -451,24 +450,6 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-2xl bg-yellow-50 p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-yellow-700">
-                      {t("checkout.noShowWarning")}
-                    </p>
-                    <p className="mt-2 text-sm font-bold text-yellow-900">
-                      {t("checkout.noShowText")}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
-                      {t("checkout.afterConfirmation")}
-                    </p>
-                    <p className="mt-2 text-sm font-bold text-gray-800">
-                      {t("checkout.ordersReminder")}
-                    </p>
-                  </div>
-
                   {offer.old_price && (
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-gray-600">
@@ -503,11 +484,6 @@ export default function CheckoutPage() {
                     </span>
                   </label>
 
-                  <div className="rounded-2xl bg-green-50 p-4">
-                    <p className="text-sm font-bold leading-6 text-green-900">
-                      {t("checkout.ratingReminder")}
-                    </p>
-                  </div>
                 </div>
 
                 <button

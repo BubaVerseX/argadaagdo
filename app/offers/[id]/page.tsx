@@ -141,8 +141,6 @@ export default function OfferDetailPage() {
     t("home.trustVerifiedBusinesses"),
     t("home.trustPickupCodeVerification"),
     t("home.trustCustomerRatings"),
-    t("home.trustSecureReservationFlow"),
-    t("home.trustLocalTbilisiBusinesses"),
   ];
 
   return (

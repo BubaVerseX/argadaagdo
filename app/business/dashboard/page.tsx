@@ -1,10 +1,12 @@
 "use client";
 
-import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
-import { getConfirmedProfile } from "@/lib/auth";
+import {
+  getConfirmedProfile,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyPickupCompleted } from "@/lib/notifications";
 import {
@@ -46,7 +48,7 @@ function createImageFileName(file: File) {
 
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
 const maxImageSizeBytes = 5 * 1024 * 1024;
-type ReservationFilter = "all" | "reserved" | "collected" | "cancelled";
+type ReservationFilter = "reserved" | "collected" | "cancelled" | "no_show";
 type MetricTone = "neutral" | "green" | "yellow";
 
 const metricToneStyles: Record<
@@ -72,11 +74,6 @@ const metricToneStyles: Record<
 
 function isApprovedBusiness(business: Business) {
   return business.approved === true || String(business.approved) === "true";
-}
-
-function getPercentage(value: number, total: number) {
-  if (total <= 0) return 0;
-  return Math.round((value / total) * 100);
 }
 
 function getImageValidationError(file: File) {
@@ -121,7 +118,7 @@ export default function BusinessDashboardPage() {
   const [pickupVerificationError, setPickupVerificationError] = useState("");
   const [editingOfferId, setEditingOfferId] = useState<number | null>(null);
   const [reservationFilter, setReservationFilter] =
-    useState<ReservationFilter>("all");
+    useState<ReservationFilter>("reserved");
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState(DEFAULT_OFFER_CATEGORY);
   const [editPrice, setEditPrice] = useState("");
@@ -137,8 +134,27 @@ export default function BusinessDashboardPage() {
   const loadDashboard = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
 
+    if (profileResult.status === "signed_out") {
+      router.replace("/login?redirect=/business/dashboard");
+      return;
+    }
+
+    if (profileResult.status === "unverified") {
+      setMessageTone("warning");
+      setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+      setBusinesses([]);
+      setApprovedBusinesses([]);
+      setOffers([]);
+      setOrders([]);
+      setReviews([]);
+      setLoading(false);
+      return;
+    }
+
     if (profileResult.status !== "confirmed") {
-      router.replace("/");
+      setMessageTone("warning");
+      setMessage("Your account profile is still being prepared. Please refresh in a moment.");
+      setLoading(false);
       return;
     }
 
@@ -974,45 +990,12 @@ export default function BusinessDashboardPage() {
       return isCancelledOrderStatus(order.status);
     }
 
-    return true;
-  });
-  const businessAnalytics = [
-    {
-      title: t("businessDashboard.totalOffersMetric"),
-      value: offers.length,
-      caption: t("businessDashboard.totalOffersHelper"),
-      percentage: getPercentage(offers.length, Math.max(offers.length, 1)),
-    },
-    {
-      title: t("businessDashboard.activeOffersMetric"),
-      value: activeOffers.length,
-      caption: t("businessDashboard.activeOffersHelper"),
-      percentage: getPercentage(activeOffers.length, offers.length),
-      tone: "green" as const,
-    },
-    {
-      title: t("businessDashboard.totalReservationsMetric"),
-      value: orders.length,
-      caption: t("businessDashboard.totalReservationsHelper"),
-      percentage: getPercentage(orders.length, Math.max(orders.length, 1)),
-      tone: "yellow" as const,
-    },
-    {
-      title: t("businessDashboard.completedPickupsMetric"),
-      value: collectedOrders.length,
-      caption: t("businessDashboard.completedPickupsHelper"),
-      percentage: getPercentage(collectedOrders.length, orders.length),
-      tone: "green" as const,
-    },
-    {
-      title: t("businessDashboard.cancelledReservationsMetric"),
-      value: cancelledOrders.length,
-      caption: t("businessDashboard.cancelledReservationsHelper"),
-      percentage: getPercentage(cancelledOrders.length, orders.length),
-      tone: "red" as const,
-    },
-  ];
+    if (reservationFilter === "no_show") {
+      return order.status === "no_show";
+    }
 
+    return false;
+  });
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F7F6EF]">
@@ -1096,87 +1079,91 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            {t("businessOnboarding.workflowBadge")}
-          </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-            {t("businessOnboarding.workflowTitle")}
-          </h2>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {businessWorkflowSteps.map((step, index) => (
-              <div
-                key={step}
-                className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
-              >
-                <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
-                  {index + 1}
-                </span>
-                {step}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              {t("businessOnboarding.checklistBadge")}
-            </p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              {t("businessOnboarding.checklistTitle")}
-            </h2>
-
-            <div className="mt-5 grid gap-3">
-              {onboardingChecklist.map((item) => (
-                <div
-                  key={item.label}
-                  className={`flex items-start gap-3 rounded-2xl p-4 font-bold ${
-                    item.completed
-                      ? "bg-green-50 text-green-800"
-                      : "bg-[#F7F6EF] text-gray-700"
-                  }`}
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
-                      item.completed
-                        ? "bg-green-700 text-white"
-                        : "bg-white text-gray-500"
-                    }`}
+        {isNewBusinessOnboarding && (
+          <>
+            <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                {t("businessOnboarding.workflowBadge")}
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                {t("businessOnboarding.workflowTitle")}
+              </h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {businessWorkflowSteps.map((step, index) => (
+                  <div
+                    key={step}
+                    className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
                   >
-                    {item.completed ? "✓" : "□"}
-                  </span>
-                  <span>
-                    <span className="block text-xs uppercase tracking-widest text-gray-500">
-                      {t("businessOnboarding.step")} {item.step}
+                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
+                      {index + 1}
                     </span>
-                    <span className="mt-1 block">{item.label}</span>
-                  </span>
-                </div>
-              ))}
+                    {step}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-sm sm:rounded-[2rem] sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-              {t("businessOnboarding.tipsBadge")}
-            </p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              {t("businessOnboarding.tipsTitle")}
-            </h2>
-            <div className="mt-5 grid gap-3">
-              {businessTips.map((tip) => (
-                <div
-                  key={tip}
-                  className="rounded-2xl bg-white/10 p-4 font-semibold leading-7 text-green-50 ring-1 ring-white/10"
-                >
-                  • {tip}
+            <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
+                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                  {t("businessOnboarding.checklistBadge")}
+                </p>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                  {t("businessOnboarding.checklistTitle")}
+                </h2>
+
+                <div className="mt-5 grid gap-3">
+                  {onboardingChecklist.map((item) => (
+                    <div
+                      key={item.label}
+                      className={`flex items-start gap-3 rounded-2xl p-4 font-bold ${
+                        item.completed
+                          ? "bg-green-50 text-green-800"
+                          : "bg-[#F7F6EF] text-gray-700"
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
+                          item.completed
+                            ? "bg-green-700 text-white"
+                            : "bg-white text-gray-500"
+                        }`}
+                      >
+                        {item.completed ? "✓" : "□"}
+                      </span>
+                      <span>
+                        <span className="block text-xs uppercase tracking-widest text-gray-500">
+                          {t("businessOnboarding.step")} {item.step}
+                        </span>
+                        <span className="mt-1 block">{item.label}</span>
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              <div className="rounded-3xl bg-green-800 p-5 text-white shadow-sm sm:rounded-[2rem] sm:p-8">
+                <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+                  {t("businessOnboarding.tipsBadge")}
+                </p>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                  {t("businessOnboarding.tipsTitle")}
+                </h2>
+                <div className="mt-5 grid gap-3">
+                  {businessTips.map((tip) => (
+                    <div
+                      key={tip}
+                      className="rounded-2xl bg-white/10 p-4 font-semibold leading-7 text-green-50 ring-1 ring-white/10"
+                    >
+                      • {tip}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -1223,11 +1210,6 @@ export default function BusinessDashboardPage() {
             })}
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {businessAnalytics.map((metric) => (
-              <AnalyticsBarCard key={metric.title} {...metric} />
-            ))}
-          </div>
         </div>
 
         {!canCreateOffers && (
@@ -1744,10 +1726,10 @@ export default function BusinessDashboardPage() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             {[
-              { value: "all", label: "All" },
-              { value: "reserved", label: "Reserved" },
-              { value: "collected", label: "Collected" },
+              { value: "reserved", label: "Active Reservations" },
+              { value: "collected", label: "Completed" },
               { value: "cancelled", label: "Cancelled" },
+              { value: "no_show", label: "No-show" },
             ].map((filter) => {
               const isActive = reservationFilter === filter.value;
 
@@ -1779,11 +1761,15 @@ export default function BusinessDashboardPage() {
                 <h3 className="mt-4 text-2xl font-black text-gray-950">
                   {orders.length === 0
                     ? t("businessDashboard.noReservations")
+                    : reservationFilter === "reserved"
+                    ? "No active reservations"
                     : t("businessDashboard.noFilteredReservations")}
                 </h3>
                 <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
                   {orders.length === 0
                     ? t("businessDashboard.noReservationsHint")
+                    : reservationFilter === "reserved"
+                    ? "Completed, cancelled and no-show reservations are kept in history. Use the filters above to review them."
                     : t("businessDashboard.noFilteredReservationsHint")}
                 </p>
               </div>

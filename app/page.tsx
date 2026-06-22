@@ -98,16 +98,9 @@ export default function Home() {
     : t("home.pickupWindows");
   const trustStripItems = [
     t("home.trustVerifiedBusinesses"),
-    t("home.trustPickupOnlyMarketplace"),
     t("home.trustPickupCodeVerification"),
     t("home.trustCustomerRatings"),
-    t("home.trustSecureReservationFlow"),
     t("home.trustLocalTbilisiBusinesses"),
-  ];
-  const missionHighlights = [
-    t("home.missionCustomer"),
-    t("home.missionBusiness"),
-    t("home.missionWaste"),
   ];
   const trustCards = [
     {
@@ -127,13 +120,6 @@ export default function Home() {
       text: t("home.trustCardWasteText"),
     },
   ];
-  const customerOnboardingSteps = [
-    t("customerOnboarding.stepBrowse"),
-    t("customerOnboarding.stepReserve"),
-    t("customerOnboarding.stepCollect"),
-    t("customerOnboarding.stepEnjoy"),
-  ];
-
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
       <Navbar />
@@ -186,21 +172,6 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 lg:grid-cols-4">
-                {trustCards.map((card) => (
-                  <div
-                    key={card.title}
-                    className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5"
-                  >
-                    <p className="text-base font-black text-green-800 sm:text-lg">
-                      {card.title}
-                    </p>
-                    <p className="mt-2 text-sm font-bold leading-6 text-gray-600">
-                      {card.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="relative">
@@ -304,90 +275,6 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-6 sm:px-6 sm:py-8 md:px-12">
-        <div className="mx-auto max-w-7xl rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
-                {t("customerOnboarding.title")}
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                {t("home.howItWorks")}
-              </h2>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[640px] lg:grid-cols-4">
-              {customerOnboardingSteps.map((step, index) => (
-                <div
-                  key={step}
-                  className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
-                >
-                  <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
-                    {index + 1}
-                  </span>
-                  {step}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-8 sm:px-6 sm:py-10 md:px-12">
-        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-stretch">
-          <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8 md:p-10">
-            <p className="text-sm font-black uppercase tracking-widest text-green-700">
-              {t("home.missionBadge")}
-            </p>
-            <h2 className="mt-3 text-3xl font-black leading-tight text-gray-950 sm:text-4xl">
-              {t("home.missionTitle")}
-            </h2>
-            <p className="mt-5 text-xl font-black text-green-800">
-              {t("home.missionIntro")}
-            </p>
-            <p className="mt-4 max-w-3xl font-semibold leading-7 text-gray-700 sm:text-lg sm:leading-8">
-              {t("home.missionText")}
-            </p>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              {missionHighlights.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl bg-[#F7F6EF] px-4 py-4 font-black text-gray-800"
-                >
-                  ✓ {item}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[2rem] bg-green-800 p-6 text-white shadow-sm sm:p-8 md:p-10">
-            <p className="text-sm font-black uppercase tracking-widest text-green-100">
-              {t("home.trustBadge")}
-            </p>
-            <h2 className="mt-3 text-3xl font-black leading-tight sm:text-4xl">
-              {t("home.trustTitle")}
-            </h2>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {trustCards.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/15"
-                >
-                  <p className="break-words text-xl font-black text-white">
-                    {item.title}
-                  </p>
-                  <p className="mt-2 font-bold leading-6 text-green-50">
-                    {item.text}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </div>

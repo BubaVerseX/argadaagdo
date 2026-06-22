@@ -322,17 +322,6 @@ export default function OffersPage() {
     return Array.from(new Set(offers.map(getOfferCategory))).sort();
   }, [offers]);
 
-  const customerOnboardingSteps = [
-    t("customerOnboarding.stepBrowse"),
-    t("customerOnboarding.stepReserve"),
-    t("customerOnboarding.stepCollect"),
-    t("customerOnboarding.stepEnjoy"),
-  ];
-
-  const totalAvailable = offers.reduce(
-    (total, offer) => total + Number(offer.quantity || 0),
-    0
-  );
   const filtersAreActive =
     search.trim() !== "" ||
     selectedCategory !== "all" ||
@@ -422,30 +411,6 @@ export default function OffersPage() {
               </label>
             </div>
 
-            <div className="mt-6 grid gap-2 sm:mt-7 sm:grid-cols-3 sm:gap-3">
-              <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-                <p className="text-sm font-black text-green-100">
-                  {t("nav.offers")}
-                </p>
-                <h2 className="text-3xl font-black sm:text-4xl">{offers.length}</h2>
-              </div>
-
-              <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-                <p className="text-sm font-black text-green-100">
-                  {t("offers.boxesLeft")}
-                </p>
-                <h2 className="text-3xl font-black sm:text-4xl">{totalAvailable}</h2>
-              </div>
-
-              <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-                <p className="text-sm font-black text-green-100">
-                  {t("home.trustPickupOnlyMarketplace")}
-                </p>
-                <h2 className="text-2xl font-black sm:text-3xl">
-                  {t("offers.tbilisiPilot")}
-                </h2>
-              </div>
-            </div>
           </div>
 
           <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:mt-8 sm:p-6">
@@ -462,33 +427,6 @@ export default function OffersPage() {
               <Notice tone={messageTone}>{message}</Notice>
             </div>
           )}
-
-          <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:mt-8 sm:p-6">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-sm font-black uppercase tracking-widest text-green-700">
-                  {t("customerOnboarding.title")}
-                </p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                  {t("home.howItWorks")}
-                </h2>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[640px] lg:grid-cols-4">
-                {customerOnboardingSteps.map((step, index) => (
-                  <div
-                    key={step}
-                    className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
-                  >
-                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
-                      {index + 1}
-                    </span>
-                    {step}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
 
           <div className="mt-8 sm:mt-10">
             <h2 className="text-2xl font-black sm:text-3xl md:text-4xl">

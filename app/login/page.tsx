@@ -101,6 +101,7 @@ export default function LoginPage() {
     "success" | "error" | "warning"
   >("success");
   const [submitting, setSubmitting] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
   const authModeOptions = [
     {
       value: "login" as const,
@@ -245,6 +246,38 @@ export default function LoginPage() {
 
     router.push("/offers");
     router.refresh();
+  }
+
+  async function resendVerificationEmail() {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      setMessageTone("warning");
+      setMessage("Enter your email address first, then request a new verification link.");
+      return;
+    }
+
+    setResendingVerification(true);
+    setMessageTone("success");
+    setMessage("Sending verification email...");
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: normalizedEmail,
+    });
+
+    setResendingVerification(false);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage(
+        "Verification email could not be sent. Please wait a moment and try again."
+      );
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Verification email sent. Please check your inbox and spam folder.");
   }
 
   const redirectMessage = getRedirectMessage(redirectPath, t);
@@ -423,6 +456,22 @@ export default function LoginPage() {
                     : t("login.signIn")}
                 </button>
               </div>
+
+              {authMode === "login" && (
+                <div className="rounded-2xl bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-900 sm:text-base">
+                  Need to verify your email?{" "}
+                  <button
+                    type="button"
+                    onClick={resendVerificationEmail}
+                    disabled={resendingVerification || submitting}
+                    className="font-black text-green-800 underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-green-200"
+                  >
+                    {resendingVerification
+                      ? "Sending..."
+                      : "Resend verification email"}
+                  </button>
+                </div>
+              )}
 
               {message && (
                 <Notice tone={messageTone}>{message}</Notice>
