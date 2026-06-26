@@ -48,7 +48,12 @@ function createImageFileName(file: File) {
 
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
 const maxImageSizeBytes = 5 * 1024 * 1024;
-type ReservationFilter = "reserved" | "collected" | "cancelled" | "no_show";
+type ReservationFilter =
+  | "all"
+  | "reserved"
+  | "collected"
+  | "cancelled"
+  | "no_show";
 type MetricTone = "neutral" | "green" | "yellow";
 
 const metricToneStyles: Record<
@@ -104,6 +109,14 @@ export default function BusinessDashboardPage() {
   const [ownedOfferIds, setOwnedOfferIds] = useState<number[]>([]);
 
   const [businessId, setBusinessId] = useState("");
+  const [profileBusinessId, setProfileBusinessId] = useState<number | null>(
+    null
+  );
+  const [profileName, setProfileName] = useState("");
+  const [profileType, setProfileType] = useState("");
+  const [profileAddress, setProfileAddress] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(DEFAULT_OFFER_CATEGORY);
@@ -128,6 +141,7 @@ export default function BusinessDashboardPage() {
   const [editingOfferId, setEditingOfferId] = useState<number | null>(null);
   const [reservationFilter, setReservationFilter] =
     useState<ReservationFilter>("reserved");
+  const [reservationSearch, setReservationSearch] = useState("");
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState(DEFAULT_OFFER_CATEGORY);
   const [editPrice, setEditPrice] = useState("");
@@ -191,13 +205,27 @@ export default function BusinessDashboardPage() {
 
     const allBusinesses = (myBusinesses || []) as Business[];
     const approved = allBusinesses.filter(isApprovedBusiness);
+    const businessOptions = approved.length > 0 ? approved : allBusinesses;
+    const selectedProfileBusiness =
+      businessOptions.find((business) => String(business.id) === businessId) ||
+      businessOptions[0];
 
     setBusinesses(allBusinesses);
     setApprovedBusinesses(approved);
 
-    setBusinessId((currentBusinessId) => {
-      const businessOptions = approved.length > 0 ? approved : allBusinesses;
+    if (
+      selectedProfileBusiness &&
+      !savingProfile &&
+      profileBusinessId !== selectedProfileBusiness.id
+    ) {
+      setProfileBusinessId(selectedProfileBusiness.id);
+      setProfileName(selectedProfileBusiness.name || "");
+      setProfileType(selectedProfileBusiness.business_type || "");
+      setProfileAddress(selectedProfileBusiness.address || "");
+      setProfilePhone(selectedProfileBusiness.phone || "");
+    }
 
+    setBusinessId((currentBusinessId) => {
       if (
         currentBusinessId &&
         businessOptions.some(
@@ -283,7 +311,7 @@ export default function BusinessDashboardPage() {
     }
 
     setLoading(false);
-  }, [router]);
+  }, [businessId, profileBusinessId, router, savingProfile]);
 
   const scheduleRefresh = useCallback(() => {
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
@@ -310,6 +338,92 @@ export default function BusinessDashboardPage() {
     }
 
     setImageFile(selectedFile);
+  }
+
+  async function saveBusinessProfile() {
+    setMessage("");
+    setMessageTone("error");
+
+    const selectedBusinessId = Number(businessId);
+    const currentBusiness = businesses.find(
+      (business) => business.id === selectedBusinessId
+    );
+
+    if (!currentBusiness || !ownedBusinessIds.includes(currentBusiness.id)) {
+      setMessage("Choose one of your businesses before saving profile changes.");
+      return;
+    }
+
+    const nextName = profileName.trim();
+    const nextType = profileType.trim();
+    const nextAddress = profileAddress.trim();
+    const nextPhone = profilePhone.trim();
+
+    if (nextName.length < 2) {
+      setMessage("Business name must be at least 2 characters.");
+      return;
+    }
+
+    if (nextType.length < 2) {
+      setMessage("Business type must be at least 2 characters.");
+      return;
+    }
+
+    if (nextAddress.length < 5) {
+      setMessage("Address must be at least 5 characters.");
+      return;
+    }
+
+    if (nextPhone && nextPhone.length < 5) {
+      setMessage("Phone number looks too short.");
+      return;
+    }
+
+    setSavingProfile(true);
+
+    const { data, error } = await supabase
+      .from("businesses")
+      .update({
+        name: nextName,
+        business_type: nextType,
+        address: nextAddress,
+        phone: nextPhone || null,
+      })
+      .eq("id", currentBusiness.id)
+      .eq("owner_id", currentBusiness.owner_id)
+      .select("id, owner_id, name, business_type, address, phone, approved")
+      .maybeSingle();
+
+    if (error || !data) {
+      setSavingProfile(false);
+      setMessageTone("error");
+      setMessage(
+        error?.message.includes("row-level security")
+          ? "Profile update was blocked by security rules."
+          : "Business profile could not be updated. Please try again."
+      );
+      return;
+    }
+
+    const updatedBusiness = data as Business;
+    setBusinesses((currentBusinesses) =>
+      currentBusinesses.map((business) =>
+        business.id === updatedBusiness.id ? updatedBusiness : business
+      )
+    );
+    setApprovedBusinesses((currentBusinesses) =>
+      currentBusinesses.map((business) =>
+        business.id === updatedBusiness.id ? updatedBusiness : business
+      )
+    );
+    setProfileBusinessId(updatedBusiness.id);
+    setProfileName(updatedBusiness.name || "");
+    setProfileType(updatedBusiness.business_type || "");
+    setProfileAddress(updatedBusiness.address || "");
+    setProfilePhone(updatedBusiness.phone || "");
+    setSavingProfile(false);
+    setMessageTone("success");
+    setMessage("Business profile updated.");
   }
 
   async function uploadImage(): Promise<string | null> {
@@ -590,6 +704,12 @@ export default function BusinessDashboardPage() {
     }
 
     const nextActive = !offer.active;
+    const effectiveStatus = getEffectiveOfferStatus(offer);
+
+    if (effectiveStatus === "expired" && nextActive) {
+      setMessage("Expired offers cannot be reactivated. Duplicate the offer and choose a new pickup date.");
+      return;
+    }
 
     if (nextActive && Number(offer.quantity || 0) <= 0) {
       setMessage("Quantity must be greater than 0 before activating an offer.");
@@ -635,6 +755,84 @@ export default function BusinessDashboardPage() {
     await loadDashboard();
   }
 
+  async function duplicateOffer(offer: Offer) {
+    setMessage("");
+    setMessageTone("error");
+
+    if (!ownedBusinessIds.includes(offer.business_id)) {
+      setMessage("You can only duplicate offers from your own business.");
+      return;
+    }
+
+    setUpdatingOfferId(offer.id);
+
+    const { error } = await supabase.from("offers").insert({
+      business_id: offer.business_id,
+      title: `${offer.title} copy`.slice(0, 120),
+      category: normalizeOfferCategory(offer.category),
+      price: Number(offer.price || 0),
+      old_price: offer.old_price ? Number(offer.old_price) : null,
+      quantity: Math.max(Number(offer.quantity || 1), 1),
+      pickup_date: getTbilisiDateKey(),
+      pickup_start: offer.pickup_start,
+      pickup_end: offer.pickup_end,
+      description: offer.description || null,
+      active: false,
+      status: "inactive",
+      image_url: offer.image_url || "",
+    });
+
+    setUpdatingOfferId(null);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage("Offer could not be duplicated. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Offer duplicated as inactive. Edit the pickup date and activate it when ready.");
+    await loadDashboard();
+  }
+
+  async function archiveExpiredOffer(offer: Offer) {
+    setMessage("");
+    setMessageTone("error");
+
+    if (!ownedBusinessIds.includes(offer.business_id)) {
+      setMessage("You can only archive offers from your own business.");
+      return;
+    }
+
+    if (getEffectiveOfferStatus(offer) !== "expired") {
+      setMessage("Only expired offers can be archived.");
+      return;
+    }
+
+    setUpdatingOfferId(offer.id);
+
+    const { error } = await supabase
+      .from("offers")
+      .update({
+        active: false,
+        status: "expired",
+      })
+      .eq("id", offer.id)
+      .in("business_id", ownedBusinessIds);
+
+    setUpdatingOfferId(null);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage("Expired offer could not be archived. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Expired offer archived in history.");
+    await loadDashboard();
+  }
+
   async function deleteOffer(offer: Offer) {
     setMessage("");
     setMessageTone("error");
@@ -645,7 +843,7 @@ export default function BusinessDashboardPage() {
     }
 
     const confirmed = window.confirm(
-      "Delete this offer? This cannot be undone."
+      "Delete this offer permanently? Offers with reservations cannot be deleted. Use Inactive for offers you want to keep in history."
     );
 
     if (!confirmed) return;
@@ -893,6 +1091,17 @@ export default function BusinessDashboardPage() {
     isCancelledOrderStatus(order.status)
   );
   const noShowOrders = orders.filter((order) => order.status === "no_show");
+  const boxesSold = orders.filter((order) =>
+    isConfirmedOrderStatus(order.status) || isCollectedOrderStatus(order.status)
+  ).length;
+  const boxesAvailable = activeOffers.reduce(
+    (total, offer) => total + Number(offer.quantity || 0),
+    0
+  );
+  const todayDateKey = getTbilisiDateKey();
+  const todaysReservations = orders.filter(
+    (order) => order.offers?.pickup_date === todayDateKey
+  ).length;
   const hasAnalyticsActivity =
     offers.length > 0 || orders.length > 0 || totalReviews > 0;
   const isNewBusinessOnboarding = offers.length === 0 && orders.length === 0;
@@ -953,6 +1162,21 @@ export default function BusinessDashboardPage() {
       value: averageRatingLabel,
       tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
     },
+    {
+      title: "Boxes sold",
+      value: boxesSold,
+      tone: "green" as const,
+    },
+    {
+      title: "Boxes available",
+      value: boxesAvailable,
+      tone: "neutral" as const,
+    },
+    {
+      title: "Today's reservations",
+      value: todaysReservations,
+      tone: todaysReservations > 0 ? ("yellow" as const) : ("neutral" as const),
+    },
   ];
   const reservationSummary = [
     {
@@ -976,24 +1200,23 @@ export default function BusinessDashboardPage() {
       className: "bg-gray-100 text-gray-700",
     },
   ];
+  const normalizedReservationSearch = reservationSearch.trim().toLowerCase();
   const filteredOrders = orders.filter((order) => {
-    if (reservationFilter === "reserved") {
-      return isConfirmedOrderStatus(order.status);
-    }
+    const matchesStatus =
+      reservationFilter === "all" ||
+      (reservationFilter === "reserved" &&
+        isConfirmedOrderStatus(order.status)) ||
+      (reservationFilter === "collected" &&
+        isCollectedOrderStatus(order.status)) ||
+      (reservationFilter === "cancelled" &&
+        isCancelledOrderStatus(order.status)) ||
+      (reservationFilter === "no_show" && order.status === "no_show");
+    const customerEmail = order.profiles?.email?.toLowerCase() || "";
+    const matchesSearch =
+      normalizedReservationSearch === "" ||
+      customerEmail.includes(normalizedReservationSearch);
 
-    if (reservationFilter === "collected") {
-      return isCollectedOrderStatus(order.status);
-    }
-
-    if (reservationFilter === "cancelled") {
-      return isCancelledOrderStatus(order.status);
-    }
-
-    if (reservationFilter === "no_show") {
-      return order.status === "no_show";
-    }
-
-    return false;
+    return matchesStatus && matchesSearch;
   });
   if (loading) {
     return (
@@ -1045,6 +1268,121 @@ export default function BusinessDashboardPage() {
         {message && (
           <div className="mt-5 sm:mt-6">
             <Notice tone={messageTone}>{message}</Notice>
+          </div>
+        )}
+
+        {selectedBusiness && (
+          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                  Business Profile
+                </p>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                  Manage public details
+                </h2>
+                <p className="mt-2 max-w-2xl font-semibold leading-7 text-gray-600">
+                  Keep your public business information clear so customers know
+                  where to collect their surprise bag.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
+                <div className="rounded-3xl bg-green-50 p-5 text-center">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-2xl font-black text-green-800 shadow-sm">
+                    {profileName.trim().slice(0, 2).toUpperCase() || "AG"}
+                  </div>
+                  <p className="mt-3 text-sm font-black text-green-800">
+                    Logo placeholder
+                  </p>
+                </div>
+                <div className="rounded-3xl bg-[#F7F6EF] p-5 text-center">
+                  <div className="mx-auto h-16 rounded-2xl bg-gradient-to-br from-green-100 to-yellow-100 shadow-inner" />
+                  <p className="mt-3 text-sm font-black text-gray-700">
+                    Cover image placeholder
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <label className="grid gap-2 text-sm font-black text-gray-700">
+                <span>
+                  Business name <RequiredMark />
+                </span>
+                <input
+                  value={profileName}
+                  onChange={(event) => setProfileName(event.target.value)}
+                  maxLength={80}
+                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  placeholder="GMBH1 Bakery"
+                />
+                <span className="text-xs font-bold text-gray-500">
+                  {profileName.length}/80
+                </span>
+              </label>
+
+              <label className="grid gap-2 text-sm font-black text-gray-700">
+                <span>
+                  Business type <RequiredMark />
+                </span>
+                <input
+                  value={profileType}
+                  onChange={(event) => setProfileType(event.target.value)}
+                  maxLength={60}
+                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  placeholder="Bakery"
+                />
+                <span className="text-xs font-bold text-gray-500">
+                  {profileType.length}/60
+                </span>
+              </label>
+
+              <label className="grid gap-2 text-sm font-black text-gray-700">
+                <span>
+                  Address <RequiredMark />
+                </span>
+                <input
+                  value={profileAddress}
+                  onChange={(event) => setProfileAddress(event.target.value)}
+                  maxLength={160}
+                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  placeholder="Rustaveli Avenue, Tbilisi"
+                />
+                <span className="text-xs font-bold text-gray-500">
+                  {profileAddress.length}/160
+                </span>
+              </label>
+
+              <label className="grid gap-2 text-sm font-black text-gray-700">
+                Phone
+                <input
+                  value={profilePhone}
+                  onChange={(event) => setProfilePhone(event.target.value)}
+                  maxLength={40}
+                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  placeholder="+995 555 123 456"
+                />
+                <span className="text-xs font-bold text-gray-500">
+                  {profilePhone.length}/40
+                </span>
+              </label>
+            </div>
+
+            <div className="mt-5 rounded-2xl bg-yellow-50 px-4 py-3 text-sm font-bold leading-6 text-yellow-900">
+              Business description, logo upload, and cover image storage need
+              database fields before they can be saved. For now, public profiles
+              use your business type, address, and active offer photos.
+            </div>
+
+            <button
+              type="button"
+              onClick={() => void saveBusinessProfile()}
+              disabled={savingProfile}
+              className="mt-5 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            >
+              {savingProfile ? "Saving profile..." : "Save profile"}
+            </button>
           </div>
         )}
 
@@ -1428,6 +1766,7 @@ export default function BusinessDashboardPage() {
               const statusClass = getOfferStatusClassName(offer);
               const rating = ratingSummaries[offer.business_id];
               const isEditing = editingOfferId === offer.id;
+              const effectiveStatus = getEffectiveOfferStatus(offer);
 
               return (
                 <div
@@ -1473,7 +1812,7 @@ export default function BusinessDashboardPage() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap lg:justify-end">
                       <button
                         onClick={() =>
                           isEditing
@@ -1502,9 +1841,31 @@ export default function BusinessDashboardPage() {
                         {updatingOfferId === offer.id
                           ? "Updating..."
                           : offer.active
-                          ? "Active"
-                          : "Inactive"}
+                          ? "Deactivate"
+                          : "Reactivate"}
                       </button>
+
+                      <button
+                        onClick={() => void duplicateOffer(offer)}
+                        disabled={updatingOfferId !== null}
+                        className="min-h-12 rounded-full border border-green-200 bg-white px-5 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {updatingOfferId === offer.id
+                          ? "Working..."
+                          : "Duplicate"}
+                      </button>
+
+                      {effectiveStatus === "expired" && (
+                        <button
+                          onClick={() => void archiveExpiredOffer(offer)}
+                          disabled={updatingOfferId !== null}
+                          className="min-h-12 rounded-full bg-yellow-500 px-5 py-3 font-black text-yellow-950 transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {updatingOfferId === offer.id
+                            ? "Archiving..."
+                            : "Archive"}
+                        </button>
+                      )}
 
                       <button
                         onClick={() => void deleteOffer(offer)}
@@ -1683,8 +2044,19 @@ export default function BusinessDashboardPage() {
             </div>
           )}
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
+            <input
+              value={reservationSearch}
+              onChange={(event) => setReservationSearch(event.target.value)}
+              className="min-h-12 rounded-2xl border bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+              placeholder="Search customer email..."
+              aria-label="Search reservations by customer email"
+            />
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
             {[
+              { value: "all", label: "All" },
               { value: "reserved", label: "Active" },
               { value: "collected", label: "Completed" },
               { value: "cancelled", label: "Cancelled" },
@@ -1721,6 +2093,8 @@ export default function BusinessDashboardPage() {
                 <h3 className="mt-4 text-2xl font-black text-gray-950">
                   {orders.length === 0
                     ? t("businessDashboard.noReservations")
+                    : normalizedReservationSearch
+                    ? "No reservations found"
                     : reservationFilter === "reserved"
                     ? "No active reservations"
                     : t("businessDashboard.noFilteredReservations")}
@@ -1728,6 +2102,8 @@ export default function BusinessDashboardPage() {
                 <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
                   {orders.length === 0
                     ? t("businessDashboard.noReservationsHint")
+                    : normalizedReservationSearch
+                    ? "Try searching a different customer email."
                     : reservationFilter === "reserved"
                     ? "Completed, cancelled and no-show reservations are kept in history. Use the filters above to review them."
                     : t("businessDashboard.noFilteredReservationsHint")}
@@ -1783,10 +2159,20 @@ export default function BusinessDashboardPage() {
 
                     {isConfirmedOrderStatus(order.status) && (
                       <span className="rounded-full bg-gray-100 px-4 py-2 text-sm font-black text-gray-700">
-                        Pickup code hidden for customer verification
+                        Pickup code:{" "}
+                        {order.pickup_code
+                          ? `••••${String(order.pickup_code).slice(-2)}`
+                          : "pending"}
                       </span>
                     )}
                   </div>
+
+                  {isConfirmedOrderStatus(order.status) && (
+                    <p className="mt-3 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold leading-6 text-green-900">
+                      Ask the customer for the full code, then use Verify &
+                      Complete Pickup.
+                    </p>
+                  )}
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
