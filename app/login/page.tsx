@@ -9,6 +9,7 @@ import {
   SIGNUP_VERIFIED_EMAIL_MESSAGE,
   VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
 } from "@/lib/auth";
+import { isValidEmail, normalizeEmail } from "@/lib/validation";
 import { supabase } from "@/lib/supabase";
 import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
@@ -120,8 +121,15 @@ export default function LoginPage() {
     setMessage("");
     setMessageTone("error");
 
-    if (!email.trim()) {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
       setMessage("Email is required.");
+      return;
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      setMessage("Enter a valid email address.");
       return;
     }
 
@@ -130,11 +138,15 @@ export default function LoginPage() {
       return;
     }
 
+    if (password.trim() !== password) {
+      setMessage("Password cannot start or end with spaces.");
+      return;
+    }
+
     setSubmitting(true);
     setMessage("Creating account...");
     setMessageTone("success");
-
-    const normalizedEmail = email.trim().toLowerCase();
+    setEmail(normalizedEmail);
 
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
@@ -174,8 +186,15 @@ export default function LoginPage() {
     setMessage("");
     setMessageTone("error");
 
-    if (!email.trim()) {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
       setMessage("Email is required.");
+      return;
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      setMessage("Enter a valid email address.");
       return;
     }
 
@@ -187,8 +206,7 @@ export default function LoginPage() {
     setSubmitting(true);
     setMessage("Signing in...");
     setMessageTone("success");
-
-    const normalizedEmail = email.trim().toLowerCase();
+    setEmail(normalizedEmail);
 
     const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,

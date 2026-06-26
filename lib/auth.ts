@@ -42,7 +42,8 @@ export function isEmailConfirmed(user: User | null | undefined) {
   if (
     !hasEmailConfirmedAt &&
     !hasConfirmedAt &&
-    !warnedMissingEmailConfirmationFields
+    !warnedMissingEmailConfirmationFields &&
+    process.env.NODE_ENV === "development"
   ) {
     warnedMissingEmailConfirmationFields = true;
     console.warn(

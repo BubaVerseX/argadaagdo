@@ -9,6 +9,7 @@ import {
 } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
+import { validateTextField } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -92,20 +93,46 @@ export default function BusinessRegisterPage() {
       return;
     }
 
-    if (!name.trim()) {
-      setMessage("Business name is required.");
+    const nameResult = validateTextField({
+      label: "Business name",
+      value: name,
+      minLength: 2,
+      maxLength: 80,
+    });
+    const typeResult = validateTextField({
+      label: "Business type",
+      value: businessType,
+      minLength: 2,
+      maxLength: 60,
+    });
+    const addressResult = validateTextField({
+      label: "Address",
+      value: address,
+      minLength: 5,
+      maxLength: 160,
+    });
+    const phoneResult = validateTextField({
+      label: "Phone number",
+      value: phone,
+      minLength: 5,
+      maxLength: 40,
+    });
+
+    const validationError =
+      nameResult.error ||
+      typeResult.error ||
+      addressResult.error ||
+      phoneResult.error;
+
+    if (validationError) {
+      setMessage(validationError);
       return;
     }
 
-    if (!address.trim()) {
-      setMessage("Address is required.");
-      return;
-    }
-
-    if (!phone.trim()) {
-      setMessage("Phone number is required.");
-      return;
-    }
+    setName(nameResult.value);
+    setBusinessType(typeResult.value);
+    setAddress(addressResult.value);
+    setPhone(phoneResult.value);
 
     setSubmitting(true);
     const authResult = await getConfirmedUser();
@@ -143,10 +170,10 @@ export default function BusinessRegisterPage() {
 
     const { error } = await supabase.from("businesses").insert({
       owner_id: userId,
-      name: name.trim(),
-      business_type: businessType,
-      address: address.trim(),
-      phone: phone.trim(),
+      name: nameResult.value,
+      business_type: typeResult.value,
+      address: addressResult.value,
+      phone: phoneResult.value,
       approved: false,
     });
 
@@ -255,13 +282,16 @@ export default function BusinessRegisterPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t("businessRegister.name")}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none"
+                  maxLength={80}
+                  aria-label={t("businessRegister.name")}
+                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 />
 
                 <select
                   value={businessType}
                   onChange={(e) => setBusinessType(e.target.value)}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none"
+                  aria-label="Business type"
+                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 >
                   <option value="Cafe">Cafe</option>
                   <option value="Bakery">Bakery</option>
@@ -275,14 +305,18 @@ export default function BusinessRegisterPage() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder={t("businessRegister.address")}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none"
+                  maxLength={160}
+                  aria-label={t("businessRegister.address")}
+                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 />
 
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder={t("businessRegister.phone")}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none"
+                  maxLength={40}
+                  aria-label={t("businessRegister.phone")}
+                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 />
 
                 <button

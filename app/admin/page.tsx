@@ -358,6 +358,32 @@ export default function AdminPage() {
       tone: "yellow" as const,
     },
   ];
+  const moderationStats = [
+    {
+      title: "Pending businesses",
+      value: pendingBusinesses.length,
+      helper: "Applications waiting for approval",
+      className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Approved businesses",
+      value: approvedBusinesses.length,
+      helper: "Businesses allowed to publish offers",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Inactive offers",
+      value: inactiveOffers.length,
+      helper: "Offers hidden by businesses or admins",
+      className: "bg-gray-100 text-gray-800",
+    },
+    {
+      title: "Expired offers",
+      value: expiredOffers.length,
+      helper: "Pickup windows that have already passed",
+      className: "bg-red-50 text-red-800",
+    },
+  ];
 
   if (loading) {
     return (
@@ -493,6 +519,41 @@ export default function AdminPage() {
 
             {customerReliabilityStats.map((stat) => (
               <StatCard key={stat.title} {...stat} />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Moderation visibility
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                Business and offer review signals
+              </h2>
+            </div>
+
+            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+              Rejected businesses are not a separate state in the current
+              approval model; unapproved businesses stay in the pending queue.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {moderationStats.map((metric) => (
+              <div
+                key={metric.title}
+                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
+              >
+                <p className="text-sm font-black opacity-75">{metric.title}</p>
+                <p className="mt-2 text-3xl font-black sm:text-4xl">
+                  {metric.value}
+                </p>
+                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
+                  {metric.helper}
+                </p>
+              </div>
             ))}
           </div>
         </div>

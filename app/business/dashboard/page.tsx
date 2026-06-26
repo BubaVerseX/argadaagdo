@@ -37,6 +37,7 @@ import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
+import { isWithinCooldown, validateTextField } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -48,6 +49,7 @@ function createImageFileName(file: File) {
 
 const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
 const maxImageSizeBytes = 5 * 1024 * 1024;
+const actionCooldownMs = 2500;
 type ReservationFilter =
   | "all"
   | "reserved"
@@ -153,6 +155,8 @@ export default function BusinessDashboardPage() {
     Record<number, RatingSummary>
   >({});
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastProfileSaveAt = useRef(0);
+  const lastOfferPublishAt = useRef(0);
 
   const loadDashboard = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -344,6 +348,11 @@ export default function BusinessDashboardPage() {
     setMessage("");
     setMessageTone("error");
 
+    if (isWithinCooldown(lastProfileSaveAt.current, actionCooldownMs)) {
+      setMessage("Please wait a moment before saving again.");
+      return;
+    }
+
     const selectedBusinessId = Number(businessId);
     const currentBusiness = businesses.find(
       (business) => business.id === selectedBusinessId
@@ -354,40 +363,53 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const nextName = profileName.trim();
-    const nextType = profileType.trim();
-    const nextAddress = profileAddress.trim();
-    const nextPhone = profilePhone.trim();
+    const nameResult = validateTextField({
+      label: "Business name",
+      value: profileName,
+      minLength: 2,
+      maxLength: 80,
+    });
+    const typeResult = validateTextField({
+      label: "Business type",
+      value: profileType,
+      minLength: 2,
+      maxLength: 60,
+    });
+    const addressResult = validateTextField({
+      label: "Address",
+      value: profileAddress,
+      minLength: 5,
+      maxLength: 160,
+    });
+    const phoneResult = validateTextField({
+      label: "Phone number",
+      value: profilePhone,
+      minLength: 5,
+      maxLength: 40,
+      required: false,
+    });
 
-    if (nextName.length < 2) {
-      setMessage("Business name must be at least 2 characters.");
-      return;
-    }
+    const validationError =
+      nameResult.error ||
+      typeResult.error ||
+      addressResult.error ||
+      phoneResult.error;
 
-    if (nextType.length < 2) {
-      setMessage("Business type must be at least 2 characters.");
-      return;
-    }
-
-    if (nextAddress.length < 5) {
-      setMessage("Address must be at least 5 characters.");
-      return;
-    }
-
-    if (nextPhone && nextPhone.length < 5) {
-      setMessage("Phone number looks too short.");
+    if (validationError) {
+      setMessage(validationError);
       return;
     }
 
     setSavingProfile(true);
+    lastProfileSaveAt.current = Date.now();
 
     const { data, error } = await supabase
       .from("businesses")
       .update({
-        name: nextName,
-        business_type: nextType,
-        address: nextAddress,
-        phone: nextPhone || null,
+        name: nameResult.value,
+        business_type: typeResult.value,
+        address: addressResult.value,
+        phone: phoneResult.value || null,
       })
       .eq("id", currentBusiness.id)
       .eq("owner_id", currentBusiness.owner_id)
@@ -399,7 +421,7 @@ export default function BusinessDashboardPage() {
       setMessageTone("error");
       setMessage(
         error?.message.includes("row-level security")
-          ? "Profile update was blocked by security rules."
+          ? "Profile update was blocked. Please make sure you are signed in as this business owner."
           : "Business profile could not be updated. Please try again."
       );
       return;
@@ -448,7 +470,7 @@ export default function BusinessDashboardPage() {
 
     if (error) {
       setMessageTone("error");
-      setMessage("Upload failed");
+      setMessage("Image upload failed. Please try a smaller JPG, PNG, or WebP file.");
       return null;
     }
 
@@ -463,15 +485,42 @@ export default function BusinessDashboardPage() {
     setMessage("");
     setMessageTone("error");
 
+    if (isWithinCooldown(lastOfferPublishAt.current, actionCooldownMs)) {
+      setMessage("Please wait a moment before publishing another offer.");
+      return;
+    }
+
     if (!businessId) {
       setMessage("Choose an approved business before publishing an offer.");
       return;
     }
 
-    if (!title.trim()) {
-      setMessage("Add an offer title. Example: Bakery Surprise Bag.");
+    const titleResult = validateTextField({
+      label: "Offer title",
+      value: title,
+      minLength: 3,
+      maxLength: 120,
+    });
+    const descriptionResult = validateTextField({
+      label: "Description",
+      value: description,
+      maxLength: 500,
+      required: false,
+      multiline: true,
+    });
+
+    if (titleResult.error) {
+      setMessage(titleResult.error || "Add an offer title. Example: Bakery Surprise Bag.");
       return;
     }
+
+    if (descriptionResult.error) {
+      setMessage(descriptionResult.error);
+      return;
+    }
+
+    setTitle(titleResult.value);
+    setDescription(descriptionResult.value);
 
     const selectedBusinessId = Number(businessId);
     const selectedCategory = normalizeOfferCategory(category);
@@ -520,6 +569,7 @@ export default function BusinessDashboardPage() {
     }
 
     setPublishing(true);
+    lastOfferPublishAt.current = Date.now();
     setMessageTone("success");
     setMessage("Publishing offer...");
 
@@ -532,7 +582,7 @@ export default function BusinessDashboardPage() {
 
     const { error } = await supabase.from("offers").insert({
       business_id: selectedBusinessId,
-      title: title.trim(),
+      title: titleResult.value,
       price: priceValue,
       old_price: oldPriceValue,
       quantity: quantityValue,
@@ -540,7 +590,7 @@ export default function BusinessDashboardPage() {
       pickup_start: pickupStart,
       pickup_end: pickupEnd,
       category: selectedCategory,
-      description: description.trim() || null,
+      description: descriptionResult.value || null,
       active: true,
       status: "active",
       image_url: imageUrl,
@@ -551,7 +601,7 @@ export default function BusinessDashboardPage() {
       setMessageTone("error");
       setMessage(
         error.message.includes("row-level security")
-          ? "Offer creation was blocked by security rules. Please make sure this business is approved."
+          ? "Offer creation was blocked. Please make sure this business is approved and you are signed in as its owner."
           : "Offer could not be published. Please check the details and try again."
       );
       return;
@@ -606,8 +656,15 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    if (!editTitle.trim()) {
-      setMessage("Offer title required.");
+    const titleResult = validateTextField({
+      label: "Offer title",
+      value: editTitle,
+      minLength: 3,
+      maxLength: 120,
+    });
+
+    if (titleResult.error) {
+      setMessage(titleResult.error);
       return;
     }
 
@@ -644,6 +701,11 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (editPickupStart >= editPickupEnd) {
+      setMessage("Pickup end time must be after pickup start time.");
+      return;
+    }
+
     const nextActive = quantityValue > 0 ? offer.active : false;
     const nextStatus =
       quantityValue <= 0 ? "sold_out" : nextActive ? "active" : "inactive";
@@ -653,7 +715,7 @@ export default function BusinessDashboardPage() {
     const { data, error } = await supabase
       .from("offers")
       .update({
-        title: editTitle.trim(),
+        title: titleResult.value,
         category: selectedCategory,
         price: priceValue,
         old_price: oldPriceValue,
@@ -1562,6 +1624,7 @@ export default function BusinessDashboardPage() {
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    maxLength={120}
                     className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                     placeholder="Bakery Surprise Bag"
                   />
@@ -1883,6 +1946,7 @@ export default function BusinessDashboardPage() {
                         <input
                           value={editTitle}
                           onChange={(event) => setEditTitle(event.target.value)}
+                          maxLength={120}
                           className="rounded-2xl border bg-white p-4 font-semibold"
                           aria-label="Offer title"
                           placeholder="Bakery Surprise Bag"

@@ -26,6 +26,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import type { Order, OrderStatus, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
+import { validateTextField } from "@/lib/validation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -189,13 +190,27 @@ export default function OrdersPage() {
       return;
     }
 
+    const reviewResult = validateTextField({
+      label: "Review",
+      value: reviewTexts[order.id] || "",
+      maxLength: 500,
+      required: false,
+      multiline: true,
+    });
+
+    if (reviewResult.error) {
+      setMessageTone("warning");
+      setMessage(reviewResult.error);
+      return;
+    }
+
     setRatingOrderId(order.id);
     setMessage("");
 
     const { error } = await supabase.rpc("rate_business", {
       p_order_id: order.id,
       p_rating: selectedRating,
-      p_comment: reviewTexts[order.id]?.trim() || null,
+      p_comment: reviewResult.value || null,
     });
 
     if (error) {
