@@ -3,7 +3,10 @@ import type { Profile } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 
 export const SIGNUP_CONFIRM_EMAIL_MESSAGE =
-  "Check your email to verify your account before signing in.";
+  "Account created. Please verify your email before continuing. Check your inbox for the verification email, then sign in again.";
+
+export const SIGNUP_VERIFIED_EMAIL_MESSAGE =
+  "Account created. You can sign in now.";
 
 export const VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE =
   "Please verify your email before using ArGadaagdo.";
@@ -22,8 +25,32 @@ export type ConfirmedProfileResult =
   | { status: "signed_out"; user: null; profile: null }
   | { status: "unverified"; user: User; profile: null };
 
+let warnedMissingEmailConfirmationFields = false;
+
 export function isEmailConfirmed(user: User | null | undefined) {
-  return Boolean(user?.email_confirmed_at || user?.confirmed_at);
+  if (!user) return false;
+
+  const hasEmailConfirmedAt = Object.prototype.hasOwnProperty.call(
+    user,
+    "email_confirmed_at"
+  );
+  const hasConfirmedAt = Object.prototype.hasOwnProperty.call(
+    user,
+    "confirmed_at"
+  );
+
+  if (
+    !hasEmailConfirmedAt &&
+    !hasConfirmedAt &&
+    !warnedMissingEmailConfirmationFields
+  ) {
+    warnedMissingEmailConfirmationFields = true;
+    console.warn(
+      "Supabase user object did not expose email confirmation fields. Treating user as unverified."
+    );
+  }
+
+  return Boolean(user.email_confirmed_at || user.confirmed_at);
 }
 
 export async function getCurrentUser() {

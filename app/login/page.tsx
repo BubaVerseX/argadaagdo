@@ -6,6 +6,7 @@ import {
   getProfileById,
   isEmailConfirmed,
   SIGNUP_CONFIRM_EMAIL_MESSAGE,
+  SIGNUP_VERIFIED_EMAIL_MESSAGE,
   VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
 } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
@@ -154,9 +155,19 @@ export default function LoginPage() {
       await supabase.auth.signOut();
     }
 
+    const signupUserIsVerified = isEmailConfirmed(data.user);
+
     setSubmitting(false);
     setMessageTone("success");
-    setMessage(SIGNUP_CONFIRM_EMAIL_MESSAGE);
+    setMessage(
+      signupUserIsVerified
+        ? SIGNUP_VERIFIED_EMAIL_MESSAGE
+        : SIGNUP_CONFIRM_EMAIL_MESSAGE
+    );
+
+    if (signupUserIsVerified) {
+      setAuthMode("login");
+    }
   }
 
   async function signIn() {
