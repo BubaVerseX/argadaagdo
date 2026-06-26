@@ -195,22 +195,6 @@ export default function Navbar() {
             >
               {t("nav.faq")}
             </Link>
-
-            <Link
-              href="/contact"
-              className={linkClass("/contact")}
-              aria-current={ariaCurrent("/contact")}
-            >
-              {t("nav.contact")}
-            </Link>
-
-            <Link
-              href="/about"
-              className={linkClass("/about")}
-              aria-current={ariaCurrent("/about")}
-            >
-              {t("nav.about")}
-            </Link>
           </div>
 
           {showBusinessNavigation && (
@@ -344,24 +328,6 @@ export default function Navbar() {
                   aria-current={ariaCurrent("/faq")}
                 >
                   {t("nav.faq")}
-                </Link>
-
-                <Link
-                  href="/contact"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/contact", "mobile")}
-                  aria-current={ariaCurrent("/contact")}
-                >
-                  {t("nav.contact")}
-                </Link>
-
-                <Link
-                  href="/about"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/about", "mobile")}
-                  aria-current={ariaCurrent("/about")}
-                >
-                  {t("nav.about")}
                 </Link>
               </div>
             </div>

@@ -131,12 +131,6 @@ export default function OfferDetailPage() {
   const averageRating =
     rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
   const verifiedBusiness = isApprovedBusiness(offer?.businesses?.approved);
-  const afterReservationSteps = [
-    t("offerDetail.afterReservationOrder"),
-    t("offerDetail.afterReservationCode"),
-    t("offerDetail.afterReservationVisit"),
-    t("offerDetail.afterReservationShowCode"),
-  ];
   const trustItems = [
     t("home.trustVerifiedBusinesses"),
     t("home.trustPickupCodeVerification"),
@@ -234,12 +228,24 @@ export default function OfferDetailPage() {
                       </p>
                     </div>
 
+                    <div className="rounded-3xl bg-[#F7F6EF] p-5">
+                      <p className="text-sm font-black text-gray-600">
+                        {t("offerDetail.pickupDate")}
+                      </p>
+                      <p className="mt-2 text-2xl font-black text-gray-950">
+                        {getOfferDateLabel(offer, language)}
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-gray-600">
+                        {formatPickupTimeRange(offer, language)}
+                      </p>
+                    </div>
+
                     <div className="rounded-3xl bg-yellow-50 p-5">
                       <p className="text-sm font-black text-yellow-700">
                         {t("offerDetail.reviewSummary")}
                       </p>
-                      <p className="mt-2 text-3xl font-black text-gray-950">
-                        {averageRating ? `⭐ ${averageRating}` : "⭐"}
+                      <p className="mt-2 text-2xl font-black text-gray-950">
+                        {averageRating ? `⭐ ${averageRating}` : t("common.noReviews")}
                       </p>
                       <p className="mt-1 text-sm font-bold text-gray-600">
                         {reviewCount > 0
@@ -247,39 +253,18 @@ export default function OfferDetailPage() {
                           : t("common.noReviews")}
                       </p>
                     </div>
-                  </div>
 
-                  <div className="mt-4 grid gap-3 rounded-3xl bg-[#F7F6EF] p-4 font-semibold text-gray-700 sm:grid-cols-2">
-                    <p>
-                      <span className="font-black text-gray-950">
-                        {t("offerDetail.pickupDate")}:
-                      </span>{" "}
-                      {getOfferDateLabel(offer, language)}
-                    </p>
-                    <p>
-                      <span className="font-black text-gray-950">
-                        {t("offerDetail.pickupTime")}:
-                      </span>{" "}
-                      {formatPickupTimeRange(offer, language)}
-                    </p>
-                    <p>
-                      <span className="font-black text-gray-950">
-                        {t("common.category")}:
-                      </span>{" "}
-                      {offerCategory}
-                    </p>
-                    <p>
-                      <span className="font-black text-gray-950">
-                        {t("common.quantity")}:
-                      </span>{" "}
-                      {offer.quantity}
-                    </p>
-                    <p>
-                      <span className="font-black text-gray-950">
-                        {t("common.pickup")}:
-                      </span>{" "}
-                      {formatPickupWindow(offer, language)}
-                    </p>
+                    <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
+                      <p className="text-sm font-black text-green-700">
+                        {t("common.quantity")}
+                      </p>
+                      <p className="mt-2 text-3xl font-black text-green-800">
+                        {offer.quantity}
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-gray-600">
+                        {t("offers.boxesLeft")}
+                      </p>
+                    </div>
                   </div>
 
                   {urgencyMessage && (
@@ -297,51 +282,36 @@ export default function OfferDetailPage() {
                     <p className="font-black text-green-900">
                       {t("offerDetail.afterReservationTitle")}
                     </p>
-                    <div className="mt-3 grid gap-2">
-                      {afterReservationSteps.map((step) => (
+                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                      {[
+                        t("offerDetail.pickupCode"),
+                        t("offerDetail.pickupVisit"),
+                        t("offerDetail.ratingReminderTitle"),
+                      ].map((step) => (
                         <p
                           key={step}
-                          className="flex gap-2 text-sm font-bold leading-6 text-green-900"
+                          className="rounded-2xl bg-white px-4 py-3 text-sm font-black text-green-900"
                         >
-                          <span aria-hidden="true">•</span>
-                          <span>{step}</span>
+                          ✓ {step}
                         </p>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-yellow-50 p-4">
-                      <p className="font-black text-yellow-900">
-                        {t("offerDetail.cancellationReminderTitle")}
-                      </p>
-                      <p className="mt-1 text-sm font-bold leading-6 text-yellow-950">
-                        {t("offerDetail.cancellationReminderText")}
-                      </p>
-                    </div>
-
-                    <div className="rounded-3xl bg-[#F7F6EF] p-4">
-                      <p className="font-black text-gray-950">
-                        {t("offerDetail.ratingReminderTitle")}
-                      </p>
-                      <p className="mt-1 text-sm font-bold leading-6 text-gray-700">
-                        {t("offerDetail.ratingReminderText")}
-                      </p>
-                    </div>
+                    <p className="mt-3 text-sm font-bold leading-6 text-green-900">
+                      {t("offerDetail.cancellationReminderText")}
+                    </p>
                   </div>
 
                   <div className="mt-4 rounded-3xl bg-white p-4 ring-1 ring-green-100">
                     <p className="text-sm font-black uppercase tracking-widest text-green-700">
                       {t("home.trustBadge")}
                     </p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <div className="mt-3 flex flex-wrap gap-2">
                       {trustItems.map((item) => (
                         <p
                           key={item}
-                          className="flex gap-2 text-sm font-bold leading-6 text-gray-700"
+                          className="rounded-full bg-green-50 px-3 py-2 text-sm font-black text-green-800"
                         >
-                          <span className="font-black text-green-700">✓</span>
-                          <span>{item}</span>
+                          ✓ {item}
                         </p>
                       ))}
                     </div>

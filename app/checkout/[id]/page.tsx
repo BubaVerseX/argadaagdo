@@ -134,26 +134,21 @@ export default function CheckoutPage() {
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
-  const pickupSteps = [
+  const checkoutSteps = [
     {
       number: "1",
-      title: t("checkout.pickupStep1"),
+      title: t("checkout.summary"),
       text: t("checkout.pickupStep1Text"),
     },
     {
       number: "2",
-      title: t("checkout.pickupStep2"),
+      title: t("checkout.payReserve"),
       text: t("checkout.pickupStep2Text"),
     },
     {
       number: "3",
-      title: t("checkout.pickupStep3"),
+      title: t("common.pickup"),
       text: t("checkout.pickupStep3Text"),
-    },
-    {
-      number: "4",
-      title: t("checkout.pickupStep4"),
-      text: t("checkout.pickupStep4Text"),
     },
   ];
   const trustItems = [
@@ -293,12 +288,31 @@ export default function CheckoutPage() {
             <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
               {t("common.continueCheckout")}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
               {t("checkout.title")}
             </h1>
             <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
               {t("checkout.subtitle")}
             </p>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {checkoutSteps.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl bg-white p-4 shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
+                    {item.number}
+                  </span>
+                  <h2 className="font-black text-gray-950">{item.title}</h2>
+                </div>
+                <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                  {item.text}
+                </p>
+              </div>
+            ))}
           </div>
 
           {message && (
@@ -521,41 +535,6 @@ export default function CheckoutPage() {
                   {t("offerDetail.back")}
                 </Link>
               </aside>
-
-              <section className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 lg:col-span-2">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
-                      {t("checkout.pickupGuideBadge")}
-                    </p>
-                    <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                      {t("checkout.pickupGuideTitle")}
-                    </h2>
-                  </div>
-                  <p className="max-w-md text-sm font-semibold leading-6 text-gray-600 sm:text-right">
-                    {t("checkout.pickupGuideIntro")}
-                  </p>
-                </div>
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {pickupSteps.map((item) => (
-                    <div
-                      key={item.title}
-                      className="rounded-3xl bg-[#F7F6EF] p-5"
-                    >
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-xl font-black text-green-800">
-                        {item.number}
-                      </div>
-                      <h3 className="mt-4 text-lg font-black text-gray-950">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 text-sm font-semibold leading-6 text-gray-700">
-                        {item.text}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </section>
             </div>
           )}
         </div>

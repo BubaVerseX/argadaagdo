@@ -35,11 +35,6 @@ function getOfferCategory(offer: Offer) {
   return normalizeOfferCategory(offer.category);
 }
 
-function formatOfferMatches(count: number, language: "en" | "ka") {
-  if (language === "ka") return `${count} შეთავაზება ემთხვევა ფილტრებს.`;
-  return `${count} ${count === 1 ? "offer matches" : "offers match"} your filters.`;
-}
-
 function formatAvailableOfferCount(count: number, language: "en" | "ka") {
   if (language === "ka") return `${count} ხელმისაწვდომი შეთავაზება`;
   return `${count} ${count === 1 ? "available offer" : "available offers"}`;
@@ -341,24 +336,20 @@ export default function OffersPage() {
 
       <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="relative mx-auto max-w-7xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-6 md:rounded-[2.5rem] md:p-12">
+          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-6 md:rounded-[2.5rem] md:p-10">
             <p className="text-xs font-black uppercase tracking-widest text-green-100 md:text-sm">
               {t("offers.badge")}
             </p>
 
-            <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-7xl">
+            <h1 className="mt-3 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
               {t("offers.title")}
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-green-50 md:text-lg">
+            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-green-50 md:text-lg">
               {t("offers.subtitle")}
             </p>
 
-            <p className="mt-4 max-w-2xl text-sm font-black text-green-100">
-              {t("offers.filterHint")}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:mt-7 md:flex-row">
+            <div className="mt-6 flex flex-col gap-3 md:flex-row">
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -374,7 +365,7 @@ export default function OffersPage() {
               </button>
             </div>
 
-            <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-center">
+            <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-center">
               <select
                 value={selectedCategory}
                 onChange={(event) => setSelectedCategory(event.target.value)}
@@ -411,15 +402,12 @@ export default function OffersPage() {
               </label>
             </div>
 
-          </div>
-
-          <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:mt-8 sm:p-6">
-            <p className="text-sm font-black uppercase tracking-widest text-green-700">
-              {t("offers.surpriseBagTitle")}
-            </p>
-            <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-700">
+            <div className="mt-4 rounded-2xl bg-white/10 p-4 text-sm font-bold leading-6 text-green-50">
+              <span className="font-black text-white">
+                {t("offers.surpriseBagTitle")}
+              </span>{" "}
               {t("offers.surpriseBagText")}
-            </p>
+            </div>
           </div>
 
           {message && (
@@ -432,8 +420,8 @@ export default function OffersPage() {
             <h2 className="text-2xl font-black sm:text-3xl md:text-4xl">
               {t("offers.heading")}
             </h2>
-            <p className="mt-2 font-semibold text-gray-700">
-              {formatOfferMatches(filteredOffers.length, language)}
+            <p className="mt-2 text-sm font-black text-gray-600">
+              {formatAvailableOfferCount(filteredOffers.length, language)}
             </p>
           </div>
 
@@ -558,64 +546,57 @@ export default function OffersPage() {
 
                           <div className="p-4 sm:p-5 md:p-6">
                             <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <h4 className="text-xl font-black leading-tight sm:text-2xl">
+                              <div className="min-w-0">
+                                <h4 className="text-2xl font-black leading-tight">
                                   {offer.title}
                                 </h4>
 
-                                <p className="mt-2 text-lg font-bold text-gray-800">
-                                  {offer.businesses?.name}
-                                </p>
+                                <div className="mt-3 flex flex-wrap items-end gap-2">
+                                  <span className="text-4xl font-black text-green-700">
+                                    {formatMoney(offer.price)}
+                                  </span>
 
-                                <p className="mt-1 text-sm font-black text-yellow-700">
-                                  ⭐ {getRatingLabel(rating, language)}
-                                </p>
+                                  {offer.old_price && (
+                                    <span className="pb-1 font-bold text-gray-400 line-through">
+                                      {formatMoney(offer.old_price)}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
 
                               <div className="rounded-2xl bg-green-50 px-4 py-3 text-center">
-                                <p className="text-xs font-black text-green-700">
-                                  {t("offers.boxesLeft")}
-                                </p>
                                 <p className="text-2xl font-black text-green-800">
                                   {offer.quantity}
+                                </p>
+                                <p className="text-xs font-black text-green-700">
+                                  {t("offers.boxesLeft")}
                                 </p>
                               </div>
                             </div>
 
-                            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                              <p className="font-semibold text-gray-600">
-                                📍 {businessAddress}
+                            <div className="mt-4 grid gap-2 text-sm font-semibold text-gray-600">
+                              <p className="text-base font-bold text-gray-800">
+                                {offer.businesses?.name}
                               </p>
+                              <p>⏰ {formatPickupWindow(offer, language)}</p>
+                              <p>📍 {businessAddress}</p>
+                              <p className="font-black text-yellow-700">
+                                ⭐ {getRatingLabel(rating, language)}
+                              </p>
+                            </div>
 
                               <a
                                 href={mapsUrl}
                                 target="_blank"
                                 rel="noreferrer"
                                 aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                                className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
+                                className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100"
                               >
                                 {t("common.openMap")}
                               </a>
-                            </div>
 
-                            <p className="mt-2 font-semibold text-gray-600">
-                              ⏰ {formatPickupWindow(offer, language)}
-                            </p>
-
-                            <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                              <div>
-                                <span className="text-4xl font-black text-green-700">
-                                  {formatMoney(offer.price)}
-                                </span>
-
-                                {offer.old_price && (
-                                  <span className="ml-3 font-bold text-gray-400 line-through">
-                                    {formatMoney(offer.old_price)}
-                                  </span>
-                                )}
-                              </div>
-
-                              <div className="flex flex-col gap-3 sm:flex-row">
+                            <div className="mt-5">
+                              <div className="grid gap-3 sm:grid-cols-2">
                                 <button
                                   onClick={() => toggleFavorite(offer)}
                                   disabled={updatingFavoriteId !== null}
@@ -624,7 +605,7 @@ export default function OffersPage() {
                                       ? `Remove ${offer.title} from favorites`
                                       : `Add ${offer.title} to favorites`
                                   }
-                                  className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                                  className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   {updatingFavoriteId === offer.id
                                     ? t("offers.updatingFavorite")
@@ -635,7 +616,7 @@ export default function OffersPage() {
 
                                 <button
                                   onClick={() => openOfferDetails(offer)}
-                                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   {reservable
                                     ? t("common.viewDetails")

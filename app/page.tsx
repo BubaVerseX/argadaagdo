@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import OfferImage from "@/components/OfferImage";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
@@ -66,32 +66,6 @@ export default function Home() {
   }, []);
 
   const featuredOffers = offers.slice(0, 3);
-  const topBusinesses = useMemo(() => {
-    const businessMap = new Map<
-      number,
-      { id: number; name: string; type: string; rating: RatingSummary | undefined }
-    >();
-
-    offers.forEach((offer) => {
-      if (!businessMap.has(offer.business_id)) {
-        businessMap.set(offer.business_id, {
-          id: offer.business_id,
-          name: offer.businesses?.name || t("common.business"),
-          type: offer.businesses?.business_type || t("common.food"),
-          rating: ratingSummaries[offer.business_id],
-        });
-      }
-    });
-
-    return Array.from(businessMap.values())
-      .sort(
-        (first, second) =>
-          (second.rating?.average_rating || 0) -
-          (first.rating?.average_rating || 0)
-      )
-      .slice(0, 3);
-  }, [offers, ratingSummaries, t]);
-
   const firstFeaturedOffer = featuredOffers[0];
   const featuredPickupLabel = firstFeaturedOffer
     ? `${t("common.pickup")} ${getOfferDateLabel(firstFeaturedOffer, language)}`
@@ -99,26 +73,7 @@ export default function Home() {
   const trustStripItems = [
     t("home.trustVerifiedBusinesses"),
     t("home.trustPickupCodeVerification"),
-    t("home.trustCustomerRatings"),
     t("home.trustLocalTbilisiBusinesses"),
-  ];
-  const trustCards = [
-    {
-      title: t("home.trustCardVerifiedTitle"),
-      text: t("home.trustCardVerifiedText"),
-    },
-    {
-      title: t("home.trustCardPickupTitle"),
-      text: t("home.trustCardPickupText"),
-    },
-    {
-      title: t("home.trustCardLocalTitle"),
-      text: t("home.trustCardLocalText"),
-    },
-    {
-      title: t("home.trustCardWasteTitle"),
-      text: t("home.trustCardWasteText"),
-    },
   ];
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -135,7 +90,7 @@ export default function Home() {
                 {t("home.badge")}
               </div>
 
-              <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:mt-7 sm:text-5xl md:text-7xl">
+              <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight sm:mt-7 sm:text-5xl md:text-6xl">
                 {t("home.title1")}
                 <span className="block text-green-700">{t("home.title2")}</span>
                 {t("home.title3")}
@@ -161,7 +116,7 @@ export default function Home() {
                 </Link>
               </div>
 
-              <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:max-w-2xl">
+              <div className="mt-6 grid gap-2 sm:grid-cols-3 lg:max-w-3xl">
                 {trustStripItems.map((item) => (
                   <div
                     key={item}
@@ -171,7 +126,6 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-
             </div>
 
             <div className="relative">
@@ -252,27 +206,6 @@ export default function Home() {
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-2xl bg-white p-4 shadow-xl sm:absolute sm:-bottom-6 sm:-left-4 sm:mt-0 sm:w-64 sm:rounded-3xl sm:p-5 md:-left-8">
-                <p className="text-sm font-black text-gray-500">
-                  {t("home.trustBadge")}
-                </p>
-                <div className="mt-3 grid gap-3">
-                  {trustCards.slice(0, 3).map((item) => (
-                    <div
-                      key={item.title}
-                      className="flex items-center justify-between gap-3 rounded-2xl bg-[#F7F6EF] px-3 py-2"
-                    >
-                      <p className="text-xs font-black text-gray-600">
-                        {item.title}
-                      </p>
-                      <p className="text-sm font-black text-green-700">
-                        ✓
-                      </p>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
@@ -441,56 +374,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-4 py-8 sm:px-6 sm:py-10 md:px-12">
-        <div className="mx-auto max-w-7xl rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
-                {t("common.rating")}
-              </p>
-              <h3 className="mt-2 text-3xl font-black">
-                {t("home.topBusinesses")}
-              </h3>
-            </div>
-            <Link
-              href="/offers"
-              className="w-fit rounded-full bg-green-50 px-5 py-2.5 font-black text-green-800"
-            >
-              {t("nav.offers")}
-            </Link>
-          </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {topBusinesses.length === 0 && (
-              <div className="rounded-3xl bg-[#F7F6EF] p-6 md:col-span-3">
-                <h4 className="text-2xl font-black text-gray-950">
-                  {t("home.moreBusinessesJoiningSoon")}
-                </h4>
-                <p className="mt-2 font-semibold leading-7 text-gray-700">
-                  {t("home.moreBusinessesJoiningSoonText")}
-                </p>
-              </div>
-            )}
-
-            {topBusinesses.map((business) => (
-              <Link
-                key={business.id}
-                href={`/businesses/${business.id}`}
-                className="rounded-3xl bg-[#F7F6EF] p-5 transition hover:-translate-y-1 hover:shadow-md"
-              >
-                <p className="text-2xl font-black">{business.name}</p>
-                <p className="mt-2 font-semibold text-gray-600">
-                  {business.type}
-                </p>
-                <p className="mt-4 font-black text-yellow-700">
-                  ⭐ {getRatingLabel(business.rating, language)}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="px-4 py-10 sm:px-6 sm:py-16 md:px-12">
         <div className="mx-auto max-w-7xl">
           <div className="mb-6 sm:mb-8">
@@ -505,7 +388,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-4">
             {[
               {
                 number: "1",
@@ -530,7 +413,7 @@ export default function Home() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:rounded-[2rem] sm:p-8"
+                className="rounded-3xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:rounded-[2rem] sm:p-6"
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-2xl font-black text-green-800">
                   {item.number}
@@ -541,51 +424,6 @@ export default function Home() {
                 </p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-stretch">
-            <div className="rounded-[2rem] bg-green-800 p-6 text-white shadow-sm sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-green-100">
-                {t("home.trustBadge")}
-              </p>
-              <h3 className="mt-3 text-3xl font-black">
-                {t("home.trustTitle")}
-              </h3>
-              <p className="mt-4 font-semibold leading-7 text-green-50">
-                {t("home.trustMessage")}
-              </p>
-              <Link
-                href="/contact"
-                className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 py-3 text-center font-black text-green-800 transition hover:bg-green-50 sm:w-auto"
-              >
-                {t("contact.cta")}
-              </Link>
-            </div>
-
-            <div className="rounded-[2rem] bg-white p-6 shadow-sm sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
-                {t("home.whyBadge")}
-              </p>
-              <h3 className="mt-3 text-3xl font-black">
-                {t("home.whyUse")}
-              </h3>
-
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {[
-                  t("home.whySaveMoney"),
-                  t("home.whyReduceWaste"),
-                  t("home.whySupportLocal"),
-                  t("home.whyDiscoverTbilisi"),
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl bg-[#F7F6EF] px-4 py-4 font-black text-gray-800"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>

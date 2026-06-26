@@ -902,19 +902,6 @@ export default function BusinessDashboardPage() {
       completed: reviews.length > 0,
     },
   ];
-  const businessWorkflowSteps = [
-    t("businessOnboarding.workflowCreateOffer"),
-    t("businessOnboarding.workflowReceiveReservations"),
-    t("businessOnboarding.workflowVerifyPickupCode"),
-    t("businessOnboarding.workflowCompletePickup"),
-    t("businessOnboarding.workflowReceiveRatings"),
-  ];
-  const businessTips = [
-    t("businessOnboarding.tipPublishEarly"),
-    t("businessOnboarding.tipClearNames"),
-    t("businessOnboarding.tipAccurateTimes"),
-    t("businessOnboarding.tipPromptPickup"),
-  ];
   const firstOfferGuidance = [
     {
       label: t("businessOnboarding.recommendedQuantity"),
@@ -1017,7 +1004,7 @@ export default function BusinessDashboardPage() {
             Business control center
           </p>
 
-          <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+          <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
             {t("businessDashboard.welcome")}, {dashboardBusinessName}
           </h1>
 
@@ -1025,7 +1012,7 @@ export default function BusinessDashboardPage() {
             {t("businessDashboard.welcomeText")}
           </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
+          <div className="mt-6 grid gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-4">
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
               <p className="text-sm font-black text-green-100">{t("businessDashboard.myOffers")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{offers.length}</h2>
@@ -1039,16 +1026,6 @@ export default function BusinessDashboardPage() {
             <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
               <p className="text-sm font-black text-green-100">{t("orders.reserved")}</p>
               <h2 className="mt-1 text-3xl font-black sm:text-4xl">{reservedOrders.length}</h2>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">{t("orders.collected")}</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{collectedOrders.length}</h2>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">{t("orders.cancelled")}</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{cancelledOrders.length}</h2>
             </div>
           </div>
         </div>
@@ -1080,105 +1057,64 @@ export default function BusinessDashboardPage() {
         )}
 
         {isNewBusinessOnboarding && (
-          <>
-            <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                {t("businessOnboarding.workflowBadge")}
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                {t("businessOnboarding.workflowTitle")}
-              </h2>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                {businessWorkflowSteps.map((step, index) => (
-                  <div
-                    key={step}
-                    className="rounded-2xl bg-[#F7F6EF] p-4 font-bold leading-6 text-gray-700"
+          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              {t("businessOnboarding.checklistBadge")}
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              {t("businessOnboarding.checklistTitle")}
+            </h2>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {onboardingChecklist.map((item) => (
+                <div
+                  key={item.label}
+                  className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
+                    item.completed
+                      ? "bg-green-50 text-green-800"
+                      : "bg-[#F7F6EF] text-gray-700"
+                  }`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
+                      item.completed
+                        ? "bg-green-700 text-white"
+                        : "bg-white text-gray-500"
+                    }`}
                   >
-                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
-                      {index + 1}
-                    </span>
-                    {step}
-                  </div>
-                ))}
-              </div>
+                    {item.completed ? "✓" : item.step}
+                  </span>
+                  <span>{item.label}</span>
+                </div>
+              ))}
             </div>
 
-            <div className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-              <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                  {t("businessOnboarding.checklistBadge")}
-                </p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                  {t("businessOnboarding.checklistTitle")}
-                </h2>
-
-                <div className="mt-5 grid gap-3">
-                  {onboardingChecklist.map((item) => (
-                    <div
-                      key={item.label}
-                      className={`flex items-start gap-3 rounded-2xl p-4 font-bold ${
-                        item.completed
-                          ? "bg-green-50 text-green-800"
-                          : "bg-[#F7F6EF] text-gray-700"
-                      }`}
-                    >
-                      <span
-                        aria-hidden="true"
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
-                          item.completed
-                            ? "bg-green-700 text-white"
-                            : "bg-white text-gray-500"
-                        }`}
-                      >
-                        {item.completed ? "✓" : "□"}
-                      </span>
-                      <span>
-                        <span className="block text-xs uppercase tracking-widest text-gray-500">
-                          {t("businessOnboarding.step")} {item.step}
-                        </span>
-                        <span className="mt-1 block">{item.label}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-3xl bg-green-800 p-5 text-white shadow-sm sm:rounded-[2rem] sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-                  {t("businessOnboarding.tipsBadge")}
-                </p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                  {t("businessOnboarding.tipsTitle")}
-                </h2>
-                <div className="mt-5 grid gap-3">
-                  {businessTips.map((tip) => (
-                    <div
-                      key={tip}
-                      className="rounded-2xl bg-white/10 p-4 font-semibold leading-7 text-green-50 ring-1 ring-white/10"
-                    >
-                      • {tip}
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {[
+                t("businessOnboarding.tipPublishEarly"),
+                t("businessOnboarding.tipClearNames"),
+                t("businessOnboarding.tipAccurateTimes"),
+              ].map((tip) => (
+                <span
+                  key={tip}
+                  className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-800"
+                >
+                  ✓ {tip}
+                </span>
+              ))}
             </div>
-          </>
+          </div>
         )}
 
         <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Dashboard Overview
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                {t("businessDashboard.stats")}
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              {t("businessDashboard.statsIntro")}
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              Dashboard Overview
             </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              {t("businessDashboard.stats")}
+            </h2>
           </div>
 
           {!hasAnalyticsActivity && (
@@ -1201,9 +1137,6 @@ export default function BusinessDashboardPage() {
                   </p>
                   <p className={`mt-2 text-3xl font-black sm:text-4xl ${styles.value}`}>
                     {metric.value}
-                  </p>
-                  <p className="mt-3 text-sm font-semibold leading-6 opacity-75">
-                    {metric.helper}
                   </p>
                 </div>
               );
@@ -1238,32 +1171,19 @@ export default function BusinessDashboardPage() {
 
           {canCreateOffers ? (
             <>
-              <div className="mt-5 rounded-3xl bg-green-50 p-5 sm:p-6">
+              <div className="mt-5 rounded-2xl bg-green-50 p-4 sm:p-5">
                 <p className="text-sm font-black uppercase tracking-widest text-green-700">
                   {t("businessOnboarding.firstOfferGuidanceTitle")}
                 </p>
-                <div className="mt-4 grid gap-3 md:grid-cols-3">
+                <div className="mt-3 flex flex-wrap gap-2">
                   {firstOfferGuidance.map((item) => (
-                    <div
+                    <span
                       key={item.label}
-                      className="rounded-2xl bg-white p-4 shadow-sm"
+                      className="rounded-full bg-white px-4 py-2 text-sm font-black text-green-900"
                     >
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        {item.label}
-                      </p>
-                      <p className="mt-2 font-black text-gray-950">
-                        {item.value}
-                      </p>
-                    </div>
+                      ✓ {item.label}: {item.value}
+                    </span>
                   ))}
-                </div>
-                <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
-                  <p className="text-sm font-black text-gray-950">
-                    {t("businessOnboarding.realExamplesTitle")}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-gray-700">
-                    {t("businessOnboarding.realExamplesText")}
-                  </p>
                 </div>
               </div>
 
@@ -1373,7 +1293,7 @@ export default function BusinessDashboardPage() {
                 />
               </div>
 
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <div className="mt-4 grid gap-2 md:grid-cols-3">
                 {[
                   t("businessOnboarding.titleHelper"),
                   t("businessOnboarding.quantityHelper"),
@@ -1381,9 +1301,9 @@ export default function BusinessDashboardPage() {
                 ].map((helper) => (
                   <p
                     key={helper}
-                    className="rounded-2xl bg-[#F7F6EF] p-4 text-sm font-semibold leading-6 text-gray-700"
+                    className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-semibold leading-6 text-gray-700"
                   >
-                    {helper}
+                    ✓ {helper}
                   </p>
                 ))}
               </div>
@@ -1653,42 +1573,23 @@ export default function BusinessDashboardPage() {
             {t("businessDashboard.reservations")}
           </h2>
 
-          <div className="mt-5 rounded-3xl bg-green-50 p-5 sm:p-6">
+          <div className="mt-5 rounded-2xl bg-green-50 p-4 sm:p-5">
             <p className="text-sm font-black uppercase tracking-widest text-green-700">
               {t("businessOnboarding.reservationGuidanceTitle")}
             </p>
-            <p className="mt-2 font-semibold leading-7 text-green-900">
-              {t("businessOnboarding.reservationGuidanceText")}
-            </p>
-            <p className="mt-3 rounded-2xl bg-white p-4 text-sm font-bold leading-6 text-green-900">
-              {t("businessOnboarding.reservationCardHint")}
-            </p>
-          </div>
-
-          <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-4 sm:p-5">
-            <h3 className="text-xl font-black">
-              {t("businessOnboarding.pickupVerificationTitle")}
-            </h3>
-
-            <p className="mt-2 font-semibold leading-7 text-gray-600">
-              {t("businessOnboarding.pickupVerificationText")}
-            </p>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="mt-3 flex flex-wrap gap-2">
               {[
+                t("businessOnboarding.reservationGuidanceText"),
                 t("businessOnboarding.pickupStepAskCode"),
                 t("businessOnboarding.pickupStepEnterCode"),
                 t("businessOnboarding.pickupStepComplete"),
-              ].map((step, index) => (
-                <div
+              ].map((step) => (
+                <span
                   key={step}
-                  className="rounded-2xl bg-white p-4 text-sm font-black leading-6 text-gray-800"
+                  className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-green-900"
                 >
-                  <span className="mb-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-700 text-white">
-                    {index + 1}
-                  </span>
-                  {step}
-                </div>
+                  ✓ {step}
+                </span>
               ))}
             </div>
           </div>
@@ -1705,9 +1606,6 @@ export default function BusinessDashboardPage() {
                     {orders.length}
                   </h3>
                 </div>
-                <p className="max-w-lg text-sm font-semibold leading-6 text-gray-700 sm:text-right">
-                  {t("businessDashboard.reservationSummaryHint")}
-                </p>
               </div>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -1987,18 +1885,8 @@ export default function BusinessDashboardPage() {
           </h2>
 
           <p className="mt-2 font-semibold text-gray-600">
-            Customer reviews from collected orders for your approved
-            businesses.
+            ✓ {t("businessOnboarding.ratingsGuidanceText")}
           </p>
-
-          <div className="mt-5 rounded-3xl bg-yellow-50 p-5 sm:p-6">
-            <p className="text-sm font-black uppercase tracking-widest text-yellow-800">
-              {t("businessOnboarding.ratingsGuidanceTitle")}
-            </p>
-            <p className="mt-2 font-semibold leading-7 text-yellow-950">
-              {t("businessOnboarding.ratingsGuidanceText")}
-            </p>
-          </div>
 
           <div className="mt-6 grid gap-4">
             {reviews.length === 0 && (
