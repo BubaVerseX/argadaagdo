@@ -15,6 +15,7 @@ import {
   compareMarketplaceOffers,
   formatMoney,
   formatPickupWindow,
+  getOfferDateLabel,
   getOfferGroup,
   getRatingLabel,
   isOfferReservable,
@@ -539,9 +540,13 @@ export default function OffersPage() {
 
                             {discount && (
                               <div className="absolute right-4 top-4 rounded-full bg-red-600 px-4 py-2 text-sm font-black text-white shadow-sm">
-                                -{discount}%
+                                Save {discount}%
                               </div>
                             )}
+
+                            <div className="absolute bottom-4 left-4 rounded-full bg-green-800/95 px-4 py-2 text-sm font-black text-white shadow-sm">
+                              {getOfferDateLabel(offer, language)}
+                            </div>
                           </div>
 
                           <div className="p-4 sm:p-5 md:p-6">
@@ -574,26 +579,31 @@ export default function OffersPage() {
                               </div>
                             </div>
 
-                            <div className="mt-4 grid gap-2 text-sm font-semibold text-gray-600">
-                              <p className="text-base font-bold text-gray-800">
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
                                 {offer.businesses?.name}
-                              </p>
-                              <p>⏰ {formatPickupWindow(offer, language)}</p>
-                              <p>📍 {businessAddress}</p>
-                              <p className="font-black text-yellow-700">
+                              </span>
+                              <span className="rounded-full bg-green-50 px-3 py-2 text-sm font-black text-green-800">
+                                ⏰ {formatPickupWindow(offer, language)}
+                              </span>
+                              <span className="rounded-full bg-yellow-50 px-3 py-2 text-sm font-black text-yellow-800">
                                 ⭐ {getRatingLabel(rating, language)}
-                              </p>
+                              </span>
                             </div>
 
-                              <a
-                                href={mapsUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                                className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100"
-                              >
-                                {t("common.openMap")}
-                              </a>
+                            <p className="mt-3 text-sm font-semibold text-gray-600">
+                              📍 {businessAddress}
+                            </p>
+
+                            <a
+                              href={mapsUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
+                              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                            >
+                              {t("common.openMap")}
+                            </a>
 
                             <div className="mt-5">
                               <div className="grid gap-3 sm:grid-cols-2">
@@ -605,7 +615,7 @@ export default function OffersPage() {
                                       ? `Remove ${offer.title} from favorites`
                                       : `Add ${offer.title} to favorites`
                                   }
-                                  className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   {updatingFavoriteId === offer.id
                                     ? t("offers.updatingFavorite")
@@ -616,10 +626,10 @@ export default function OffersPage() {
 
                                 <button
                                   onClick={() => openOfferDetails(offer)}
-                                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   {reservable
-                                    ? t("common.viewDetails")
+                                    ? t("common.reserve")
                                     : Number(offer.quantity || 0) <= 0
                                     ? t("common.soldOut")
                                     : t("common.unavailable")}

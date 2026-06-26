@@ -486,7 +486,7 @@ export default function OrdersPage() {
                 className="rounded-3xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-5 md:p-8"
               >
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                  <div>
+                  <div className="order-2 lg:order-1">
                     <div className="flex flex-wrap items-center gap-3">
                       <span
                         className={`rounded-full px-4 py-2 text-sm font-black ${statusClass}`}
@@ -497,6 +497,12 @@ export default function OrdersPage() {
                       <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700">
                         {order.offers?.businesses?.business_type || t("common.food")}
                       </span>
+
+                      {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
+                        <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-black text-yellow-900">
+                          Ready to rate
+                        </span>
+                      )}
                     </div>
 
                     <h2 className="mt-4 text-2xl font-black sm:text-3xl">
@@ -575,7 +581,7 @@ export default function OrdersPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-3xl bg-[#F7F6EF] p-4 text-center sm:rounded-[2rem] sm:p-5 lg:min-w-[280px]">
+                  <div className="order-1 rounded-3xl bg-[#F7F6EF] p-4 text-center sm:rounded-[2rem] sm:p-5 lg:order-2 lg:min-w-[280px]">
                     <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("orders.pickupCode")}
                     </p>
@@ -649,6 +655,7 @@ export default function OrdersPage() {
                                 <button
                                   key={rating}
                                   type="button"
+                                  aria-label={`Rate this pickup ${rating} out of 5`}
                                   onClick={() =>
                                     setRatingValues((currentRatings) => ({
                                       ...currentRatings,
@@ -677,7 +684,7 @@ export default function OrdersPage() {
                               }
                               maxLength={500}
                               placeholder={t("orders.reviewPlaceholder")}
-                              className="mt-3 min-h-24 w-full rounded-2xl border bg-white p-3 text-sm font-semibold text-gray-800 outline-none focus:border-green-600"
+                              className="mt-3 min-h-24 w-full rounded-2xl border bg-white p-3 text-sm font-semibold text-gray-800 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
                             />
 
                             <button

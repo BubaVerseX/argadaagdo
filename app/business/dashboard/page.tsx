@@ -77,9 +77,17 @@ function isApprovedBusiness(business: Business) {
 }
 
 function getImageValidationError(file: File) {
-  if (file.size > maxImageSizeBytes) return "File too large";
-  if (!allowedImageTypes.includes(file.type)) return "Invalid file type";
+  if (file.size > maxImageSizeBytes) {
+    return "Image is too large. Please upload a file under 5MB.";
+  }
+  if (!allowedImageTypes.includes(file.type)) {
+    return "Invalid image type. Please use JPG, PNG, or WebP.";
+  }
   return "";
+}
+
+function RequiredMark() {
+  return <span className="text-red-600">*</span>;
 }
 
 export default function BusinessDashboardPage() {
@@ -97,6 +105,7 @@ export default function BusinessDashboardPage() {
 
   const [businessId, setBusinessId] = useState("");
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [category, setCategory] = useState(DEFAULT_OFFER_CATEGORY);
   const [price, setPrice] = useState("");
   const [oldPrice, setOldPrice] = useState("");
@@ -341,12 +350,12 @@ export default function BusinessDashboardPage() {
     setMessageTone("error");
 
     if (!businessId) {
-      setMessage("No business found.");
+      setMessage("Choose an approved business before publishing an offer.");
       return;
     }
 
     if (!title.trim()) {
-      setMessage("Offer title required.");
+      setMessage("Add an offer title. Example: Bakery Surprise Bag.");
       return;
     }
 
@@ -364,7 +373,7 @@ export default function BusinessDashboardPage() {
     }
 
     if (!Number.isFinite(priceValue) || priceValue <= 0) {
-      setMessage("Price must be greater than 0.");
+      setMessage("Add a valid discounted price greater than 0.");
       return;
     }
 
@@ -372,22 +381,27 @@ export default function BusinessDashboardPage() {
       oldPriceValue !== null &&
       (!Number.isFinite(oldPriceValue) || oldPriceValue <= 0)
     ) {
-      setMessage("Old price must be greater than 0.");
+      setMessage("Original price must be greater than 0, or leave it empty.");
       return;
     }
 
     if (!Number.isInteger(quantityValue) || quantityValue <= 0) {
-      setMessage("Quantity must be greater than 0.");
+      setMessage("Quantity must be a whole number greater than 0.");
       return;
     }
 
     if (!selectedCategory) {
-      setMessage("Category required.");
+      setMessage("Choose a category for this offer.");
       return;
     }
 
     if (!pickupDate || !pickupStart || !pickupEnd) {
-      setMessage("Pickup date and time required.");
+      setMessage("Add a pickup date, start time and end time.");
+      return;
+    }
+
+    if (pickupStart >= pickupEnd) {
+      setMessage("Pickup end time must be after pickup start time.");
       return;
     }
 
@@ -412,6 +426,7 @@ export default function BusinessDashboardPage() {
       pickup_start: pickupStart,
       pickup_end: pickupEnd,
       category: selectedCategory,
+      description: description.trim() || null,
       active: true,
       status: "active",
       image_url: imageUrl,
@@ -429,6 +444,7 @@ export default function BusinessDashboardPage() {
     }
 
     setTitle("");
+    setDescription("");
     setCategory(DEFAULT_OFFER_CATEGORY);
     setPrice("");
     setOldPrice("");
@@ -440,7 +456,7 @@ export default function BusinessDashboardPage() {
 
     setPublishing(false);
     setMessageTone("success");
-    setMessage("Offer published.");
+    setMessage("Offer published. It is now visible to customers.");
     await loadDashboard();
   }
 
@@ -920,25 +936,21 @@ export default function BusinessDashboardPage() {
     {
       title: t("businessDashboard.activeOffersMetric"),
       value: activeOffers.length,
-      helper: t("businessDashboard.activeOffersHelper"),
       tone: "green" as const,
     },
     {
       title: t("businessDashboard.totalReservationsMetric"),
       value: orders.length,
-      helper: t("businessDashboard.totalReservationsHelper"),
       tone: "neutral" as const,
     },
     {
       title: t("businessDashboard.completedPickupsMetric"),
       value: collectedOrders.length,
-      helper: t("businessDashboard.completedPickupsHelper"),
       tone: "green" as const,
     },
     {
       title: t("businessDashboard.averageRating"),
       value: averageRatingLabel,
-      helper: t("businessDashboard.averageRatingHelper"),
       tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
     },
   ];
@@ -1188,109 +1200,158 @@ export default function BusinessDashboardPage() {
               </div>
 
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <select
-                  value={businessId}
-                  onChange={(e) => setBusinessId(e.target.value)}
-                  className="rounded-2xl border p-4 font-semibold"
-                >
-                  {approvedBusinesses.map((business) => (
-                    <option key={business.id} value={business.id}>
-                      {business.name}
-                    </option>
-                  ))}
-                </select>
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Business <RequiredMark />
+                  </span>
+                  <select
+                    value={businessId}
+                    onChange={(e) => setBusinessId(e.target.value)}
+                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  >
+                    {approvedBusinesses.map((business) => (
+                      <option key={business.id} value={business.id}>
+                        {business.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-                <input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Offer title"
-                  placeholder="Bakery Surprise Bag"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Title <RequiredMark />
+                  </span>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    placeholder="Bakery Surprise Bag"
+                  />
+                </label>
 
-                <select
-                  value={category}
-                  onChange={(event) =>
-                    setCategory(normalizeOfferCategory(event.target.value))
-                  }
-                  required
-                  aria-label="Offer category"
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold"
-                >
-                  {OFFER_CATEGORIES.map((offerCategory) => (
-                    <option key={offerCategory} value={offerCategory}>
-                      {offerCategory}
-                    </option>
-                  ))}
-                </select>
+                <label className="grid gap-2 text-sm font-black text-gray-700 md:col-span-2">
+                  Description
+                  <textarea
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
+                    maxLength={500}
+                    className="min-h-28 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    placeholder="Fresh bakery items saved from today's closing stock."
+                  />
+                </label>
 
-                <input
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  inputMode="decimal"
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Offer price"
-                  placeholder="5.00"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Category <RequiredMark />
+                  </span>
+                  <select
+                    value={category}
+                    onChange={(event) =>
+                      setCategory(normalizeOfferCategory(event.target.value))
+                    }
+                    required
+                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  >
+                    {OFFER_CATEGORIES.map((offerCategory) => (
+                      <option key={offerCategory} value={offerCategory}>
+                        {offerCategory}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-                <input
-                  value={oldPrice}
-                  onChange={(e) => setOldPrice(e.target.value)}
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  inputMode="decimal"
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Original price"
-                  placeholder="10.00"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Price <RequiredMark />
+                  </span>
+                  <input
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    inputMode="decimal"
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    placeholder="5.00"
+                  />
+                </label>
 
-                <input
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  type="number"
-                  min="1"
-                  step="1"
-                  inputMode="numeric"
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Quantity"
-                  placeholder="3"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  Original price
+                  <input
+                    value={oldPrice}
+                    onChange={(e) => setOldPrice(e.target.value)}
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    inputMode="decimal"
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    placeholder="10.00"
+                  />
+                </label>
 
-                <input
-                  value={pickupDate}
-                  onChange={(e) => setPickupDate(e.target.value)}
-                  type="date"
-                  min={getTbilisiDateKey()}
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Pickup date"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Quantity <RequiredMark />
+                  </span>
+                  <input
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    type="number"
+                    min="1"
+                    step="1"
+                    inputMode="numeric"
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    placeholder="3"
+                  />
+                </label>
 
-                <input
-                  value={pickupStart}
-                  onChange={(e) => setPickupStart(e.target.value)}
-                  type="time"
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Pickup start"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Pickup date <RequiredMark />
+                  </span>
+                  <input
+                    value={pickupDate}
+                    onChange={(e) => setPickupDate(e.target.value)}
+                    type="date"
+                    min={getTbilisiDateKey()}
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  />
+                </label>
 
-                <input
-                  value={pickupEnd}
-                  onChange={(e) => setPickupEnd(e.target.value)}
-                  type="time"
-                  className="rounded-2xl border p-4 font-semibold"
-                  aria-label="Pickup end"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Pickup start <RequiredMark />
+                  </span>
+                  <input
+                    value={pickupStart}
+                    onChange={(e) => setPickupStart(e.target.value)}
+                    type="time"
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  />
+                </label>
 
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
-                  onChange={handleImageFileChange}
-                  className="rounded-2xl border bg-white p-4 font-semibold"
-                />
+                <label className="grid gap-2 text-sm font-black text-gray-700">
+                  <span>
+                    Pickup end <RequiredMark />
+                  </span>
+                  <input
+                    value={pickupEnd}
+                    onChange={(e) => setPickupEnd(e.target.value)}
+                    type="time"
+                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  />
+                </label>
+
+                <label className="grid gap-2 text-sm font-black text-gray-700 md:col-span-2">
+                  Offer image
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
+                    onChange={handleImageFileChange}
+                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-green-50 file:px-4 file:py-2 file:font-black file:text-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                  />
+                </label>
               </div>
 
               <div className="mt-4 grid gap-2 md:grid-cols-3">
@@ -1624,7 +1685,7 @@ export default function BusinessDashboardPage() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             {[
-              { value: "reserved", label: "Active Reservations" },
+              { value: "reserved", label: "Active" },
               { value: "collected", label: "Completed" },
               { value: "cancelled", label: "Cancelled" },
               { value: "no_show", label: "No-show" },
@@ -1635,6 +1696,7 @@ export default function BusinessDashboardPage() {
                 <button
                   key={filter.value}
                   type="button"
+                  aria-pressed={isActive}
                   onClick={() =>
                     setReservationFilter(filter.value as ReservationFilter)
                   }

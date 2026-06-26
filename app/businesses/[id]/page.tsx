@@ -27,6 +27,17 @@ function isApprovedBusiness(value: boolean | string | null | undefined) {
   return value === true || String(value) === "true";
 }
 
+function getBusinessInitials(name: string) {
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+
+  return initials || "A";
+}
+
 export default function BusinessProfilePage() {
   const params = useParams<{ id: string }>();
   const { language, t } = useLanguage();
@@ -137,8 +148,10 @@ export default function BusinessProfilePage() {
                         sizes="(max-width: 1024px) 100vw, 45vw"
                       />
                     ) : (
-                      <div className="flex h-full min-h-72 items-center justify-center text-6xl">
-                        🥡
+                      <div className="flex h-full min-h-72 items-center justify-center">
+                        <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white text-4xl font-black text-green-800 shadow-sm">
+                          {getBusinessInitials(business.name)}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -155,9 +168,19 @@ export default function BusinessProfilePage() {
                       )}
                     </div>
 
-                    <h1 className="mt-3 text-3xl font-black sm:text-5xl">
-                      {business.name}
-                    </h1>
+                    <div className="mt-4 flex items-center gap-4">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-2xl font-black text-green-800">
+                        {getBusinessInitials(business.name)}
+                      </div>
+                      <div>
+                        <h1 className="text-3xl font-black sm:text-5xl">
+                          {business.name}
+                        </h1>
+                        <p className="mt-2 font-semibold leading-7 text-gray-600">
+                          Local {business.business_type || t("common.food")} business offering pickup-only surprise bags in Tbilisi.
+                        </p>
+                      </div>
+                    </div>
 
                     <div className="mt-5 grid gap-3 rounded-3xl bg-[#F7F6EF] p-4 font-semibold text-gray-700">
                       <p>
@@ -199,7 +222,7 @@ export default function BusinessProfilePage() {
                           {t("common.rating")}
                         </p>
                         <p className="mt-2 text-3xl font-black text-gray-950">
-                          {averageRating ? `⭐ ${averageRating}` : "⭐"}
+                          {averageRating ? `⭐ ${averageRating}` : t("common.noRatings")}
                         </p>
                         <p className="mt-1 text-sm font-bold text-gray-600">
                           {averageRating
@@ -262,46 +285,65 @@ export default function BusinessProfilePage() {
                     </div>
                   )}
 
-                  {offers.map((offer) => (
-                    <Link
-                      key={offer.id}
-                      href={`/offers/${offer.id}`}
-                      className="overflow-hidden rounded-3xl bg-[#F7F6EF] shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                    >
-                      <div className="relative h-48 bg-green-100">
-                        <OfferImage
-                          src={offer.image_url}
-                          alt={offer.title}
-                          sizes="(max-width: 768px) 100vw, 33vw"
-                        />
-                        <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-green-700 shadow-sm">
-                          {normalizeOfferCategory(offer.category)}
-                        </span>
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-xl font-black">{offer.title}</h3>
-                        <p className="mt-2 font-semibold text-gray-600">
-                          {formatPickupWindow(offer, language)}
-                        </p>
-                        <p className="mt-2 text-sm font-bold text-gray-500">
-                          {t("common.quantity")}: {offer.quantity}
-                        </p>
-                        <div className="mt-4 flex items-center justify-between gap-3">
-                          <p className="text-2xl font-black text-green-700">
-                            {formatMoney(offer.price)}
-                          </p>
-                          <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-green-700">
-                            {isOfferReservable(offer)
-                              ? t("common.available")
-                              : t("common.unavailable")}
+                  {offers.map((offer) => {
+                    const discount =
+                      offer.old_price &&
+                      Number(offer.old_price) > Number(offer.price)
+                        ? Math.round(
+                            ((Number(offer.old_price) - Number(offer.price)) /
+                              Number(offer.old_price)) *
+                              100
+                          )
+                        : null;
+
+                    return (
+                      <Link
+                        key={offer.id}
+                        href={`/offers/${offer.id}`}
+                        className="overflow-hidden rounded-3xl bg-[#F7F6EF] shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                      >
+                        <div className="relative h-48 bg-green-100">
+                          <OfferImage
+                            src={offer.image_url}
+                            alt={offer.title}
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                          />
+                          <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-green-700 shadow-sm">
+                            {normalizeOfferCategory(offer.category)}
                           </span>
+                          {discount && (
+                            <span className="absolute right-4 top-4 rounded-full bg-red-600 px-3 py-1 text-sm font-black text-white shadow-sm">
+                              Save {discount}%
+                            </span>
+                          )}
                         </div>
-                        <p className="mt-4 inline-flex min-h-10 items-center rounded-full bg-green-700 px-4 py-2 text-sm font-black text-white">
-                          {t("common.viewDetails")}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+                        <div className="p-5">
+                          <h3 className="text-xl font-black">{offer.title}</h3>
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-green-800">
+                              {formatPickupWindow(offer, language)}
+                            </span>
+                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-gray-700">
+                              {t("common.quantity")}: {offer.quantity}
+                            </span>
+                          </div>
+                          <div className="mt-4 flex items-center justify-between gap-3">
+                            <p className="text-2xl font-black text-green-700">
+                              {formatMoney(offer.price)}
+                            </p>
+                            <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-green-700">
+                              {isOfferReservable(offer)
+                                ? t("common.available")
+                                : t("common.unavailable")}
+                            </span>
+                          </div>
+                          <p className="mt-4 inline-flex min-h-10 items-center rounded-full bg-green-700 px-4 py-2 text-sm font-black text-white">
+                            {t("common.viewDetails")}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -315,11 +357,14 @@ export default function BusinessProfilePage() {
 
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (
-                    <div className="rounded-3xl bg-[#F7F6EF] p-6">
-                      <p className="text-lg font-black text-gray-950">
+                    <div className="rounded-3xl border border-dashed border-yellow-200 bg-yellow-50/70 p-6 text-center">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
+                        ⭐
+                      </div>
+                      <p className="mt-4 text-lg font-black text-gray-950">
                         {t("common.noReviews")}
                       </p>
-                      <p className="mt-2 font-semibold leading-7 text-gray-600">
+                      <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-600">
                         {t("businessProfile.noReviewsHint")}
                       </p>
                     </div>
