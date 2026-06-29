@@ -3,7 +3,7 @@ import NotificationCenter from "@/components/NotificationCenter";
 import "./globals.css";
 
 const appDescription =
-  "Reserve discounted leftover food boxes from local Tbilisi businesses and pick them up in store.";
+  "Save money on surprise food bags from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
 
 export const metadata: Metadata = {
   title: {
@@ -42,6 +42,11 @@ export const metadata: Metadata = {
     description: appDescription,
     siteName: "ArGadaagdo",
     type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "ArGadaagdo | Rescue Good Food in Tbilisi",
+    description: appDescription,
   },
 };
 

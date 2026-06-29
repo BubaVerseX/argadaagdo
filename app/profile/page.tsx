@@ -1,6 +1,9 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import { LoyaltyProgress } from "@/components/growth/LoyaltyProgress";
+import { PromoCodePrep } from "@/components/growth/PromoCodePrep";
+import { ReferralPrepCard } from "@/components/growth/ReferralPrepCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import {
@@ -15,6 +18,7 @@ import {
   type Language,
 } from "@/lib/i18n";
 import { notifyAccountUpdated } from "@/lib/notifications";
+import { isCollectedOrderStatus } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -30,6 +34,20 @@ type EditableMetadata = {
   preferred_language?: string | null;
   role?: string | null;
   [key: string]: unknown;
+};
+
+type ProfileGrowthStats = {
+  reservations: number;
+  completedPickups: number;
+  ratingsGiven: number;
+  favoriteBusinesses: number;
+  favoriteOffers: number;
+};
+
+type FavoriteBusinessRow = {
+  offers?: {
+    business_id?: number | null;
+  } | null;
 };
 
 function formatAccountDate(value?: string | null) {
@@ -55,6 +73,16 @@ function getRoleLabel(role?: string | null) {
   return "Customer";
 }
 
+function getReferralPreviewCode(user: User | null) {
+  const source = user?.email || user?.id || "ARG";
+  const normalized = source
+    .replace(/[^a-z0-9]/gi, "")
+    .slice(0, 8)
+    .toUpperCase();
+
+  return `ARG-${normalized || "FOOD"}`;
+}
+
 export default function ProfilePage() {
   const router = useRouter();
   const { language, setLanguage } = useLanguage();
@@ -67,6 +95,13 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [growthStats, setGrowthStats] = useState<ProfileGrowthStats>({
+    reservations: 0,
+    completedPickups: 0,
+    ratingsGiven: 0,
+    favoriteBusinesses: 0,
+    favoriteOffers: 0,
+  });
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
@@ -106,6 +141,47 @@ export default function ProfilePage() {
     setPreferredLanguage(
       isSupportedLanguage(savedLanguage) ? savedLanguage : language
     );
+
+    const [ordersResult, favoritesResult, ratingsResult] = await Promise.all([
+      supabase
+        .from("orders")
+        .select("id, status")
+        .eq("user_id", profileResult.user.id)
+        .limit(500),
+      supabase
+        .from("favorites")
+        .select("id, offer_id, offers(business_id)")
+        .eq("user_id", profileResult.user.id)
+        .limit(500),
+      supabase
+        .from("business_ratings")
+        .select("id")
+        .eq("user_id", profileResult.user.id)
+        .limit(500),
+    ]);
+
+    const orderRows = (ordersResult.data || []) as Array<{
+      id: number;
+      status: string;
+    }>;
+    const favoriteRows = (favoritesResult.data || []) as FavoriteBusinessRow[];
+    const favoriteBusinessIds = new Set(
+      favoriteRows
+        .map((favorite) => favorite.offers?.business_id)
+        .filter((businessId): businessId is number => Boolean(businessId))
+    );
+
+    setGrowthStats({
+      reservations: ordersResult.error ? 0 : orderRows.length,
+      completedPickups: ordersResult.error
+        ? 0
+        : orderRows.filter((order) =>
+            isCollectedOrderStatus(order.status as never)
+          ).length,
+      ratingsGiven: ratingsResult.error ? 0 : ratingsResult.data?.length || 0,
+      favoriteBusinesses: favoritesResult.error ? 0 : favoriteBusinessIds.size,
+      favoriteOffers: favoritesResult.error ? 0 : favoriteRows.length,
+    });
     setLoading(false);
   }, [language, router]);
 
@@ -187,6 +263,7 @@ export default function ProfilePage() {
 
   const verified = isEmailConfirmed(user);
   const roleLabel = getRoleLabel(profile?.role);
+  const referralCode = getReferralPreviewCode(user);
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -365,6 +442,73 @@ export default function ProfilePage() {
                 </p>
               </div>
             </aside>
+          </div>
+
+          <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr]">
+            <ReferralPrepCard
+              referralCode={referralCode}
+              invitedFriends={0}
+              successfulReferrals={0}
+            />
+            <LoyaltyProgress
+              reservations={growthStats.reservations}
+              completedPickups={growthStats.completedPickups}
+              ratingsGiven={growthStats.ratingsGiven}
+            />
+          </div>
+
+          <div className="mt-6 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+            <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Marketplace activity
+              </p>
+              <h2 className="mt-2 text-2xl font-black">
+                Your food rescue stats
+              </h2>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {[
+                  {
+                    title: "Reservations",
+                    value: growthStats.reservations,
+                    helper: "All reservations made by this account",
+                  },
+                  {
+                    title: "Completed Pickups",
+                    value: growthStats.completedPickups,
+                    helper: "Orders collected successfully",
+                  },
+                  {
+                    title: "Ratings Given",
+                    value: growthStats.ratingsGiven,
+                    helper: "Reviews submitted after pickup",
+                  },
+                  {
+                    title: "Favorite Businesses",
+                    value: growthStats.favoriteBusinesses,
+                    helper: "Businesses saved through favorite offers",
+                  },
+                  {
+                    title: "Favorite Offers",
+                    value: growthStats.favoriteOffers,
+                    helper: "Offers saved for later",
+                  },
+                ].map((stat) => (
+                  <div key={stat.title} className="rounded-2xl bg-[#F7F6EF] p-4">
+                    <p className="text-sm font-black text-gray-500">
+                      {stat.title}
+                    </p>
+                    <p className="mt-2 text-3xl font-black text-gray-950">
+                      {stat.value}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+                      {stat.helper}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <PromoCodePrep />
           </div>
 
           <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-8">

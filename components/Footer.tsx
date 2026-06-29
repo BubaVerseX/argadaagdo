@@ -9,6 +9,7 @@ export default function Footer() {
   const platformLinks = [
     { href: "/", label: t("nav.home") },
     { href: "/offers", label: t("nav.offers") },
+    { href: "/discover", label: t("nav.discover") },
     { href: "/faq", label: t("nav.faq") },
     { href: "/support", label: t("nav.support") },
     { href: "/contact", label: t("nav.contact") },

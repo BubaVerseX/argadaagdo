@@ -36,6 +36,14 @@ type PerformanceSummary = {
   mostPopularWeekday: string;
 };
 
+type MarketingInsights = {
+  mostViewedOffer: string;
+  highestConversion: string;
+  returningCustomers: number;
+  repeatReservations: number;
+  averageRatingTrend: string;
+};
+
 export type BusinessAnalyticsSummary = {
   todayReservations: number;
   thisWeekReservations: number;
@@ -51,6 +59,7 @@ export type BusinessAnalyticsSummary = {
   boxesSold: number;
   boxesRemaining: number;
   performance: PerformanceSummary;
+  marketingInsights: MarketingInsights;
   reservationsOverTime: ChartDatum[];
   revenueOverTime: ChartDatum[];
   offerPopularity: ChartDatum[];
@@ -254,6 +263,59 @@ function getPerformanceSummary(
   };
 }
 
+function getRatingTrend(reviews: Rating[]) {
+  const sortedReviews = [...reviews]
+    .filter((review) => review.created_at)
+    .sort((first, second) =>
+      String(second.created_at).localeCompare(String(first.created_at))
+    );
+
+  if (sortedReviews.length < 4) return "Not enough data";
+
+  const recent = sortedReviews.slice(0, Math.min(5, sortedReviews.length));
+  const previous = sortedReviews.slice(recent.length, recent.length * 2);
+
+  if (previous.length === 0) return "Not enough data";
+
+  const average = (items: Rating[]) =>
+    items.reduce((total, review) => total + Number(review.rating), 0) /
+    items.length;
+  const difference = average(recent) - average(previous);
+
+  if (Math.abs(difference) < 0.1) return "Stable";
+  return difference > 0 ? "Improving" : "Needs attention";
+}
+
+function getMarketingInsights(offers: Offer[], orders: Order[], reviews: Rating[]) {
+  const reservationsByCustomer = orders.reduce<Record<string, number>>(
+    (customerMap, order) => {
+      if (!order.user_id) return customerMap;
+      customerMap[order.user_id] = (customerMap[order.user_id] || 0) + 1;
+      return customerMap;
+    },
+    {}
+  );
+  const returningCustomerCounts = Object.values(reservationsByCustomer).filter(
+    (count) => count > 1
+  );
+  const repeatReservations = returningCustomerCounts.reduce(
+    (total, count) => total + Math.max(0, count - 1),
+    0
+  );
+  const popularity = getPerformanceSummary(offers, orders).bestSellingOffer;
+
+  return {
+    mostViewedOffer: "View tracking not connected yet",
+    highestConversion:
+      popularity === "Not enough data"
+        ? "Conversion tracking not connected yet"
+        : `${popularity} by reservations`,
+    returningCustomers: returningCustomerCounts.length,
+    repeatReservations,
+    averageRatingTrend: getRatingTrend(reviews),
+  };
+}
+
 export function calculateOfferAnalytics(
   offers: Offer[],
   orders: Order[]
@@ -352,6 +414,7 @@ export function calculateBusinessAnalytics({
       0
     ),
     performance: getPerformanceSummary(offers, orders),
+    marketingInsights: getMarketingInsights(offers, orders, reviews),
     reservationsOverTime: timeSeriesFromOrders(orders, () => 1),
     revenueOverTime: timeSeriesFromOrders(revenueOrders, getBusinessAmount),
     offerPopularity: topChartItems(offerPopularityMap, 5),

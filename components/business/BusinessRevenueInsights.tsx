@@ -112,6 +112,28 @@ export function BusinessRevenueInsights({
       value: analytics.performance.mostPopularWeekday,
     },
   ];
+  const marketingItems = [
+    {
+      label: "Most Viewed Offer",
+      value: analytics.marketingInsights.mostViewedOffer,
+    },
+    {
+      label: "Highest Conversion",
+      value: analytics.marketingInsights.highestConversion,
+    },
+    {
+      label: "Returning Customers",
+      value: analytics.marketingInsights.returningCustomers,
+    },
+    {
+      label: "Repeat Reservations",
+      value: analytics.marketingInsights.repeatReservations,
+    },
+    {
+      label: "Average Rating Trend",
+      value: analytics.marketingInsights.averageRatingTrend,
+    },
+  ];
 
   return (
     <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
@@ -176,6 +198,27 @@ export function BusinessRevenueInsights({
             description="Top offers by reservation count."
             data={analytics.offerPopularity}
           />
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-3xl bg-[#F7F6EF] p-5">
+        <h3 className="text-xl font-black text-gray-950">
+          Marketing insights prepared
+        </h3>
+        <p className="mt-2 max-w-3xl font-semibold leading-7 text-gray-600">
+          These signals prepare the dashboard for growth campaigns. View and
+          conversion tracking still need dedicated events before they become
+          exact.
+        </p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {marketingItems.map((item) => (
+            <div key={item.label} className="rounded-2xl bg-white p-4">
+              <p className="text-xs font-black uppercase tracking-wide text-green-700">
+                {item.label}
+              </p>
+              <p className="mt-2 font-black text-gray-950">{item.value}</p>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -176,6 +176,14 @@ export default function Navbar() {
               {t("nav.businesses")}
             </Link>
 
+            <Link
+              href="/discover"
+              className={linkClass("/discover")}
+              aria-current={ariaCurrent("/discover")}
+            >
+              {t("nav.discover")}
+            </Link>
+
             {showCustomerNavigation && (
               <Link
                 href="/favorites"
@@ -342,6 +350,15 @@ export default function Navbar() {
                   aria-current={ariaCurrent("/businesses")}
                 >
                   {t("nav.businesses")}
+                </Link>
+
+                <Link
+                  href="/discover"
+                  onClick={() => setMobileMenu(false)}
+                  className={linkClass("/discover", "mobile")}
+                  aria-current={ariaCurrent("/discover")}
+                >
+                  {t("nav.discover")}
                 </Link>
 
                 {showCustomerNavigation && (
