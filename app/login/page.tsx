@@ -17,6 +17,9 @@ import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 
+type PasswordHelpMode = "none" | "forgot" | "reset";
+type PasswordHelpOverride = PasswordHelpMode | "hidden";
+
 function getAuthErrorMessage(message?: string) {
   const normalizedMessage = (message || "").toLowerCase();
 
@@ -65,6 +68,25 @@ function readRedirectPath() {
   return getSafeInternalRedirectPath(redirectPath);
 }
 
+function subscribeToPasswordHelpModeChanges() {
+  return () => {};
+}
+
+function readPasswordHelpMode(): PasswordHelpMode {
+  if (typeof window === "undefined") return "none";
+
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get("mode");
+  const hash = window.location.hash.toLowerCase();
+
+  if (mode === "forgot-password") return "forgot";
+  if (mode === "reset-password" || hash.includes("type=recovery")) {
+    return "reset";
+  }
+
+  return "none";
+}
+
 function getRedirectMessage(
   path: string | null,
   t: (key: TranslationKey) => string
@@ -83,6 +105,10 @@ function getRedirectMessage(
     return t("login.redirectFavorites");
   }
 
+  if (path === "/profile" || path === "/settings") {
+    return "Please sign in to manage your account settings.";
+  }
+
   return "";
 }
 
@@ -95,6 +121,11 @@ export default function LoginPage() {
     readRedirectPath,
     () => null
   );
+  const urlPasswordHelpMode = useSyncExternalStore(
+    subscribeToPasswordHelpModeChanges,
+    readPasswordHelpMode,
+    () => "none"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>("customer");
@@ -104,6 +135,10 @@ export default function LoginPage() {
   >("success");
   const [submitting, setSubmitting] = useState(false);
   const [resendingVerification, setResendingVerification] = useState(false);
+  const [passwordHelpMode, setPasswordHelpMode] =
+    useState<PasswordHelpOverride>("none");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const authModeOptions = [
     {
       value: "login" as const,
@@ -116,6 +151,12 @@ export default function LoginPage() {
       helper: t("login.signUpModeHelper"),
     },
   ];
+  const effectivePasswordHelpMode =
+    passwordHelpMode === "hidden"
+      ? "none"
+      : passwordHelpMode === "none"
+        ? urlPasswordHelpMode
+        : passwordHelpMode;
 
   async function createAccount() {
     setMessage("");
@@ -309,6 +350,90 @@ export default function LoginPage() {
     setMessage("Verification email sent. Please check your inbox and spam folder.");
   }
 
+  async function requestPasswordReset() {
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail) {
+      setMessageTone("warning");
+      setMessage("Enter your email address first, then request a reset link.");
+      return;
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      setMessageTone("error");
+      setMessage("Enter a valid email address.");
+      return;
+    }
+
+    setSubmitting(true);
+    setMessageTone("success");
+    setMessage("Sending password reset email...");
+    setEmail(normalizedEmail);
+
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/login?mode=reset-password`
+        : undefined;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      normalizedEmail,
+      { redirectTo }
+    );
+
+    setSubmitting(false);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage("Password reset email could not be sent. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Password reset email sent. Please check your inbox.");
+  }
+
+  async function updatePassword() {
+    setMessage("");
+    setMessageTone("error");
+
+    if (newPassword.length < 6) {
+      setMessage("New password must be at least 6 characters.");
+      return;
+    }
+
+    if (newPassword.trim() !== newPassword) {
+      setMessage("New password cannot start or end with spaces.");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    setSubmitting(true);
+    setMessageTone("success");
+    setMessage("Updating password...");
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage("Password could not be updated. Please request a new reset link.");
+      return;
+    }
+
+    setNewPassword("");
+    setConfirmNewPassword("");
+    setPasswordHelpMode("hidden");
+    setMessageTone("success");
+    setMessage("Password updated. You can continue using ArGadaagdo.");
+  }
+
   const redirectMessage = getRedirectMessage(redirectPath, t);
 
   return (
@@ -413,6 +538,87 @@ export default function LoginPage() {
                 placeholder={t("login.password")}
                 className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
               />
+
+              {authMode === "login" && (
+                <div className="flex flex-col gap-2 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold text-gray-700 sm:flex-row sm:items-center sm:justify-between sm:text-base">
+                  <span>Need help signing in?</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMessage("");
+                      setPasswordHelpMode(
+                        effectivePasswordHelpMode === "forgot"
+                          ? "hidden"
+                          : "forgot"
+                      );
+                    }}
+                    className="text-left font-black text-green-700 underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-green-200 sm:text-right"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+              {authMode === "login" && effectivePasswordHelpMode === "forgot" && (
+                <div className="rounded-3xl border border-green-100 bg-green-50 p-4">
+                  <h3 className="font-black text-green-950">Reset password</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                    Enter your account email above. We will send a secure reset
+                    link if the account exists.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={requestPasswordReset}
+                    disabled={submitting}
+                    className="mt-4 min-h-11 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  >
+                    {submitting ? "Sending..." : "Send reset link"}
+                  </button>
+                </div>
+              )}
+
+              {authMode === "login" && effectivePasswordHelpMode === "reset" && (
+                <div className="grid gap-4 rounded-3xl border border-green-100 bg-green-50 p-4">
+                  <div>
+                    <h3 className="font-black text-green-950">
+                      Choose a new password
+                    </h3>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                      Use at least 6 characters. Avoid passwords you use on
+                      other websites.
+                    </p>
+                  </div>
+
+                  <input
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    type="password"
+                    aria-label="New password"
+                    placeholder="New password"
+                    className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  />
+
+                  <input
+                    value={confirmNewPassword}
+                    onChange={(event) =>
+                      setConfirmNewPassword(event.target.value)
+                    }
+                    type="password"
+                    aria-label="Confirm new password"
+                    placeholder="Confirm new password"
+                    className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={updatePassword}
+                    disabled={submitting}
+                    className="min-h-11 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  >
+                    {submitting ? "Updating..." : "Update password"}
+                  </button>
+                </div>
+              )}
 
               {authMode === "signup" && (
                 <div>

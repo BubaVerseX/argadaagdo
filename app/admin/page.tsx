@@ -250,6 +250,14 @@ export default function AdminPage() {
           ) / profiles.length
         )
       : 0;
+  const customerProfiles = profiles.filter(
+    (profile) => profile.role === "customer"
+  );
+  const businessProfiles = profiles.filter(
+    (profile) => profile.role === "business"
+  );
+  const adminProfiles = profiles.filter((profile) => profile.role === "admin");
+  const unknownProfiles = profiles.filter((profile) => !profile.role);
   const totalProfileCompletedPickups = profiles.reduce(
     (total, profile) => total + Number(profile.completed_pickup_count || 0),
     0
@@ -298,6 +306,50 @@ export default function AdminPage() {
       value: totalRatings,
       helper: "Customer reviews submitted",
       className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Customers",
+      value: customerProfiles.length,
+      helper: "Customer accounts in profiles",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Business Accounts",
+      value: businessProfiles.length,
+      helper: "Users with business account role",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Admins",
+      value: adminProfiles.length,
+      helper: "Admin accounts with approval access",
+      className: "bg-white text-gray-950",
+    },
+  ];
+  const accountOverview = [
+    {
+      title: "Customers",
+      value: customerProfiles.length,
+      helper: "Can browse, reserve, favorite and rate completed pickups",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Businesses",
+      value: businessProfiles.length,
+      helper: "Can register businesses and manage approved business offers",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Admins",
+      value: adminProfiles.length,
+      helper: "Can approve businesses and monitor marketplace activity",
+      className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Missing role",
+      value: unknownProfiles.length,
+      helper: "Profiles that may need support review",
+      className: "bg-red-50 text-red-800",
     },
   ];
   const marketplaceHealth = [
@@ -525,6 +577,75 @@ export default function AdminPage() {
             {customerReliabilityStats.map((stat) => (
               <StatCard key={stat.title} {...stat} />
             ))}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Account view
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                Customers, businesses and admins
+              </h2>
+            </div>
+
+            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+              Admins can review role distribution here. Roles still cannot be
+              changed from this dashboard.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {accountOverview.map((metric) => (
+              <div
+                key={metric.title}
+                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
+              >
+                <p className="text-sm font-black opacity-75">{metric.title}</p>
+                <p className="mt-2 text-3xl font-black sm:text-4xl">
+                  {metric.value}
+                </p>
+                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
+                  {metric.helper}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 overflow-hidden rounded-3xl border border-gray-100">
+            <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-[#F7F6EF] px-4 py-3 text-xs font-black uppercase tracking-wide text-gray-500">
+              <span>Email</span>
+              <span>Role</span>
+              <span>Reliability</span>
+            </div>
+
+            <div className="divide-y divide-gray-100 bg-white">
+              {profiles.length === 0 && (
+                <p className="px-4 py-5 font-semibold text-gray-600">
+                  No profiles available.
+                </p>
+              )}
+
+              {profiles.slice(0, 12).map((profile) => (
+                <div
+                  key={profile.id}
+                  className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 px-4 py-4 text-sm font-semibold text-gray-700"
+                >
+                  <span className="min-w-0 break-words">
+                    {profile.email || "Email unavailable"}
+                  </span>
+                  <span className="capitalize">
+                    {profile.role || "Missing"}
+                  </span>
+                  <span>
+                    {profile.reliability_score ?? "N/A"} ·{" "}
+                    {profile.reliability_status || "unknown"}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

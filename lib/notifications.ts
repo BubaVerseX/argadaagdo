@@ -9,6 +9,7 @@ export type NotificationEvent =
   | "business_registration_submitted"
   | "business_approved"
   | "offer_published"
+  | "account_updated"
   | "profile_updated"
   | "reservation_confirmed"
   | "order_cancelled"
@@ -156,6 +157,14 @@ export function notifyProfileUpdated({ businessName }: BusinessInput) {
     metadata: {
       businessName,
     },
+  });
+}
+
+export function notifyAccountUpdated() {
+  return dispatchNotification({
+    event: "account_updated",
+    title: "Account updated",
+    message: "Your account details were saved.",
   });
 }
 

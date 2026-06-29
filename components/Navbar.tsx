@@ -198,6 +198,16 @@ export default function Navbar() {
 
             {user && (
               <Link
+                href="/profile"
+                className={linkClass("/profile")}
+                aria-current={ariaCurrent("/profile")}
+              >
+                {t("nav.profile")}
+              </Link>
+            )}
+
+            {user && (
+              <Link
                 href="/settings"
                 className={linkClass("/settings")}
                 aria-current={ariaCurrent("/settings")}
@@ -339,6 +349,17 @@ export default function Navbar() {
                 >
                   {t("nav.faq")}
                 </Link>
+
+                {user && (
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/profile", "mobile")}
+                    aria-current={ariaCurrent("/profile")}
+                  >
+                    {t("nav.profile")}
+                  </Link>
+                )}
 
                 {user && (
                   <Link

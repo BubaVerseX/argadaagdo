@@ -3,25 +3,129 @@
 import Footer from "@/components/Footer";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Navbar from "@/components/Navbar";
+import Notice from "@/components/Notice";
+import {
+  getConfirmedProfile,
+  isEmailConfirmed,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
 import { getEmailNotificationPlaceholders } from "@/lib/emailNotifications";
+import { useLanguage } from "@/lib/useLanguage";
+import type { Profile } from "@/lib/types";
+import type { User } from "@supabase/supabase-js";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+function formatAccountDate(value?: string | null) {
+  if (!value) return "Not available";
+
+  return new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
+function getRoleLabel(role?: string | null) {
+  if (role === "admin") return "Admin";
+  if (role === "business") return "Business";
+  return "Customer";
+}
 
 export default function SettingsPage() {
+  const router = useRouter();
+  useLanguage();
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<"warning" | "error">(
+    "warning"
+  );
   const emailPlaceholders = getEmailNotificationPlaceholders();
-  const settingCards = [
+
+  const loadSettings = useCallback(async () => {
+    const profileResult = await getConfirmedProfile(4);
+
+    if (profileResult.status === "signed_out") {
+      router.replace("/login?redirect=/settings");
+      return;
+    }
+
+    if (profileResult.status === "unverified") {
+      setMessageTone("warning");
+      setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+      setLoading(false);
+      return;
+    }
+
+    if (profileResult.status !== "confirmed") {
+      setMessageTone("warning");
+      setMessage(
+        "Your account profile is still being prepared. Please refresh in a moment."
+      );
+      setLoading(false);
+      return;
+    }
+
+    setUser(profileResult.user);
+    setProfile(profileResult.profile);
+    setLoading(false);
+  }, [router]);
+
+  useEffect(() => {
+    const initialLoad = window.setTimeout(() => void loadSettings(), 0);
+
+    return () => {
+      window.clearTimeout(initialLoad);
+    };
+  }, [loadSettings]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+        <Navbar />
+        <section className="px-4 py-8 sm:px-6 md:px-12">
+          <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-white" />
+        </section>
+      </main>
+    );
+  }
+
+  const verified = isEmailConfirmed(user);
+  const roleLabel = getRoleLabel(profile?.role);
+
+  const settingsCards = [
     {
-      title: "Email notifications",
-      text: "Choose which updates should be sent by email once a provider is connected.",
+      title: "General",
+      text: "Manage your basic profile details, phone number and preferred language.",
+      action: "Edit profile",
+      href: "/profile",
+      status: "Available",
+    },
+    {
+      title: "Notifications",
+      text: "Email notification preferences are prepared for future provider integration.",
+      action: "Review plan",
+      href: "#notifications",
       status: "Prepared",
     },
     {
-      title: "Dark mode",
-      text: "A future display preference for customers and businesses.",
-      status: "Future",
+      title: "Privacy",
+      text: "Review how account, order and support information is used.",
+      action: "Privacy page",
+      href: "/privacy",
+      status: "Available",
     },
     {
-      title: "Profile",
-      text: "Future account details and communication preferences.",
-      status: "Future",
+      title: "Account",
+      text: "Check verification status, role, account creation and last sign-in.",
+      action: "View profile",
+      href: "/profile",
+      status: "Available",
     },
   ];
 
@@ -33,63 +137,131 @@ export default function SettingsPage() {
         <div className="mx-auto max-w-5xl">
           <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
             <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-              Settings preparation
+              Settings
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
-              Communication settings
+              Account management
             </h1>
             <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-green-50 sm:text-lg">
-              A lightweight foundation for future account, language and email
-              notification controls.
+              Manage language, profile, notifications and account security from
+              one simple place.
             </p>
           </div>
 
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              Language
-            </p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              Choose your language
-            </h2>
-            <p className="mt-2 font-semibold leading-7 text-gray-600">
-              Language preference is stored on this device.
-            </p>
-            <div className="mt-5 inline-flex rounded-2xl bg-[#F7F6EF] p-3">
-              <LanguageSwitcher />
+          {message && (
+            <div className="mt-5">
+              <Notice tone={messageTone}>{message}</Notice>
             </div>
-          </div>
+          )}
 
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {settingCards.map((card) => (
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {settingsCards.map((card) => (
               <div
                 key={card.title}
                 className="rounded-3xl bg-white p-5 shadow-sm sm:p-6"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <h2 className="text-xl font-black text-gray-950">
-                    {card.title}
-                  </h2>
-                  <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-800">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-widest text-green-700">
+                      {card.title}
+                    </p>
+                    <h2 className="mt-2 text-xl font-black text-gray-950">
+                      {card.text}
+                    </h2>
+                  </div>
+                  <span className="w-fit rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-800">
                     {card.status}
                   </span>
                 </div>
-                <p className="mt-3 font-semibold leading-7 text-gray-600">
-                  {card.text}
-                </p>
+
+                <Link
+                  href={card.href}
+                  className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 sm:w-auto"
+                >
+                  {card.action}
+                </Link>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+          <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Language
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                Choose your language
+              </h2>
+              <p className="mt-2 font-semibold leading-7 text-gray-600">
+                The language switcher updates this device immediately. Saving a
+                preferred language to your account is available on the profile
+                page.
+              </p>
+              <div className="mt-5 inline-flex rounded-2xl bg-[#F7F6EF] p-3">
+                <LanguageSwitcher />
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Account security
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                Verification and role
+              </h2>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl bg-green-50 p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-green-800">
+                    Email status
+                  </p>
+                  <p className="mt-1 font-black text-gray-950">
+                    {verified ? "Verified email" : "Email not verified"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                    Account role
+                  </p>
+                  <p className="mt-1 font-black text-gray-950">{roleLabel}</p>
+                </div>
+
+                <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                    Created
+                  </p>
+                  <p className="mt-1 font-black text-gray-950">
+                    {formatAccountDate(user?.created_at)}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                    Last sign-in
+                  </p>
+                  <p className="mt-1 font-black text-gray-950">
+                    {formatAccountDate(user?.last_sign_in_at)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="notifications"
+            className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8"
+          >
             <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              Email notification plan
+              Notifications
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              Prepared events
+              Email notification plan
             </h2>
             <p className="mt-2 font-semibold leading-7 text-gray-600">
-              Real email sending is not connected yet. These placeholders show
-              the events that should be wired to a provider later.
+              Real email sending is not connected yet. These events are prepared
+              so a provider can be added later without changing the marketplace
+              flow.
             </p>
 
             <div className="mt-6 grid gap-3">
@@ -117,6 +289,67 @@ export default function SettingsPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Privacy
+              </p>
+              <h2 className="mt-2 text-2xl font-black">Data controls</h2>
+              <p className="mt-2 font-semibold leading-7 text-gray-600">
+                Export and account deletion are prepared as support workflows.
+                They are not self-service yet.
+              </p>
+              <div className="mt-5 grid gap-3">
+                <button
+                  type="button"
+                  disabled
+                  className="min-h-12 rounded-full bg-gray-100 px-5 py-3 text-left font-black text-gray-500"
+                >
+                  Download my data · Prepared
+                </button>
+                <Link
+                  href="/contact"
+                  className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
+                >
+                  Contact support
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-red-100 bg-red-50 p-5 shadow-sm sm:p-8">
+              <p className="text-xs font-black uppercase tracking-widest text-red-700 sm:text-sm">
+                Danger Zone
+              </p>
+              <h2 className="mt-2 text-2xl font-black text-red-950">
+                Account deletion request
+              </h2>
+              <p className="mt-2 font-semibold leading-7 text-red-800">
+                Account deletion should be reviewed by support because orders,
+                ratings and business records may need to remain for marketplace
+                history.
+              </p>
+              <Link
+                href="/contact"
+                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-red-600 px-6 py-3 font-black text-white transition hover:bg-red-700 sm:w-auto"
+              >
+                Request account help
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+            <h2 className="text-2xl font-black">Password management</h2>
+            <p className="mt-2 font-semibold leading-7 text-gray-600">
+              Forgot your password? Request a reset link from the sign-in page.
+            </p>
+            <Link
+              href="/login?mode=forgot-password"
+              className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 sm:w-auto"
+            >
+              Reset password
+            </Link>
           </div>
         </div>
       </section>
