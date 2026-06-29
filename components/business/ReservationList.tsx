@@ -1,4 +1,5 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
+import { Pagination } from "@/components/Pagination";
 import { getBusinessTimelineSteps, type ReservationFilter } from "@/lib/business/dashboard";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
@@ -25,13 +26,17 @@ type ReservationListProps = {
   language: Language;
   orders: Order[];
   filteredOrders: Order[];
+  filteredOrderCount: number;
   reservationSummary: ReservationSummaryItem[];
   reservationFilter: ReservationFilter;
   reservationSearch: string;
   normalizedReservationSearch: string;
   updatingOrderId: number | null;
+  reservationPage: number;
+  reservationPageSize: number;
   onReservationSearchChange: (value: string) => void;
   onReservationFilterChange: (value: ReservationFilter) => void;
+  onReservationPageChange: (page: number) => void;
   onOpenPickupVerification: (order: Order) => void;
   onMarkNoShow: (order: Order) => void;
 };
@@ -41,13 +46,17 @@ export function ReservationList({
   language,
   orders,
   filteredOrders,
+  filteredOrderCount,
   reservationSummary,
   reservationFilter,
   reservationSearch,
   normalizedReservationSearch,
   updatingOrderId,
+  reservationPage,
+  reservationPageSize,
   onReservationSearchChange,
   onReservationFilterChange,
+  onReservationPageChange,
   onOpenPickupVerification,
   onMarkNoShow,
 }: ReservationListProps) {
@@ -324,6 +333,15 @@ export function ReservationList({
           );
         })}
       </div>
+
+      <Pagination
+        className="mt-5"
+        page={reservationPage}
+        totalItems={filteredOrderCount}
+        pageSize={reservationPageSize}
+        label="Reservations"
+        onPageChange={onReservationPageChange}
+      />
     </div>
   );
 }

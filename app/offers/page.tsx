@@ -3,6 +3,7 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
+import { Pagination } from "@/components/Pagination";
 import {
   getConfirmedUser,
   getProfileById,
@@ -23,6 +24,7 @@ import {
   type RatingSummary,
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
+import { paginateItems } from "@/lib/pagination";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -30,7 +32,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type PriceSort = "newest" | "price-asc" | "price-desc";
+type OfferSort =
+  | "recommended"
+  | "price-asc"
+  | "price-desc"
+  | "savings-desc"
+  | "rating-desc";
+type PickupFilter = "all" | "today" | "tomorrow" | "upcoming";
+type PriceFilter = "all" | "under-5" | "under-10" | "under-15";
+
+const OFFERS_PAGE_SIZE = 12;
+const OFFERS_QUERY_LIMIT = 300;
 
 function getOfferCategory(offer: Offer) {
   return normalizeOfferCategory(offer.category);
@@ -41,14 +53,33 @@ function formatAvailableOfferCount(count: number, language: "en" | "ka") {
   return `${count} ${count === 1 ? "available offer" : "available offers"}`;
 }
 
+function getSavingsAmount(offer: Offer) {
+  const price = Number(offer.price || 0);
+  const oldPrice = Number(offer.old_price || 0);
+
+  return oldPrice > price ? oldPrice - price : 0;
+}
+
+function matchesPriceFilter(offer: Offer, priceFilter: PriceFilter) {
+  const price = Number(offer.price || 0);
+
+  if (priceFilter === "under-5") return price <= 5;
+  if (priceFilter === "under-10") return price <= 10;
+  if (priceFilter === "under-15") return price <= 15;
+  return true;
+}
+
 export default function OffersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [priceSort, setPriceSort] = useState<PriceSort>("newest");
+  const [offerSort, setOfferSort] = useState<OfferSort>("recommended");
+  const [pickupFilter, setPickupFilter] = useState<PickupFilter>("all");
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>("all");
   const [availableOnly, setAvailableOnly] = useState(true);
+  const [page, setPage] = useState(1);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -89,7 +120,8 @@ export default function OffersPage() {
       .select("*, businesses(name, address, business_type)")
       .eq("active", true)
       .gt("quantity", 0)
-      .order("id", { ascending: false });
+      .order("id", { ascending: false })
+      .limit(OFFERS_QUERY_LIMIT);
 
     if (error) {
       setMessageTone("error");
@@ -277,31 +309,64 @@ export default function OffersPage() {
       const matchesCategory =
         selectedCategory === "all" || category === selectedCategory;
       const matchesAvailability = !availableOnly || isOfferReservable(offer);
+      const matchesPickup =
+        pickupFilter === "all" || getOfferGroup(offer) === pickupFilter;
+      const matchesPrice = matchesPriceFilter(offer, priceFilter);
 
-      return matchesSearch && matchesCategory && matchesAvailability;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesAvailability &&
+        matchesPickup &&
+        matchesPrice
+      );
     });
 
     return [...matchingOffers].sort((firstOffer, secondOffer) => {
       const firstPrice = Number(firstOffer.price || 0);
       const secondPrice = Number(secondOffer.price || 0);
+      const firstRating =
+        ratingSummaries[firstOffer.business_id]?.average_rating || 0;
+      const secondRating =
+        ratingSummaries[secondOffer.business_id]?.average_rating || 0;
 
-      if (priceSort === "price-asc") return firstPrice - secondPrice;
-      if (priceSort === "price-desc") return secondPrice - firstPrice;
+      if (offerSort === "price-asc") return firstPrice - secondPrice;
+      if (offerSort === "price-desc") return secondPrice - firstPrice;
+      if (offerSort === "savings-desc") {
+        return getSavingsAmount(secondOffer) - getSavingsAmount(firstOffer);
+      }
+      if (offerSort === "rating-desc") {
+        if (firstRating !== secondRating) return secondRating - firstRating;
+      }
       return compareMarketplaceOffers(firstOffer, secondOffer, ratingSummaries);
     });
-  }, [availableOnly, offers, priceSort, ratingSummaries, search, selectedCategory]);
+  }, [
+    availableOnly,
+    offerSort,
+    offers,
+    pickupFilter,
+    priceFilter,
+    ratingSummaries,
+    search,
+    selectedCategory,
+  ]);
+
+  const paginatedOffers = useMemo(
+    () => paginateItems(filteredOffers, page, OFFERS_PAGE_SIZE),
+    [filteredOffers, page]
+  );
 
   const groupedOffers = useMemo<Record<OfferGroup, Offer[]>>(
     () => ({
-      today: filteredOffers.filter((offer) => getOfferGroup(offer) === "today"),
-      tomorrow: filteredOffers.filter(
+      today: paginatedOffers.items.filter((offer) => getOfferGroup(offer) === "today"),
+      tomorrow: paginatedOffers.items.filter(
         (offer) => getOfferGroup(offer) === "tomorrow"
       ),
-      upcoming: filteredOffers.filter(
+      upcoming: paginatedOffers.items.filter(
         (offer) => getOfferGroup(offer) === "upcoming"
       ),
     }),
-    [filteredOffers]
+    [paginatedOffers.items]
   );
 
   const offerSections = [
@@ -321,14 +386,19 @@ export default function OffersPage() {
   const filtersAreActive =
     search.trim() !== "" ||
     selectedCategory !== "all" ||
-    priceSort !== "newest" ||
+    offerSort !== "recommended" ||
+    pickupFilter !== "all" ||
+    priceFilter !== "all" ||
     !availableOnly;
 
   function resetFilters() {
     setSearch("");
     setSelectedCategory("all");
-    setPriceSort("newest");
+    setOfferSort("recommended");
+    setPickupFilter("all");
+    setPriceFilter("all");
     setAvailableOnly(true);
+    setPage(1);
   }
 
   return (
@@ -353,7 +423,10 @@ export default function OffersPage() {
             <div className="mt-6 flex flex-col gap-3 md:flex-row">
               <input
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                }}
                 placeholder={t("offers.search")}
                 className="min-h-12 w-full rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4 md:max-w-xl"
               />
@@ -366,10 +439,13 @@ export default function OffersPage() {
               </button>
             </div>
 
-            <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-center">
+            <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-center">
               <select
                 value={selectedCategory}
-                onChange={(event) => setSelectedCategory(event.target.value)}
+                onChange={(event) => {
+                  setSelectedCategory(event.target.value);
+                  setPage(1);
+                }}
                 aria-label="Filter offers by category"
                 className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
               >
@@ -382,21 +458,59 @@ export default function OffersPage() {
               </select>
 
               <select
-                value={priceSort}
-                onChange={(event) => setPriceSort(event.target.value as PriceSort)}
-                aria-label="Sort offers by price"
+                value={priceFilter}
+                onChange={(event) => {
+                  setPriceFilter(event.target.value as PriceFilter);
+                  setPage(1);
+                }}
+                aria-label="Filter offers by price"
                 className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
               >
-                <option value="newest">{t("offers.sortNewest")}</option>
+                <option value="all">All prices</option>
+                <option value="under-5">₾ 5 or less</option>
+                <option value="under-10">₾ 10 or less</option>
+                <option value="under-15">₾ 15 or less</option>
+              </select>
+
+              <select
+                value={pickupFilter}
+                onChange={(event) => {
+                  setPickupFilter(event.target.value as PickupFilter);
+                  setPage(1);
+                }}
+                aria-label="Filter offers by pickup date"
+                className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
+              >
+                <option value="all">Any pickup date</option>
+                <option value="today">Pickup today</option>
+                <option value="tomorrow">Pickup tomorrow</option>
+                <option value="upcoming">Upcoming</option>
+              </select>
+
+              <select
+                value={offerSort}
+                onChange={(event) => {
+                  setOfferSort(event.target.value as OfferSort);
+                  setPage(1);
+                }}
+                aria-label="Sort offers"
+                className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
+              >
+                <option value="recommended">Recommended</option>
                 <option value="price-asc">{t("offers.sortLowest")}</option>
                 <option value="price-desc">{t("offers.sortHighest")}</option>
+                <option value="savings-desc">Highest savings</option>
+                <option value="rating-desc">Highest rated businesses</option>
               </select>
 
               <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl bg-white/15 px-5 py-3 font-black text-white md:justify-start">
                 <input
                   type="checkbox"
                   checked={availableOnly}
-                  onChange={(event) => setAvailableOnly(event.target.checked)}
+                  onChange={(event) => {
+                    setAvailableOnly(event.target.checked);
+                    setPage(1);
+                  }}
                   className="h-5 w-5 accent-green-600"
                 />
                 {t("offers.availableOnly")}
@@ -645,6 +759,15 @@ export default function OffersPage() {
               );
             })}
           </div>
+
+          <Pagination
+            className="mt-8"
+            page={paginatedOffers.page}
+            totalItems={filteredOffers.length}
+            pageSize={OFFERS_PAGE_SIZE}
+            label="Offers"
+            onPageChange={setPage}
+          />
         </div>
       </section>
     </main>

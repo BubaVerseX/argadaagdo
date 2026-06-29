@@ -3,6 +3,9 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { LoadingState } from "@/components/LoadingState";
+import { FilterBar } from "@/components/FilterBar";
+import { Pagination } from "@/components/Pagination";
+import { SearchBar } from "@/components/SearchBar";
 import {
   AdminAccountView,
   AdminHealthSections,
@@ -32,6 +35,7 @@ import {
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import { calculatePaymentPreparationSummary } from "@/lib/paymentArchitecture";
+import { paginateItems } from "@/lib/pagination";
 import { supabase } from "@/lib/supabase";
 import type { Offer, Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -42,6 +46,18 @@ function getPercentage(value: number, total: number) {
   if (total <= 0) return 0;
   return Math.round((value / total) * 100);
 }
+
+type AdminOfferFilter = "all" | "active" | "inactive" | "expired" | "sold_out";
+type AdminOrderFilter =
+  | "all"
+  | "reserved"
+  | "completed"
+  | "cancelled"
+  | "no_show";
+type AdminProfileFilter = "all" | "customer" | "business" | "admin";
+
+const ADMIN_LIST_PAGE_SIZE = 8;
+const ADMIN_QUERY_LIMIT = 1000;
 
 export default function AdminPage() {
   const router = useRouter();
@@ -60,6 +76,15 @@ export default function AdminPage() {
   >("success");
   const [loading, setLoading] = useState(true);
   const [realtimeReady, setRealtimeReady] = useState(false);
+  const [adminSearch, setAdminSearch] = useState("");
+  const [adminOfferFilter, setAdminOfferFilter] =
+    useState<AdminOfferFilter>("all");
+  const [adminOrderFilter, setAdminOrderFilter] =
+    useState<AdminOrderFilter>("all");
+  const [adminProfileFilter, setAdminProfileFilter] =
+    useState<AdminProfileFilter>("all");
+  const [pendingPage, setPendingPage] = useState(1);
+  const [approvedPage, setApprovedPage] = useState(1);
   const [updatingBusinessId, setUpdatingBusinessId] = useState<number | null>(
     null
   );
@@ -90,9 +115,10 @@ export default function AdminPage() {
         supabase
           .from("businesses")
           .select("*")
-          .order("id", { ascending: false }),
-        supabase.from("offers").select("*"),
-        supabase.from("orders").select("*"),
+          .order("id", { ascending: false })
+          .limit(ADMIN_QUERY_LIMIT),
+        supabase.from("offers").select("*").limit(ADMIN_QUERY_LIMIT),
+        supabase.from("orders").select("*").limit(ADMIN_QUERY_LIMIT),
         supabase.from("profiles").select(`
           id,
           email,
@@ -102,7 +128,7 @@ export default function AdminPage() {
           no_show_count,
           completed_pickup_count,
           cancelled_order_count
-        `),
+        `).limit(ADMIN_QUERY_LIMIT),
         supabase
           .from("business_ratings")
           .select("id", { count: "exact", head: true }),
@@ -251,6 +277,13 @@ export default function AdminPage() {
 
   const pendingBusinesses = businesses.filter((business) => !business.approved);
   const approvedBusinesses = businesses.filter((business) => business.approved);
+  const businessNameById = businesses.reduce<Record<number, string>>(
+    (businessMap, business) => {
+      businessMap[business.id] = business.name;
+      return businessMap;
+    },
+    {}
+  );
   const activeOffers = offers.filter(
     (offer) => getEffectiveOfferStatus(offer) === "active"
   );
@@ -485,6 +518,64 @@ export default function AdminPage() {
   ];
   const paymentPreparationSummary =
     calculatePaymentPreparationSummary(orders);
+  const normalizedAdminSearch = adminSearch.trim().toLowerCase();
+  const filteredPendingBusinesses = pendingBusinesses.filter((business) => {
+    const searchText =
+      `${business.name} ${business.business_type} ${business.address} ${business.phone}`.toLowerCase();
+    return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
+  });
+  const filteredApprovedBusinesses = approvedBusinesses.filter((business) => {
+    const searchText =
+      `${business.name} ${business.business_type} ${business.address} ${business.phone}`.toLowerCase();
+    return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
+  });
+  const filteredAdminOffers = offers.filter((offer) => {
+    const status = getEffectiveOfferStatus(offer);
+    const searchText =
+      `${offer.title} ${offer.category} ${businessNameById[offer.business_id] || ""}`.toLowerCase();
+    const matchesSearch =
+      normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
+    const matchesFilter = adminOfferFilter === "all" || status === adminOfferFilter;
+
+    return matchesSearch && matchesFilter;
+  });
+  const filteredAdminOrders = orders.filter((order) => {
+    const isCompleted = isCollectedOrderStatus(order.status);
+    const isCancelled =
+      order.status === "cancelled" || order.status === "refunded";
+    const searchText =
+      `${order.id} ${order.user_id} ${order.offer_id} ${order.status}`.toLowerCase();
+    const matchesSearch =
+      normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
+    const matchesFilter =
+      adminOrderFilter === "all" ||
+      (adminOrderFilter === "reserved" &&
+        isConfirmedOrderStatus(order.status)) ||
+      (adminOrderFilter === "completed" && isCompleted) ||
+      (adminOrderFilter === "cancelled" && isCancelled) ||
+      (adminOrderFilter === "no_show" && order.status === "no_show");
+
+    return matchesSearch && matchesFilter;
+  });
+  const filteredAdminProfiles = profiles.filter((profile) => {
+    const searchText = `${profile.email} ${profile.role}`.toLowerCase();
+    const matchesSearch =
+      normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
+    const matchesFilter =
+      adminProfileFilter === "all" || profile.role === adminProfileFilter;
+
+    return matchesSearch && matchesFilter;
+  });
+  const paginatedPendingBusinesses = paginateItems(
+    filteredPendingBusinesses,
+    pendingPage,
+    ADMIN_LIST_PAGE_SIZE
+  );
+  const paginatedApprovedBusinesses = paginateItems(
+    filteredApprovedBusinesses,
+    approvedPage,
+    ADMIN_LIST_PAGE_SIZE
+  );
   const todayDateKey = getTbilisiDateKey();
   const todayOfferIds = new Set(
     offers
@@ -631,18 +722,180 @@ export default function AdminPage() {
 
         <AdminModerationVisibility metrics={moderationStats} />
 
+        <FilterBar
+          className="mt-6 sm:mt-8"
+          title="Admin search tools"
+          description="Search businesses, offers, customers and orders from one place."
+        >
+          <SearchBar
+            value={adminSearch}
+            onChange={(value) => {
+              setAdminSearch(value);
+              setPendingPage(1);
+              setApprovedPage(1);
+            }}
+            placeholder="Search admin data..."
+            label="Search admin data"
+          />
+
+          <select
+            value={adminOfferFilter}
+            onChange={(event) =>
+              setAdminOfferFilter(event.target.value as AdminOfferFilter)
+            }
+            aria-label="Filter admin offers"
+            className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+          >
+            <option value="all">All offer statuses</option>
+            <option value="active">Active offers</option>
+            <option value="inactive">Inactive offers</option>
+            <option value="expired">Expired offers</option>
+            <option value="sold_out">Sold out offers</option>
+          </select>
+
+          <select
+            value={adminOrderFilter}
+            onChange={(event) =>
+              setAdminOrderFilter(event.target.value as AdminOrderFilter)
+            }
+            aria-label="Filter admin orders"
+            className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+          >
+            <option value="all">All order statuses</option>
+            <option value="reserved">Reserved</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled/refunded</option>
+            <option value="no_show">No-show</option>
+          </select>
+
+          <select
+            value={adminProfileFilter}
+            onChange={(event) =>
+              setAdminProfileFilter(event.target.value as AdminProfileFilter)
+            }
+            aria-label="Filter admin profiles"
+            className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+          >
+            <option value="all">All account roles</option>
+            <option value="customer">Customers</option>
+            <option value="business">Businesses</option>
+            <option value="admin">Admins</option>
+          </select>
+        </FilterBar>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-4">
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <p className="text-sm font-black text-gray-500">Businesses found</p>
+            <p className="mt-2 text-3xl font-black">
+              {filteredPendingBusinesses.length + filteredApprovedBusinesses.length}
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <p className="text-sm font-black text-gray-500">Offers found</p>
+            <p className="mt-2 text-3xl font-black">
+              {filteredAdminOffers.length}
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <p className="text-sm font-black text-gray-500">Orders found</p>
+            <p className="mt-2 text-3xl font-black">
+              {filteredAdminOrders.length}
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <p className="text-sm font-black text-gray-500">Accounts found</p>
+            <p className="mt-2 text-3xl font-black">
+              {filteredAdminProfiles.length}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-black text-gray-950">Offer matches</h3>
+            <div className="mt-4 grid gap-3">
+              {filteredAdminOffers.slice(0, 5).map((offer) => (
+                <div key={offer.id} className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <p className="font-black text-gray-950">{offer.title}</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-600">
+                    {businessNameById[offer.business_id] || "Business"} ·{" "}
+                    {getEffectiveOfferStatus(offer)}
+                  </p>
+                </div>
+              ))}
+              {filteredAdminOffers.length === 0 && (
+                <p className="font-semibold text-gray-600">No offers found.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-black text-gray-950">Order matches</h3>
+            <div className="mt-4 grid gap-3">
+              {filteredAdminOrders.slice(0, 5).map((order) => (
+                <div key={order.id} className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <p className="font-black text-gray-950">Order #{order.id}</p>
+                  <p className="mt-1 text-sm font-semibold text-gray-600">
+                    Offer #{order.offer_id} · {order.status}
+                  </p>
+                </div>
+              ))}
+              {filteredAdminOrders.length === 0 && (
+                <p className="font-semibold text-gray-600">No orders found.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-black text-gray-950">Account matches</h3>
+            <div className="mt-4 grid gap-3">
+              {filteredAdminProfiles.slice(0, 5).map((profile) => (
+                <div key={profile.id} className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <p className="break-words font-black text-gray-950">
+                    {profile.email || "Email unavailable"}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold capitalize text-gray-600">
+                    {profile.role || "Missing role"}
+                  </p>
+                </div>
+              ))}
+              {filteredAdminProfiles.length === 0 && (
+                <p className="font-semibold text-gray-600">No accounts found.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
         <PendingBusinesses
           t={t}
           language={language}
-          businesses={pendingBusinesses}
+          businesses={paginatedPendingBusinesses.items}
           updatingBusinessId={updatingBusinessId}
           onApprove={(id) => void approveBusiness(id)}
         />
 
+        <Pagination
+          className="mt-5"
+          page={paginatedPendingBusinesses.page}
+          totalItems={filteredPendingBusinesses.length}
+          pageSize={ADMIN_LIST_PAGE_SIZE}
+          label="Pending businesses"
+          onPageChange={setPendingPage}
+        />
+
         <ApprovedBusinesses
-          businesses={approvedBusinesses}
+          businesses={paginatedApprovedBusinesses.items}
           updatingBusinessId={updatingBusinessId}
           onMoveToPending={(id) => void moveToPending(id)}
+        />
+
+        <Pagination
+          className="mt-5"
+          page={paginatedApprovedBusinesses.page}
+          totalItems={filteredApprovedBusinesses.length}
+          pageSize={ADMIN_LIST_PAGE_SIZE}
+          label="Approved businesses"
+          onPageChange={setApprovedPage}
         />
       </section>
     </main>

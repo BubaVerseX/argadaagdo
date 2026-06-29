@@ -168,6 +168,14 @@ export default function Navbar() {
               {t("common.browseOffers")}
             </Link>
 
+            <Link
+              href="/businesses"
+              className={linkClass("/businesses")}
+              aria-current={ariaCurrent("/businesses")}
+            >
+              {t("nav.businesses")}
+            </Link>
+
             {showCustomerNavigation && (
               <Link
                 href="/favorites"
@@ -317,6 +325,15 @@ export default function Navbar() {
                   aria-current={ariaCurrent("/offers")}
                 >
                   {t("common.browseOffers")}
+                </Link>
+
+                <Link
+                  href="/businesses"
+                  onClick={() => setMobileMenu(false)}
+                  className={linkClass("/businesses", "mobile")}
+                  aria-current={ariaCurrent("/businesses")}
+                >
+                  {t("nav.businesses")}
                 </Link>
 
                 {showCustomerNavigation && (

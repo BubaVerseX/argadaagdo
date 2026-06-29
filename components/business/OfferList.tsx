@@ -22,6 +22,8 @@ type OfferListProps = {
   t: (key: TranslationKey) => string;
   language: Language;
   offers: Offer[];
+  emptyTitle?: string;
+  emptyText?: string;
   ratingSummaries: Record<number, RatingSummary>;
   editingOfferId: number | null;
   updatingOfferId: number | null;
@@ -52,6 +54,8 @@ export function OfferList({
   t,
   language,
   offers,
+  emptyTitle,
+  emptyText,
   ratingSummaries,
   editingOfferId,
   updatingOfferId,
@@ -93,17 +97,19 @@ export function OfferList({
               +
             </div>
             <h3 className="mt-4 text-2xl font-black text-gray-950">
-              {t("businessDashboard.noOffers")}
+              {emptyTitle || t("businessDashboard.noOffers")}
             </h3>
             <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-              {t("businessDashboard.noOffersHint")}
+              {emptyText || t("businessDashboard.noOffersHint")}
             </p>
-            <a
-              href="#create-offer"
-              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
-            >
-              {t("businessDashboard.createFirstOffer")}
-            </a>
+            {!emptyTitle && (
+              <a
+                href="#create-offer"
+                className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
+              >
+                {t("businessDashboard.createFirstOffer")}
+              </a>
+            )}
           </div>
         )}
 

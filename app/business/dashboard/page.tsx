@@ -2,7 +2,10 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { FilterBar } from "@/components/FilterBar";
 import { LoadingState } from "@/components/LoadingState";
+import { Pagination } from "@/components/Pagination";
+import { SearchBar } from "@/components/SearchBar";
 import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
@@ -48,6 +51,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { logAppError } from "@/lib/errors";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
+import { paginateItems } from "@/lib/pagination";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -55,6 +59,16 @@ import { isWithinCooldown, validateTextField } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+type DashboardOfferFilter =
+  | "all"
+  | "active"
+  | "inactive"
+  | "expired"
+  | "sold_out";
+
+const DASHBOARD_OFFER_PAGE_SIZE = 8;
+const DASHBOARD_RESERVATION_PAGE_SIZE = 8;
 
 export default function BusinessDashboardPage() {
   const router = useRouter();
@@ -103,6 +117,11 @@ export default function BusinessDashboardPage() {
   const [reservationFilter, setReservationFilter] =
     useState<ReservationFilter>("reserved");
   const [reservationSearch, setReservationSearch] = useState("");
+  const [reservationPage, setReservationPage] = useState(1);
+  const [offerManagementSearch, setOfferManagementSearch] = useState("");
+  const [offerManagementFilter, setOfferManagementFilter] =
+    useState<DashboardOfferFilter>("all");
+  const [offerManagementPage, setOfferManagementPage] = useState(1);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState(DEFAULT_OFFER_CATEGORY);
   const [editPrice, setEditPrice] = useState("");
@@ -227,7 +246,8 @@ export default function BusinessDashboardPage() {
         .from("offers")
         .select("*, businesses(name)")
         .in("business_id", businessIds)
-        .order("id", { ascending: false }),
+        .order("id", { ascending: false })
+        .limit(500),
       loadBusinessRatingSummaries(),
       supabase
         .from("business_ratings")
@@ -273,7 +293,8 @@ export default function BusinessDashboardPage() {
           profiles(email, reliability_score, reliability_status)
         `)
         .in("offer_id", offerIds)
-        .order("id", { ascending: false });
+        .order("id", { ascending: false })
+        .limit(500);
 
       if (orderError) {
         logAppError("Business dashboard failed to load reservations", orderError, {
@@ -1411,6 +1432,23 @@ export default function BusinessDashboardPage() {
       : []),
   ];
   const normalizedReservationSearch = reservationSearch.trim().toLowerCase();
+  const normalizedOfferSearch = offerManagementSearch.trim().toLowerCase();
+  const filteredManagedOffers = offers.filter((offer) => {
+    const effectiveStatus = getEffectiveOfferStatus(offer);
+    const matchesStatus =
+      offerManagementFilter === "all" || effectiveStatus === offerManagementFilter;
+    const searchText =
+      `${offer.title} ${offer.category} ${offer.businesses?.name}`.toLowerCase();
+    const matchesSearch =
+      normalizedOfferSearch === "" || searchText.includes(normalizedOfferSearch);
+
+    return matchesStatus && matchesSearch;
+  });
+  const paginatedManagedOffers = paginateItems(
+    filteredManagedOffers,
+    offerManagementPage,
+    DASHBOARD_OFFER_PAGE_SIZE
+  );
   const filteredOrders = orders.filter((order) => {
     const matchesStatus =
       reservationFilter === "all" ||
@@ -1428,6 +1466,12 @@ export default function BusinessDashboardPage() {
 
     return matchesStatus && matchesSearch;
   });
+  const paginatedReservations = paginateItems(
+    filteredOrders,
+    reservationPage,
+    DASHBOARD_RESERVATION_PAGE_SIZE
+  );
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F7F6EF]">
@@ -1533,10 +1577,52 @@ export default function BusinessDashboardPage() {
           onCreateOffer={(actionTime) => void createOffer(actionTime)}
         />
 
+        <FilterBar
+          className="mt-6 sm:mt-8"
+          title="Offer management search"
+          description="Find offers by title, category or business. Filter history before editing or archiving."
+        >
+          <SearchBar
+            value={offerManagementSearch}
+            onChange={(value) => {
+              setOfferManagementSearch(value);
+              setOfferManagementPage(1);
+            }}
+            placeholder="Search offers..."
+            label="Search offers"
+          />
+
+          <select
+            value={offerManagementFilter}
+            onChange={(event) => {
+              setOfferManagementFilter(
+                event.target.value as DashboardOfferFilter
+              );
+              setOfferManagementPage(1);
+            }}
+            aria-label="Filter offers by status"
+            className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+          >
+            <option value="all">All offers</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="expired">Expired</option>
+            <option value="sold_out">Sold out</option>
+          </select>
+        </FilterBar>
+
         <OfferList
           t={t}
           language={language}
-          offers={offers}
+          offers={paginatedManagedOffers.items}
+          emptyTitle={
+            offers.length === 0 ? undefined : "No offers match your filters"
+          }
+          emptyText={
+            offers.length === 0
+              ? undefined
+              : "Try a different search or status filter."
+          }
           ratingSummaries={ratingSummaries}
           editingOfferId={editingOfferId}
           updatingOfferId={updatingOfferId}
@@ -1563,18 +1649,37 @@ export default function BusinessDashboardPage() {
           onEditPickupEndChange={setEditPickupEnd}
         />
 
+        <Pagination
+          className="mt-5"
+          page={paginatedManagedOffers.page}
+          totalItems={filteredManagedOffers.length}
+          pageSize={DASHBOARD_OFFER_PAGE_SIZE}
+          label="Offers"
+          onPageChange={setOfferManagementPage}
+        />
+
         <ReservationList
           t={t}
           language={language}
           orders={orders}
-          filteredOrders={filteredOrders}
+          filteredOrders={paginatedReservations.items}
+          filteredOrderCount={filteredOrders.length}
           reservationSummary={reservationSummary}
           reservationFilter={reservationFilter}
           reservationSearch={reservationSearch}
           normalizedReservationSearch={normalizedReservationSearch}
           updatingOrderId={updatingOrderId}
-          onReservationSearchChange={setReservationSearch}
-          onReservationFilterChange={setReservationFilter}
+          reservationPage={paginatedReservations.page}
+          reservationPageSize={DASHBOARD_RESERVATION_PAGE_SIZE}
+          onReservationSearchChange={(value) => {
+            setReservationSearch(value);
+            setReservationPage(1);
+          }}
+          onReservationFilterChange={(value) => {
+            setReservationFilter(value);
+            setReservationPage(1);
+          }}
+          onReservationPageChange={setReservationPage}
           onOpenPickupVerification={openPickupVerification}
           onMarkNoShow={(order) => void markNoShow(order)}
         />
