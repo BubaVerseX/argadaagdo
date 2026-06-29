@@ -8,6 +8,7 @@ import {
   getConfirmedUser,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import { getUserErrorMessage } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { notifyReservationConfirmed } from "@/lib/notifications";
 import {
@@ -111,7 +112,10 @@ function getReservationErrorMessage(message?: string) {
     return "Only customer accounts in good standing can reserve offers.";
   }
 
-  return "Reservation could not be completed. Please try again.";
+  return getUserErrorMessage(
+    message,
+    "Reservation could not be completed. Please try again."
+  );
 }
 
 function getLoginRedirectUrl(path: string) {

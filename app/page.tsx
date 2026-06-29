@@ -19,6 +19,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { useLanguage } from "@/lib/useLanguage";
+import { getUserErrorMessage } from "@/lib/errors";
 
 export default function Home() {
   const { language, t } = useLanguage();
@@ -27,35 +28,63 @@ export default function Home() {
     Record<number, RatingSummary>
   >({});
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     let active = true;
 
     async function loadFeaturedOffers() {
-      await processExpiredMarketplace();
+      try {
+        await processExpiredMarketplace();
 
-      const [{ data }, summaries] = await Promise.all([
-        supabase
-          .from("offers")
-          .select("*, businesses(name, address, business_type)")
-          .eq("active", true)
-          .eq("status", "active")
-          .gt("quantity", 0)
-          .order("id", { ascending: false })
-          .limit(6),
-        loadBusinessRatingSummaries(),
-      ]);
+        const [{ data, error }, summaries] = await Promise.all([
+          supabase
+            .from("offers")
+            .select("*, businesses(name, address, business_type)")
+            .eq("active", true)
+            .eq("status", "active")
+            .gt("quantity", 0)
+            .order("id", { ascending: false })
+            .limit(6),
+          loadBusinessRatingSummaries(),
+        ]);
 
-      if (!active) return;
+        if (!active) return;
 
-      setRatingSummaries(summaries);
-      setOffers(
-        ((data || []) as Offer[])
-          .sort((firstOffer, secondOffer) =>
+        if (error) {
+          setErrorMessage(
+            getUserErrorMessage(
+              error,
+              "Featured offers could not be loaded right now."
+            )
+          );
+          setOffers([]);
+          setLoading(false);
+          return;
+        }
+
+        setErrorMessage("");
+        setRatingSummaries(summaries);
+        setOffers(
+          ((data || []) as Offer[]).sort((firstOffer, secondOffer) =>
             compareMarketplaceOffers(firstOffer, secondOffer, summaries)
           )
-      );
-      setLoading(false);
+        );
+      } catch (error) {
+        if (!active) return;
+
+        setErrorMessage(
+          getUserErrorMessage(
+            error,
+            "Featured offers could not be loaded right now."
+          )
+        );
+        setOffers([]);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
     }
 
     void loadFeaturedOffers();
@@ -142,7 +171,9 @@ export default function Home() {
                           : t("offers.title")}
                       </h2>
                       <p className="mt-2 font-semibold text-gray-600">
-                        {!loading && offers.length === 0
+                        {errorMessage
+                          ? errorMessage
+                          : !loading && offers.length === 0
                           ? t("home.publishLater")
                           : `${featuredPickupLabel} · Tbilisi`}
                       </p>

@@ -49,8 +49,31 @@ export function getUserErrorMessage(
     return "This action is not allowed for your account. Please sign in again or contact support.";
   }
 
-  if (message.includes("network") || message.includes("fetch")) {
+  if (
+    message.includes("network") ||
+    message.includes("fetch") ||
+    message.includes("failed to fetch") ||
+    message.includes("timeout") ||
+    message.includes("timed out") ||
+    message.includes("abort")
+  ) {
     return "Network problem. Please check your connection and try again.";
+  }
+
+  if (
+    message.includes("supabase") ||
+    message.includes("database") ||
+    message.includes("temporarily unavailable")
+  ) {
+    return "Marketplace data is temporarily unavailable. Please try again in a moment.";
+  }
+
+  if (
+    message.includes("storage") ||
+    message.includes("bucket") ||
+    message.includes("object")
+  ) {
+    return "Image storage is temporarily unavailable. Please try again with the image in a moment.";
   }
 
   if (message.includes("sold out") || message.includes("quantity")) {
@@ -71,6 +94,10 @@ export function getUserErrorMessage(
 
   if (message.includes("invalid login") || message.includes("invalid credentials")) {
     return "Email or password is incorrect.";
+  }
+
+  if (message.includes("duplicate") || message.includes("unique")) {
+    return "This item already exists. Please refresh and try again.";
   }
 
   return fallback;

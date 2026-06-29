@@ -1,4 +1,5 @@
 import type { Language } from "@/lib/i18n";
+import { getUserErrorMessage } from "@/lib/errors";
 import {
   getEffectiveOrderStatus,
   isCancelledOrderStatus,
@@ -27,7 +28,10 @@ export function getCancellationErrorMessage(message?: string) {
     return "This order could not be found or no longer belongs to your account.";
   }
 
-  return message || "Order could not be cancelled. Please try again.";
+  return getUserErrorMessage(
+    message,
+    "Order could not be cancelled. Please try again."
+  );
 }
 
 export function getLoginRedirectUrl(path: string) {

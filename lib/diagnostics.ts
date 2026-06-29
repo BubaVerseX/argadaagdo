@@ -58,7 +58,7 @@ export async function checkApplicationHealth(): Promise<ApplicationHealthItem[]>
       status: databaseError ? "error" : "ok",
       value: databaseError ? "Connection issue" : "Connected",
       detail: databaseError
-        ? formatAppError(databaseError).developerMessage
+        ? formatAppError(databaseError).userMessage
         : "Database responded to an admin health check.",
     },
     {
@@ -66,7 +66,7 @@ export async function checkApplicationHealth(): Promise<ApplicationHealthItem[]>
       status: storageError ? "warning" : "ok",
       value: storageError ? "Check policy" : "Available",
       detail: storageError
-        ? formatAppError(storageError).developerMessage
+        ? formatAppError(storageError).userMessage
         : "offer-images bucket is reachable from the app.",
     },
     {

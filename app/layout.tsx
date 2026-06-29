@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import NotificationCenter from "@/components/NotificationCenter";
+import { absoluteSiteUrl, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const appDescription =
   "Save money on surprise food bags from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "ArGadaagdo | Rescue Good Food in Tbilisi",
     template: "%s | ArGadaagdo",
@@ -40,6 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ArGadaagdo | Rescue Good Food in Tbilisi",
     description: appDescription,
+    url: absoluteSiteUrl("/"),
     siteName: "ArGadaagdo",
     type: "website",
   },
