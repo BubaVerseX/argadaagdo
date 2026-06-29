@@ -101,6 +101,10 @@ export function validateTextField({
   return { value: normalizedValue, error: "" };
 }
 
-export function isWithinCooldown(lastActionAt: number, cooldownMs: number) {
-  return Date.now() - lastActionAt < cooldownMs;
+export function isWithinCooldown(
+  lastActionAt: number,
+  cooldownMs: number,
+  currentActionAt: number
+) {
+  return currentActionAt - lastActionAt < cooldownMs;
 }

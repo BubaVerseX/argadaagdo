@@ -195,6 +195,16 @@ export default function Navbar() {
             >
               {t("nav.faq")}
             </Link>
+
+            {user && (
+              <Link
+                href="/settings"
+                className={linkClass("/settings")}
+                aria-current={ariaCurrent("/settings")}
+              >
+                {t("nav.settings")}
+              </Link>
+            )}
           </div>
 
           {showBusinessNavigation && (
@@ -329,6 +339,17 @@ export default function Navbar() {
                 >
                   {t("nav.faq")}
                 </Link>
+
+                {user && (
+                  <Link
+                    href="/settings"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/settings", "mobile")}
+                    aria-current={ariaCurrent("/settings")}
+                  >
+                    {t("nav.settings")}
+                  </Link>
+                )}
               </div>
             </div>
 

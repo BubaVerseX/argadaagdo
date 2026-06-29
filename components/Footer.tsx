@@ -14,6 +14,7 @@ export default function Footer() {
     { href: "/about", label: t("nav.about") },
     { href: "/privacy", label: t("nav.privacy") },
     { href: "/terms", label: t("nav.terms") },
+    { href: "/settings", label: t("nav.settings") },
   ];
 
   return (

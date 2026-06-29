@@ -10,6 +10,7 @@ import {
   formatDisplayDateTime,
   getEffectiveOfferStatus,
 } from "@/lib/offerLifecycle";
+import { notifyBusinessApproved } from "@/lib/notifications";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Profile } from "@/lib/types";
@@ -122,6 +123,7 @@ export default function AdminPage() {
 
   async function approveBusiness(id: number) {
     setUpdatingBusinessId(id);
+    const approvedBusiness = businesses.find((business) => business.id === id);
     const { error } = await supabase
       .from("businesses")
       .update({ approved: true })
@@ -136,6 +138,9 @@ export default function AdminPage() {
 
     setMessageTone("success");
     setMessage("Business approved.");
+    if (approvedBusiness) {
+      notifyBusinessApproved({ businessName: approvedBusiness.name });
+    }
     setUpdatingBusinessId(null);
     await checkAdminAndLoadData();
   }

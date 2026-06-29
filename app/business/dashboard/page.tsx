@@ -433,11 +433,17 @@ export default function BusinessDashboardPage() {
     setImageFile(selectedFile);
   }
 
-  async function saveBusinessProfile() {
+  async function saveBusinessProfile(actionTime: number) {
     setMessage("");
     setMessageTone("error");
 
-    if (isWithinCooldown(lastProfileSaveAt.current, actionCooldownMs)) {
+    if (
+      isWithinCooldown(
+        lastProfileSaveAt.current,
+        actionCooldownMs,
+        actionTime
+      )
+    ) {
       setMessage("Please wait a moment before saving again.");
       return;
     }
@@ -490,7 +496,7 @@ export default function BusinessDashboardPage() {
     }
 
     setSavingProfile(true);
-    lastProfileSaveAt.current = Date.now();
+    lastProfileSaveAt.current = actionTime;
 
     const { data, error } = await supabase
       .from("businesses")
@@ -571,11 +577,17 @@ export default function BusinessDashboardPage() {
     return publicUrl;
   }
 
-  async function createOffer() {
+  async function createOffer(actionTime: number) {
     setMessage("");
     setMessageTone("error");
 
-    if (isWithinCooldown(lastOfferPublishAt.current, actionCooldownMs)) {
+    if (
+      isWithinCooldown(
+        lastOfferPublishAt.current,
+        actionCooldownMs,
+        actionTime
+      )
+    ) {
       setMessage("Please wait a moment before publishing another offer.");
       return;
     }
@@ -659,7 +671,7 @@ export default function BusinessDashboardPage() {
     }
 
     setPublishing(true);
-    lastOfferPublishAt.current = Date.now();
+    lastOfferPublishAt.current = actionTime;
     setMessageTone("success");
     setMessage("Publishing offer...");
 
@@ -1629,7 +1641,7 @@ export default function BusinessDashboardPage() {
 
             <button
               type="button"
-              onClick={() => void saveBusinessProfile()}
+              onClick={(event) => void saveBusinessProfile(event.timeStamp)}
               disabled={savingProfile}
               className="mt-5 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
@@ -1971,7 +1983,7 @@ export default function BusinessDashboardPage() {
               )}
 
               <button
-                onClick={createOffer}
+                onClick={(event) => void createOffer(event.timeStamp)}
                 disabled={publishing}
                 className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
               >
