@@ -8,6 +8,7 @@ import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
+import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
 import { BusinessPromotionToolkit } from "@/components/growth/BusinessPromotionToolkit";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
@@ -1285,6 +1286,88 @@ export default function BusinessDashboardPage() {
       value: t("businessOnboarding.recommendedTitleValue"),
     },
   ];
+  const hasCompleteProfile = Boolean(
+    profileName.trim() &&
+      profileType.trim() &&
+      profileAddress.trim() &&
+      profilePhone.trim()
+  );
+  const hasBusinessImage = offers.some((offer) => Boolean(offer.image_url));
+  const hasBusinessDescription = Boolean(
+    selectedBusiness?.description?.trim() ||
+      offers.some((offer) => Boolean(offer.description?.trim()))
+  );
+  const businessHealthChecks = [
+    {
+      label: "Profile complete",
+      helper: "Name, type, address and phone are filled in.",
+      complete: hasCompleteProfile,
+    },
+    {
+      label: "Logo or offer image uploaded",
+      helper: "Use clear images so customers trust your surprise bags.",
+      complete: hasBusinessImage,
+    },
+    {
+      label: "Description added",
+      helper: "Add a short description on your profile or offers.",
+      complete: hasBusinessDescription,
+    },
+    {
+      label: "Address added",
+      helper: "Customers need a clear pickup location.",
+      complete: Boolean(profileAddress.trim() || selectedBusiness?.address),
+    },
+    {
+      label: "Phone verified",
+      helper: "For now this means a contact phone is saved for admin review.",
+      complete: Boolean(profilePhone.trim() || selectedBusiness?.phone),
+    },
+    {
+      label: "Active offers",
+      helper: "At least one offer is visible to customers.",
+      complete: activeOffers.length > 0,
+    },
+    {
+      label: "Completed pickups",
+      helper: "At least one customer pickup has been completed.",
+      complete: collectedOrders.length > 0,
+    },
+  ];
+  const businessOperationsChecklist = [
+    {
+      label: "Create first offer",
+      helper: "Publish a realistic surprise bag with price and pickup time.",
+      complete: offers.length > 0,
+      anchor: "#create-offer",
+    },
+    {
+      label: "Upload logo or image",
+      helper: "Add a clear image to build customer trust.",
+      complete: hasBusinessImage,
+      anchor: "#create-offer",
+    },
+    {
+      label: "Complete profile",
+      helper: "Keep name, type, address and phone up to date.",
+      complete: hasCompleteProfile,
+    },
+    {
+      label: "Receive first reservation",
+      helper: "New reservations will appear in the reservations section.",
+      complete: orders.length > 0,
+    },
+    {
+      label: "Complete first pickup",
+      helper: "Ask for the pickup code before handing over food.",
+      complete: collectedOrders.length > 0,
+    },
+    {
+      label: "Receive first rating",
+      helper: "Ratings help future customers trust your business.",
+      complete: reviews.length > 0,
+    },
+  ];
   const overviewStats = [
     {
       title: t("businessDashboard.activeOffersMetric"),
@@ -1582,18 +1665,25 @@ export default function BusinessDashboardPage() {
         <BusinessAlertsSection alerts={businessAlerts} />
 
         {selectedBusiness && (
-          <BusinessProfileSection
-            profileName={profileName}
-            profileType={profileType}
-            profileAddress={profileAddress}
-            profilePhone={profilePhone}
-            savingProfile={savingProfile}
-            onProfileNameChange={setProfileName}
-            onProfileTypeChange={setProfileType}
-            onProfileAddressChange={setProfileAddress}
-            onProfilePhoneChange={setProfilePhone}
-            onSave={(actionTime) => void saveBusinessProfile(actionTime)}
-          />
+          <>
+            <BusinessProfileSection
+              profileName={profileName}
+              profileType={profileType}
+              profileAddress={profileAddress}
+              profilePhone={profilePhone}
+              savingProfile={savingProfile}
+              onProfileNameChange={setProfileName}
+              onProfileTypeChange={setProfileType}
+              onProfileAddressChange={setProfileAddress}
+              onProfilePhoneChange={setProfilePhone}
+              onSave={(actionTime) => void saveBusinessProfile(actionTime)}
+            />
+
+            <BusinessHealthScore
+              checks={businessHealthChecks}
+              checklist={businessOperationsChecklist}
+            />
+          </>
         )}
 
         {isNewBusinessOnboarding && (

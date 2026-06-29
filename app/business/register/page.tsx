@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { BusinessOnboardingWizard } from "@/components/business/BusinessOnboardingWizard";
 import {
   getConfirmedUser,
   getProfileById,
@@ -249,95 +250,27 @@ export default function BusinessRegisterPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border bg-[#F7F6EF] p-5 sm:rounded-[2rem] sm:p-6">
-              <h2 className="text-2xl font-black text-gray-950">
-                {t("businessRegister.details")}
-              </h2>
-              <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
-                {t("businessRegister.detailsHint")}
-              </p>
+            <div>
+              <BusinessOnboardingWizard
+                name={name}
+                businessType={businessType}
+                address={address}
+                phone={phone}
+                submitting={submitting}
+                accessReady={accessReady}
+                canRegister={canRegister}
+                onNameChange={setName}
+                onBusinessTypeChange={setBusinessType}
+                onAddressChange={setAddress}
+                onPhoneChange={setPhone}
+                onSubmit={() => void registerBusiness()}
+              />
 
-              <div className="mt-5 grid gap-3">
-                <div className="rounded-2xl bg-white p-4 shadow-sm">
-                  <p className="text-sm font-black text-gray-950">
-                    {t("businessRegister.requiredInfoTitle")}
-                  </p>
-                  <ul className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-gray-700">
-                    <li>{t("businessRegister.requiredNameType")}</li>
-                    <li>{t("businessRegister.requiredAddress")}</li>
-                    <li>{t("businessRegister.requiredPhone")}</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-2xl bg-green-50 p-4">
-                  <p className="text-sm font-black text-green-800">
-                    {t("businessRegister.expectationsTitle")}
-                  </p>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
-                    {t("businessRegister.expectationsText")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 grid gap-4">
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder={t("businessRegister.name")}
-                  maxLength={80}
-                  aria-label={t("businessRegister.name")}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                />
-
-                <select
-                  value={businessType}
-                  onChange={(e) => setBusinessType(e.target.value)}
-                  aria-label="Business type"
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                >
-                  <option value="Cafe">Cafe</option>
-                  <option value="Bakery">Bakery</option>
-                  <option value="Restaurant">Restaurant</option>
-                  <option value="Supermarket">Supermarket</option>
-                  <option value="Hotel">Hotel</option>
-                  <option value="Other">Other</option>
-                </select>
-
-                <input
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder={t("businessRegister.address")}
-                  maxLength={160}
-                  aria-label={t("businessRegister.address")}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                />
-
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder={t("businessRegister.phone")}
-                  maxLength={40}
-                  aria-label={t("businessRegister.phone")}
-                  className="rounded-2xl border bg-white p-4 font-medium outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                />
-
-                <button
-                  type="button"
-                  onClick={registerBusiness}
-                  disabled={submitting || !accessReady || !canRegister}
-                  className="min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
-                >
-                  {submitting
-                    ? t("businessRegister.submitting")
-                    : !accessReady
-                    ? t("businessRegister.checking")
-                    : t("businessRegister.submit")}
-                </button>
-
-                {message && (
+              {message && (
+                <div className="mt-4">
                   <Notice tone={messageTone}>{message}</Notice>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -19,6 +19,7 @@ import {
   paymentStatuses,
 } from "@/lib/paymentArchitecture";
 import type { Business, Profile } from "@/lib/types";
+import type { FormEvent } from "react";
 
 export type AdminBusiness = Business & {
   created_at?: string | null;
@@ -199,6 +200,77 @@ export function AdminRevenueInsights({
           description="Top offers by total reservations."
           data={analytics.offerPopularity}
         />
+      </div>
+    </section>
+  );
+}
+
+export function AdminOperationalDashboard({
+  metrics,
+}: {
+  metrics: SimpleStat[];
+}) {
+  return (
+    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Operational dashboard
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Today&apos;s marketplace activity
+          </h2>
+        </div>
+
+        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+          Fast pilot signals for reservations, pickups, cancellations,
+          no-shows and marketplace activity.
+        </p>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+        {metrics.map((metric) => (
+          <StatCard key={metric.title} {...metric} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function AdminSupportTools({
+  metrics,
+}: {
+  metrics: MetricCard[];
+}) {
+  return (
+    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Support tools
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Lookup workspace
+          </h2>
+        </div>
+
+        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+          Use the admin search box below to look up reservations, customers,
+          businesses and orders. Support notes are prepared as a future workflow.
+        </p>
+      </div>
+
+      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-5" />
+
+      <div className="mt-6 rounded-3xl bg-[#F7F6EF] p-5">
+        <h3 className="text-xl font-black text-gray-950">
+          Future support notes
+        </h3>
+        <p className="mt-2 font-semibold leading-7 text-gray-600">
+          For now, admins can identify records quickly and handle support
+          manually. A future support-notes table can store internal follow-up
+          history without changing the customer flow.
+        </p>
       </div>
     </section>
   );
@@ -540,13 +612,37 @@ export function PendingBusinesses({
   businesses,
   updatingBusinessId,
   onApprove,
+  onRequestChanges,
+  onReject,
 }: {
   t: (key: TranslationKey) => string;
   language: Language;
   businesses: AdminBusiness[];
   updatingBusinessId: number | null;
   onApprove: (id: number) => void;
+  onRequestChanges: (id: number, reason: string) => void;
+  onReject: (id: number, reason: string) => void;
 }) {
+  function handleReviewAction(
+    event: FormEvent<HTMLFormElement>,
+    businessId: number
+  ) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const reason = String(formData.get("reason") || "").trim();
+    const action = String(formData.get("approval_action") || "");
+
+    if (action === "request_changes") {
+      onRequestChanges(businessId, reason);
+      return;
+    }
+
+    if (action === "reject") {
+      onReject(businessId, reason);
+    }
+  }
+
   return (
     <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -610,7 +706,7 @@ export function PendingBusinesses({
         {businesses.map((business) => (
           <div
             key={business.id}
-            className="flex flex-col gap-5 rounded-3xl border border-yellow-100 bg-yellow-50/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between"
+            className="grid gap-5 rounded-3xl border border-yellow-100 bg-yellow-50/40 p-5 sm:p-6 lg:grid-cols-[1fr_320px] lg:items-start"
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -633,13 +729,59 @@ export function PendingBusinesses({
               </div>
             </div>
 
-            <button
-              onClick={() => onApprove(business.id)}
-              disabled={updatingBusinessId !== null}
-              className="min-h-12 w-full shrink-0 rounded-full bg-green-700 px-6 py-3 font-black text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+            <form
+              onSubmit={(event) => handleReviewAction(event, business.id)}
+              className="rounded-3xl bg-white p-4 shadow-sm"
             >
-              {updatingBusinessId === business.id ? "Updating..." : "Approve"}
-            </button>
+              <label className="grid gap-2 text-sm font-black text-gray-700">
+                Review reason
+                <textarea
+                  name="reason"
+                  rows={3}
+                  placeholder="Optional note for rejection or requested changes"
+                  maxLength={220}
+                  className="rounded-2xl border bg-white p-3 font-semibold outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                />
+              </label>
+
+              <div className="mt-4 grid gap-2">
+                <button
+                  type="button"
+                  onClick={() => onApprove(business.id)}
+                  disabled={updatingBusinessId !== null}
+                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {updatingBusinessId === business.id
+                    ? "Updating..."
+                    : "Approve"}
+                </button>
+
+                <button
+                  type="submit"
+                  name="approval_action"
+                  value="request_changes"
+                  disabled={updatingBusinessId !== null}
+                  className="min-h-12 rounded-full bg-yellow-100 px-6 py-3 font-black text-yellow-900 transition hover:bg-yellow-200 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Request changes
+                </button>
+
+                <button
+                  type="submit"
+                  name="approval_action"
+                  value="reject"
+                  disabled={updatingBusinessId !== null}
+                  className="min-h-12 rounded-full bg-red-50 px-6 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Reject
+                </button>
+              </div>
+
+              <p className="mt-3 text-xs font-semibold leading-5 text-gray-500">
+                Current database stores approval as approved or pending. Request
+                and reject notes are prepared for operator workflow only.
+              </p>
+            </form>
           </div>
         ))}
       </div>

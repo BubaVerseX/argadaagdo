@@ -11,9 +11,11 @@ import {
   AdminHealthSections,
   AdminHero,
   AdminMarketplaceOverview,
+  AdminOperationalDashboard,
   AdminRevenueInsights,
   AdminModerationVisibility,
   AdminPaymentPreparation,
+  AdminSupportTools,
   ApprovedBusinesses,
   PendingBusinesses,
   type AdminBusiness,
@@ -49,6 +51,12 @@ function getPercentage(value: number, total: number) {
   return Math.round((value / total) * 100);
 }
 
+function getBusinessSortTime(business: AdminBusiness) {
+  if (!business.created_at) return business.id;
+  const createdAt = new Date(business.created_at).getTime();
+  return Number.isFinite(createdAt) ? createdAt : business.id;
+}
+
 type AdminOfferFilter = "all" | "active" | "inactive" | "expired" | "sold_out";
 type AdminOrderFilter =
   | "all"
@@ -57,6 +65,7 @@ type AdminOrderFilter =
   | "cancelled"
   | "no_show";
 type AdminProfileFilter = "all" | "customer" | "business" | "admin";
+type ApprovalQueueFilter = "newest" | "oldest" | "needs_review" | "approved";
 
 const ADMIN_LIST_PAGE_SIZE = 8;
 const ADMIN_QUERY_LIMIT = 1000;
@@ -88,6 +97,8 @@ export default function AdminPage() {
     useState<AdminOrderFilter>("all");
   const [adminProfileFilter, setAdminProfileFilter] =
     useState<AdminProfileFilter>("all");
+  const [approvalQueueFilter, setApprovalQueueFilter] =
+    useState<ApprovalQueueFilter>("newest");
   const [pendingPage, setPendingPage] = useState(1);
   const [approvedPage, setApprovedPage] = useState(1);
   const [updatingBusinessId, setUpdatingBusinessId] = useState<number | null>(
@@ -237,6 +248,26 @@ export default function AdminPage() {
     setMessage("Business moved to pending.");
     setUpdatingBusinessId(null);
     await checkAdminAndLoadData();
+  }
+
+  function requestBusinessChanges(id: number, reason: string) {
+    const business = businesses.find((item) => item.id === id);
+    setMessageTone("warning");
+    setMessage(
+      `Change request prepared for ${
+        business?.name || "this business"
+      }. Reason: ${reason || "No reason provided yet."} Current pilot data model keeps the business pending until the owner updates details.`
+    );
+  }
+
+  function rejectBusinessApplication(id: number, reason: string) {
+    const business = businesses.find((item) => item.id === id);
+    setMessageTone("warning");
+    setMessage(
+      `Rejection prepared for ${
+        business?.name || "this business"
+      }. Reason: ${reason || "No reason provided yet."} Because the current schema only stores approved or pending, no database status was changed.`
+    );
   }
 
   useEffect(() => {
@@ -545,6 +576,19 @@ export default function AdminPage() {
       `${business.name} ${business.business_type} ${business.address} ${business.phone}`.toLowerCase();
     return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
   });
+  const sortDirection = approvalQueueFilter === "oldest" ? 1 : -1;
+  const sortedPendingBusinesses = [...filteredPendingBusinesses].sort(
+    (first, second) =>
+      (getBusinessSortTime(first) - getBusinessSortTime(second)) * sortDirection
+  );
+  const sortedApprovedBusinesses = [...filteredApprovedBusinesses].sort(
+    (first, second) =>
+      (getBusinessSortTime(first) - getBusinessSortTime(second)) * sortDirection
+  );
+  const approvalVisiblePendingBusinesses =
+    approvalQueueFilter === "approved" ? [] : sortedPendingBusinesses;
+  const approvalVisibleApprovedBusinesses =
+    approvalQueueFilter === "needs_review" ? [] : sortedApprovedBusinesses;
   const filteredAdminOffers = offers.filter((offer) => {
     const status = getEffectiveOfferStatus(offer);
     const searchText =
@@ -583,12 +627,12 @@ export default function AdminPage() {
     return matchesSearch && matchesFilter;
   });
   const paginatedPendingBusinesses = paginateItems(
-    filteredPendingBusinesses,
+    approvalVisiblePendingBusinesses,
     pendingPage,
     ADMIN_LIST_PAGE_SIZE
   );
   const paginatedApprovedBusinesses = paginateItems(
-    filteredApprovedBusinesses,
+    approvalVisibleApprovedBusinesses,
     approvedPage,
     ADMIN_LIST_PAGE_SIZE
   );
@@ -605,9 +649,29 @@ export default function AdminPage() {
     isCollectedOrderStatus(order.status)
   );
   const businessIdsWithOffers = new Set(offers.map((offer) => offer.business_id));
+  const businessIdsWithActiveOffers = new Set(
+    activeOffers.map((offer) => offer.business_id)
+  );
   const businessesWithZeroOffers = businesses.filter(
     (business) => !businessIdsWithOffers.has(business.id)
   );
+  const inactiveBusinesses = approvedBusinesses.filter(
+    (business) => !businessIdsWithActiveOffers.has(business.id)
+  );
+  const offersExpiringToday = activeOffers.filter(
+    (offer) => offer.pickup_date === todayDateKey
+  );
+  const offerIdsWithReservations = new Set(
+    orders.map((order) => order.offer_id)
+  );
+  const offersWithZeroReservations = offers.filter(
+    (offer) => !offerIdsWithReservations.has(offer.id)
+  );
+  const businessesNeedingAttention = new Set([
+    ...pendingBusinesses.map((business) => business.id),
+    ...inactiveBusinesses.map((business) => business.id),
+    ...businessesWithZeroOffers.map((business) => business.id),
+  ]);
   const customersWithActiveReservations = new Set(
     activeReservationOrders
       .map((order) => order.user_id)
@@ -640,9 +704,31 @@ export default function AdminPage() {
       tone: expiredOffers.length > 0 ? ("red" as const) : undefined,
     },
     {
+      title: "Expiring today",
+      value: offersExpiringToday.length,
+      tone: offersExpiringToday.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Zero reservations",
+      value: offersWithZeroReservations.length,
+      tone:
+        offersWithZeroReservations.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
       title: "Businesses with zero offers",
       value: businessesWithZeroOffers.length,
       tone: businessesWithZeroOffers.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Inactive businesses",
+      value: inactiveBusinesses.length,
+      tone: inactiveBusinesses.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Need attention",
+      value: businessesNeedingAttention.size,
+      tone:
+        businessesNeedingAttention.size > 0 ? ("yellow" as const) : undefined,
     },
     {
       title: "Customers with active reservations",
@@ -693,6 +779,83 @@ export default function AdminPage() {
       className: "bg-red-50 text-red-800",
     },
   ];
+  const operationalDashboardMetrics = [
+    {
+      title: "Today's activity",
+      value: todayReservations.length + todayPickups.length,
+      tone:
+        todayReservations.length + todayPickups.length > 0
+          ? ("green" as const)
+          : undefined,
+    },
+    {
+      title: "Reservations",
+      value: todayReservations.length,
+      tone: todayReservations.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Pickups",
+      value: todayPickups.length,
+      tone: todayPickups.length > 0 ? ("green" as const) : undefined,
+    },
+    {
+      title: "Cancelled",
+      value: cancelledOrders.length,
+      tone: cancelledOrders.length > 0 ? ("red" as const) : undefined,
+    },
+    {
+      title: "No-shows",
+      value: noShowOrders.length,
+      tone: noShowOrders.length > 0 ? ("red" as const) : undefined,
+    },
+    {
+      title: "Average rating",
+      value: marketplaceAnalytics.averageRating,
+      tone:
+        marketplaceAnalytics.averageRating === "No ratings yet"
+          ? undefined
+          : ("yellow" as const),
+    },
+    {
+      title: "Active offers",
+      value: activeOffers.length,
+      tone: activeOffers.length > 0 ? ("green" as const) : undefined,
+    },
+  ];
+  const supportLookupMetrics = [
+    {
+      title: "Reservation lookup",
+      value: filteredAdminOrders.length,
+      helper: "Use search to find reservation/order records by id or status",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Customer lookup",
+      value: filteredAdminProfiles.filter(
+        (profile) => profile.role === "customer"
+      ).length,
+      helper: "Customer accounts matching the current admin search",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Business lookup",
+      value: filteredApprovedBusinesses.length + filteredPendingBusinesses.length,
+      helper: "Approved and pending businesses matching the search",
+      className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Order lookup",
+      value: filteredAdminOrders.length,
+      helper: "Orders matching the selected status and search term",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Future notes",
+      value: "Prepared",
+      helper: "Internal support notes can be added later with a dedicated table",
+      className: "bg-[#F7F6EF] text-gray-900",
+    },
+  ];
 
   if (loading) {
     return (
@@ -725,6 +888,8 @@ export default function AdminPage() {
 
         <AdminRevenueInsights analytics={marketplaceAnalytics} />
 
+        <AdminOperationalDashboard metrics={operationalDashboardMetrics} />
+
         <AdminHealthSections
           t={t}
           marketplaceHealth={marketplaceHealth}
@@ -739,6 +904,8 @@ export default function AdminPage() {
         <AdminAccountView metrics={accountOverview} profiles={profiles} />
 
         <AdminModerationVisibility metrics={moderationStats} />
+
+        <AdminSupportTools metrics={supportLookupMetrics} />
 
         <FilterBar
           className="mt-6 sm:mt-8"
@@ -798,6 +965,24 @@ export default function AdminPage() {
             <option value="customer">Customers</option>
             <option value="business">Businesses</option>
             <option value="admin">Admins</option>
+          </select>
+
+          <select
+            value={approvalQueueFilter}
+            onChange={(event) => {
+              setApprovalQueueFilter(
+                event.target.value as ApprovalQueueFilter
+              );
+              setPendingPage(1);
+              setApprovedPage(1);
+            }}
+            aria-label="Filter approval center"
+            className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+          >
+            <option value="newest">Approval: Newest first</option>
+            <option value="oldest">Approval: Oldest first</option>
+            <option value="needs_review">Approval: Needs review</option>
+            <option value="approved">Approval: Approved</option>
           </select>
         </FilterBar>
 
@@ -890,12 +1075,14 @@ export default function AdminPage() {
           businesses={paginatedPendingBusinesses.items}
           updatingBusinessId={updatingBusinessId}
           onApprove={(id) => void approveBusiness(id)}
+          onRequestChanges={requestBusinessChanges}
+          onReject={rejectBusinessApplication}
         />
 
         <Pagination
           className="mt-5"
           page={paginatedPendingBusinesses.page}
-          totalItems={filteredPendingBusinesses.length}
+          totalItems={approvalVisiblePendingBusinesses.length}
           pageSize={ADMIN_LIST_PAGE_SIZE}
           label="Pending businesses"
           onPageChange={setPendingPage}
@@ -910,7 +1097,7 @@ export default function AdminPage() {
         <Pagination
           className="mt-5"
           page={paginatedApprovedBusinesses.page}
-          totalItems={filteredApprovedBusinesses.length}
+          totalItems={approvalVisibleApprovedBusinesses.length}
           pageSize={ADMIN_LIST_PAGE_SIZE}
           label="Approved businesses"
           onPageChange={setApprovedPage}
