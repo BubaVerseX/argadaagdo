@@ -10,12 +10,20 @@ import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSecti
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
+import { BusinessRevenueInsights } from "@/components/business/BusinessRevenueInsights";
 import { BusinessReviews } from "@/components/business/BusinessReviews";
 import { BusinessStatsSection } from "@/components/business/BusinessStatsSection";
 import { OfferForm } from "@/components/business/OfferForm";
 import { OfferList } from "@/components/business/OfferList";
 import { PickupVerificationModal } from "@/components/business/PickupVerificationModal";
 import { ReservationList } from "@/components/business/ReservationList";
+import {
+  buildCsv,
+  calculateBusinessAnalytics,
+  downloadCsv,
+  formatAnalyticsMoney,
+  type OfferAnalytics,
+} from "@/lib/analytics";
 import {
   getConfirmedProfile,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
@@ -1220,17 +1228,7 @@ export default function BusinessDashboardPage() {
     isCancelledOrderStatus(order.status)
   );
   const noShowOrders = orders.filter((order) => order.status === "no_show");
-  const boxesSold = orders.filter((order) =>
-    isConfirmedOrderStatus(order.status) || isCollectedOrderStatus(order.status)
-  ).length;
-  const boxesAvailable = activeOffers.reduce(
-    (total, offer) => total + Number(offer.quantity || 0),
-    0
-  );
   const todayDateKey = getTbilisiDateKey();
-  const todaysReservations = orders.filter(
-    (order) => order.offers?.pickup_date === todayDateKey
-  ).length;
   const todaysActiveReservations = orders.filter(
     (order) =>
       order.offers?.pickup_date === todayDateKey &&
@@ -1245,6 +1243,11 @@ export default function BusinessDashboardPage() {
   const hasAnalyticsActivity =
     offers.length > 0 || orders.length > 0 || totalReviews > 0;
   const isNewBusinessOnboarding = offers.length === 0 && orders.length === 0;
+  const businessAnalytics = calculateBusinessAnalytics({
+    offers,
+    orders,
+    reviews,
+  });
   const onboardingChecklist = [
     {
       step: 1,
@@ -1304,18 +1307,21 @@ export default function BusinessDashboardPage() {
     },
     {
       title: "Boxes sold",
-      value: boxesSold,
+      value: businessAnalytics.boxesSold,
       tone: "green" as const,
     },
     {
       title: "Boxes available",
-      value: boxesAvailable,
+      value: businessAnalytics.boxesRemaining,
       tone: "neutral" as const,
     },
     {
       title: "Today's reservations",
-      value: todaysReservations,
-      tone: todaysReservations > 0 ? ("yellow" as const) : ("neutral" as const),
+      value: businessAnalytics.todayReservations,
+      tone:
+        businessAnalytics.todayReservations > 0
+          ? ("yellow" as const)
+          : ("neutral" as const),
     },
   ];
   const reservationSummary = [
@@ -1472,6 +1478,73 @@ export default function BusinessDashboardPage() {
     DASHBOARD_RESERVATION_PAGE_SIZE
   );
 
+  function exportReservationsCsv() {
+    const csv = buildCsv(
+      orders.map((order) => ({
+        order_id: order.id,
+        offer_id: order.offer_id,
+        offer_title: order.offers?.title || "Offer unavailable",
+        customer_email: order.profiles?.email || "Email unavailable",
+        status: order.status,
+        pickup_date: order.offers?.pickup_date || "",
+        pickup_start: order.offers?.pickup_start || "",
+        pickup_end: order.offers?.pickup_end || "",
+        amount: order.amount || "",
+        business_amount: order.business_amount || "",
+        created_at: order.created_at || "",
+      }))
+    );
+
+    downloadCsv("argadaagdo-reservations.csv", csv);
+  }
+
+  function exportCompletedPickupsCsv() {
+    const csv = buildCsv(
+      orders
+        .filter((order) => isCollectedOrderStatus(order.status))
+        .map((order) => ({
+          order_id: order.id,
+          offer_title: order.offers?.title || "Offer unavailable",
+          customer_email: order.profiles?.email || "Email unavailable",
+          completed_at: order.completed_at || "",
+          pickup_date: order.offers?.pickup_date || "",
+          estimated_business_revenue: order.business_amount || "",
+        }))
+    );
+
+    downloadCsv("argadaagdo-completed-pickups.csv", csv);
+  }
+
+  function offerAnalyticsRows(
+    offerAnalyticsById: Record<number, OfferAnalytics>
+  ) {
+    return offers.map((offer) => {
+      const analytics = offerAnalyticsById[offer.id];
+
+      return {
+        offer_id: offer.id,
+        title: offer.title,
+        category: offer.category || "",
+        status: getEffectiveOfferStatus(offer),
+        remaining_quantity: offer.quantity,
+        reservations: analytics?.reservations || 0,
+        completion_rate: analytics ? `${analytics.completionRate}%` : "0%",
+        cancellation_rate: analytics ? `${analytics.cancellationRate}%` : "0%",
+        estimated_revenue: analytics
+          ? formatAnalyticsMoney(analytics.estimatedRevenue)
+          : "₾ 0.00",
+      };
+    });
+  }
+
+  function exportOfferStatisticsCsv() {
+    const csv = buildCsv(
+      offerAnalyticsRows(businessAnalytics.offerAnalyticsById)
+    );
+
+    downloadCsv("argadaagdo-offer-statistics.csv", csv);
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F7F6EF]">
@@ -1530,6 +1603,13 @@ export default function BusinessDashboardPage() {
           t={t}
           hasAnalyticsActivity={hasAnalyticsActivity}
           metrics={overviewStats}
+        />
+
+        <BusinessRevenueInsights
+          analytics={businessAnalytics}
+          onExportReservations={exportReservationsCsv}
+          onExportCompletedPickups={exportCompletedPickupsCsv}
+          onExportOfferStatistics={exportOfferStatisticsCsv}
         />
 
         {!canCreateOffers && (
@@ -1624,6 +1704,7 @@ export default function BusinessDashboardPage() {
               : "Try a different search or status filter."
           }
           ratingSummaries={ratingSummaries}
+          offerAnalyticsById={businessAnalytics.offerAnalyticsById}
           editingOfferId={editingOfferId}
           updatingOfferId={updatingOfferId}
           editTitle={editTitle}

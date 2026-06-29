@@ -11,6 +11,7 @@ import {
   AdminHealthSections,
   AdminHero,
   AdminMarketplaceOverview,
+  AdminRevenueInsights,
   AdminModerationVisibility,
   AdminPaymentPreparation,
   ApprovedBusinesses,
@@ -18,6 +19,7 @@ import {
   type AdminBusiness,
 } from "@/components/admin/AdminSections";
 import { getConfirmedProfile } from "@/lib/auth";
+import { calculateMarketplaceAnalytics } from "@/lib/analytics";
 import {
   checkApplicationHealth,
   type ApplicationHealthItem,
@@ -70,6 +72,9 @@ export default function AdminPage() {
     ApplicationHealthItem[]
   >([]);
   const [totalRatings, setTotalRatings] = useState(0);
+  const [ratingScores, setRatingScores] = useState<
+    Array<{ rating: number | string | null }>
+  >([]);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -131,7 +136,8 @@ export default function AdminPage() {
         `).limit(ADMIN_QUERY_LIMIT),
         supabase
           .from("business_ratings")
-          .select("id", { count: "exact", head: true }),
+          .select("rating", { count: "exact" })
+          .limit(ADMIN_QUERY_LIMIT),
       ]);
 
     if (
@@ -165,6 +171,9 @@ export default function AdminPage() {
     setOrders((orderResult.data || []) as Order[]);
     setProfiles((profilesResult.data || []) as Profile[]);
     setTotalRatings(ratingsResult.count || 0);
+    setRatingScores(
+      (ratingsResult.data || []) as Array<{ rating: number | string | null }>
+    );
     setApplicationHealth(await checkApplicationHealth());
     setRealtimeReady(true);
     setLoading(false);
@@ -333,6 +342,13 @@ export default function AdminPage() {
   );
   const adminProfiles = profiles.filter((profile) => profile.role === "admin");
   const unknownProfiles = profiles.filter((profile) => !profile.role);
+  const marketplaceAnalytics = calculateMarketplaceAnalytics({
+    businessesCount: businesses.length,
+    customersCount: customerProfiles.length,
+    offers,
+    orders,
+    ratings: ratingScores,
+  });
   const totalProfileCompletedPickups = profiles.reduce(
     (total, profile) => total + Number(profile.completed_pickup_count || 0),
     0
@@ -706,6 +722,8 @@ export default function AdminPage() {
         )}
 
         <AdminMarketplaceOverview metrics={marketplaceOverview} />
+
+        <AdminRevenueInsights analytics={marketplaceAnalytics} />
 
         <AdminHealthSections
           t={t}

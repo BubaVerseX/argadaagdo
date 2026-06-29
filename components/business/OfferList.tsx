@@ -1,4 +1,5 @@
 import OfferImage from "@/components/OfferImage";
+import { formatAnalyticsMoney, type OfferAnalytics } from "@/lib/analytics";
 import {
   DEFAULT_OFFER_CATEGORY,
   OFFER_CATEGORIES,
@@ -25,6 +26,7 @@ type OfferListProps = {
   emptyTitle?: string;
   emptyText?: string;
   ratingSummaries: Record<number, RatingSummary>;
+  offerAnalyticsById?: Record<number, OfferAnalytics>;
   editingOfferId: number | null;
   updatingOfferId: number | null;
   editTitle: string;
@@ -57,6 +59,7 @@ export function OfferList({
   emptyTitle,
   emptyText,
   ratingSummaries,
+  offerAnalyticsById = {},
   editingOfferId,
   updatingOfferId,
   editTitle,
@@ -117,6 +120,7 @@ export function OfferList({
           const statusLabel = getOfferStatusLabel(offer, language);
           const statusClass = getOfferStatusClassName(offer);
           const rating = ratingSummaries[offer.business_id];
+          const analytics = offerAnalyticsById[offer.id];
           const isEditing = editingOfferId === offer.id;
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
@@ -214,6 +218,46 @@ export function OfferList({
                   </button>
                 </div>
               </div>
+
+              {analytics && (
+                <div className="grid gap-3 rounded-2xl bg-[#F7F6EF] p-4 sm:grid-cols-2 xl:grid-cols-6">
+                  {[
+                    {
+                      label: "Reservations",
+                      value: analytics.reservations,
+                    },
+                    {
+                      label: "Remaining",
+                      value: analytics.remainingQuantity,
+                    },
+                    {
+                      label: "Completion rate",
+                      value: `${analytics.completionRate}%`,
+                    },
+                    {
+                      label: "Cancellation rate",
+                      value: `${analytics.cancellationRate}%`,
+                    },
+                    {
+                      label: "Est. revenue",
+                      value: formatAnalyticsMoney(analytics.estimatedRevenue),
+                    },
+                    {
+                      label: "Pickup success",
+                      value: `${analytics.pickupSuccessRate}%`,
+                    },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-2xl bg-white p-4">
+                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                        {item.label}
+                      </p>
+                      <p className="mt-1 text-xl font-black text-gray-950">
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {isEditing && (
                 <div className="rounded-2xl bg-[#F7F6EF] p-4">

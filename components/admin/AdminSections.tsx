@@ -1,5 +1,11 @@
 import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import StatCard from "@/components/StatCard";
+import { KpiCardGrid, type KpiCard } from "@/components/analytics/KpiCardGrid";
+import { MiniBarChart } from "@/components/analytics/MiniBarChart";
+import {
+  formatAnalyticsMoney,
+  type MarketplaceAnalyticsSummary,
+} from "@/lib/analytics";
 import {
   getApplicationHealthStatusLabel,
   type ApplicationHealthItem,
@@ -84,6 +90,117 @@ export function AdminMarketplaceOverview({
 
       <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-3" />
     </div>
+  );
+}
+
+export function AdminRevenueInsights({
+  analytics,
+}: {
+  analytics: MarketplaceAnalyticsSummary;
+}) {
+  const cards: KpiCard[] = [
+    {
+      title: "Businesses",
+      value: analytics.businesses,
+      helper: "All business profiles in the marketplace",
+    },
+    {
+      title: "Customers",
+      value: analytics.customers,
+      helper: "Customer accounts ready to reserve offers",
+    },
+    {
+      title: "Offers",
+      value: analytics.offers,
+      helper: "Total offers visible to admin",
+    },
+    {
+      title: "Reservations",
+      value: analytics.reservations,
+      helper: "All order records in the current admin dataset",
+      tone: "green",
+    },
+    {
+      title: "Completed Pickups",
+      value: analytics.completedPickups,
+      helper: "Orders successfully collected",
+      tone: "green",
+    },
+    {
+      title: "Cancellation Rate",
+      value: `${analytics.cancellationRate}%`,
+      helper: "Cancelled, refunded and no-show share of orders",
+      tone: analytics.cancellationRate > 20 ? "yellow" : "white",
+    },
+    {
+      title: "Average Rating",
+      value: analytics.averageRating,
+      helper: "Average customer review score",
+      tone: analytics.averageRating === "No ratings yet" ? "white" : "yellow",
+    },
+    {
+      title: "Marketplace Revenue",
+      value: formatAnalyticsMoney(analytics.estimatedMarketplaceRevenue),
+      helper: "Prepared 10% platform commission estimate",
+      tone: "green",
+    },
+    {
+      title: "Business Revenue",
+      value: formatAnalyticsMoney(analytics.estimatedBusinessRevenue),
+      helper: "Prepared 90% business earnings estimate",
+      tone: "green",
+    },
+  ];
+
+  return (
+    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Marketplace revenue
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Financial and operational insight
+          </h2>
+          <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-600">
+            These are pilot estimates from existing orders. They prepare the
+            admin view for a future commission model without connecting real
+            payment providers.
+          </p>
+        </div>
+
+        <div className="rounded-3xl bg-green-50 p-4 text-sm font-semibold leading-6 text-green-900 lg:max-w-sm">
+          <p className="font-black">Future commission model</p>
+          <p className="mt-1">
+            Current architecture prepares 10% platform revenue and 90% business
+            revenue per paid reservation.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <KpiCardGrid cards={cards} />
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <MiniBarChart
+          title="Reservations over time"
+          description="Reservation volume by recent order creation date."
+          data={analytics.reservationsOverTime}
+        />
+        <MiniBarChart
+          title="Revenue over time"
+          description="Estimated gross reservation value by date."
+          data={analytics.revenueOverTime}
+          valuePrefix="₾ "
+        />
+        <MiniBarChart
+          title="Offer popularity"
+          description="Top offers by total reservations."
+          data={analytics.offerPopularity}
+        />
+      </div>
+    </section>
   );
 }
 
