@@ -3,6 +3,7 @@ import {
   DEFAULT_OFFER_CATEGORY,
   OFFER_CATEGORIES,
   normalizeOfferCategory,
+  type OfferCategory,
 } from "@/lib/offerCategories";
 import {
   formatDisplayDateTime,
@@ -14,7 +15,7 @@ import {
   getRatingLabel,
   type RatingSummary,
 } from "@/lib/offerLifecycle";
-import type { Language } from "@/lib/i18n";
+import type { Language, TranslationKey } from "@/lib/i18n";
 import type { Offer } from "@/lib/types";
 
 type OfferListProps = {
@@ -25,7 +26,7 @@ type OfferListProps = {
   editingOfferId: number | null;
   updatingOfferId: number | null;
   editTitle: string;
-  editCategory: string;
+  editCategory: OfferCategory;
   editPrice: string;
   editOldPrice: string;
   editQuantity: string;
@@ -39,7 +40,7 @@ type OfferListProps = {
   onDelete: (offer: Offer) => void;
   onSaveEdits: (offer: Offer) => void;
   onEditTitleChange: (value: string) => void;
-  onEditCategoryChange: (value: string) => void;
+  onEditCategoryChange: (value: OfferCategory) => void;
   onEditPriceChange: (value: string) => void;
   onEditOldPriceChange: (value: string) => void;
   onEditQuantityChange: (value: string) => void;

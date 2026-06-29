@@ -2,7 +2,7 @@
 
 import { RouteErrorState } from "@/components/RouteErrorState";
 
-export default function ErrorPage({
+export default function BusinessDashboardError({
   error,
   reset,
 }: {
@@ -13,9 +13,9 @@ export default function ErrorPage({
     <RouteErrorState
       error={error}
       reset={reset}
-      route="app"
-      title="Something went wrong"
-      description="Please try again. If this keeps happening, contact support with the page you were using."
+      route="/business/dashboard"
+      title="Business dashboard could not load"
+      description="Your business tools hit a temporary problem. Try again to reload offers, reservations and ratings."
     />
   );
 }

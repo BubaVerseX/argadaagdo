@@ -1,6 +1,6 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
 import { getBusinessTimelineSteps, type ReservationFilter } from "@/lib/business/dashboard";
-import type { Language } from "@/lib/i18n";
+import type { Language, TranslationKey } from "@/lib/i18n";
 import {
   formatDisplayDateTime,
   formatMoney,

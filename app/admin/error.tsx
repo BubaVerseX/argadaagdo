@@ -2,7 +2,7 @@
 
 import { RouteErrorState } from "@/components/RouteErrorState";
 
-export default function ErrorPage({
+export default function AdminError({
   error,
   reset,
 }: {
@@ -13,9 +13,9 @@ export default function ErrorPage({
     <RouteErrorState
       error={error}
       reset={reset}
-      route="app"
-      title="Something went wrong"
-      description="Please try again. If this keeps happening, contact support with the page you were using."
+      route="/admin"
+      title="Admin dashboard could not load"
+      description="Marketplace operations could not be displayed. Try again to reload approval and health data."
     />
   );
 }

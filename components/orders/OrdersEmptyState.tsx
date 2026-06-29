@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { TranslationKey } from "@/lib/i18n";
 
 type OrdersEmptyStateProps = {
   t: (key: TranslationKey) => string;

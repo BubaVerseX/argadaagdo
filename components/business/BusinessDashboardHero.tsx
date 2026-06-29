@@ -1,3 +1,5 @@
+import type { TranslationKey } from "@/lib/i18n";
+
 type BusinessDashboardHeroProps = {
   t: (key: TranslationKey) => string;
   businessName: string;

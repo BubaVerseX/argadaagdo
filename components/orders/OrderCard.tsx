@@ -18,7 +18,7 @@ import {
   getCustomerTimelineSteps,
   getPickupReminderMessage,
 } from "@/lib/orders";
-import type { Language } from "@/lib/i18n";
+import type { Language, TranslationKey } from "@/lib/i18n";
 import type { Order } from "@/lib/types";
 
 type OrderCardProps = {

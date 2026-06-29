@@ -2,7 +2,9 @@ import { RequiredMark } from "@/components/RequiredMark";
 import {
   OFFER_CATEGORIES,
   normalizeOfferCategory,
+  type OfferCategory,
 } from "@/lib/offerCategories";
+import type { TranslationKey } from "@/lib/i18n";
 import { getTbilisiDateKey } from "@/lib/offerLifecycle";
 import type { Business } from "@/lib/types";
 import type { ChangeEvent } from "react";
@@ -20,7 +22,7 @@ type OfferFormProps = {
   businessId: string;
   title: string;
   description: string;
-  category: string;
+  category: OfferCategory;
   price: string;
   oldPrice: string;
   quantity: string;
@@ -33,7 +35,7 @@ type OfferFormProps = {
   onBusinessIdChange: (value: string) => void;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
-  onCategoryChange: (value: string) => void;
+  onCategoryChange: (value: OfferCategory) => void;
   onPriceChange: (value: string) => void;
   onOldPriceChange: (value: string) => void;
   onQuantityChange: (value: string) => void;

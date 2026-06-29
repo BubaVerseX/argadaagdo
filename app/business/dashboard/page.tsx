@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { LoadingState } from "@/components/LoadingState";
 import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
@@ -41,9 +42,11 @@ import {
 import {
   getEffectiveOfferStatus,
   getTbilisiDateKey,
+  hasPickupWindowStarted,
   isOrderPastPickupEnd,
   type RatingSummary,
 } from "@/lib/offerLifecycle";
+import { logAppError } from "@/lib/errors";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
@@ -157,6 +160,10 @@ export default function BusinessDashboardPage() {
       .order("id", { ascending: false });
 
     if (businessError) {
+      logAppError("Business dashboard failed to load businesses", businessError, {
+        operation: "load_businesses",
+        userId,
+      });
       setMessageTone("error");
       setMessage("Your business information could not be loaded.");
       setLoading(false);
@@ -232,9 +239,19 @@ export default function BusinessDashboardPage() {
     ]);
 
     setRatingSummaries(summaries);
+    if (reviewError) {
+      logAppError("Business dashboard failed to load reviews", reviewError, {
+        operation: "load_business_reviews",
+        businessIds,
+      });
+    }
     setReviews(reviewError ? [] : ((myReviews || []) as Rating[]));
 
     if (offerError) {
+      logAppError("Business dashboard failed to load offers", offerError, {
+        operation: "load_business_offers",
+        businessIds,
+      });
       setMessageTone("error");
       setMessage("Your offers could not be loaded.");
       setLoading(false);
@@ -259,6 +276,10 @@ export default function BusinessDashboardPage() {
         .order("id", { ascending: false });
 
       if (orderError) {
+        logAppError("Business dashboard failed to load reservations", orderError, {
+          operation: "load_business_reservations",
+          offerIds,
+        });
         setMessageTone("error");
         setMessage("Reservations could not be loaded.");
         setLoading(false);
@@ -379,6 +400,10 @@ export default function BusinessDashboardPage() {
       .maybeSingle();
 
     if (error || !data) {
+      logAppError("Business profile update failed", error || "No business row returned", {
+        operation: "update_business_profile",
+        businessId: currentBusiness.id,
+      });
       setSavingProfile(false);
       setMessageTone("error");
       setMessage(
@@ -432,6 +457,12 @@ export default function BusinessDashboardPage() {
       });
 
     if (error) {
+      logAppError("Offer image upload failed", error, {
+        operation: "upload_offer_image",
+        fileName,
+        size: imageFile.size,
+        type: imageFile.type,
+      });
       setMessageTone("error");
       setMessage("Image upload failed. Please try a smaller JPG, PNG, or WebP file.");
       return null;
@@ -566,6 +597,10 @@ export default function BusinessDashboardPage() {
     });
 
     if (error) {
+      logAppError("Offer creation failed", error, {
+        operation: "create_offer",
+        businessId: selectedBusinessId,
+      });
       setPublishing(false);
       setMessageTone("error");
       setMessage(
@@ -704,6 +739,10 @@ export default function BusinessDashboardPage() {
       .maybeSingle();
 
     if (error) {
+      logAppError("Offer edit failed", error, {
+        operation: "update_offer",
+        offerId: offer.id,
+      });
       setUpdatingOfferId(null);
       setMessageTone("error");
       setMessage("Offer changes could not be saved. Please try again.");
@@ -765,6 +804,10 @@ export default function BusinessDashboardPage() {
       .maybeSingle();
 
     if (error) {
+      logAppError("Offer status update failed", error, {
+        operation: "toggle_offer_active",
+        offerId: offer.id,
+      });
       setUpdatingOfferId(null);
       setMessageTone("error");
       setMessage("Offer status could not be updated. Please try again.");
@@ -820,6 +863,10 @@ export default function BusinessDashboardPage() {
     setUpdatingOfferId(null);
 
     if (error) {
+      logAppError("Offer duplication failed", error, {
+        operation: "duplicate_offer",
+        offerId: offer.id,
+      });
       setMessageTone("error");
       setMessage("Offer could not be duplicated. Please try again.");
       return;
@@ -858,6 +905,10 @@ export default function BusinessDashboardPage() {
     setUpdatingOfferId(null);
 
     if (error) {
+      logAppError("Expired offer archive failed", error, {
+        operation: "archive_expired_offer",
+        offerId: offer.id,
+      });
       setMessageTone("error");
       setMessage("Expired offer could not be archived. Please try again.");
       return;
@@ -894,6 +945,10 @@ export default function BusinessDashboardPage() {
       .maybeSingle();
 
     if (error) {
+      logAppError("Offer deletion failed", error, {
+        operation: "delete_offer",
+        offerId: offer.id,
+      });
       setUpdatingOfferId(null);
       setMessageTone("error");
       setMessage(
@@ -942,6 +997,10 @@ export default function BusinessDashboardPage() {
     });
 
     if (error) {
+      logAppError("Pickup completion failed", error, {
+        operation: "complete_pickup",
+        orderId,
+      });
       setUpdatingOrderId(null);
       setMessageTone("error");
       setMessage("Pickup could not be completed. Please check the pickup code and try again.");
@@ -1015,6 +1074,10 @@ export default function BusinessDashboardPage() {
     });
 
     if (error) {
+      logAppError("No-show marking failed", error, {
+        operation: "mark_order_no_show",
+        orderId: order.id,
+      });
       setMessageTone("error");
       setMessage("Order could not be marked no-show. Please try again.");
       setUpdatingOrderId(null);
@@ -1094,6 +1157,9 @@ export default function BusinessDashboardPage() {
     (offer) =>
       Number(offer.quantity || 0) > 0 && Number(offer.quantity || 0) <= 2
   );
+  const inactiveOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "inactive"
+  );
   const totalReviews = reviews.length;
   const averageRating =
     totalReviews > 0
@@ -1148,6 +1214,12 @@ export default function BusinessDashboardPage() {
     (order) =>
       order.offers?.pickup_date === todayDateKey &&
       isConfirmedOrderStatus(order.status)
+  );
+  const offersExpiringToday = activeOffers.filter(
+    (offer) => offer.pickup_date === todayDateKey
+  );
+  const reservationsWithStartedPickupWindow = todaysActiveReservations.filter(
+    (order) => hasPickupWindowStarted(order.offers)
   );
   const hasAnalyticsActivity =
     offers.length > 0 || orders.length > 0 || totalReviews > 0;
@@ -1258,6 +1330,34 @@ export default function BusinessDashboardPage() {
             className: "border-green-100 bg-green-50 text-green-900",
           },
         ]
+      : [
+          {
+            title: "No active reservations",
+            text: "New reservations will appear here when customers reserve your offers.",
+            className: "border-gray-100 bg-gray-50 text-gray-800",
+          },
+        ]),
+    ...(offersExpiringToday.length > 0
+      ? [
+          {
+            title: "Offer expires today",
+            text: `${offersExpiringToday.length} active offer ${
+              offersExpiringToday.length === 1 ? "ends" : "end"
+            } today. Unsold quantity should stay as same-day inventory.`,
+            className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+          },
+        ]
+      : []),
+    ...(reservationsWithStartedPickupWindow.length > 0
+      ? [
+          {
+            title: "Pickup window started",
+            text: `${reservationsWithStartedPickupWindow.length} reservation ${
+              reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
+            } inside the pickup window now.`,
+            className: "border-green-100 bg-green-50 text-green-900",
+          },
+        ]
       : []),
     ...(todaysActiveReservations.length > 0
       ? [
@@ -1279,11 +1379,22 @@ export default function BusinessDashboardPage() {
     ...(nearlySoldOutOffers.length > 0
       ? [
           {
-            title: "Offer nearly sold out",
+            title: "Low quantity",
             text: `${nearlySoldOutOffers.length} active offer ${
               nearlySoldOutOffers.length === 1 ? "has" : "have"
             } 2 or fewer boxes left.`,
             className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+          },
+        ]
+      : []),
+    ...(inactiveOffers.length > 0
+      ? [
+          {
+            title: "Inactive offers",
+            text: `${inactiveOffers.length} offer ${
+              inactiveOffers.length === 1 ? "is" : "are"
+            } hidden from public browsing.`,
+            className: "border-gray-100 bg-gray-50 text-gray-800",
           },
         ]
       : []),
@@ -1322,7 +1433,10 @@ export default function BusinessDashboardPage() {
       <main className="min-h-screen bg-[#F7F6EF]">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
-          <div className="h-60 animate-pulse rounded-3xl bg-white" />
+          <LoadingState
+            title="Loading business dashboard..."
+            description="Preparing offers, reservations, pickup tasks and ratings."
+          />
         </section>
       </main>
     );

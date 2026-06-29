@@ -1,4 +1,4 @@
-import type { Language } from "@/lib/i18n";
+import type { Language, TranslationKey } from "@/lib/i18n";
 import { formatPickupWindow } from "@/lib/offerLifecycle";
 import type { Order } from "@/lib/types";
 

@@ -1,3 +1,5 @@
+import { logger } from "@/lib/logger";
+
 export const ARGADAAGDO_NOTIFICATION_EVENT = "argadaagdo:notification";
 
 type NotificationMetadata = Record<
@@ -78,10 +80,11 @@ export function dispatchNotification(
   }
 
   if (process.env.NODE_ENV === "development") {
-    console.info(
-      "[ArGadaagdo notification placeholder]",
-      preparedNotification
-    );
+    logger.debug("Notification placeholder dispatched", {
+      event: preparedNotification.event,
+      title: preparedNotification.title,
+      metadata: preparedNotification.metadata,
+    });
   }
 
   return preparedNotification;

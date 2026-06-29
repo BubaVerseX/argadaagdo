@@ -135,8 +135,14 @@ export function getOfferEndKey(
   )}`;
 }
 
-export function getOfferStartKey(offer: OfferTiming) {
-  return `${getOfferDateKey(offer)}T${normalizeTime(offer.pickup_start, "00:00")}`;
+export function getOfferStartKey(
+  offer: OfferTiming,
+  fallbackDate?: string | null
+) {
+  return `${getOfferDateKey(offer, fallbackDate)}T${normalizeTime(
+    offer.pickup_start,
+    "00:00"
+  )}`;
 }
 
 export function getEffectiveOfferStatus(offer: Offer): OfferLifecycleStatus {
@@ -217,6 +223,14 @@ export function isOrderPastPickupEnd(
 ) {
   if (!offer) return false;
   return getOfferEndKey(offer, fallbackDate) < getTbilisiDateTimeKey();
+}
+
+export function hasPickupWindowStarted(
+  offer: OfferTiming | null | undefined,
+  fallbackDate?: string | null
+) {
+  if (!offer) return false;
+  return getOfferStartKey(offer, fallbackDate) <= getTbilisiDateTimeKey();
 }
 
 export function getRatingLabel(

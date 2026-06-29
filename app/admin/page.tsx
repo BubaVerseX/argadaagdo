@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { LoadingState } from "@/components/LoadingState";
 import {
   AdminAccountView,
   AdminHealthSections,
@@ -14,13 +15,22 @@ import {
   type AdminBusiness,
 } from "@/components/admin/AdminSections";
 import { getConfirmedProfile } from "@/lib/auth";
+import {
+  checkApplicationHealth,
+  type ApplicationHealthItem,
+} from "@/lib/diagnostics";
+import { logAppError } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
   formatMoney,
   getEffectiveOfferStatus,
+  getTbilisiDateKey,
 } from "@/lib/offerLifecycle";
 import { notifyBusinessApproved } from "@/lib/notifications";
-import { isCollectedOrderStatus } from "@/lib/orderStatus";
+import {
+  isCollectedOrderStatus,
+  isConfirmedOrderStatus,
+} from "@/lib/orderStatus";
 import { calculatePaymentPreparationSummary } from "@/lib/paymentArchitecture";
 import { supabase } from "@/lib/supabase";
 import type { Offer, Order, Profile } from "@/lib/types";
@@ -40,6 +50,9 @@ export default function AdminPage() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [applicationHealth, setApplicationHealth] = useState<
+    ApplicationHealthItem[]
+  >([]);
   const [totalRatings, setTotalRatings] = useState(0);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
@@ -102,6 +115,17 @@ export default function AdminPage() {
       profilesResult.error ||
       ratingsResult.error
     ) {
+      logAppError(
+        "Admin dashboard failed to load marketplace data",
+        businessResult.error ||
+          offerResult.error ||
+          orderResult.error ||
+          profilesResult.error ||
+          ratingsResult.error,
+        {
+          operation: "load_admin_dashboard",
+        }
+      );
       setMessageTone("error");
       setMessage(
         "Admin data could not be loaded. Check that your admin database policies allow this view."
@@ -115,6 +139,7 @@ export default function AdminPage() {
     setOrders((orderResult.data || []) as Order[]);
     setProfiles((profilesResult.data || []) as Profile[]);
     setTotalRatings(ratingsResult.count || 0);
+    setApplicationHealth(await checkApplicationHealth());
     setRealtimeReady(true);
     setLoading(false);
   }, [router]);
@@ -136,6 +161,10 @@ export default function AdminPage() {
       .eq("id", id);
 
     if (error) {
+      logAppError("Business approval failed", error, {
+        operation: "approve_business",
+        businessId: id,
+      });
       setUpdatingBusinessId(null);
       setMessageTone("error");
       setMessage("Business could not be approved. Please try again.");
@@ -159,6 +188,10 @@ export default function AdminPage() {
       .eq("id", id);
 
     if (error) {
+      logAppError("Business status update failed", error, {
+        operation: "move_business_to_pending",
+        businessId: id,
+      });
       setUpdatingBusinessId(null);
       setMessageTone("error");
       setMessage("Business status could not be updated. Please try again.");
@@ -231,6 +264,9 @@ export default function AdminPage() {
     (offer) => getEffectiveOfferStatus(offer) === "inactive"
   );
   const reservedOrders = orders.filter((order) => order.status === "reserved");
+  const activeReservationOrders = orders.filter((order) =>
+    isConfirmedOrderStatus(order.status)
+  );
   const completedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
   );
@@ -449,6 +485,67 @@ export default function AdminPage() {
   ];
   const paymentPreparationSummary =
     calculatePaymentPreparationSummary(orders);
+  const todayDateKey = getTbilisiDateKey();
+  const todayOfferIds = new Set(
+    offers
+      .filter((offer) => offer.pickup_date === todayDateKey)
+      .map((offer) => offer.id)
+  );
+  const todayReservations = orders.filter((order) =>
+    todayOfferIds.has(order.offer_id)
+  );
+  const todayPickups = todayReservations.filter((order) =>
+    isCollectedOrderStatus(order.status)
+  );
+  const businessIdsWithOffers = new Set(offers.map((offer) => offer.business_id));
+  const businessesWithZeroOffers = businesses.filter(
+    (business) => !businessIdsWithOffers.has(business.id)
+  );
+  const customersWithActiveReservations = new Set(
+    activeReservationOrders
+      .map((order) => order.user_id)
+      .filter((userId): userId is string => Boolean(userId))
+  );
+  const marketplaceOperations = [
+    {
+      title: "Pending businesses",
+      value: pendingBusinesses.length,
+      tone: pendingBusinesses.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Active offers",
+      value: activeOffers.length,
+      tone: activeOffers.length > 0 ? ("green" as const) : undefined,
+    },
+    {
+      title: "Today's reservations",
+      value: todayReservations.length,
+      tone: todayReservations.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Today's pickups",
+      value: todayPickups.length,
+      tone: todayPickups.length > 0 ? ("green" as const) : undefined,
+    },
+    {
+      title: "Expired offers",
+      value: expiredOffers.length,
+      tone: expiredOffers.length > 0 ? ("red" as const) : undefined,
+    },
+    {
+      title: "Businesses with zero offers",
+      value: businessesWithZeroOffers.length,
+      tone: businessesWithZeroOffers.length > 0 ? ("yellow" as const) : undefined,
+    },
+    {
+      title: "Customers with active reservations",
+      value: customersWithActiveReservations.size,
+      tone:
+        customersWithActiveReservations.size > 0
+          ? ("green" as const)
+          : undefined,
+    },
+  ];
   const paymentOverview = [
     {
       title: "Paid reservations",
@@ -495,7 +592,10 @@ export default function AdminPage() {
       <main className="min-h-screen bg-[#F7F6EF]">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
-          <div className="h-56 animate-pulse rounded-3xl bg-white" />
+          <LoadingState
+            title="Loading admin dashboard..."
+            description="Checking businesses, offers, orders and marketplace health."
+          />
         </section>
       </main>
     );
@@ -519,8 +619,10 @@ export default function AdminPage() {
         <AdminHealthSections
           t={t}
           marketplaceHealth={marketplaceHealth}
+          marketplaceOperations={marketplaceOperations}
           operationalStats={operationalStats}
           customerReliabilityStats={customerReliabilityStats}
+          applicationHealth={applicationHealth}
         />
 
         <AdminPaymentPreparation metrics={paymentOverview} />

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
 import type { Profile } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
 
@@ -46,7 +47,7 @@ export function isEmailConfirmed(user: User | null | undefined) {
     process.env.NODE_ENV === "development"
   ) {
     warnedMissingEmailConfirmationFields = true;
-    console.warn(
+    logger.warn(
       "Supabase user object did not expose email confirmation fields. Treating user as unverified."
     );
   }

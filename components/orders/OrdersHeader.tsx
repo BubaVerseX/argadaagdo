@@ -1,4 +1,5 @@
 import StatCard from "@/components/StatCard";
+import type { TranslationKey } from "@/lib/i18n";
 import type { Profile } from "@/lib/types";
 
 type OrdersHeaderProps = {

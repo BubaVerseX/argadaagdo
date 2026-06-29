@@ -2,6 +2,7 @@ import {
   metricToneStyles,
   type MetricTone,
 } from "@/lib/business/dashboard";
+import type { TranslationKey } from "@/lib/i18n";
 
 type BusinessMetric = {
   title: string;

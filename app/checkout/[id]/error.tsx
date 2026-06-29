@@ -2,7 +2,7 @@
 
 import { RouteErrorState } from "@/components/RouteErrorState";
 
-export default function ErrorPage({
+export default function CheckoutError({
   error,
   reset,
 }: {
@@ -13,9 +13,9 @@ export default function ErrorPage({
     <RouteErrorState
       error={error}
       reset={reset}
-      route="app"
-      title="Something went wrong"
-      description="Please try again. If this keeps happening, contact support with the page you were using."
+      route="/checkout/[id]"
+      title="Checkout could not load"
+      description="Your reservation step could not be prepared. Try again before reserving the offer."
     />
   );
 }

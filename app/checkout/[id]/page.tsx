@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { LoadingState } from "@/components/LoadingState";
 import OfferImage from "@/components/OfferImage";
 import {
   getConfirmedUser,
@@ -327,11 +328,11 @@ export default function CheckoutPage() {
           )}
 
           {loading && (
-            <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
-              <p className="font-semibold text-gray-600">
-                {t("common.loading")}
-              </p>
-            </div>
+            <LoadingState
+              className="mt-8"
+              title={t("common.loading")}
+              description="Loading the offer summary and pickup details."
+            />
           )}
 
           {!loading && offer && (

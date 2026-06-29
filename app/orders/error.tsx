@@ -2,7 +2,7 @@
 
 import { RouteErrorState } from "@/components/RouteErrorState";
 
-export default function ErrorPage({
+export default function OrdersError({
   error,
   reset,
 }: {
@@ -13,9 +13,9 @@ export default function ErrorPage({
     <RouteErrorState
       error={error}
       reset={reset}
-      route="app"
-      title="Something went wrong"
-      description="Please try again. If this keeps happening, contact support with the page you were using."
+      route="/orders"
+      title="Orders could not load"
+      description="Your reservations could not be displayed. Try again to reload pickup codes and order history."
     />
   );
 }

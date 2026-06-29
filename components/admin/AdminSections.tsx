@@ -1,6 +1,10 @@
 import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import StatCard from "@/components/StatCard";
-import type { Language } from "@/lib/i18n";
+import {
+  getApplicationHealthStatusLabel,
+  type ApplicationHealthItem,
+} from "@/lib/diagnostics";
+import type { Language, TranslationKey } from "@/lib/i18n";
 import { formatDisplayDateTime } from "@/lib/offerLifecycle";
 import {
   adminPaymentPanelSections,
@@ -23,7 +27,7 @@ type MetricCard = {
 
 type BarMetric = {
   title: string;
-  value: number | string;
+  value: number;
   caption: string;
   percentage: number;
   tone: "green" | "yellow" | "red";
@@ -86,14 +90,24 @@ export function AdminMarketplaceOverview({
 export function AdminHealthSections({
   t,
   marketplaceHealth,
+  marketplaceOperations,
   operationalStats,
   customerReliabilityStats,
+  applicationHealth,
 }: {
   t: (key: TranslationKey) => string;
   marketplaceHealth: BarMetric[];
+  marketplaceOperations: SimpleStat[];
   operationalStats: SimpleStat[];
   customerReliabilityStats: SimpleStat[];
+  applicationHealth: ApplicationHealthItem[];
 }) {
+  const healthToneStyles = {
+    ok: "border-green-100 bg-green-50 text-green-900",
+    warning: "border-yellow-100 bg-yellow-50 text-yellow-950",
+    error: "border-red-100 bg-red-50 text-red-800",
+  };
+
   return (
     <>
       <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
@@ -134,6 +148,68 @@ export function AdminHealthSections({
               <AnalyticsBarCard key={metric.title} {...metric} />
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              Marketplace operations
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              Pilot health checklist
+            </h2>
+          </div>
+
+          <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+            Fast counts for approvals, today&apos;s reservations, pickups, expired
+            offers and active customer demand.
+          </p>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+          {marketplaceOperations.map((stat) => (
+            <StatCard key={stat.title} {...stat} />
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              Application health
+            </p>
+            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              Runtime diagnostics
+            </h2>
+          </div>
+
+          <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+            Lightweight checks for environment variables, Supabase, Storage,
+            Realtime and the deployed build identifier.
+          </p>
+        </div>
+
+        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          {applicationHealth.map((item) => (
+            <div
+              key={item.title}
+              className={`rounded-2xl border p-4 ${healthToneStyles[item.status]}`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-black">{item.title}</p>
+                <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-black uppercase tracking-wide">
+                  {getApplicationHealthStatusLabel(item.status)}
+                </span>
+              </div>
+              <p className="mt-3 text-2xl font-black">{item.value}</p>
+              <p className="mt-2 text-sm font-semibold leading-6">
+                {item.detail}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 

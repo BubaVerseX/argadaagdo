@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { LoadingState } from "@/components/LoadingState";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { OrdersEmptyState } from "@/components/orders/OrdersEmptyState";
 import { OrdersHeader } from "@/components/orders/OrdersHeader";
@@ -315,9 +316,11 @@ export default function OrdersPage() {
         )}
 
         {loading && (
-          <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
-            <p className="font-semibold text-gray-600">{t("orders.loading")}</p>
-          </div>
+          <LoadingState
+            className="mt-8"
+            title={t("orders.loading")}
+            description="Preparing your reservations, pickup codes and order history."
+          />
         )}
 
         {!loading && orders.length === 0 && <OrdersEmptyState t={t} />}
