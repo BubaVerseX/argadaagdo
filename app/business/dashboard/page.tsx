@@ -9,6 +9,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
+import { BusinessIntelligencePanel } from "@/components/business/BusinessIntelligencePanel";
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
 import { BusinessPromotionToolkit } from "@/components/growth/BusinessPromotionToolkit";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
@@ -38,6 +39,12 @@ import {
   type ReservationFilter,
 } from "@/lib/business/dashboard";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import {
+  buildBusinessDailySummary,
+  buildBusinessRecommendations,
+  buildBusinessWeeklySummary,
+  buildOfferIntelligence,
+} from "@/lib/marketplaceIntelligence";
 import {
   notifyOfferPublished,
   notifyPickupCompleted,
@@ -74,7 +81,7 @@ type DashboardOfferFilter =
   | "all"
   | "active"
   | "inactive"
-  | "expired"
+  | "archive"
   | "sold_out";
 
 const DASHBOARD_OFFER_PAGE_SIZE = 8;
@@ -130,7 +137,7 @@ export default function BusinessDashboardPage() {
   const [reservationPage, setReservationPage] = useState(1);
   const [offerManagementSearch, setOfferManagementSearch] = useState("");
   const [offerManagementFilter, setOfferManagementFilter] =
-    useState<DashboardOfferFilter>("all");
+    useState<DashboardOfferFilter>("active");
   const [offerManagementPage, setOfferManagementPage] = useState(1);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState(DEFAULT_OFFER_CATEGORY);
@@ -1250,6 +1257,13 @@ export default function BusinessDashboardPage() {
     orders,
     reviews,
   });
+  const offerIntelligenceById = buildOfferIntelligence(offers, orders);
+  const businessRecommendations = buildBusinessRecommendations(
+    offers,
+    offerIntelligenceById
+  );
+  const dailySummary = buildBusinessDailySummary({ offers, orders });
+  const weeklySummary = buildBusinessWeeklySummary({ orders, reviews });
   const onboardingChecklist = [
     {
       step: 1,
@@ -1526,7 +1540,9 @@ export default function BusinessDashboardPage() {
   const filteredManagedOffers = offers.filter((offer) => {
     const effectiveStatus = getEffectiveOfferStatus(offer);
     const matchesStatus =
-      offerManagementFilter === "all" || effectiveStatus === offerManagementFilter;
+      offerManagementFilter === "all" ||
+      (offerManagementFilter === "archive" && effectiveStatus === "expired") ||
+      effectiveStatus === offerManagementFilter;
     const searchText =
       `${offer.title} ${offer.category} ${offer.businesses?.name}`.toLowerCase();
     const matchesSearch =
@@ -1703,6 +1719,12 @@ export default function BusinessDashboardPage() {
           onExportOfferStatistics={exportOfferStatisticsCsv}
         />
 
+        <BusinessIntelligencePanel
+          dailySummary={dailySummary}
+          weeklySummary={weeklySummary}
+          recommendations={businessRecommendations}
+        />
+
         <BusinessPromotionToolkit />
 
         {!canCreateOffers && (
@@ -1779,7 +1801,7 @@ export default function BusinessDashboardPage() {
             <option value="all">All offers</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
-            <option value="expired">Expired</option>
+            <option value="archive">Archive</option>
             <option value="sold_out">Sold out</option>
           </select>
         </FilterBar>
@@ -1798,6 +1820,7 @@ export default function BusinessDashboardPage() {
           }
           ratingSummaries={ratingSummaries}
           offerAnalyticsById={businessAnalytics.offerAnalyticsById}
+          offerIntelligenceById={offerIntelligenceById}
           editingOfferId={editingOfferId}
           updatingOfferId={updatingOfferId}
           editTitle={editTitle}

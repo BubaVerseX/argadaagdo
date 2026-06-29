@@ -1,5 +1,6 @@
 import OfferImage from "@/components/OfferImage";
 import { formatAnalyticsMoney, type OfferAnalytics } from "@/lib/analytics";
+import type { OfferIntelligence } from "@/lib/marketplaceIntelligence";
 import {
   DEFAULT_OFFER_CATEGORY,
   OFFER_CATEGORIES,
@@ -27,6 +28,7 @@ type OfferListProps = {
   emptyText?: string;
   ratingSummaries: Record<number, RatingSummary>;
   offerAnalyticsById?: Record<number, OfferAnalytics>;
+  offerIntelligenceById?: Record<number, OfferIntelligence>;
   editingOfferId: number | null;
   updatingOfferId: number | null;
   editTitle: string;
@@ -60,6 +62,7 @@ export function OfferList({
   emptyText,
   ratingSummaries,
   offerAnalyticsById = {},
+  offerIntelligenceById = {},
   editingOfferId,
   updatingOfferId,
   editTitle,
@@ -84,6 +87,24 @@ export function OfferList({
   onEditPickupStartChange,
   onEditPickupEndChange,
 }: OfferListProps) {
+  const badgeToneStyles: Record<
+    OfferIntelligence["badges"][number]["tone"],
+    string
+  > = {
+    green: "bg-green-100 text-green-800",
+    yellow: "bg-yellow-100 text-yellow-900",
+    red: "bg-red-100 text-red-800",
+    gray: "bg-gray-100 text-gray-700",
+  };
+  const recommendationToneStyles: Record<
+    OfferIntelligence["recommendations"][number]["tone"],
+    string
+  > = {
+    green: "bg-green-50 text-green-900",
+    yellow: "bg-yellow-50 text-yellow-950",
+    red: "bg-red-50 text-red-800",
+  };
+
   return (
     <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -121,6 +142,7 @@ export function OfferList({
           const statusClass = getOfferStatusClassName(offer);
           const rating = ratingSummaries[offer.business_id];
           const analytics = offerAnalyticsById[offer.id];
+          const intelligence = offerIntelligenceById[offer.id];
           const isEditing = editingOfferId === offer.id;
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
@@ -158,6 +180,18 @@ export function OfferList({
                       {t("businessDashboard.created")}:{" "}
                       {formatDisplayDateTime(offer.created_at, language)}
                     </p>
+                    {intelligence && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {intelligence.badges.map((badge) => (
+                          <span
+                            key={badge.label}
+                            className={`rounded-full px-3 py-1 text-xs font-black ${badgeToneStyles[badge.tone]}`}
+                          >
+                            {badge.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -196,7 +230,11 @@ export function OfferList({
                     disabled={updatingOfferId !== null}
                     className="min-h-12 rounded-full border border-green-200 bg-white px-5 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {updatingOfferId === offer.id ? "Working..." : "Duplicate"}
+                    {updatingOfferId === offer.id
+                      ? "Working..."
+                      : effectiveStatus === "expired"
+                      ? "Create Similar Offer"
+                      : "Duplicate Offer"}
                   </button>
 
                   {effectiveStatus === "expired" && (
@@ -256,6 +294,54 @@ export function OfferList({
                       </p>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {intelligence && (
+                <div className="grid gap-3 rounded-2xl bg-green-50 p-4 lg:grid-cols-[0.9fr_1.1fr]">
+                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    {[
+                      {
+                        label: "Pickup timing",
+                        value: intelligence.timeUntilPickup,
+                      },
+                      {
+                        label: "Reserved",
+                        value: `${intelligence.reservationPercentage}%`,
+                      },
+                      {
+                        label: "Sell-out chance",
+                        value: `${intelligence.sellOutProbability}%`,
+                      },
+                      {
+                        label: "Speed",
+                        value: intelligence.reservationSpeed,
+                      },
+                    ].map((item) => (
+                      <div key={item.label} className="rounded-2xl bg-white p-4">
+                        <p className="text-xs font-black uppercase tracking-wide text-green-700">
+                          {item.label}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-gray-950">
+                          {item.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-2">
+                    {intelligence.recommendations.map((recommendation) => (
+                      <div
+                        key={`${offer.id}-${recommendation.title}`}
+                        className={`rounded-2xl p-4 ${recommendationToneStyles[recommendation.tone]}`}
+                      >
+                        <p className="font-black">{recommendation.title}</p>
+                        <p className="mt-1 text-sm font-semibold leading-6 opacity-80">
+                          {recommendation.text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 

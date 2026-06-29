@@ -10,6 +10,7 @@ import {
   AdminAccountView,
   AdminHealthSections,
   AdminHero,
+  AdminMarketplaceIntelligence,
   AdminMarketplaceOverview,
   AdminOperationalDashboard,
   AdminRevenueInsights,
@@ -32,6 +33,7 @@ import {
   formatMoney,
   getEffectiveOfferStatus,
   getTbilisiDateKey,
+  getTbilisiDateKeyFromValue,
 } from "@/lib/offerLifecycle";
 import { notifyBusinessApproved } from "@/lib/notifications";
 import {
@@ -637,6 +639,9 @@ export default function AdminPage() {
     ADMIN_LIST_PAGE_SIZE
   );
   const todayDateKey = getTbilisiDateKey();
+  const offersCreatedToday = offers.filter(
+    (offer) => getTbilisiDateKeyFromValue(offer.created_at) === todayDateKey
+  );
   const todayOfferIds = new Set(
     offers
       .filter((offer) => offer.pickup_date === todayDateKey)
@@ -666,6 +671,34 @@ export default function AdminPage() {
   );
   const offersWithZeroReservations = offers.filter(
     (offer) => !offerIdsWithReservations.has(offer.id)
+  );
+  const offerBusinessIdById = new Map(
+    offers.map((offer) => [offer.id, offer.business_id])
+  );
+  const reservationsByBusinessId = orders.reduce<Record<number, number>>(
+    (activityMap, order) => {
+      const ownerBusinessId = offerBusinessIdById.get(order.offer_id);
+      if (!ownerBusinessId) return activityMap;
+      activityMap[ownerBusinessId] = (activityMap[ownerBusinessId] || 0) + 1;
+      return activityMap;
+    },
+    {}
+  );
+  const rankedBusinessActivity = approvedBusinesses
+    .map((business) => ({
+      business,
+      reservations: reservationsByBusinessId[business.id] || 0,
+    }))
+    .sort((first, second) => second.reservations - first.reservations);
+  const mostActiveBusiness = rankedBusinessActivity[0];
+  const leastActiveBusiness =
+    rankedBusinessActivity.length > 0
+      ? [...rankedBusinessActivity].sort(
+          (first, second) => first.reservations - second.reservations
+        )[0]
+      : null;
+  const businessesWithoutReservations = approvedBusinesses.filter(
+    (business) => (reservationsByBusinessId[business.id] || 0) === 0
   );
   const businessesNeedingAttention = new Set([
     ...pendingBusinesses.map((business) => business.id),
@@ -856,6 +889,52 @@ export default function AdminPage() {
       className: "bg-[#F7F6EF] text-gray-900",
     },
   ];
+  const marketplaceIntelligenceMetrics = [
+    {
+      title: "Most active business",
+      value: mostActiveBusiness
+        ? mostActiveBusiness.business.name
+        : "Not enough data",
+      helper: mostActiveBusiness
+        ? `${mostActiveBusiness.reservations} total reservations`
+        : "Reservations will identify the strongest active partner.",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Least active business",
+      value: leastActiveBusiness
+        ? leastActiveBusiness.business.name
+        : "Not enough data",
+      helper: leastActiveBusiness
+        ? `${leastActiveBusiness.reservations} total reservations`
+        : "Approved businesses will appear here after onboarding.",
+      className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Offers created today",
+      value: offersCreatedToday.length,
+      helper: "New offers published in the current Tbilisi day",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Offers expiring",
+      value: offersExpiringToday.length,
+      helper: "Active offers with pickup scheduled today",
+      className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Businesses without offers",
+      value: businessesWithZeroOffers.length,
+      helper: "Businesses that may need onboarding help",
+      className: "bg-red-50 text-red-800",
+    },
+    {
+      title: "Without reservations",
+      value: businessesWithoutReservations.length,
+      helper: "Approved businesses that have not received reservations yet",
+      className: "bg-yellow-50 text-yellow-900",
+    },
+  ];
 
   if (loading) {
     return (
@@ -889,6 +968,10 @@ export default function AdminPage() {
         <AdminRevenueInsights analytics={marketplaceAnalytics} />
 
         <AdminOperationalDashboard metrics={operationalDashboardMetrics} />
+
+        <AdminMarketplaceIntelligence
+          metrics={marketplaceIntelligenceMetrics}
+        />
 
         <AdminHealthSections
           t={t}

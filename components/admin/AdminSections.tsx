@@ -237,6 +237,34 @@ export function AdminOperationalDashboard({
   );
 }
 
+export function AdminMarketplaceIntelligence({
+  metrics,
+}: {
+  metrics: MetricCard[];
+}) {
+  return (
+    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            Marketplace intelligence
+          </p>
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Business activity signals
+          </h2>
+        </div>
+
+        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+          Rule-based operations view for spotting active partners, inactive
+          businesses and offers that need admin attention.
+        </p>
+      </div>
+
+      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-3" />
+    </section>
+  );
+}
+
 export function AdminSupportTools({
   metrics,
 }: {
