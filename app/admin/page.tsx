@@ -1,34 +1,32 @@
 "use client";
 
-import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import StatCard from "@/components/StatCard";
+import {
+  AdminAccountView,
+  AdminHealthSections,
+  AdminHero,
+  AdminMarketplaceOverview,
+  AdminModerationVisibility,
+  AdminPaymentPreparation,
+  ApprovedBusinesses,
+  PendingBusinesses,
+  type AdminBusiness,
+} from "@/components/admin/AdminSections";
 import { getConfirmedProfile } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
-  formatDisplayDateTime,
   formatMoney,
   getEffectiveOfferStatus,
 } from "@/lib/offerLifecycle";
 import { notifyBusinessApproved } from "@/lib/notifications";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
-import {
-  adminPaymentPanelSections,
-  calculatePaymentPreparationSummary,
-  currentDatabasePaymentStatuses,
-  paymentProviderPreparation,
-  paymentStatuses,
-} from "@/lib/paymentArchitecture";
+import { calculatePaymentPreparationSummary } from "@/lib/paymentArchitecture";
 import { supabase } from "@/lib/supabase";
-import type { Business, Offer, Order, Profile } from "@/lib/types";
+import type { Offer, Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-type AdminBusiness = Business & {
-  created_at?: string | null;
-};
 
 function getPercentage(value: number, total: number) {
   if (total <= 0) return 0;
@@ -508,17 +506,7 @@ export default function AdminPage() {
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-12">
-        <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-12">
-          <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-            {t("admin.analytics")}
-          </p>
-          <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-            {t("admin.title")}
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
-            {t("admin.subtitle")}
-          </p>
-        </div>
+        <AdminHero t={t} />
 
         {message && (
           <div className="mt-5">
@@ -526,479 +514,34 @@ export default function AdminPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Marketplace overview
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Pilot operations snapshot
-              </h2>
-            </div>
+        <AdminMarketplaceOverview metrics={marketplaceOverview} />
 
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              The core numbers admins need before approving businesses or
-              checking marketplace activity.
-            </p>
-          </div>
+        <AdminHealthSections
+          t={t}
+          marketplaceHealth={marketplaceHealth}
+          operationalStats={operationalStats}
+          customerReliabilityStats={customerReliabilityStats}
+        />
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {marketplaceOverview.map((metric) => (
-              <div
-                key={metric.title}
-                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
-              >
-                <p className="text-sm font-black opacity-75">{metric.title}</p>
-                <p className="mt-2 text-3xl font-black sm:text-4xl">
-                  {metric.value}
-                </p>
-                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
-                  {metric.helper}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <AdminPaymentPreparation metrics={paymentOverview} />
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-sm sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-              Admin guidance
-            </p>
-            <h2 className="mt-3 text-2xl font-black sm:text-3xl">
-              Use this dashboard to approve businesses and monitor marketplace
-              activity.
-            </h2>
-            <p className="mt-4 font-semibold leading-7 text-green-50">
-              Review pending businesses before they can publish offers, then
-              watch orders, active offers, ratings and reliability signals as
-              the pilot grows.
-            </p>
-          </div>
+        <AdminAccountView metrics={accountOverview} profiles={profiles} />
 
-          <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                  Live marketplace health
-                </p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                  {t("admin.analytics")}
-                </h2>
-              </div>
+        <AdminModerationVisibility metrics={moderationStats} />
 
-              <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-                Lightweight status cards based on the current businesses,
-                offers, orders and ratings visible to admins.
-              </p>
-            </div>
+        <PendingBusinesses
+          t={t}
+          language={language}
+          businesses={pendingBusinesses}
+          updatingBusinessId={updatingBusinessId}
+          onApprove={(id) => void approveBusiness(id)}
+        />
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {marketplaceHealth.map((metric) => (
-                <AnalyticsBarCard key={metric.title} {...metric} />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Operational details
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Status and reliability
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              Extra signals for spotting sold-out offers, no-shows and customer
-              reliability risks during the pilot.
-            </p>
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6">
-            {operationalStats.map((stat) => (
-              <StatCard key={stat.title} {...stat} />
-            ))}
-
-            {customerReliabilityStats.map((stat) => (
-              <StatCard key={stat.title} {...stat} />
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Payment preparation
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Financial architecture overview
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              Real payment providers are not connected yet. This panel shows the
-              financial fields already recorded by orders and the sections ready
-              for future provider integration.
-            </p>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {paymentOverview.map((metric) => (
-              <div
-                key={metric.title}
-                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
-              >
-                <p className="text-sm font-black opacity-75">{metric.title}</p>
-                <p className="mt-2 text-3xl font-black sm:text-4xl">
-                  {metric.value}
-                </p>
-                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
-                  {metric.helper}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-3xl bg-[#F7F6EF] p-5">
-              <h3 className="text-xl font-black text-gray-950">
-                Future payment states
-              </h3>
-              <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
-                Current database payments support{" "}
-                {currentDatabasePaymentStatuses.join(", ")}. Future provider
-                work should add pending, authorized and expired before real
-                payment sessions are stored.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {paymentStatuses.map((status) => (
-                  <span
-                    key={status}
-                    className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800"
-                  >
-                    {status}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-3xl bg-green-50 p-5">
-              <h3 className="text-xl font-black text-green-950">
-                Provider-ready plan
-              </h3>
-              <div className="mt-4 grid gap-2">
-                {paymentProviderPreparation.map((provider) => (
-                  <div
-                    key={provider.id}
-                    className="rounded-2xl bg-white p-3 text-sm"
-                  >
-                    <p className="font-black text-gray-950">{provider.name}</p>
-                    <p className="mt-1 font-semibold leading-5 text-gray-600">
-                      {provider.role}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-3 md:grid-cols-5">
-            {adminPaymentPanelSections.map((section) => (
-              <div
-                key={section.title}
-                className="rounded-2xl border border-green-100 bg-white p-4"
-              >
-                <p className="font-black text-gray-950">{section.title}</p>
-                <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
-                  {section.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Account view
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Customers, businesses and admins
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              Admins can review role distribution here. Roles still cannot be
-              changed from this dashboard.
-            </p>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {accountOverview.map((metric) => (
-              <div
-                key={metric.title}
-                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
-              >
-                <p className="text-sm font-black opacity-75">{metric.title}</p>
-                <p className="mt-2 text-3xl font-black sm:text-4xl">
-                  {metric.value}
-                </p>
-                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
-                  {metric.helper}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 overflow-hidden rounded-3xl border border-gray-100">
-            <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-[#F7F6EF] px-4 py-3 text-xs font-black uppercase tracking-wide text-gray-500">
-              <span>Email</span>
-              <span>Role</span>
-              <span>Reliability</span>
-            </div>
-
-            <div className="divide-y divide-gray-100 bg-white">
-              {profiles.length === 0 && (
-                <p className="px-4 py-5 font-semibold text-gray-600">
-                  No profiles available.
-                </p>
-              )}
-
-              {profiles.slice(0, 12).map((profile) => (
-                <div
-                  key={profile.id}
-                  className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 px-4 py-4 text-sm font-semibold text-gray-700"
-                >
-                  <span className="min-w-0 break-words">
-                    {profile.email || "Email unavailable"}
-                  </span>
-                  <span className="capitalize">
-                    {profile.role || "Missing"}
-                  </span>
-                  <span>
-                    {profile.reliability_score ?? "N/A"} ·{" "}
-                    {profile.reliability_status || "unknown"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Moderation visibility
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                Business and offer review signals
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              Rejected businesses are not a separate state in the current
-              approval model; unapproved businesses stay in the pending queue.
-            </p>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {moderationStats.map((metric) => (
-              <div
-                key={metric.title}
-                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
-              >
-                <p className="text-sm font-black opacity-75">{metric.title}</p>
-                <p className="mt-2 text-3xl font-black sm:text-4xl">
-                  {metric.value}
-                </p>
-                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
-                  {metric.helper}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-yellow-700 sm:text-sm">
-                Approval queue
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                {t("admin.pendingBusinesses")}
-              </h2>
-              <p className="mt-2 max-w-2xl font-semibold leading-7 text-gray-600">
-                Review new business registrations before they can publish food
-                rescue offers.
-              </p>
-            </div>
-
-            <span className="w-full rounded-full bg-yellow-100 px-4 py-2 text-center text-sm font-black text-yellow-800 sm:w-auto">
-              {pendingBusinesses.length} waiting
-            </span>
-          </div>
-
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {[
-              {
-                title: "1. Review details",
-                text: "Check the business type, address and phone before approving.",
-              },
-              {
-                title: "2. Approve verified businesses",
-                text: "Approved businesses can open their dashboard and publish offers.",
-              },
-              {
-                title: "3. Monitor pilot activity",
-                text: "Use marketplace health cards to watch offers, orders and ratings.",
-              },
-            ].map((step) => (
-              <div
-                key={step.title}
-                className="rounded-2xl bg-[#F7F6EF] p-4 text-sm"
-              >
-                <p className="font-black text-gray-950">{step.title}</p>
-                <p className="mt-2 font-semibold leading-6 text-gray-600">
-                  {step.text}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 grid gap-4">
-            {pendingBusinesses.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-6 text-center sm:p-8">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl font-black text-green-700">
-                  ✓
-                </div>
-                <h3 className="mt-4 text-2xl font-black text-gray-950">
-                  No businesses awaiting approval
-                </h3>
-                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-                  New registrations will appear here.
-                </p>
-              </div>
-            )}
-
-            {pendingBusinesses.map((business) => (
-              <div
-                key={business.id}
-                className="flex flex-col gap-5 rounded-3xl border border-yellow-100 bg-yellow-50/40 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between"
-              >
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-xl font-black sm:text-2xl">
-                      {business.name}
-                    </h3>
-                    <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-black text-yellow-800">
-                      Pending approval
-                    </span>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 text-sm font-semibold text-gray-700 sm:grid-cols-2 xl:grid-cols-4">
-                    <div className="rounded-2xl bg-white p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        Business type
-                      </p>
-                      <p className="mt-1 break-words text-gray-950">
-                        {business.business_type || "Not provided"}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-white p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        Address
-                      </p>
-                      <p className="mt-1 break-words text-gray-950">
-                        {business.address || "Not provided"}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-white p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        Phone
-                      </p>
-                      <p className="mt-1 break-words text-gray-950">
-                        {business.phone || "Not provided"}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl bg-white p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        Registered
-                      </p>
-                      <p className="mt-1 break-words text-gray-950">
-                        {formatDisplayDateTime(business.created_at, language)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => approveBusiness(business.id)}
-                  disabled={updatingBusinessId !== null}
-                  className="min-h-12 w-full shrink-0 rounded-full bg-green-700 px-6 py-3 font-black text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                >
-                  {updatingBusinessId === business.id ? "Updating..." : "Approve"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <h2 className="text-xl font-black sm:text-2xl">Approved businesses</h2>
-
-          <div className="mt-6 grid gap-4">
-            {approvedBusinesses.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-6 text-center sm:p-8">
-                <h3 className="text-2xl font-black text-gray-950">
-                  No approved businesses yet
-                </h3>
-                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-                  Approved businesses will appear here after you review new registrations.
-                </p>
-              </div>
-            )}
-
-            {approvedBusinesses.map((business) => (
-              <div
-                key={business.id}
-                className="flex flex-col gap-4 rounded-2xl border p-5 md:flex-row md:items-center md:justify-between"
-              >
-                <div>
-                  <h3 className="text-xl font-black">{business.name}</h3>
-                  <p className="text-gray-600">
-                    {business.business_type} · {business.address}
-                  </p>
-                  <p className="text-gray-600">{business.phone}</p>
-                  <p className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-700">
-                    Approved
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => moveToPending(business.id)}
-                  disabled={updatingBusinessId !== null}
-                  className="min-h-12 rounded-full bg-red-600 px-6 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {updatingBusinessId === business.id
-                    ? "Updating..."
-                    : "Move to pending"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ApprovedBusinesses
+          businesses={approvedBusinesses}
+          updatingBusinessId={updatingBusinessId}
+          onMoveToPending={(id) => void moveToPending(id)}
+        />
       </section>
     </main>
   );

@@ -1,0 +1,317 @@
+import OfferImage from "@/components/OfferImage";
+import {
+  DEFAULT_OFFER_CATEGORY,
+  OFFER_CATEGORIES,
+  normalizeOfferCategory,
+} from "@/lib/offerCategories";
+import {
+  formatDisplayDateTime,
+  formatMoney,
+  formatPickupWindow,
+  getEffectiveOfferStatus,
+  getOfferStatusClassName,
+  getOfferStatusLabel,
+  getRatingLabel,
+  type RatingSummary,
+} from "@/lib/offerLifecycle";
+import type { Language } from "@/lib/i18n";
+import type { Offer } from "@/lib/types";
+
+type OfferListProps = {
+  t: (key: TranslationKey) => string;
+  language: Language;
+  offers: Offer[];
+  ratingSummaries: Record<number, RatingSummary>;
+  editingOfferId: number | null;
+  updatingOfferId: number | null;
+  editTitle: string;
+  editCategory: string;
+  editPrice: string;
+  editOldPrice: string;
+  editQuantity: string;
+  editPickupStart: string;
+  editPickupEnd: string;
+  onStartEditing: (offer: Offer) => void;
+  onCancelEditing: () => void;
+  onToggleActive: (offer: Offer) => void;
+  onDuplicate: (offer: Offer) => void;
+  onArchiveExpired: (offer: Offer) => void;
+  onDelete: (offer: Offer) => void;
+  onSaveEdits: (offer: Offer) => void;
+  onEditTitleChange: (value: string) => void;
+  onEditCategoryChange: (value: string) => void;
+  onEditPriceChange: (value: string) => void;
+  onEditOldPriceChange: (value: string) => void;
+  onEditQuantityChange: (value: string) => void;
+  onEditPickupStartChange: (value: string) => void;
+  onEditPickupEndChange: (value: string) => void;
+};
+
+export function OfferList({
+  t,
+  language,
+  offers,
+  ratingSummaries,
+  editingOfferId,
+  updatingOfferId,
+  editTitle,
+  editCategory,
+  editPrice,
+  editOldPrice,
+  editQuantity,
+  editPickupStart,
+  editPickupEnd,
+  onStartEditing,
+  onCancelEditing,
+  onToggleActive,
+  onDuplicate,
+  onArchiveExpired,
+  onDelete,
+  onSaveEdits,
+  onEditTitleChange,
+  onEditCategoryChange,
+  onEditPriceChange,
+  onEditOldPriceChange,
+  onEditQuantityChange,
+  onEditPickupStartChange,
+  onEditPickupEndChange,
+}: OfferListProps) {
+  return (
+    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+      <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+        Offer History
+      </p>
+      <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+        {t("businessDashboard.myOffers")}
+      </h2>
+
+      <div className="mt-6 grid gap-4">
+        {offers.length === 0 && (
+          <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
+              +
+            </div>
+            <h3 className="mt-4 text-2xl font-black text-gray-950">
+              {t("businessDashboard.noOffers")}
+            </h3>
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+              {t("businessDashboard.noOffersHint")}
+            </p>
+            <a
+              href="#create-offer"
+              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
+            >
+              {t("businessDashboard.createFirstOffer")}
+            </a>
+          </div>
+        )}
+
+        {offers.map((offer) => {
+          const statusLabel = getOfferStatusLabel(offer, language);
+          const statusClass = getOfferStatusClassName(offer);
+          const rating = ratingSummaries[offer.business_id];
+          const isEditing = editingOfferId === offer.id;
+          const effectiveStatus = getEffectiveOfferStatus(offer);
+
+          return (
+            <div key={offer.id} className="grid gap-5 rounded-2xl border p-5">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex gap-3 sm:gap-4">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
+                    <OfferImage src={offer.image_url} alt={offer.title} sizes="96px" />
+                  </div>
+
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-xl font-black">{offer.title}</h3>
+                      <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-700">
+                        {normalizeOfferCategory(offer.category)}
+                      </span>
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
+                      >
+                        {statusLabel}
+                      </span>
+                    </div>
+
+                    <p className="font-medium text-gray-700">
+                      {formatMoney(offer.price)} · Quantity: {offer.quantity}
+                    </p>
+                    <p className="text-gray-600">
+                      {t("common.pickup")}: {formatPickupWindow(offer, language)}
+                    </p>
+                    <p className="text-sm font-bold text-yellow-700">
+                      ⭐ {getRatingLabel(rating, language)}
+                    </p>
+                    <p className="mt-1 text-xs font-bold text-gray-500">
+                      {t("businessDashboard.created")}:{" "}
+                      {formatDisplayDateTime(offer.created_at, language)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap lg:justify-end">
+                  <button
+                    onClick={() =>
+                      isEditing ? onCancelEditing() : onStartEditing(offer)
+                    }
+                    disabled={
+                      updatingOfferId !== null && updatingOfferId !== offer.id
+                    }
+                    className="min-h-12 rounded-full border border-green-200 bg-green-50 px-5 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isEditing ? "Cancel" : "Edit"}
+                  </button>
+
+                  <button
+                    onClick={() => onToggleActive(offer)}
+                    disabled={updatingOfferId !== null}
+                    aria-label={`Toggle ${offer.title} active status`}
+                    className={`min-h-12 rounded-full px-5 py-3 font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      offer.active
+                        ? "bg-green-700 hover:bg-green-800"
+                        : "bg-gray-600 hover:bg-gray-700"
+                    }`}
+                  >
+                    {updatingOfferId === offer.id
+                      ? "Updating..."
+                      : offer.active
+                      ? "Deactivate"
+                      : "Reactivate"}
+                  </button>
+
+                  <button
+                    onClick={() => onDuplicate(offer)}
+                    disabled={updatingOfferId !== null}
+                    className="min-h-12 rounded-full border border-green-200 bg-white px-5 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {updatingOfferId === offer.id ? "Working..." : "Duplicate"}
+                  </button>
+
+                  {effectiveStatus === "expired" && (
+                    <button
+                      onClick={() => onArchiveExpired(offer)}
+                      disabled={updatingOfferId !== null}
+                      className="min-h-12 rounded-full bg-yellow-500 px-5 py-3 font-black text-yellow-950 transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {updatingOfferId === offer.id ? "Archiving..." : "Archive"}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => onDelete(offer)}
+                    disabled={updatingOfferId !== null}
+                    className="min-h-12 rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
+                  </button>
+                </div>
+              </div>
+
+              {isEditing && (
+                <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <input
+                      value={editTitle}
+                      onChange={(event) => onEditTitleChange(event.target.value)}
+                      maxLength={120}
+                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      aria-label="Offer title"
+                      placeholder="Bakery Surprise Bag"
+                    />
+
+                    <select
+                      value={editCategory || DEFAULT_OFFER_CATEGORY}
+                      onChange={(event) =>
+                        onEditCategoryChange(
+                          normalizeOfferCategory(event.target.value)
+                        )
+                      }
+                      required
+                      aria-label="Offer category"
+                      className="min-h-12 rounded-2xl border bg-white p-4 font-semibold"
+                    >
+                      {OFFER_CATEGORIES.map((offerCategory) => (
+                        <option key={offerCategory} value={offerCategory}>
+                          {offerCategory}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      value={editPrice}
+                      onChange={(event) => onEditPriceChange(event.target.value)}
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      inputMode="decimal"
+                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      aria-label="Offer price"
+                      placeholder="5.00"
+                    />
+
+                    <input
+                      value={editOldPrice}
+                      onChange={(event) =>
+                        onEditOldPriceChange(event.target.value)
+                      }
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      inputMode="decimal"
+                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      aria-label="Original price"
+                      placeholder="10.00"
+                    />
+
+                    <input
+                      value={editQuantity}
+                      onChange={(event) =>
+                        onEditQuantityChange(event.target.value)
+                      }
+                      type="number"
+                      min="0"
+                      step="1"
+                      inputMode="numeric"
+                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      aria-label="Quantity"
+                      placeholder="3"
+                    />
+
+                    <input
+                      value={editPickupStart}
+                      onChange={(event) =>
+                        onEditPickupStartChange(event.target.value)
+                      }
+                      type="time"
+                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      aria-label="Pickup start"
+                    />
+
+                    <input
+                      value={editPickupEnd}
+                      onChange={(event) =>
+                        onEditPickupEndChange(event.target.value)
+                      }
+                      type="time"
+                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      aria-label="Pickup end"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => onSaveEdits(offer)}
+                    disabled={updatingOfferId !== null}
+                    className="mt-4 min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  >
+                    {updatingOfferId === offer.id ? "Saving..." : "Save changes"}
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

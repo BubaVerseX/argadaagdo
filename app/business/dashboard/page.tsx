@@ -2,11 +2,27 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import OfferImage from "@/components/OfferImage";
+import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
+import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
+import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
+import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
+import { BusinessReviews } from "@/components/business/BusinessReviews";
+import { BusinessStatsSection } from "@/components/business/BusinessStatsSection";
+import { OfferForm } from "@/components/business/OfferForm";
+import { OfferList } from "@/components/business/OfferList";
+import { PickupVerificationModal } from "@/components/business/PickupVerificationModal";
+import { ReservationList } from "@/components/business/ReservationList";
 import {
   getConfirmedProfile,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import {
+  actionCooldownMs,
+  createImageFileName,
+  getImageValidationError,
+  isApprovedBusiness,
+  type ReservationFilter,
+} from "@/lib/business/dashboard";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
   notifyOfferPublished,
@@ -14,25 +30,16 @@ import {
   notifyProfileUpdated,
 } from "@/lib/notifications";
 import {
-  getOrderStatusClassName,
-  getOrderStatusLabel,
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
 import {
   DEFAULT_OFFER_CATEGORY,
-  OFFER_CATEGORIES,
   normalizeOfferCategory,
 } from "@/lib/offerCategories";
 import {
-  formatDisplayDateTime,
-  formatMoney,
-  formatPickupWindow,
   getEffectiveOfferStatus,
-  getOfferStatusClassName,
-  getOfferStatusLabel,
-  getRatingLabel,
   getTbilisiDateKey,
   isOrderPastPickupEnd,
   type RatingSummary,
@@ -45,146 +52,6 @@ import { isWithinCooldown, validateTextField } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-function createImageFileName(file: File) {
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-  return `${crypto.randomUUID()}-${safeName}`;
-}
-
-const allowedImageTypes = ["image/png", "image/jpeg", "image/webp"];
-const maxImageSizeBytes = 5 * 1024 * 1024;
-const actionCooldownMs = 2500;
-type ReservationFilter =
-  | "all"
-  | "reserved"
-  | "collected"
-  | "cancelled"
-  | "no_show";
-type MetricTone = "neutral" | "green" | "yellow";
-
-const metricToneStyles: Record<
-  MetricTone,
-  { card: string; label: string; value: string }
-> = {
-  neutral: {
-    card: "bg-gray-50 text-gray-950",
-    label: "text-gray-600",
-    value: "text-gray-950",
-  },
-  green: {
-    card: "bg-green-50 text-green-950",
-    label: "text-green-700",
-    value: "text-green-800",
-  },
-  yellow: {
-    card: "bg-yellow-50 text-yellow-950",
-    label: "text-yellow-800",
-    value: "text-yellow-800",
-  },
-};
-
-function isApprovedBusiness(business: Business) {
-  return business.approved === true || String(business.approved) === "true";
-}
-
-function getImageValidationError(file: File) {
-  if (file.size > maxImageSizeBytes) {
-    return "Image is too large. Please upload a file under 5MB.";
-  }
-  if (!allowedImageTypes.includes(file.type)) {
-    return "Invalid image type. Please use JPG, PNG, or WebP.";
-  }
-  return "";
-}
-
-function RequiredMark() {
-  return <span className="text-red-600">*</span>;
-}
-
-type BusinessTimelineStepState = "done" | "current" | "pending" | "stopped";
-
-type BusinessTimelineStep = {
-  label: string;
-  state: BusinessTimelineStepState;
-};
-
-function getBusinessTimelineSteps(order: Order, language: "en" | "ka") {
-  const labels =
-    language === "ka"
-      ? ["დაჯავშნილი", "წაღების მოლოდინი", "დასრულებული", "გაუქმებული", "არ გამოცხადდა"]
-      : ["Reserved", "Waiting for pickup", "Completed", "Cancelled", "No-show"];
-  const status = order.status;
-
-  if (status === "no_show") {
-    return labels.map((label, index) => ({
-      label,
-      state:
-        index < 2
-          ? ("done" as const)
-          : index === 4
-          ? ("stopped" as const)
-          : ("pending" as const),
-    }));
-  }
-
-  if (isCancelledOrderStatus(status)) {
-    return labels.map((label, index) => ({
-      label,
-      state:
-        index === 0
-          ? ("done" as const)
-          : index === 3
-          ? ("stopped" as const)
-          : ("pending" as const),
-    }));
-  }
-
-  if (isCollectedOrderStatus(status)) {
-    return labels.map((label, index) => ({
-      label,
-      state:
-        index < 2
-          ? ("done" as const)
-          : index === 2
-          ? ("current" as const)
-          : ("pending" as const),
-    }));
-  }
-
-  const waitingForPickup = isConfirmedOrderStatus(status);
-
-  return labels.map((label, index) => ({
-    label,
-    state:
-      index === 0
-        ? ("done" as const)
-        : index === 1 && waitingForPickup
-        ? ("current" as const)
-        : ("pending" as const),
-  }));
-}
-
-function BusinessTimelineSteps({ steps }: { steps: BusinessTimelineStep[] }) {
-  const stepStyles: Record<BusinessTimelineStepState, string> = {
-    done: "border-green-700 bg-green-700 text-white",
-    current: "border-yellow-400 bg-yellow-100 text-yellow-950",
-    pending: "border-gray-200 bg-white text-gray-500",
-    stopped: "border-red-200 bg-red-100 text-red-700",
-  };
-
-  return (
-    <ol className="grid gap-2 sm:grid-cols-5" aria-label="Reservation timeline">
-      {steps.map((step, index) => (
-        <li
-          key={`${step.label}-${index}`}
-          className={`rounded-2xl border px-3 py-3 text-center text-xs font-black sm:text-sm ${stepStyles[step.state]}`}
-        >
-          {step.label}
-        </li>
-      ))}
-    </ol>
-  );
-}
 
 export default function BusinessDashboardPage() {
   const router = useRouter();
@@ -1466,36 +1333,13 @@ export default function BusinessDashboardPage() {
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
-        <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-12">
-          <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
-            Business control center
-          </p>
-
-          <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
-            {t("businessDashboard.welcome")}, {dashboardBusinessName}
-          </h1>
-
-          <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:mt-4 sm:text-lg">
-            {t("businessDashboard.welcomeText")}
-          </p>
-
-          <div className="mt-6 grid gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-4">
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">{t("businessDashboard.myOffers")}</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{offers.length}</h2>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">{t("businessProfile.activeOffers")}</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{activeOffers.length}</h2>
-            </div>
-
-            <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-              <p className="text-sm font-black text-green-100">{t("orders.reserved")}</p>
-              <h2 className="mt-1 text-3xl font-black sm:text-4xl">{reservedOrders.length}</h2>
-            </div>
-          </div>
-        </div>
+        <BusinessDashboardHero
+          t={t}
+          businessName={dashboardBusinessName}
+          totalOffers={offers.length}
+          activeOffers={activeOffers.length}
+          reservedOrders={reservedOrders.length}
+        />
 
         {message && (
           <div className="mt-5 sm:mt-6">
@@ -1503,316 +1347,32 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                Business alerts
-              </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                What needs attention?
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-              Quick signals for reservations, pickups, sold-out risk and
-              expired offers.
-            </p>
-          </div>
-
-          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {businessAlerts.map((alert) => (
-              <div
-                key={alert.title}
-                className={`rounded-2xl border p-4 shadow-sm ${alert.className}`}
-              >
-                <p className="font-black">{alert.title}</p>
-                <p className="mt-2 text-sm font-semibold leading-6">
-                  {alert.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <BusinessAlertsSection alerts={businessAlerts} />
 
         {selectedBusiness && (
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                  Business Profile
-                </p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                  Manage public details
-                </h2>
-                <p className="mt-2 max-w-2xl font-semibold leading-7 text-gray-600">
-                  Keep your public business information clear so customers know
-                  where to collect their surprise bag.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
-                <div className="rounded-3xl bg-green-50 p-5 text-center">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-2xl font-black text-green-800 shadow-sm">
-                    {profileName.trim().slice(0, 2).toUpperCase() || "AG"}
-                  </div>
-                  <p className="mt-3 text-sm font-black text-green-800">
-                    Logo placeholder
-                  </p>
-                </div>
-                <div className="rounded-3xl bg-[#F7F6EF] p-5 text-center">
-                  <div className="mx-auto h-16 rounded-2xl bg-gradient-to-br from-green-100 to-yellow-100 shadow-inner" />
-                  <p className="mt-3 text-sm font-black text-gray-700">
-                    Cover image placeholder
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2 text-sm font-black text-gray-700">
-                <span>
-                  Business name <RequiredMark />
-                </span>
-                <input
-                  value={profileName}
-                  onChange={(event) => setProfileName(event.target.value)}
-                  maxLength={80}
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  placeholder="GMBH1 Bakery"
-                />
-                <span className="text-xs font-bold text-gray-500">
-                  {profileName.length}/80
-                </span>
-              </label>
-
-              <label className="grid gap-2 text-sm font-black text-gray-700">
-                <span>
-                  Business type <RequiredMark />
-                </span>
-                <input
-                  value={profileType}
-                  onChange={(event) => setProfileType(event.target.value)}
-                  maxLength={60}
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  placeholder="Bakery"
-                />
-                <span className="text-xs font-bold text-gray-500">
-                  {profileType.length}/60
-                </span>
-              </label>
-
-              <label className="grid gap-2 text-sm font-black text-gray-700">
-                <span>
-                  Address <RequiredMark />
-                </span>
-                <input
-                  value={profileAddress}
-                  onChange={(event) => setProfileAddress(event.target.value)}
-                  maxLength={160}
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  placeholder="Rustaveli Avenue, Tbilisi"
-                />
-                <span className="text-xs font-bold text-gray-500">
-                  {profileAddress.length}/160
-                </span>
-              </label>
-
-              <label className="grid gap-2 text-sm font-black text-gray-700">
-                Phone
-                <input
-                  value={profilePhone}
-                  onChange={(event) => setProfilePhone(event.target.value)}
-                  maxLength={40}
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  placeholder="+995 555 123 456"
-                />
-                <span className="text-xs font-bold text-gray-500">
-                  {profilePhone.length}/40
-                </span>
-              </label>
-            </div>
-
-            <div className="mt-5 rounded-2xl bg-yellow-50 px-4 py-3 text-sm font-bold leading-6 text-yellow-900">
-              Current database fields support business name, type, address and
-              phone. Description, website, social links, logo and cover image
-              are prepared below as profile fields to add when storage columns
-              are available.
-            </div>
-
-            <div className="mt-5 grid gap-4 rounded-3xl bg-[#F7F6EF] p-4 sm:p-5 md:grid-cols-2">
-              <div className="md:col-span-2">
-                <p className="text-sm font-black uppercase tracking-wide text-gray-500">
-                  Future public profile fields
-                </p>
-                <h3 className="mt-1 text-xl font-black text-gray-950">
-                  Ready for the next database update
-                </h3>
-                <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
-                  These fields are shown as placeholders so business owners know
-                  what profile information will be supported next. They are not
-                  saved until matching database columns exist.
-                </p>
-              </div>
-
-              <label className="grid gap-2 text-sm font-black text-gray-500">
-                Business description
-                <textarea
-                  disabled
-                  rows={3}
-                  placeholder="Fresh bakery items, daily surprise bags and easy pickup in Tbilisi."
-                  className="rounded-2xl border bg-white p-4 font-semibold text-gray-500"
-                />
-              </label>
-
-              <label className="grid gap-2 text-sm font-black text-gray-500">
-                Website
-                <input
-                  disabled
-                  placeholder="https://example.ge"
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-500"
-                />
-              </label>
-
-              <label className="grid gap-2 text-sm font-black text-gray-500">
-                Social link
-                <input
-                  disabled
-                  placeholder="Instagram or Facebook link"
-                  className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-500"
-                />
-              </label>
-
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-sm font-black text-gray-500">
-                  Logo and cover image
-                </p>
-                <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
-                  Logo and cover upload need a storage path and database fields.
-                  The placeholders above keep the profile layout ready.
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={(event) => void saveBusinessProfile(event.timeStamp)}
-              disabled={savingProfile}
-              className="mt-5 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-            >
-              {savingProfile ? "Saving profile..." : "Save profile"}
-            </button>
-          </div>
+          <BusinessProfileSection
+            profileName={profileName}
+            profileType={profileType}
+            profileAddress={profileAddress}
+            profilePhone={profilePhone}
+            savingProfile={savingProfile}
+            onProfileNameChange={setProfileName}
+            onProfileTypeChange={setProfileType}
+            onProfileAddressChange={setProfileAddress}
+            onProfilePhoneChange={setProfilePhone}
+            onSave={(actionTime) => void saveBusinessProfile(actionTime)}
+          />
         )}
 
         {isNewBusinessOnboarding && (
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              {t("businessOnboarding.badge")}
-            </p>
-            <h2 className="mt-3 text-3xl font-black text-gray-950 sm:text-4xl">
-              {t("businessOnboarding.welcomeTitle")}
-            </h2>
-            <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-700">
-              {t("businessOnboarding.welcomeText")}
-            </p>
-            <a
-              href="#create-offer"
-              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800 sm:w-auto"
-            >
-              {t("businessOnboarding.createFirstBag")}
-            </a>
-          </div>
+          <BusinessOnboardingSections t={t} checklist={onboardingChecklist} />
         )}
 
-        {isNewBusinessOnboarding && (
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              {t("businessOnboarding.checklistBadge")}
-            </p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              {t("businessOnboarding.checklistTitle")}
-            </h2>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {onboardingChecklist.map((item) => (
-                <div
-                  key={item.label}
-                  className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
-                    item.completed
-                      ? "bg-green-50 text-green-800"
-                      : "bg-[#F7F6EF] text-gray-700"
-                  }`}
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
-                      item.completed
-                        ? "bg-green-700 text-white"
-                        : "bg-white text-gray-500"
-                    }`}
-                  >
-                    {item.completed ? "✓" : item.step}
-                  </span>
-                  <span>{item.label}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {[
-                t("businessOnboarding.tipPublishEarly"),
-                t("businessOnboarding.tipClearNames"),
-                t("businessOnboarding.tipAccurateTimes"),
-              ].map((tip) => (
-                <span
-                  key={tip}
-                  className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-800"
-                >
-                  ✓ {tip}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-              Dashboard Overview
-            </p>
-            <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              {t("businessDashboard.stats")}
-            </h2>
-          </div>
-
-          {!hasAnalyticsActivity && (
-            <div className="mt-6 rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-5 text-center font-bold text-green-800 sm:p-6">
-              {t("businessDashboard.emptyAnalytics")}
-            </div>
-          )}
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {overviewStats.map((metric) => {
-              const styles = metricToneStyles[metric.tone];
-
-              return (
-                <div
-                  key={metric.title}
-                  className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${styles.card}`}
-                >
-                  <p className={`text-sm font-black ${styles.label}`}>
-                    {metric.title}
-                  </p>
-                  <p className={`mt-2 text-3xl font-black sm:text-4xl ${styles.value}`}>
-                    {metric.value}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
+        <BusinessStatsSection
+          t={t}
+          hasAnalyticsActivity={hasAnalyticsActivity}
+          metrics={overviewStats}
+        />
 
         {!canCreateOffers && (
           <div className="mt-6 rounded-3xl bg-yellow-100 p-5 sm:mt-8 sm:p-8">
@@ -1827,930 +1387,107 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
-        <div
-          id="create-offer"
-          className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
-        >
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Offer Management
-          </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-            {t("businessDashboard.createOffer")}
-          </h2>
+        <OfferForm
+          t={t}
+          canCreateOffers={canCreateOffers}
+          businessStatusMessage={businessStatusMessage}
+          approvedBusinesses={approvedBusinesses}
+          businessId={businessId}
+          title={title}
+          description={description}
+          category={category}
+          price={price}
+          oldPrice={oldPrice}
+          quantity={quantity}
+          pickupDate={pickupDate}
+          pickupStart={pickupStart}
+          pickupEnd={pickupEnd}
+          imageFile={imageFile}
+          publishing={publishing}
+          guidance={firstOfferGuidance}
+          onBusinessIdChange={setBusinessId}
+          onTitleChange={setTitle}
+          onDescriptionChange={setDescription}
+          onCategoryChange={setCategory}
+          onPriceChange={setPrice}
+          onOldPriceChange={setOldPrice}
+          onQuantityChange={setQuantity}
+          onPickupDateChange={setPickupDate}
+          onPickupStartChange={setPickupStart}
+          onPickupEndChange={setPickupEnd}
+          onImageFileChange={handleImageFileChange}
+          onCreateOffer={(actionTime) => void createOffer(actionTime)}
+        />
 
-          {canCreateOffers ? (
-            <>
-              <div className="mt-5 rounded-2xl bg-green-50 p-4 sm:p-5">
-                <p className="text-sm font-black uppercase tracking-widest text-green-700">
-                  {t("businessOnboarding.firstOfferGuidanceTitle")}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {firstOfferGuidance.map((item) => (
-                    <span
-                      key={item.label}
-                      className="rounded-full bg-white px-4 py-2 text-sm font-black text-green-900"
-                    >
-                      ✓ {item.label}: {item.value}
-                    </span>
-                  ))}
-                </div>
-              </div>
+        <OfferList
+          t={t}
+          language={language}
+          offers={offers}
+          ratingSummaries={ratingSummaries}
+          editingOfferId={editingOfferId}
+          updatingOfferId={updatingOfferId}
+          editTitle={editTitle}
+          editCategory={editCategory}
+          editPrice={editPrice}
+          editOldPrice={editOldPrice}
+          editQuantity={editQuantity}
+          editPickupStart={editPickupStart}
+          editPickupEnd={editPickupEnd}
+          onStartEditing={startEditingOffer}
+          onCancelEditing={cancelEditingOffer}
+          onToggleActive={(offer) => void toggleOfferActive(offer)}
+          onDuplicate={(offer) => void duplicateOffer(offer)}
+          onArchiveExpired={(offer) => void archiveExpiredOffer(offer)}
+          onDelete={(offer) => void deleteOffer(offer)}
+          onSaveEdits={(offer) => void saveOfferEdits(offer)}
+          onEditTitleChange={setEditTitle}
+          onEditCategoryChange={setEditCategory}
+          onEditPriceChange={setEditPrice}
+          onEditOldPriceChange={setEditOldPrice}
+          onEditQuantityChange={setEditQuantity}
+          onEditPickupStartChange={setEditPickupStart}
+          onEditPickupEndChange={setEditPickupEnd}
+        />
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Business <RequiredMark />
-                  </span>
-                  <select
-                    value={businessId}
-                    onChange={(e) => setBusinessId(e.target.value)}
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  >
-                    {approvedBusinesses.map((business) => (
-                      <option key={business.id} value={business.id}>
-                        {business.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Title <RequiredMark />
-                  </span>
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    maxLength={120}
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                    placeholder="Bakery Surprise Bag"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700 md:col-span-2">
-                  Description
-                  <textarea
-                    value={description}
-                    onChange={(event) => setDescription(event.target.value)}
-                    maxLength={500}
-                    className="min-h-28 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                    placeholder="Fresh bakery items saved from today's closing stock."
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Category <RequiredMark />
-                  </span>
-                  <select
-                    value={category}
-                    onChange={(event) =>
-                      setCategory(normalizeOfferCategory(event.target.value))
-                    }
-                    required
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  >
-                    {OFFER_CATEGORIES.map((offerCategory) => (
-                      <option key={offerCategory} value={offerCategory}>
-                        {offerCategory}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Price <RequiredMark />
-                  </span>
-                  <input
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    inputMode="decimal"
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                    placeholder="5.00"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  Original price
-                  <input
-                    value={oldPrice}
-                    onChange={(e) => setOldPrice(e.target.value)}
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    inputMode="decimal"
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                    placeholder="10.00"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Quantity <RequiredMark />
-                  </span>
-                  <input
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    type="number"
-                    min="1"
-                    step="1"
-                    inputMode="numeric"
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                    placeholder="3"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Pickup date <RequiredMark />
-                  </span>
-                  <input
-                    value={pickupDate}
-                    onChange={(e) => setPickupDate(e.target.value)}
-                    type="date"
-                    min={getTbilisiDateKey()}
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Pickup start <RequiredMark />
-                  </span>
-                  <input
-                    value={pickupStart}
-                    onChange={(e) => setPickupStart(e.target.value)}
-                    type="time"
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700">
-                  <span>
-                    Pickup end <RequiredMark />
-                  </span>
-                  <input
-                    value={pickupEnd}
-                    onChange={(e) => setPickupEnd(e.target.value)}
-                    type="time"
-                    className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  />
-                </label>
-
-                <label className="grid gap-2 text-sm font-black text-gray-700 md:col-span-2">
-                  Offer image
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
-                    onChange={handleImageFileChange}
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-green-50 file:px-4 file:py-2 file:font-black file:text-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
-                  />
-                </label>
-              </div>
-
-              <div className="mt-4 grid gap-2 md:grid-cols-3">
-                {[
-                  t("businessOnboarding.titleHelper"),
-                  t("businessOnboarding.quantityHelper"),
-                  t("businessOnboarding.pickupWindowHelper"),
-                ].map((helper) => (
-                  <p
-                    key={helper}
-                    className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-semibold leading-6 text-gray-700"
-                  >
-                    ✓ {helper}
-                  </p>
-                ))}
-              </div>
-
-              <p className="mt-4 rounded-2xl bg-yellow-50 px-4 py-3 text-sm font-bold leading-6 text-yellow-900">
-                {t("businessOnboarding.offerValidationHint")}
-              </p>
-
-              {imageFile && (
-                <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
-                  {t("businessDashboard.selectedImage")}: {imageFile.name}
-                </p>
-              )}
-
-              <button
-                onClick={(event) => void createOffer(event.timeStamp)}
-                disabled={publishing}
-                className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
-              >
-                {publishing
-                  ? t("businessDashboard.publishing")
-                  : t("businessDashboard.createOfferButton")}
-              </button>
-            </>
-          ) : (
-            <div className="mt-6 rounded-2xl bg-yellow-50 p-5 font-bold text-yellow-800">
-              {businessStatusMessage}
-            </div>
-          )}
-        </div>
-
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Offer History
-          </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">{t("businessDashboard.myOffers")}</h2>
-
-          <div className="mt-6 grid gap-4">
-            {offers.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
-                  +
-                </div>
-                <h3 className="mt-4 text-2xl font-black text-gray-950">
-                  {t("businessDashboard.noOffers")}
-                </h3>
-                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-                  {t("businessDashboard.noOffersHint")}
-                </p>
-                <a
-                  href="#create-offer"
-                  className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
-                >
-                  {t("businessDashboard.createFirstOffer")}
-                </a>
-              </div>
-            )}
-
-            {offers.map((offer) => {
-              const statusLabel = getOfferStatusLabel(offer, language);
-              const statusClass = getOfferStatusClassName(offer);
-              const rating = ratingSummaries[offer.business_id];
-              const isEditing = editingOfferId === offer.id;
-              const effectiveStatus = getEffectiveOfferStatus(offer);
-
-              return (
-                <div
-                  key={offer.id}
-                  className="grid gap-5 rounded-2xl border p-5"
-                >
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div className="flex gap-3 sm:gap-4">
-                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
-                        <OfferImage
-                          src={offer.image_url}
-                          alt={offer.title}
-                          sizes="96px"
-                        />
-                      </div>
-
-                      <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-xl font-black">{offer.title}</h3>
-                          <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-700">
-                            {normalizeOfferCategory(offer.category)}
-                          </span>
-                          <span
-                            className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
-                          >
-                            {statusLabel}
-                          </span>
-                        </div>
-
-                        <p className="font-medium text-gray-700">
-                          {formatMoney(offer.price)} · Quantity: {offer.quantity}
-                        </p>
-                        <p className="text-gray-600">
-                          {t("common.pickup")}: {formatPickupWindow(offer, language)}
-                        </p>
-                        <p className="text-sm font-bold text-yellow-700">
-                          ⭐ {getRatingLabel(rating, language)}
-                        </p>
-                        <p className="mt-1 text-xs font-bold text-gray-500">
-                          {t("businessDashboard.created")}:{" "}
-                          {formatDisplayDateTime(offer.created_at, language)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap lg:justify-end">
-                      <button
-                        onClick={() =>
-                          isEditing
-                            ? cancelEditingOffer()
-                            : startEditingOffer(offer)
-                        }
-                        disabled={
-                          updatingOfferId !== null &&
-                          updatingOfferId !== offer.id
-                        }
-                        className="min-h-12 rounded-full border border-green-200 bg-green-50 px-5 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {isEditing ? "Cancel" : "Edit"}
-                      </button>
-
-                      <button
-                        onClick={() => void toggleOfferActive(offer)}
-                        disabled={updatingOfferId !== null}
-                        aria-label={`Toggle ${offer.title} active status`}
-                        className={`min-h-12 rounded-full px-5 py-3 font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                          offer.active
-                            ? "bg-green-700 hover:bg-green-800"
-                            : "bg-gray-600 hover:bg-gray-700"
-                        }`}
-                      >
-                        {updatingOfferId === offer.id
-                          ? "Updating..."
-                          : offer.active
-                          ? "Deactivate"
-                          : "Reactivate"}
-                      </button>
-
-                      <button
-                        onClick={() => void duplicateOffer(offer)}
-                        disabled={updatingOfferId !== null}
-                        className="min-h-12 rounded-full border border-green-200 bg-white px-5 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {updatingOfferId === offer.id
-                          ? "Working..."
-                          : "Duplicate"}
-                      </button>
-
-                      {effectiveStatus === "expired" && (
-                        <button
-                          onClick={() => void archiveExpiredOffer(offer)}
-                          disabled={updatingOfferId !== null}
-                          className="min-h-12 rounded-full bg-yellow-500 px-5 py-3 font-black text-yellow-950 transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          {updatingOfferId === offer.id
-                            ? "Archiving..."
-                            : "Archive"}
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => void deleteOffer(offer)}
-                        disabled={updatingOfferId !== null}
-                        className="min-h-12 rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {isEditing && (
-                    <div className="rounded-2xl bg-[#F7F6EF] p-4">
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <input
-                          value={editTitle}
-                          onChange={(event) => setEditTitle(event.target.value)}
-                          maxLength={120}
-                          className="rounded-2xl border bg-white p-4 font-semibold"
-                          aria-label="Offer title"
-                          placeholder="Bakery Surprise Bag"
-                        />
-
-                        <select
-                          value={editCategory}
-                          onChange={(event) =>
-                            setEditCategory(
-                              normalizeOfferCategory(event.target.value)
-                            )
-                          }
-                          required
-                          aria-label="Offer category"
-                          className="min-h-12 rounded-2xl border bg-white p-4 font-semibold"
-                        >
-                          {OFFER_CATEGORIES.map((offerCategory) => (
-                            <option key={offerCategory} value={offerCategory}>
-                              {offerCategory}
-                            </option>
-                          ))}
-                        </select>
-
-                        <input
-                          value={editPrice}
-                          onChange={(event) => setEditPrice(event.target.value)}
-                          type="number"
-                          min="0.01"
-                          step="0.01"
-                          inputMode="decimal"
-                          className="rounded-2xl border bg-white p-4 font-semibold"
-                          aria-label="Offer price"
-                          placeholder="5.00"
-                        />
-
-                        <input
-                          value={editOldPrice}
-                          onChange={(event) =>
-                            setEditOldPrice(event.target.value)
-                          }
-                          type="number"
-                          min="0.01"
-                          step="0.01"
-                          inputMode="decimal"
-                          className="rounded-2xl border bg-white p-4 font-semibold"
-                          aria-label="Original price"
-                          placeholder="10.00"
-                        />
-
-                        <input
-                          value={editQuantity}
-                          onChange={(event) =>
-                            setEditQuantity(event.target.value)
-                          }
-                          type="number"
-                          min="0"
-                          step="1"
-                          inputMode="numeric"
-                          className="rounded-2xl border bg-white p-4 font-semibold"
-                          aria-label="Quantity"
-                          placeholder="3"
-                        />
-
-                        <input
-                          value={editPickupStart}
-                          onChange={(event) =>
-                            setEditPickupStart(event.target.value)
-                          }
-                          type="time"
-                          className="rounded-2xl border bg-white p-4 font-semibold"
-                          aria-label="Pickup start"
-                        />
-
-                        <input
-                          value={editPickupEnd}
-                          onChange={(event) =>
-                            setEditPickupEnd(event.target.value)
-                          }
-                          type="time"
-                          className="rounded-2xl border bg-white p-4 font-semibold"
-                          aria-label="Pickup end"
-                        />
-                      </div>
-
-                      <button
-                        onClick={() => void saveOfferEdits(offer)}
-                        disabled={updatingOfferId !== null}
-                        className="mt-4 min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                      >
-                        {updatingOfferId === offer.id
-                          ? "Saving..."
-                          : "Save changes"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div
-          id="reservations"
-          className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
-        >
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Pickup Operations
-          </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-            {t("businessDashboard.reservations")}
-          </h2>
-
-          <div className="mt-5 rounded-2xl bg-green-50 p-4 sm:p-5">
-            <p className="text-sm font-black uppercase tracking-widest text-green-700">
-              {t("businessOnboarding.reservationGuidanceTitle")}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {[
-                t("businessOnboarding.reservationGuidanceText"),
-                t("businessOnboarding.pickupStepAskCode"),
-                t("businessOnboarding.pickupStepEnterCode"),
-                t("businessOnboarding.pickupStepComplete"),
-              ].map((step) => (
-                <span
-                  key={step}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-green-900"
-                >
-                  ✓ {step}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {orders.length > 0 && (
-            <div className="mt-6 rounded-3xl border border-green-100 bg-green-50/60 p-5 sm:p-6">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-widest text-green-700">
-                    {t("businessDashboard.reservationSummary")}
-                  </p>
-                  <h3 className="mt-2 text-2xl font-black text-gray-950">
-                    {t("businessDashboard.totalReservationsMetric")}:{" "}
-                    {orders.length}
-                  </h3>
-                </div>
-              </div>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {reservationSummary.map((item) => (
-                  <div
-                    key={item.label}
-                    className={`rounded-2xl p-4 shadow-sm ${item.className}`}
-                  >
-                    <p className="text-sm font-black">{item.label}</p>
-                    <p className="mt-2 text-3xl font-black">{item.value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-            <input
-              value={reservationSearch}
-              onChange={(event) => setReservationSearch(event.target.value)}
-              className="min-h-12 rounded-2xl border bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-              placeholder="Search customer email..."
-              aria-label="Search reservations by customer email"
-            />
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            {[
-              { value: "all", label: "All" },
-              { value: "reserved", label: "Active" },
-              { value: "collected", label: "Completed" },
-              { value: "cancelled", label: "Cancelled" },
-              { value: "no_show", label: "No-show" },
-            ].map((filter) => {
-              const isActive = reservationFilter === filter.value;
-
-              return (
-                <button
-                  key={filter.value}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() =>
-                    setReservationFilter(filter.value as ReservationFilter)
-                  }
-                  className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
-                    isActive
-                      ? "bg-green-700 text-white"
-                      : "bg-green-50 text-green-800 hover:bg-green-100"
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-6 grid gap-4">
-            {filteredOrders.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
-                  ✓
-                </div>
-                <h3 className="mt-4 text-2xl font-black text-gray-950">
-                  {orders.length === 0
-                    ? t("businessDashboard.noReservations")
-                    : normalizedReservationSearch
-                    ? "No reservations found"
-                    : reservationFilter === "reserved"
-                    ? "No active reservations"
-                    : t("businessDashboard.noFilteredReservations")}
-                </h3>
-                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-                  {orders.length === 0
-                    ? t("businessDashboard.noReservationsHint")
-                    : normalizedReservationSearch
-                    ? "Try searching a different customer email."
-                    : reservationFilter === "reserved"
-                    ? "Completed, cancelled and no-show reservations are kept in history. Use the filters above to review them."
-                    : t("businessDashboard.noFilteredReservationsHint")}
-                </p>
-              </div>
-            )}
-
-            {filteredOrders.map((order) => {
-              const timelineSteps = getBusinessTimelineSteps(order, language);
-
-              return (
-                <div
-                  key={order.id}
-                  className="flex flex-col gap-5 rounded-2xl border p-5 lg:flex-row lg:items-center lg:justify-between"
-                >
-                  <div>
-                  <h3 className="text-xl font-black sm:text-2xl">
-                    {order.offers?.title || t("common.offerUnavailable")}
-                  </h3>
-
-                  <p className="mt-2 font-semibold text-gray-700">
-                    {t("businessDashboard.customer")}:{" "}
-                    {order.profiles?.email || t("common.unavailable")}
-                  </p>
-
-                  <p className="mt-1 font-semibold text-gray-600">
-                    {t("businessDashboard.created")}:{" "}
-                    {formatDisplayDateTime(order.created_at, language)}
-                  </p>
-
-                  <p className="mt-1 font-black text-green-700">
-                    {order.offers
-                      ? formatMoney(order.offers.price)
-                      : t("common.unavailable")}
-                  </p>
-
-                  <div className="mt-3 grid gap-2 rounded-2xl bg-[#F7F6EF] p-4 text-sm font-semibold text-gray-700 sm:grid-cols-2">
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        Business receipt
-                      </p>
-                      <p className="mt-1">Reservation ID: #{order.id}</p>
-                      <p>
-                        Gross:{" "}
-                        {order.amount
-                          ? formatMoney(order.amount)
-                          : order.offers
-                            ? formatMoney(order.offers.price)
-                            : t("common.unavailable")}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                        Payout prep
-                      </p>
-                      <p>
-                        Platform fee:{" "}
-                        {order.platform_fee
-                          ? formatMoney(order.platform_fee)
-                          : "prepared"}
-                      </p>
-                      <p>
-                        Business amount:{" "}
-                        {order.business_amount
-                          ? formatMoney(order.business_amount)
-                          : "prepared"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="mt-1 font-semibold text-gray-600">
-                    {t("common.pickup")}:{" "}
-                    {order.offers
-                      ? formatPickupWindow(order.offers, language)
-                      : t("orders.pickupUnavailable")}
-                  </p>
-
-                  <p className="mt-1 text-sm font-bold text-gray-500">
-                    {t("businessDashboard.reliability")}:{" "}
-                    {order.profiles?.reliability_score ?? t("common.unavailable")} ·{" "}
-                    {order.profiles?.reliability_status || t("common.unavailable")}
-                  </p>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span
-                      className={`rounded-full px-4 py-2 text-sm font-black ${getOrderStatusClassName(order.status)}`}
-                    >
-                      {getOrderStatusLabel(order.status, language)}
-                    </span>
-
-                    {isConfirmedOrderStatus(order.status) && (
-                      <span className="rounded-full bg-gray-100 px-4 py-2 text-sm font-black text-gray-700">
-                        Pickup code:{" "}
-                        {order.pickup_code
-                          ? `••••${String(order.pickup_code).slice(-2)}`
-                          : "pending"}
-                      </span>
-                    )}
-                  </div>
-
-                  {isConfirmedOrderStatus(order.status) && (
-                    <p className="mt-3 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold leading-6 text-green-900">
-                      Ask the customer for the full code, then use Verify &
-                      Complete Pickup.
-                    </p>
-                  )}
-
-                    <div className="mt-4 rounded-3xl border border-green-100 bg-[#F7F6EF] p-4">
-                      <p className="mb-3 text-sm font-black uppercase tracking-widest text-green-700">
-                        Reservation timeline
-                      </p>
-                      <BusinessTimelineSteps steps={timelineSteps} />
-                    </div>
-                  </div>
-
-                  {isConfirmedOrderStatus(order.status) && (
-                    <div className="flex flex-col gap-3 lg:flex-row">
-                      {isOrderPastPickupEnd(order.offers) && (
-                        <button
-                          onClick={() => void markNoShow(order)}
-                          disabled={updatingOrderId !== null}
-                          className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                        >
-                          {updatingOrderId === order.id
-                            ? "Updating..."
-                            : "Mark No-Show"}
-                        </button>
-                      )}
-
-                      {!isOrderPastPickupEnd(order.offers) && (
-                        <button
-                          onClick={() => openPickupVerification(order)}
-                          disabled={updatingOrderId !== null}
-                          className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                        >
-                          {updatingOrderId === order.id
-                            ? "Completing..."
-                            : "Verify & Complete Pickup"}
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <ReservationList
+          t={t}
+          language={language}
+          orders={orders}
+          filteredOrders={filteredOrders}
+          reservationSummary={reservationSummary}
+          reservationFilter={reservationFilter}
+          reservationSearch={reservationSearch}
+          normalizedReservationSearch={normalizedReservationSearch}
+          updatingOrderId={updatingOrderId}
+          onReservationSearchChange={setReservationSearch}
+          onReservationFilterChange={setReservationFilter}
+          onOpenPickupVerification={openPickupVerification}
+          onMarkNoShow={(order) => void markNoShow(order)}
+        />
 
         {pickupVerificationOrder && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-950/60 px-4 py-6 sm:py-10">
-            <div className="mx-auto flex min-h-full max-w-lg items-center">
-              <div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="pickup-verification-title"
-                className="w-full rounded-[2rem] bg-white p-5 shadow-2xl sm:p-7"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-green-700">
-                      Pickup Operations
-                    </p>
-                    <h3
-                      id="pickup-verification-title"
-                      className="mt-2 text-2xl font-black text-gray-950"
-                    >
-                      Verify Customer Pickup Code
-                    </h3>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={closePickupVerification}
-                    disabled={updatingOrderId !== null}
-                    aria-label="Close pickup verification"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 font-black text-gray-700 transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    ×
-                  </button>
-                </div>
-
-                <div className="mt-5 rounded-3xl bg-[#F7F6EF] p-4">
-                  <p className="text-lg font-black text-gray-950">
-                    {pickupVerificationOrder.offers?.title ||
-                      t("common.offerUnavailable")}
-                  </p>
-                  <p className="mt-2 font-semibold text-gray-700">
-                    {t("businessDashboard.customer")}:{" "}
-                    {pickupVerificationOrder.profiles?.email ||
-                      t("common.unavailable")}
-                  </p>
-                  <p className="mt-1 font-semibold text-gray-600">
-                    {t("common.pickup")}:{" "}
-                    {pickupVerificationOrder.offers
-                      ? formatPickupWindow(
-                          pickupVerificationOrder.offers,
-                          language
-                        )
-                      : t("orders.pickupUnavailable")}
-                  </p>
-                </div>
-
-                <p className="mt-5 font-semibold leading-7 text-gray-700">
-                  Ask the customer to show the pickup code from their Orders
-                  page. Enter it here before handing over the order.
-                </p>
-
-                <label
-                  htmlFor="pickup-verification-code"
-                  className="mt-5 block text-sm font-black uppercase tracking-wide text-gray-600"
-                >
-                  Pickup Code
-                </label>
-                <input
-                  id="pickup-verification-code"
-                  value={pickupVerificationCode}
-                  onChange={(event) => {
-                    setPickupVerificationCode(event.target.value);
-                    setPickupVerificationError("");
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      void submitPickupVerification();
-                    }
-                  }}
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  className="mt-2 min-h-12 w-full rounded-2xl border bg-white p-4 font-mono text-2xl font-black tracking-widest text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
-                  placeholder="123456"
-                />
-
-                {pickupVerificationError && (
-                  <p className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700">
-                    {pickupVerificationError}
-                  </p>
-                )}
-
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-                  <button
-                    type="button"
-                    onClick={closePickupVerification}
-                    disabled={updatingOrderId !== null}
-                    className="min-h-12 rounded-full border border-green-200 bg-white px-6 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => void submitPickupVerification()}
-                    disabled={updatingOrderId !== null}
-                    className="min-h-12 rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {updatingOrderId === pickupVerificationOrder.id
-                      ? "Completing..."
-                      : "Verify & Complete Pickup"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <PickupVerificationModal
+            t={t}
+            language={language}
+            order={pickupVerificationOrder}
+            code={pickupVerificationCode}
+            error={pickupVerificationError}
+            updatingOrderId={updatingOrderId}
+            onCodeChange={(value) => {
+              setPickupVerificationCode(value);
+              setPickupVerificationError("");
+            }}
+            onClose={closePickupVerification}
+            onSubmit={() => void submitPickupVerification()}
+          />
         )}
 
-        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Customer Feedback
-          </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-            {t("businessDashboard.businessReviews")}
-          </h2>
-
-          <p className="mt-2 font-semibold text-gray-600">
-            ✓ {t("businessOnboarding.ratingsGuidanceText")}
-          </p>
-
-          <div className="mt-6 grid gap-4">
-            {reviews.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-yellow-200 bg-yellow-50/70 p-6 text-center sm:p-8">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
-                  ⭐
-                </div>
-                <h3 className="mt-4 text-2xl font-black text-gray-950">
-                  {t("businessDashboard.noReviews")}
-                </h3>
-                <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
-                  {t("businessDashboard.noReviewsHint")}
-                </p>
-                <a
-                  href="#reservations"
-                  className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-yellow-500 px-6 py-3 font-black text-yellow-950 transition hover:bg-yellow-400"
-                >
-                  {t("businessDashboard.viewReservations")}
-                </a>
-              </div>
-            )}
-
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="rounded-2xl border bg-[#F7F6EF] p-5"
-              >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="text-xl font-black text-yellow-700">
-                      {review.rating} ⭐
-                    </p>
-                    <p className="mt-1 font-bold text-gray-700">
-                      {businessNameById[Number(review.business_id)] ||
-                        "Business"}
-                    </p>
-                  </div>
-
-                  <p className="text-sm font-bold text-gray-500">
-                    {formatDisplayDateTime(review.created_at, language)}
-                  </p>
-                </div>
-
-                <p className="mt-4 font-semibold text-gray-700">
-                  {review.review?.trim() || t("common.noWrittenReview")}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <BusinessReviews
+          t={t}
+          language={language}
+          reviews={reviews}
+          businessNameById={businessNameById}
+        />
       </section>
     </main>
   );
