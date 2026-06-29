@@ -8,10 +8,18 @@ import { getConfirmedProfile } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
   formatDisplayDateTime,
+  formatMoney,
   getEffectiveOfferStatus,
 } from "@/lib/offerLifecycle";
 import { notifyBusinessApproved } from "@/lib/notifications";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
+import {
+  adminPaymentPanelSections,
+  calculatePaymentPreparationSummary,
+  currentDatabasePaymentStatuses,
+  paymentProviderPreparation,
+  paymentStatuses,
+} from "@/lib/paymentArchitecture";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -441,6 +449,48 @@ export default function AdminPage() {
       className: "bg-red-50 text-red-800",
     },
   ];
+  const paymentPreparationSummary =
+    calculatePaymentPreparationSummary(orders);
+  const paymentOverview = [
+    {
+      title: "Paid reservations",
+      value: paymentPreparationSummary.activePaidCount,
+      helper: "Current reserved/completed orders with recorded amounts",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Refunded/cancelled",
+      value: paymentPreparationSummary.refundedCount,
+      helper: `${formatMoney(
+        paymentPreparationSummary.refundedAmount
+      )} marked for refund history`,
+      className: "bg-yellow-50 text-yellow-900",
+    },
+    {
+      title: "Platform revenue",
+      value: formatMoney(paymentPreparationSummary.platformRevenue),
+      helper: "Prepared 10% marketplace fee estimate",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Business payout",
+      value: formatMoney(paymentPreparationSummary.businessPayout),
+      helper: "Prepared 90% business revenue estimate",
+      className: "bg-white text-gray-950",
+    },
+    {
+      title: "Pending payouts",
+      value: formatMoney(paymentPreparationSummary.pendingPayoutEstimate),
+      helper: "Future weekly payout estimate from completed pickups",
+      className: "bg-green-50 text-green-900",
+    },
+    {
+      title: "Failed payments",
+      value: 0,
+      helper: "Provider failures will appear after real payment integration",
+      className: "bg-red-50 text-red-800",
+    },
+  ];
 
   if (loading) {
     return (
@@ -576,6 +626,99 @@ export default function AdminPage() {
 
             {customerReliabilityStats.map((stat) => (
               <StatCard key={stat.title} {...stat} />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Payment preparation
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                Financial architecture overview
+              </h2>
+            </div>
+
+            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+              Real payment providers are not connected yet. This panel shows the
+              financial fields already recorded by orders and the sections ready
+              for future provider integration.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {paymentOverview.map((metric) => (
+              <div
+                key={metric.title}
+                className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
+              >
+                <p className="text-sm font-black opacity-75">{metric.title}</p>
+                <p className="mt-2 text-3xl font-black sm:text-4xl">
+                  {metric.value}
+                </p>
+                <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
+                  {metric.helper}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-3xl bg-[#F7F6EF] p-5">
+              <h3 className="text-xl font-black text-gray-950">
+                Future payment states
+              </h3>
+              <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+                Current database payments support{" "}
+                {currentDatabasePaymentStatuses.join(", ")}. Future provider
+                work should add pending, authorized and expired before real
+                payment sessions are stored.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {paymentStatuses.map((status) => (
+                  <span
+                    key={status}
+                    className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800"
+                  >
+                    {status}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-green-50 p-5">
+              <h3 className="text-xl font-black text-green-950">
+                Provider-ready plan
+              </h3>
+              <div className="mt-4 grid gap-2">
+                {paymentProviderPreparation.map((provider) => (
+                  <div
+                    key={provider.id}
+                    className="rounded-2xl bg-white p-3 text-sm"
+                  >
+                    <p className="font-black text-gray-950">{provider.name}</p>
+                    <p className="mt-1 font-semibold leading-5 text-gray-600">
+                      {provider.role}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-3 md:grid-cols-5">
+            {adminPaymentPanelSections.map((section) => (
+              <div
+                key={section.title}
+                className="rounded-2xl border border-green-100 bg-white p-4"
+              >
+                <p className="font-black text-gray-950">{section.title}</p>
+                <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+                  {section.text}
+                </p>
+              </div>
             ))}
           </div>
         </div>

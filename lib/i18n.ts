@@ -509,6 +509,15 @@ const translations = {
     "checkout.subtitle":
       "Your reservation will be confirmed immediately. Please collect your order during the pickup window shown below.",
     "checkout.summary": "Reservation summary",
+    "checkout.stepReservationTitle": "Reservation",
+    "checkout.stepReservationText":
+      "Review the offer, pickup time and cancellation rules.",
+    "checkout.stepPaymentTitle": "Payment",
+    "checkout.stepPaymentText":
+      "Real online payment provider integration is prepared for a future release.",
+    "checkout.stepPickupTitle": "Pickup",
+    "checkout.stepPickupText":
+      "After confirmation, use your pickup code during the pickup window.",
     "checkout.rescueBox": "Rescue box",
     "checkout.offerTitle": "Offer",
     "checkout.businessName": "Business",
@@ -523,6 +532,20 @@ const translations = {
     "checkout.paymentMethod": "Reservation method",
     "checkout.pilotReservationMethod":
       "Reservations are processed directly through ArGadaagdo during the pilot phase.",
+    "checkout.paymentPreparationTitle": "Payment preparation",
+    "checkout.paymentPreparationText":
+      "Online card payment is not connected yet. The checkout is structured so Bank of Georgia, TBC, Stripe or another provider can be added later.",
+    "checkout.futurePaymentTitle": "Future online payment",
+    "checkout.futurePaymentText":
+      "When payments are enabled, payment confirmation will happen before the reservation is finalized.",
+    "checkout.financialSplitTitle": "Financial split prepared",
+    "checkout.financialSplitText":
+      "The database already records platform fee and business payout amounts for each reservation.",
+    "checkout.receiptTitle": "Receipt preview",
+    "checkout.reservationIdAfterConfirmation":
+      "Reservation ID appears after confirmation.",
+    "checkout.paymentReferenceFuture":
+      "Payment reference will appear when a real provider is connected.",
     "checkout.rules": "I understand the pickup and cancellation rules.",
     "checkout.payReserve": "Confirm reservation",
     "checkout.reserving": "Reserving...",
@@ -1206,6 +1229,15 @@ const translations = {
     "checkout.subtitle":
       "შენი ჯავშანი დაუყოვნებლივ დადასტურდება. შეკვეთა წაიღე ქვემოთ მითითებულ ფანჯარაში.",
     "checkout.summary": "ჯავშნის შეჯამება",
+    "checkout.stepReservationTitle": "ჯავშანი",
+    "checkout.stepReservationText":
+      "გადაამოწმე შეთავაზება, წაღების დრო და გაუქმების წესები.",
+    "checkout.stepPaymentTitle": "გადახდა",
+    "checkout.stepPaymentText":
+      "რეალური ონლაინ გადახდის პროვაიდერის ინტეგრაცია მომავალი ვერსიისთვის მზადდება.",
+    "checkout.stepPickupTitle": "წაღება",
+    "checkout.stepPickupText":
+      "დადასტურების შემდეგ გამოიყენე წაღების კოდი მითითებულ ფანჯარაში.",
     "checkout.rescueBox": "საკვების ყუთი",
     "checkout.offerTitle": "შეთავაზება",
     "checkout.businessName": "ბიზნესი",
@@ -1220,6 +1252,20 @@ const translations = {
     "checkout.paymentMethod": "დაჯავშნის მეთოდი",
     "checkout.pilotReservationMethod":
       "ჯავშნები პილოტის პერიოდში პირდაპირ ArGadaagdo-ს სისტემით მუშავდება.",
+    "checkout.paymentPreparationTitle": "გადახდის მომზადება",
+    "checkout.paymentPreparationText":
+      "ონლაინ ბარათით გადახდა ჯერ არ არის ჩართული. Checkout ისეა მოწყობილი, რომ მომავალში Bank of Georgia, TBC, Stripe ან სხვა პროვაიდერი დაემატოს.",
+    "checkout.futurePaymentTitle": "მომავალი ონლაინ გადახდა",
+    "checkout.futurePaymentText":
+      "გადახდების ჩართვის შემდეგ გადახდის დადასტურება ჯავშნის დასრულებამდე მოხდება.",
+    "checkout.financialSplitTitle": "ფინანსური გაყოფა მომზადებულია",
+    "checkout.financialSplitText":
+      "მონაცემთა ბაზა უკვე ინახავს პლატფორმის საკომისიოს და ბიზნესის თანხას თითოეული ჯავშნისთვის.",
+    "checkout.receiptTitle": "ქვითრის წინასწარი ხედი",
+    "checkout.reservationIdAfterConfirmation":
+      "ჯავშნის ID დადასტურების შემდეგ გამოჩნდება.",
+    "checkout.paymentReferenceFuture":
+      "გადახდის reference რეალური პროვაიდერის ჩართვის შემდეგ გამოჩნდება.",
     "checkout.rules": "მესმის წაღებისა და გაუქმების წესები.",
     "checkout.payReserve": "ჯავშნის დადასტურება",
     "checkout.reserving": "იჯავშნება...",

@@ -1,4 +1,12 @@
 export type UserRole = "customer" | "business" | "admin";
+export type PaymentStatus =
+  | "pending"
+  | "authorized"
+  | "paid"
+  | "failed"
+  | "refunded"
+  | "cancelled"
+  | "expired";
 export type OrderStatus =
   | "reserved"
   | "confirmed"
@@ -89,6 +97,21 @@ export type Order = {
     businesses?: Pick<Business, "name" | "address" | "business_type"> | null;
   }) | null;
   profiles?: Pick<Profile, "email" | "reliability_score" | "reliability_status"> | null;
+};
+
+export type Payment = {
+  id: number;
+  order_id: number;
+  user_id: string;
+  offer_id: number;
+  amount: number | string;
+  platform_fee: number | string;
+  business_amount: number | string;
+  status: PaymentStatus;
+  provider: string;
+  provider_reference: string | null;
+  created_at: string | null;
+  refunded_at?: string | null;
 };
 
 export type BusinessRating = {

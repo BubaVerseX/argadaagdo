@@ -747,6 +747,26 @@ export default function OrdersPage() {
                           ? formatMoney(order.offers.price)
                           : t("common.unavailable")}
                       </p>
+
+                      <div className="mt-4 rounded-2xl bg-white p-4">
+                        <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                          Receipt
+                        </p>
+                        <div className="mt-2 grid gap-1 text-sm font-semibold text-gray-700">
+                          <p>Reservation ID: #{order.id}</p>
+                          <p>
+                            Amount:{" "}
+                            {order.amount
+                              ? formatMoney(order.amount)
+                              : order.offers
+                                ? formatMoney(order.offers.price)
+                                : t("common.unavailable")}
+                          </p>
+                          <p>
+                            Payment reference: prepared for future provider
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 

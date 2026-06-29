@@ -16,6 +16,11 @@ import {
   getOfferDateLabel,
   isOfferReservable,
 } from "@/lib/offerLifecycle";
+import {
+  businessPayoutRate,
+  paymentProviderPreparation,
+  platformFeeRate,
+} from "@/lib/paymentArchitecture";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -137,18 +142,18 @@ export default function CheckoutPage() {
   const checkoutSteps = [
     {
       number: "1",
-      title: t("checkout.summary"),
-      text: t("checkout.pickupStep1Text"),
+      title: t("checkout.stepReservationTitle"),
+      text: t("checkout.stepReservationText"),
     },
     {
       number: "2",
-      title: t("checkout.payReserve"),
-      text: t("checkout.pickupStep2Text"),
+      title: t("checkout.stepPaymentTitle"),
+      text: t("checkout.stepPaymentText"),
     },
     {
       number: "3",
-      title: t("common.pickup"),
-      text: t("checkout.pickupStep3Text"),
+      title: t("checkout.stepPickupTitle"),
+      text: t("checkout.stepPickupText"),
     },
   ];
   const trustItems = [
@@ -482,6 +487,55 @@ export default function CheckoutPage() {
                     <p className="mt-1 font-black text-gray-950">
                       {t("checkout.pilotReservationMethod")}
                     </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-green-100 bg-white p-4">
+                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      {t("checkout.paymentPreparationTitle")}
+                    </p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
+                      {t("checkout.paymentPreparationText")}
+                    </p>
+
+                    <div className="mt-4 grid gap-2">
+                      {paymentProviderPreparation.slice(0, 3).map((provider) => (
+                        <div
+                          key={provider.id}
+                          className="rounded-2xl bg-green-50 px-3 py-2 text-sm font-black text-green-900"
+                        >
+                          {provider.name}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                      {t("checkout.futurePaymentTitle")}
+                    </p>
+                    <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
+                      {t("checkout.futurePaymentText")}
+                    </p>
+                    <p className="mt-3 text-sm font-black text-green-800">
+                      {Math.round(platformFeeRate * 100)}% platform fee ·{" "}
+                      {Math.round(businessPayoutRate * 100)}% business payout
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white p-4 ring-1 ring-green-100">
+                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      {t("checkout.receiptTitle")}
+                    </p>
+                    <div className="mt-3 grid gap-2 text-sm font-bold text-gray-700">
+                      <p>
+                        {t("checkout.offerTitle")}: {offer.title}
+                      </p>
+                      <p>
+                        {t("checkout.price")}: {formatMoney(offer.price)}
+                      </p>
+                      <p>{t("checkout.reservationIdAfterConfirmation")}</p>
+                      <p>{t("checkout.paymentReferenceFuture")}</p>
+                    </div>
                   </div>
 
                   <label className="flex items-start gap-3 rounded-2xl border border-green-100 bg-white p-4 font-bold text-gray-800">

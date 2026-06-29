@@ -2461,6 +2461,40 @@ export default function BusinessDashboardPage() {
                       : t("common.unavailable")}
                   </p>
 
+                  <div className="mt-3 grid gap-2 rounded-2xl bg-[#F7F6EF] p-4 text-sm font-semibold text-gray-700 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                        Business receipt
+                      </p>
+                      <p className="mt-1">Reservation ID: #{order.id}</p>
+                      <p>
+                        Gross:{" "}
+                        {order.amount
+                          ? formatMoney(order.amount)
+                          : order.offers
+                            ? formatMoney(order.offers.price)
+                            : t("common.unavailable")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                        Payout prep
+                      </p>
+                      <p>
+                        Platform fee:{" "}
+                        {order.platform_fee
+                          ? formatMoney(order.platform_fee)
+                          : "prepared"}
+                      </p>
+                      <p>
+                        Business amount:{" "}
+                        {order.business_amount
+                          ? formatMoney(order.business_amount)
+                          : "prepared"}
+                      </p>
+                    </div>
+                  </div>
+
                   <p className="mt-1 font-semibold text-gray-600">
                     {t("common.pickup")}:{" "}
                     {order.offers
