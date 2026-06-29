@@ -204,6 +204,14 @@ export default function Navbar() {
               {t("nav.faq")}
             </Link>
 
+            <Link
+              href="/support"
+              className={linkClass("/support")}
+              aria-current={ariaCurrent("/support")}
+            >
+              {t("nav.support")}
+            </Link>
+
             {user && (
               <Link
                 href="/profile"
@@ -365,6 +373,15 @@ export default function Navbar() {
                   aria-current={ariaCurrent("/faq")}
                 >
                   {t("nav.faq")}
+                </Link>
+
+                <Link
+                  href="/support"
+                  onClick={() => setMobileMenu(false)}
+                  className={linkClass("/support", "mobile")}
+                  aria-current={ariaCurrent("/support")}
+                >
+                  {t("nav.support")}
                 </Link>
 
                 {user && (

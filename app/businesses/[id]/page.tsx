@@ -3,6 +3,10 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
+import { HelpCard } from "@/components/help/HelpCard";
+import { InfoBanner } from "@/components/help/InfoBanner";
+import { SupportLink } from "@/components/help/SupportLink";
+import { TrustBadge } from "@/components/help/TrustBadge";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
@@ -112,6 +116,16 @@ export default function BusinessProfilePage() {
   const reviewCount = rating?.rating_count || reviews.length;
   const averageRating =
     rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
+  const joinedDate = business?.created_at
+    ? formatReviewDate(business.created_at, language)
+    : "Tbilisi pilot";
+  const businessDescription =
+    business?.description?.trim() ||
+    `Verified ${
+      business?.business_type || "food"
+    } business offering pickup-only surprise bags in Tbilisi.`;
+  const completedPickupSignal =
+    reviewCount > 0 ? `${reviewCount}+` : "Not published yet";
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -161,11 +175,7 @@ export default function BusinessProfilePage() {
                       <p className="text-xs font-black uppercase tracking-widest text-green-700">
                         {t("businessProfile.title")}
                       </p>
-                      {isVerified && (
-                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800">
-                          {t("businessProfile.verified")}
-                        </span>
-                      )}
+                      {isVerified && <TrustBadge label={t("businessProfile.verified")} />}
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">
@@ -177,7 +187,7 @@ export default function BusinessProfilePage() {
                           {business.name}
                         </h1>
                         <p className="mt-2 font-semibold leading-7 text-gray-600">
-                          Local {business.business_type || t("common.food")} business offering pickup-only surprise bags in Tbilisi.
+                          {businessDescription}
                         </p>
                       </div>
                     </div>
@@ -195,28 +205,28 @@ export default function BusinessProfilePage() {
                         </span>{" "}
                         {business.address || t("common.addressUnavailable")}
                       </p>
+                      <p>
+                        <span className="font-black text-gray-950">
+                          Phone:
+                        </span>{" "}
+                        {business.phone || "Contact through ArGadaagdo support"}
+                      </p>
                     </div>
 
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-3xl border border-green-100 bg-green-50 p-4">
-                        <p className="text-sm font-black text-green-800">
-                          {t("businessProfile.localBusinessTitle")}
-                        </p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
-                          {t("businessProfile.localBusinessText")}
-                        </p>
-                      </div>
-                      <div className="rounded-3xl border border-yellow-100 bg-yellow-50 p-4">
-                        <p className="text-sm font-black text-yellow-800">
-                          {t("businessProfile.pickupOnlyTitle")}
-                        </p>
-                        <p className="mt-2 text-sm font-semibold leading-6 text-yellow-950">
-                          {t("businessProfile.pickupOnlyText")}
-                        </p>
-                      </div>
+                      <HelpCard
+                        title={t("businessProfile.localBusinessTitle")}
+                        text={t("businessProfile.localBusinessText")}
+                        icon="🏪"
+                      />
+                      <HelpCard
+                        title={t("businessProfile.pickupOnlyTitle")}
+                        text={t("businessProfile.pickupOnlyText")}
+                        icon="📍"
+                      />
                     </div>
 
-                    <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                       <div className="rounded-3xl bg-yellow-50 p-5">
                         <p className="text-sm font-black text-yellow-700">
                           {t("common.rating")}
@@ -241,6 +251,17 @@ export default function BusinessProfilePage() {
                           {t("businessProfile.customerReviews")}
                         </p>
                       </div>
+                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
+                        <p className="text-sm font-black text-green-700">
+                          Completed pickups
+                        </p>
+                        <p className="mt-2 text-3xl font-black text-gray-950">
+                          {completedPickupSignal}
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-gray-600">
+                          Public signal from completed rated pickups
+                        </p>
+                      </div>
                       <div className="rounded-3xl bg-green-50 p-5">
                         <p className="text-sm font-black text-green-700">
                           {t("businessProfile.activeOffers")}
@@ -252,16 +273,53 @@ export default function BusinessProfilePage() {
                           {t("businessProfile.activeOffersHint")}
                         </p>
                       </div>
+                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
+                        <p className="text-sm font-black text-green-700">
+                          Joined
+                        </p>
+                        <p className="mt-2 text-2xl font-black text-gray-950">
+                          {joinedDate || "Tbilisi pilot"}
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-gray-600">
+                          Approved local marketplace member
+                        </p>
+                      </div>
+                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
+                        <p className="text-sm font-black text-green-700">
+                          Response rate
+                        </p>
+                        <p className="mt-2 text-2xl font-black text-gray-950">
+                          Pilot support
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-gray-600">
+                          Support requests are handled by ArGadaagdo
+                        </p>
+                      </div>
+                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
+                        <p className="text-sm font-black text-green-700">
+                          Opening hours
+                        </p>
+                        <p className="mt-2 text-2xl font-black text-gray-950">
+                          See each offer
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-gray-600">
+                          Pickup windows are shown on active offers
+                        </p>
+                      </div>
                     </div>
 
                     {isVerified && (
-                      <div className="mt-6 rounded-3xl border border-green-100 bg-green-50 p-5">
-                        <p className="font-black text-green-800">
-                          {t("businessProfile.trustTitle")}
-                        </p>
-                        <p className="mt-2 font-semibold leading-7 text-green-900">
-                          {t("businessProfile.trustMessage")}
-                        </p>
+                      <div className="mt-6">
+                        <InfoBanner
+                          title={t("businessProfile.trustTitle")}
+                          text={t("businessProfile.trustMessage")}
+                        >
+                          <div className="flex flex-wrap gap-2">
+                            <TrustBadge label="Pickup code verification" />
+                            <TrustBadge label="Customer ratings" tone="yellow" />
+                            <TrustBadge label="Local Tbilisi business" />
+                          </div>
+                        </InfoBanner>
                       </div>
                     )}
                   </div>
@@ -275,14 +333,13 @@ export default function BusinessProfilePage() {
 
                 <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {offers.length === 0 && (
-                    <div className="rounded-3xl bg-[#F7F6EF] p-6">
-                      <p className="text-lg font-black text-gray-950">
-                        {t("businessProfile.noActiveOffers")}
-                      </p>
-                      <p className="mt-2 font-semibold leading-7 text-gray-600">
-                        {t("businessProfile.noActiveOffersHint")}
-                      </p>
-                    </div>
+                    <HelpCard
+                      title={t("businessProfile.noActiveOffers")}
+                      text={t("businessProfile.noActiveOffersHint")}
+                      icon="🥡"
+                      href="/offers"
+                      actionLabel={t("common.browseOffers")}
+                    />
                   )}
 
                   {offers.map((offer) => {
@@ -367,6 +424,9 @@ export default function BusinessProfilePage() {
                       <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-600">
                         {t("businessProfile.noReviewsHint")}
                       </p>
+                      <div className="mt-5 flex justify-center">
+                        <SupportLink label="How ratings work" />
+                      </div>
                     </div>
                   )}
 

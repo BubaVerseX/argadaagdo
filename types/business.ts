@@ -6,4 +6,6 @@ export type Business = {
   address: string;
   phone: string | null;
   approved: boolean;
+  created_at?: string | null;
+  description?: string | null;
 };

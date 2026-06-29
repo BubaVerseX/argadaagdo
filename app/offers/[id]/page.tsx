@@ -3,6 +3,10 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
+import { FAQAccordion } from "@/components/help/FAQAccordion";
+import { HelpCard } from "@/components/help/HelpCard";
+import { SupportLink } from "@/components/help/SupportLink";
+import { TrustBadge } from "@/components/help/TrustBadge";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { normalizeOfferCategory } from "@/lib/offerCategories";
@@ -131,11 +135,57 @@ export default function OfferDetailPage() {
   const averageRating =
     rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
   const verifiedBusiness = isApprovedBusiness(offer?.businesses?.approved);
+  const businessName = offer?.businesses?.name || t("common.business");
   const trustItems = [
     t("home.trustVerifiedBusinesses"),
     t("home.trustPickupCodeVerification"),
     t("home.trustCustomerRatings"),
   ];
+  const confidenceQuestions = offer
+    ? [
+        {
+          question:
+            language === "ka" ? "ვინ ამზადებს ამ ყუთს?" : "Who prepares this bag?",
+          answer:
+            language === "ka"
+              ? `${businessName} ამზადებს ამ სიურპრიზის ყუთს. ბიზნესის პროფილში შეგიძლია ნახო მისამართი, შეფასებები და აქტიური შეთავაზებები.`
+              : `${businessName} prepares this surprise bag. You can review the business profile, address, ratings and active offers before reserving.`,
+        },
+        {
+          question:
+            language === "ka" ? "რამდენად ახალია საკვები?" : "How fresh is the food?",
+          answer:
+            language === "ka"
+              ? "სიურპრიზის ყუთები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ ფანჯარაში, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
+              : "Surprise bags are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
+        },
+        {
+          question:
+            language === "ka" ? "როგორ მუშაობს წაღება?" : "How does pickup work?",
+          answer:
+            language === "ka"
+              ? "დადასტურების შემდეგ შეკვეთა გამოჩნდება Orders გვერდზე. ბიზნესში მისვლისას აჩვენე წაღების კოდი და თანამშრომელი კოდს გადაამოწმებს."
+              : "After confirmation, your order appears in Orders. Visit the business during the pickup window and show your pickup code for verification.",
+        },
+        {
+          question: language === "ka" ? "როდის ვიხდი?" : "When do I pay?",
+          answer:
+            language === "ka"
+              ? "პილოტის პერიოდში ჯავშანი ArGadaagdo-ში დასტურდება. ონლაინ ბარათით გადახდა დაემატება ფასიანი გაშვების წინ."
+              : "During the pilot, reservations are confirmed in ArGadaagdo. Online card payments will be added before the paid launch.",
+        },
+        {
+          question:
+            language === "ka"
+              ? "რა მოხდება, თუ ვერ წავიღებ?"
+              : "What happens if I cannot collect?",
+          answer:
+            language === "ka"
+              ? "თუ გეგმები შეიცვალა, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე. თუ წაღების ფანჯარაში არ მიხვალ, შეკვეთა შეიძლება missed pickup-ად ჩაითვალოს."
+              : "If plans change, cancel up to 2 hours before pickup. If you miss the pickup window, the order may be marked as a missed pickup.",
+        },
+      ]
+    : [];
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -307,13 +357,14 @@ export default function OfferDetailPage() {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {trustItems.map((item) => (
-                        <p
+                        <TrustBadge
                           key={item}
-                          className="rounded-full bg-green-50 px-3 py-2 text-sm font-black text-green-800"
-                        >
-                          ✓ {item}
-                        </p>
+                          label={item}
+                        />
                       ))}
+                    </div>
+                    <div className="mt-4">
+                      <SupportLink label="Need help before reserving?" />
                     </div>
                   </div>
 
@@ -347,21 +398,53 @@ export default function OfferDetailPage() {
               </div>
 
               <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-                <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
-                  <h2 className="text-2xl font-black">
-                    {t("offerDetail.about")}
-                  </h2>
-                  <p className="mt-3 font-semibold leading-7 text-gray-700">
-                    {offer.description ||
-                      "A surprise rescue box prepared by the business from available food."}
-                  </p>
+                <div className="grid gap-6">
+                  <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+                    <h2 className="text-2xl font-black">
+                      {t("offerDetail.about")}
+                    </h2>
+                    <p className="mt-3 font-semibold leading-7 text-gray-700">
+                      {offer.description ||
+                        "A surprise rescue box prepared by the business from available food."}
+                    </p>
 
-                  <h3 className="mt-6 text-xl font-black">
-                    {t("offerDetail.allergens")}
-                  </h3>
-                  <p className="mt-2 font-semibold text-gray-700">
-                    {offer.allergens || t("offerDetail.allergensAsk")}
-                  </p>
+                    <h3 className="mt-6 text-xl font-black">
+                      {t("offerDetail.allergens")}
+                    </h3>
+                    <p className="mt-2 font-semibold text-gray-700">
+                      {offer.allergens || t("offerDetail.allergensAsk")}
+                    </p>
+                  </div>
+
+                  <HelpCard
+                    title={
+                      language === "ka"
+                        ? "რა არის სიურპრიზის ყუთი?"
+                        : "What is a surprise bag?"
+                    }
+                    text={
+                      language === "ka"
+                        ? "ეს არის ფასდაკლებული საკვების ყუთი, რომელიც ბიზნესმა კარგი დარჩენილი საკვებიდან მოამზადა. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს."
+                        : "It is a discounted food bag prepared from good surplus food. The exact contents can vary, but the price, business and pickup window are clear before you reserve."
+                    }
+                    icon="🥡"
+                  />
+
+                  <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+                    <h2 className="text-2xl font-black">
+                      {language === "ka"
+                        ? "კითხვები დაჯავშნამდე"
+                        : "Questions before you reserve"}
+                    </h2>
+                    <p className="mt-3 font-semibold leading-7 text-gray-700">
+                      {language === "ka"
+                        ? "მოკლე პასუხები ყველაზე მნიშვნელოვან საკითხებზე."
+                        : "Short answers to the most important customer questions."}
+                    </p>
+                    <div className="mt-5">
+                      <FAQAccordion items={confidenceQuestions} />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid gap-6">

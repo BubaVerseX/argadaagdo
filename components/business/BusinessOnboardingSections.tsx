@@ -1,3 +1,4 @@
+import { HelpCard } from "@/components/help/HelpCard";
 import type { TranslationKey } from "@/lib/i18n";
 
 type ChecklistItem = {
@@ -81,6 +82,34 @@ export function BusinessOnboardingSections({
               ✓ {tip}
             </span>
           ))}
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <HelpCard
+            icon="🥡"
+            title="Create offers"
+            text="Publish one clear surprise bag with price, quantity and pickup time."
+          />
+          <HelpCard
+            icon="🧾"
+            title="Receive reservations"
+            text="Customers reserve available bags and appear in your dashboard."
+          />
+          <HelpCard
+            icon="🔐"
+            title="Verify pickup codes"
+            text="Ask the customer for their code before handing over food."
+          />
+          <HelpCard
+            icon="⭐"
+            title="Receive ratings"
+            text="After completed pickups, customers can rate the experience."
+          />
+          <HelpCard
+            icon="✓"
+            title="Best practice"
+            text="Use realistic titles like Bakery Surprise Bag and keep pickup windows accurate."
+          />
         </div>
       </div>
     </>
