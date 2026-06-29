@@ -8,7 +8,11 @@ import {
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
-import { notifyPickupCompleted } from "@/lib/notifications";
+import {
+  notifyOfferPublished,
+  notifyPickupCompleted,
+  notifyProfileUpdated,
+} from "@/lib/notifications";
 import {
   getOrderStatusClassName,
   getOrderStatusLabel,
@@ -95,6 +99,91 @@ function getImageValidationError(file: File) {
 
 function RequiredMark() {
   return <span className="text-red-600">*</span>;
+}
+
+type BusinessTimelineStepState = "done" | "current" | "pending" | "stopped";
+
+type BusinessTimelineStep = {
+  label: string;
+  state: BusinessTimelineStepState;
+};
+
+function getBusinessTimelineSteps(order: Order, language: "en" | "ka") {
+  const labels =
+    language === "ka"
+      ? ["დაჯავშნილი", "წაღების მოლოდინი", "დასრულებული", "გაუქმებული", "არ გამოცხადდა"]
+      : ["Reserved", "Waiting for pickup", "Completed", "Cancelled", "No-show"];
+  const status = order.status;
+
+  if (status === "no_show") {
+    return labels.map((label, index) => ({
+      label,
+      state:
+        index < 2
+          ? ("done" as const)
+          : index === 4
+          ? ("stopped" as const)
+          : ("pending" as const),
+    }));
+  }
+
+  if (isCancelledOrderStatus(status)) {
+    return labels.map((label, index) => ({
+      label,
+      state:
+        index === 0
+          ? ("done" as const)
+          : index === 3
+          ? ("stopped" as const)
+          : ("pending" as const),
+    }));
+  }
+
+  if (isCollectedOrderStatus(status)) {
+    return labels.map((label, index) => ({
+      label,
+      state:
+        index < 2
+          ? ("done" as const)
+          : index === 2
+          ? ("current" as const)
+          : ("pending" as const),
+    }));
+  }
+
+  const waitingForPickup = isConfirmedOrderStatus(status);
+
+  return labels.map((label, index) => ({
+    label,
+    state:
+      index === 0
+        ? ("done" as const)
+        : index === 1 && waitingForPickup
+        ? ("current" as const)
+        : ("pending" as const),
+  }));
+}
+
+function BusinessTimelineSteps({ steps }: { steps: BusinessTimelineStep[] }) {
+  const stepStyles: Record<BusinessTimelineStepState, string> = {
+    done: "border-green-700 bg-green-700 text-white",
+    current: "border-yellow-400 bg-yellow-100 text-yellow-950",
+    pending: "border-gray-200 bg-white text-gray-500",
+    stopped: "border-red-200 bg-red-100 text-red-700",
+  };
+
+  return (
+    <ol className="grid gap-2 sm:grid-cols-5" aria-label="Reservation timeline">
+      {steps.map((step, index) => (
+        <li
+          key={`${step.label}-${index}`}
+          className={`rounded-2xl border px-3 py-3 text-center text-xs font-black sm:text-sm ${stepStyles[step.state]}`}
+        >
+          {step.label}
+        </li>
+      ))}
+    </ol>
+  );
 }
 
 export default function BusinessDashboardPage() {
@@ -446,6 +535,7 @@ export default function BusinessDashboardPage() {
     setSavingProfile(false);
     setMessageTone("success");
     setMessage("Business profile updated.");
+    notifyProfileUpdated({ businessName: updatedBusiness.name || "Business" });
   }
 
   async function uploadImage(): Promise<string | null> {
@@ -621,6 +711,10 @@ export default function BusinessDashboardPage() {
     setPublishing(false);
     setMessageTone("success");
     setMessage("Offer published. It is now visible to customers.");
+    notifyOfferPublished({
+      offerTitle: titleResult.value,
+      businessName: selectedBusiness?.name,
+    });
     await loadDashboard();
   }
 
@@ -1114,6 +1208,13 @@ export default function BusinessDashboardPage() {
   const activeOffers = offers.filter(
     (offer) => getEffectiveOfferStatus(offer) === "active"
   );
+  const expiredOffers = offers.filter(
+    (offer) => getEffectiveOfferStatus(offer) === "expired"
+  );
+  const nearlySoldOutOffers = activeOffers.filter(
+    (offer) =>
+      Number(offer.quantity || 0) > 0 && Number(offer.quantity || 0) <= 2
+  );
   const totalReviews = reviews.length;
   const averageRating =
     totalReviews > 0
@@ -1164,6 +1265,11 @@ export default function BusinessDashboardPage() {
   const todaysReservations = orders.filter(
     (order) => order.offers?.pickup_date === todayDateKey
   ).length;
+  const todaysActiveReservations = orders.filter(
+    (order) =>
+      order.offers?.pickup_date === todayDateKey &&
+      isConfirmedOrderStatus(order.status)
+  );
   const hasAnalyticsActivity =
     offers.length > 0 || orders.length > 0 || totalReviews > 0;
   const isNewBusinessOnboarding = offers.length === 0 && orders.length === 0;
@@ -1262,6 +1368,58 @@ export default function BusinessDashboardPage() {
       className: "bg-gray-100 text-gray-700",
     },
   ];
+  const businessAlerts = [
+    ...(reservedOrders.length > 0
+      ? [
+          {
+            title: "New reservation",
+            text: `${reservedOrders.length} active ${
+              reservedOrders.length === 1 ? "reservation needs" : "reservations need"
+            } pickup attention.`,
+            className: "border-green-100 bg-green-50 text-green-900",
+          },
+        ]
+      : []),
+    ...(todaysActiveReservations.length > 0
+      ? [
+          {
+            title: "Pickup due today",
+            text: `${todaysActiveReservations.length} reservation ${
+              todaysActiveReservations.length === 1 ? "is" : "are"
+            } scheduled for pickup today.`,
+            className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+          },
+        ]
+      : [
+          {
+            title: "No reservations today",
+            text: "Nothing needs pickup action today. New reservations will appear here automatically.",
+            className: "border-gray-100 bg-gray-50 text-gray-800",
+          },
+        ]),
+    ...(nearlySoldOutOffers.length > 0
+      ? [
+          {
+            title: "Offer nearly sold out",
+            text: `${nearlySoldOutOffers.length} active offer ${
+              nearlySoldOutOffers.length === 1 ? "has" : "have"
+            } 2 or fewer boxes left.`,
+            className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+          },
+        ]
+      : []),
+    ...(expiredOffers.length > 0
+      ? [
+          {
+            title: "Expired offer",
+            text: `${expiredOffers.length} offer ${
+              expiredOffers.length === 1 ? "has" : "have"
+            } passed the pickup window and should stay in history.`,
+            className: "border-red-100 bg-red-50 text-red-800",
+          },
+        ]
+      : []),
+  ];
   const normalizedReservationSearch = reservationSearch.trim().toLowerCase();
   const filteredOrders = orders.filter((order) => {
     const matchesStatus =
@@ -1332,6 +1490,38 @@ export default function BusinessDashboardPage() {
             <Notice tone={messageTone}>{message}</Notice>
           </div>
         )}
+
+        <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                Business alerts
+              </p>
+              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                What needs attention?
+              </h2>
+            </div>
+
+            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+              Quick signals for reservations, pickups, sold-out risk and
+              expired offers.
+            </p>
+          </div>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {businessAlerts.map((alert) => (
+              <div
+                key={alert.title}
+                className={`rounded-2xl border p-4 shadow-sm ${alert.className}`}
+              >
+                <p className="font-black">{alert.title}</p>
+                <p className="mt-2 text-sm font-semibold leading-6">
+                  {alert.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {selectedBusiness && (
           <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
@@ -2175,12 +2365,15 @@ export default function BusinessDashboardPage() {
               </div>
             )}
 
-            {filteredOrders.map((order) => (
-              <div
-                key={order.id}
-                className="flex flex-col gap-5 rounded-2xl border p-5 lg:flex-row lg:items-center lg:justify-between"
-              >
-                <div>
+            {filteredOrders.map((order) => {
+              const timelineSteps = getBusinessTimelineSteps(order, language);
+
+              return (
+                <div
+                  key={order.id}
+                  className="flex flex-col gap-5 rounded-2xl border p-5 lg:flex-row lg:items-center lg:justify-between"
+                >
+                  <div>
                   <h3 className="text-xl font-black sm:text-2xl">
                     {order.offers?.title || t("common.offerUnavailable")}
                   </h3>
@@ -2237,37 +2430,45 @@ export default function BusinessDashboardPage() {
                       Complete Pickup.
                     </p>
                   )}
-                </div>
 
-                {isConfirmedOrderStatus(order.status) && (
-                  <div className="flex flex-col gap-3 lg:flex-row">
-                    {isOrderPastPickupEnd(order.offers) && (
-                      <button
-                        onClick={() => void markNoShow(order)}
-                        disabled={updatingOrderId !== null}
-                        className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                      >
-                        {updatingOrderId === order.id
-                          ? "Updating..."
-                          : "Mark No-Show"}
-                      </button>
-                    )}
-
-                    {!isOrderPastPickupEnd(order.offers) && (
-                      <button
-                        onClick={() => openPickupVerification(order)}
-                        disabled={updatingOrderId !== null}
-                        className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                      >
-                        {updatingOrderId === order.id
-                          ? "Completing..."
-                          : "Verify & Complete Pickup"}
-                      </button>
-                    )}
+                    <div className="mt-4 rounded-3xl border border-green-100 bg-[#F7F6EF] p-4">
+                      <p className="mb-3 text-sm font-black uppercase tracking-widest text-green-700">
+                        Reservation timeline
+                      </p>
+                      <BusinessTimelineSteps steps={timelineSteps} />
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {isConfirmedOrderStatus(order.status) && (
+                    <div className="flex flex-col gap-3 lg:flex-row">
+                      {isOrderPastPickupEnd(order.offers) && (
+                        <button
+                          onClick={() => void markNoShow(order)}
+                          disabled={updatingOrderId !== null}
+                          className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                        >
+                          {updatingOrderId === order.id
+                            ? "Updating..."
+                            : "Mark No-Show"}
+                        </button>
+                      )}
+
+                      {!isOrderPastPickupEnd(order.offers) && (
+                        <button
+                          onClick={() => openPickupVerification(order)}
+                          disabled={updatingOrderId !== null}
+                          className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                        >
+                          {updatingOrderId === order.id
+                            ? "Completing..."
+                            : "Verify & Complete Pickup"}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 

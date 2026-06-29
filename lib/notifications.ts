@@ -6,9 +6,16 @@ type NotificationMetadata = Record<
 >;
 
 export type NotificationEvent =
+  | "business_registration_submitted"
+  | "business_approved"
+  | "offer_published"
+  | "profile_updated"
   | "reservation_confirmed"
   | "order_cancelled"
-  | "pickup_completed";
+  | "pickup_reminder"
+  | "pickup_completed"
+  | "rating_submitted"
+  | "new_rating_received";
 
 export type AppNotification = {
   event: NotificationEvent;
@@ -35,6 +42,21 @@ type OrderCancelledInput = {
 type PickupCompletedInput = {
   orderId: number;
   offerTitle?: string | null;
+  businessName?: string | null;
+};
+
+type BusinessInput = {
+  businessName: string;
+};
+
+type OfferInput = {
+  offerId?: number;
+  offerTitle: string;
+  businessName?: string | null;
+};
+
+type RatingInput = {
+  orderId: number;
   businessName?: string | null;
 };
 
@@ -85,6 +107,58 @@ export function notifyReservationConfirmed({
   });
 }
 
+export function notifyBusinessRegistrationSubmitted({
+  businessName,
+}: BusinessInput) {
+  return dispatchNotification({
+    event: "business_registration_submitted",
+    title: "Business submitted",
+    message: `${businessName} was submitted for admin approval.`,
+    metadata: {
+      businessName,
+    },
+  });
+}
+
+export function notifyBusinessApproved({ businessName }: BusinessInput) {
+  return dispatchNotification({
+    event: "business_approved",
+    title: "Business approved",
+    message: `${businessName} can now publish offers.`,
+    metadata: {
+      businessName,
+    },
+  });
+}
+
+export function notifyOfferPublished({
+  offerId,
+  offerTitle,
+  businessName,
+}: OfferInput) {
+  return dispatchNotification({
+    event: "offer_published",
+    title: "Offer published",
+    message: `${offerTitle} is now visible to customers.`,
+    metadata: {
+      offerId,
+      offerTitle,
+      businessName,
+    },
+  });
+}
+
+export function notifyProfileUpdated({ businessName }: BusinessInput) {
+  return dispatchNotification({
+    event: "profile_updated",
+    title: "Profile updated",
+    message: `${businessName} profile details were saved.`,
+    metadata: {
+      businessName,
+    },
+  });
+}
+
 export function notifyOrderCancelled({
   orderId,
   offerTitle,
@@ -118,6 +192,23 @@ export function notifyPickupCompleted({
     metadata: {
       orderId,
       offerTitle,
+      businessName,
+    },
+  });
+}
+
+export function notifyRatingSubmitted({
+  orderId,
+  businessName,
+}: RatingInput) {
+  return dispatchNotification({
+    event: "rating_submitted",
+    title: "Rating submitted",
+    message: businessName
+      ? `Thanks for rating ${businessName}.`
+      : "Thanks for sharing your rating.",
+    metadata: {
+      orderId,
       businessName,
     },
   });

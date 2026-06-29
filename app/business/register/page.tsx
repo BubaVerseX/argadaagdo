@@ -7,6 +7,7 @@ import {
   getProfileById,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import { notifyBusinessRegistrationSubmitted } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { validateTextField } from "@/lib/validation";
@@ -195,6 +196,7 @@ export default function BusinessRegisterPage() {
     setSubmitting(false);
     setMessageTone("success");
     setMessage("Business submitted. Waiting for admin approval.");
+    notifyBusinessRegistrationSubmitted({ businessName: nameResult.value });
   }
 
   return (

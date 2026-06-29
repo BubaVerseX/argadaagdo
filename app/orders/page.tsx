@@ -10,7 +10,10 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { notifyOrderCancelled } from "@/lib/notifications";
+import {
+  notifyOrderCancelled,
+  notifyRatingSubmitted,
+} from "@/lib/notifications";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -98,6 +101,130 @@ function canShowCancellationAvailable(order: Order) {
   const deadline = getCancellationDeadlineKey(order);
   if (!deadline) return true;
   return getTbilisiDateTimeKey() <= deadline;
+}
+
+function getPickupDateTime(order: Order, field: "pickup_start" | "pickup_end") {
+  const offer = order.offers;
+  const timeValue = offer?.[field];
+
+  if (!offer?.pickup_date || !timeValue) return null;
+
+  const pickupDate = new Date(
+    `${offer.pickup_date}T${normalizeTime(timeValue)}:00+04:00`
+  );
+
+  return Number.isNaN(pickupDate.getTime()) ? null : pickupDate;
+}
+
+function isPickupWindowOpen(order: Order) {
+  const pickupStart = getPickupDateTime(order, "pickup_start");
+  const pickupEnd = getPickupDateTime(order, "pickup_end");
+
+  if (!pickupStart || !pickupEnd) return false;
+
+  const now = new Date();
+  return now >= pickupStart && now <= pickupEnd;
+}
+
+function getPickupReminderMessage(order: Order, language: "en" | "ka") {
+  if (!isConfirmedOrderStatus(getEffectiveOrderStatus(order))) return "";
+
+  const pickupStart = getPickupDateTime(order, "pickup_start");
+  const pickupEnd = getPickupDateTime(order, "pickup_end");
+
+  if (!pickupStart || !pickupEnd) return "";
+
+  const now = new Date();
+
+  if (now >= pickupStart && now <= pickupEnd) {
+    return language === "ka"
+      ? "წაღების დრო ახლა აქტიურია. არ დაგავიწყდეს კოდის ჩვენება."
+      : "Pickup is open now. Do not forget your pickup code.";
+  }
+
+  const minutesUntilPickup = Math.ceil(
+    (pickupStart.getTime() - now.getTime()) / 60000
+  );
+
+  if (minutesUntilPickup < 0 || minutesUntilPickup > 120) return "";
+
+  if (minutesUntilPickup <= 60) {
+    return language === "ka"
+      ? `წაღება იწყება ${minutesUntilPickup} წუთში. არ დაგავიწყდეს კოდი.`
+      : `Pickup starts in ${minutesUntilPickup} minutes. Do not forget your pickup code.`;
+  }
+
+  const hoursUntilPickup = Math.ceil(minutesUntilPickup / 60);
+
+  return language === "ka"
+    ? `წაღება იწყება ${hoursUntilPickup} საათში. არ დაგავიწყდეს კოდი.`
+    : `Pickup starts in ${hoursUntilPickup} hours. Do not forget your pickup code.`;
+}
+
+type TimelineStepState = "done" | "current" | "pending" | "stopped";
+
+type TimelineStep = {
+  label: string;
+  state: TimelineStepState;
+};
+
+function TimelineSteps({ steps }: { steps: TimelineStep[] }) {
+  const stepStyles: Record<TimelineStepState, string> = {
+    done: "border-green-700 bg-green-700 text-white",
+    current: "border-yellow-400 bg-yellow-100 text-yellow-950",
+    pending: "border-gray-200 bg-white text-gray-500",
+    stopped: "border-red-200 bg-red-100 text-red-700",
+  };
+
+  return (
+    <ol className="grid gap-2 sm:grid-cols-4" aria-label="Order timeline">
+      {steps.map((step, index) => (
+        <li
+          key={`${step.label}-${index}`}
+          className={`rounded-2xl border px-3 py-3 text-center text-xs font-black sm:text-sm ${stepStyles[step.state]}`}
+        >
+          {step.label}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function getCustomerTimelineSteps(order: Order, language: "en" | "ka") {
+  const displayStatus = getEffectiveOrderStatus(order);
+  const isCollected = isCollectedOrderStatus(displayStatus);
+  const isStopped =
+    isCancelledOrderStatus(displayStatus) || displayStatus === "expired";
+  const readyForPickup = isPickupWindowOpen(order);
+  const rated = Boolean(order.rated_at);
+  const labels =
+    language === "ka"
+      ? ["დაჯავშნილი", "წასაღებად მზად", "წაღებული", "შეფასებული"]
+      : ["Reserved", "Ready for pickup", "Collected", "Rated"];
+
+  if (isStopped) {
+    return labels.map((label, index) => ({
+      label,
+      state:
+        index === 0
+          ? ("done" as const)
+          : index === 1
+          ? ("stopped" as const)
+          : ("pending" as const),
+    }));
+  }
+
+  const currentIndex = rated ? 3 : isCollected ? 2 : readyForPickup ? 1 : 0;
+
+  return labels.map((label, index) => ({
+    label,
+    state:
+      index < currentIndex
+        ? ("done" as const)
+        : index === currentIndex
+        ? ("current" as const)
+        : ("pending" as const),
+  }));
 }
 
 function getCustomerStatusLabel(status: OrderStatus, language: "en" | "ka") {
@@ -222,6 +349,10 @@ export default function OrdersPage() {
 
     setMessageTone("success");
     setMessage("Thanks. Your review was saved.");
+    notifyRatingSubmitted({
+      orderId: order.id,
+      businessName: order.offers?.businesses?.name,
+    });
     setOrders((currentOrders) =>
       currentOrders.map((item) =>
         item.id === order.id
@@ -494,6 +625,11 @@ export default function OrdersPage() {
               : t("orders.pickupCodeAvailable");
             const selectedRating = ratingValues[order.id] || 0;
             const reviewText = reviewTexts[order.id] || "";
+            const pickupReminderMessage = getPickupReminderMessage(
+              order,
+              language
+            );
+            const timelineSteps = getCustomerTimelineSteps(order, language);
 
             return (
               <div
@@ -527,6 +663,24 @@ export default function OrdersPage() {
                     <p className="mt-2 text-lg font-bold text-gray-800">
                       {order.offers?.businesses?.name || t("common.businessUnavailable")}
                     </p>
+
+                    <div className="mt-4 rounded-3xl border border-green-100 bg-white p-4">
+                      <p className="mb-3 text-sm font-black uppercase tracking-widest text-green-700">
+                        Order timeline
+                      </p>
+                      <TimelineSteps steps={timelineSteps} />
+                    </div>
+
+                    {pickupReminderMessage && (
+                      <div className="mt-4 rounded-3xl border border-yellow-200 bg-yellow-50 p-4">
+                        <p className="text-sm font-black uppercase tracking-widest text-yellow-800">
+                          Pickup reminder
+                        </p>
+                        <p className="mt-2 font-bold leading-7 text-yellow-950">
+                          {pickupReminderMessage}
+                        </p>
+                      </div>
+                    )}
 
                     <div className="mt-4 rounded-3xl bg-[#F7F6EF] p-4">
                       <p className="text-sm font-black uppercase tracking-widest text-green-700">

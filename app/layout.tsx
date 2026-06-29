@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import NotificationCenter from "@/components/NotificationCenter";
 import "./globals.css";
 
 const appDescription =
@@ -57,7 +58,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <NotificationCenter />
+      </body>
     </html>
   );
 }
