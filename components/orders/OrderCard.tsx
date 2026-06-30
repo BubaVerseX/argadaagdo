@@ -11,6 +11,7 @@ import {
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isPendingPaymentOrderStatus,
 } from "@/lib/orderStatus";
 import {
   canShowCancellationAvailable,
@@ -67,6 +68,8 @@ export function OrderCard({
     : t("orders.pickupUnavailable");
   const inactiveOrderMessage = isCollectedOrderStatus(displayStatus)
     ? t("orders.collectedMessage")
+    : isPendingPaymentOrderStatus(displayStatus)
+    ? "Payment is being confirmed. Your pickup code will appear after confirmation."
     : displayStatus === "no_show"
     ? t("orders.noShowMessage")
     : displayStatus === "expired"
@@ -205,7 +208,7 @@ export function OrderCard({
                     ? formatMoney(order.offers.price)
                     : t("common.unavailable")}
                 </p>
-                <p>Payment reference: prepared for future provider</p>
+                <p>Payment reference: managed securely by ArGadaagdo</p>
               </div>
             </div>
           </div>

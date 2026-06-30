@@ -21,13 +21,15 @@ Production beta URL:
 - Business registration with admin approval
 - Business dashboard for offers, reservations, pickup verification, and reviews
 - Public marketplace with categories, sorting, favorites, and offer detail pages
-- Pilot reservation flow through Supabase RPC functions
+- Bank of Georgia checkout session preparation through server route handlers
+- Payment-first reservation flow through Supabase RPC functions
 - Pickup codes for customers and manual code verification for businesses
 - Customer orders, cancellation, completed pickup history, and ratings
 - Admin dashboard for approvals and marketplace health
 - Supabase Storage image uploads with safe fallbacks
 - Mobile-friendly public pages, FAQ, support, contact, privacy, and terms pages
 - Basic PWA manifest, metadata, robots, and sitemap support
+- Production health endpoint and operations runbook
 
 ## Tech Stack
 
@@ -40,6 +42,7 @@ Production beta URL:
 - Supabase Storage
 - Supabase Realtime
 - Supabase RPC functions
+- Resend transactional email
 - Vercel
 
 ## Marketplace Flow
@@ -48,11 +51,13 @@ Production beta URL:
 2. An admin reviews and approves the business.
 3. The business creates a pickup-only surprise bag offer.
 4. A customer browses active offers and confirms a reservation.
-5. The reservation RPC creates the order, payment record, pickup code, and
-   decreases offer quantity atomically.
-6. The customer shows the pickup code during the pickup window.
-7. The business verifies the code and completes the pickup.
-8. The customer can rate the completed order.
+5. The payment RPC creates a pending order and payment hold while decreasing
+   offer quantity atomically.
+6. Bank of Georgia confirms payment through a verified server callback.
+7. The order becomes reserved and the pickup code is created.
+8. The customer shows the pickup code during the pickup window.
+9. The business verifies the code and completes the pickup.
+10. The customer can rate the completed order.
 
 ## Database Overview
 
@@ -61,15 +66,37 @@ Production beta URL:
 | `profiles` | User email, role, and reliability fields |
 | `businesses` | Business ownership, details, approval state, and profile data |
 | `offers` | Surprise bags, prices, pickup windows, images, status, and quantity |
-| `orders` | Reservation lifecycle, pickup codes, cancellation, and rating state |
-| `payments` | Pilot payment records, fees, business amount, and refund state |
+| `orders` | Pending payment, reservation lifecycle, pickup codes, cancellation, and rating state |
+| `payments` | Provider payment state, fees, business amount, references, and refund state |
 | `business_ratings` | Customer ratings for completed pickups |
 | `favorites` | Saved offers for customers |
 
-Reservation inventory changes must go through:
+Payment-first inventory holds must go through:
 
 ```ts
-supabase.rpc("mock_pay_and_reserve_offer", { p_offer_id: offerId })
+supabase.rpc("create_provider_payment_order", {
+  p_offer_id: offerId,
+  p_provider: "bog",
+})
+```
+
+Payment callbacks must be finalized server-side through:
+
+```ts
+supabase.rpc("finalize_provider_payment", {
+  p_provider: "bog",
+  p_provider_reference: providerReference,
+  p_external_order_id: externalOrderId,
+  p_provider_status: providerStatus,
+  p_amount: amount,
+})
+```
+
+The old mock reservation RPC remains in the database for compatibility, but the
+customer checkout should use the provider session route:
+
+```ts
+POST /api/payments/checkout
 ```
 
 Customer cancellation must go through:
@@ -118,15 +145,41 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-or-publishable-key
 NEXT_PUBLIC_SITE_URL=https://argadaagdo-silk.vercel.app
 ```
 
-Optional:
+Server-only payment variables:
+
+```bash
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+BOG_CLIENT_ID=your-bank-of-georgia-client-id
+BOG_CLIENT_SECRET=your-bank-of-georgia-client-secret
+BOG_AUTH_URL=https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token
+BOG_API_BASE_URL=https://api.bog.ge
+BOG_CALLBACK_SECRET=use-a-long-random-callback-secret
+BOG_CALLBACK_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+BOG_REQUIRE_CALLBACK_SIGNATURE=true
+BOG_REFUND_PATH_TEMPLATE=/payments/v1/payment/refund/{order_id}
+```
+
+Server-only email variables:
+
+```bash
+RESEND_API_KEY=re_your_resend_api_key
+TRANSACTIONAL_EMAIL_FROM="ArGadaagdo <support@argadaagdo.ge>"
+TRANSACTIONAL_EMAIL_REPLY_TO=support@argadaagdo.ge
+TRANSACTIONAL_EMAILS_ENABLED=true
+CRON_SECRET=use-a-long-random-cron-secret
+```
+
+Optional public build variables:
 
 ```bash
 NEXT_PUBLIC_APP_VERSION=local
 NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA=provided-by-vercel
 ```
 
-Only public browser-safe Supabase values should use the `NEXT_PUBLIC_` prefix.
-Do not commit `.env.local`.
+Only public browser-safe values should use the `NEXT_PUBLIC_` prefix. Never
+expose `SUPABASE_SERVICE_ROLE_KEY`, `BOG_CLIENT_SECRET`,
+`BOG_CALLBACK_SECRET`, `BOG_CALLBACK_PUBLIC_KEY`, `RESEND_API_KEY`, or
+`CRON_SECRET` to the browser. Do not commit `.env.local`.
 
 ## Local Development
 
@@ -157,6 +210,9 @@ npm run build
 - The `offer-images` storage bucket must exist and allow approved businesses to
   upload offer images according to the project storage policies.
 - Email confirmation should be enabled for production.
+- Configure Supabase Auth email delivery with the same Resend SMTP sender used
+  by the app. Supabase Auth should send account verification, resend
+  verification, and password reset emails.
 - Auth redirect URLs should include the production URL and local development
   URL, for example:
   - `https://argadaagdo-silk.vercel.app`
@@ -164,14 +220,53 @@ npm run build
   - `http://localhost:3000`
   - `http://localhost:3000/login`
 
+## Transactional Email System
+
+ArGadaagdo uses Resend for marketplace emails sent from Next.js route handlers.
+The app sends:
+
+- Reservation confirmation after verified payment finalizes an order
+- Reservation cancellation after `cancel_paid_order` succeeds
+- Business approval after an admin approves a business
+- Pickup completed after `complete_pickup` succeeds
+- Rating reminder after pickup completion
+- Pickup reminder through `/api/cron/pickup-reminders`
+
+Supabase Auth remains responsible for account verification and password reset
+emails. Configure Supabase Authentication SMTP with the verified Resend sender
+domain so those auth emails are delivered through the same production provider.
+
+The email sender uses deterministic Resend idempotency keys and retries
+transient provider failures. Email delivery failures are logged but do not roll
+back successful reservations, cancellations, approvals, or pickups.
+
 ## Vercel Deployment Notes
 
 - Set all required environment variables in Vercel.
 - Use `NEXT_PUBLIC_SITE_URL=https://argadaagdo-silk.vercel.app` for canonical
   metadata, sitemap, and robots URLs.
+- Configure the Bank of Georgia merchant callback URL as:
+  `https://argadaagdo-silk.vercel.app/api/payments/bog/callback?secret=<BOG_CALLBACK_SECRET>`
+- Configure successful and failed payment redirects to use the generated
+  checkout session URLs returned by ArGadaagdo.
+- Set `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`,
+  `TRANSACTIONAL_EMAIL_REPLY_TO`, and `CRON_SECRET` in Vercel.
+- Set `HEALTH_CHECK_SECRET` in Vercel for detailed authenticated health checks.
+- The Vercel cron in `vercel.json` calls `/api/cron/pickup-reminders` once per
+  day. Vercel sends `Authorization: Bearer $CRON_SECRET`; keep that secret set
+  in production.
+- Use `/api/health` for public uptime checks. Use
+  `Authorization: Bearer $HEALTH_CHECK_SECRET` for detailed operational checks.
 - The production branch should deploy from the GitHub repository that is treated
   as the source of truth.
 - Run `npm run build` locally before promoting production changes.
+
+## Operations Runbook
+
+Production recovery, backup expectations, deployment checks and pilot readiness
+steps live in:
+
+[docs/production-reliability.md](docs/production-reliability.md)
 
 ## Screenshots
 
@@ -183,8 +278,8 @@ Add final pilot screenshots after the production UI is confirmed:
 
 ## Future Roadmap
 
-- Real card/bank payment integration for Georgia
-- Transactional email notifications
+- Provider refund automation and payout reporting
+- Delivery webhooks for email bounce/complaint tracking
 - Stronger marketplace analytics and payouts
 - Location-aware discovery for Tbilisi neighborhoods
 - More complete Georgian and English localization

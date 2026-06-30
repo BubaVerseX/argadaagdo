@@ -479,9 +479,9 @@ export function AdminPaymentPreparation({
         </div>
 
         <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-          Real payment providers are not connected yet. This panel shows the
-          financial fields already recorded by orders and the sections ready for
-          future provider integration.
+          Bank of Georgia checkout support is prepared in the app. This panel
+          shows the financial fields recorded by orders and the states admins
+          should monitor when provider credentials are enabled.
         </p>
       </div>
 
@@ -494,9 +494,9 @@ export function AdminPaymentPreparation({
           </h3>
           <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
             Current database payments support{" "}
-            {currentDatabasePaymentStatuses.join(", ")}. Future provider work
-            should add pending, authorized and expired before real payment
-            sessions are stored.
+            {currentDatabasePaymentStatuses.join(", ")}. Pending sessions hold
+            inventory until Bank of Georgia confirms, fails, cancels or expires
+            the payment.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {paymentStatuses.map((status) => (

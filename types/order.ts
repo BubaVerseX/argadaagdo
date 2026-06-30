@@ -3,6 +3,7 @@ import type { Offer } from "@/types/offer";
 import type { Profile } from "@/types/profile";
 
 export type OrderStatus =
+  | "pending_payment"
   | "reserved"
   | "confirmed"
   | "collected"

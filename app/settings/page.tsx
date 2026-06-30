@@ -108,10 +108,10 @@ export default function SettingsPage() {
     },
     {
       title: "Notifications",
-      text: "Email notification preferences are prepared for future provider integration.",
-      action: "Review plan",
+      text: "Transactional emails are configured for account, reservation, pickup and rating events.",
+      action: "Review emails",
       href: "#notifications",
-      status: "Prepared",
+      status: "Configured",
     },
     {
       title: "Privacy",
@@ -256,12 +256,11 @@ export default function SettingsPage() {
               Notifications
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-              Email notification plan
+              Email notifications
             </h2>
             <p className="mt-2 font-semibold leading-7 text-gray-600">
-              Real email sending is not connected yet. These events are prepared
-              so a provider can be added later without changing the marketplace
-              flow.
+              ArGadaagdo sends important account, reservation, pickup and
+              rating emails through the configured transactional email provider.
             </p>
 
             <div className="mt-6 grid gap-3">
@@ -280,7 +279,7 @@ export default function SettingsPage() {
                       </p>
                     </div>
                     <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800">
-                      {placeholder.recipient}
+                      {placeholder.status} · {placeholder.recipient}
                     </span>
                   </div>
                   <p className="mt-3 text-sm font-semibold leading-6 text-gray-700">

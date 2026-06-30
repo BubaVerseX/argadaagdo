@@ -13,10 +13,13 @@ export const paymentStatuses = [
 export type PaymentStatus = (typeof paymentStatuses)[number];
 
 export const currentDatabasePaymentStatuses = [
+  "pending",
+  "authorized",
   "paid",
   "refunded",
   "failed",
   "cancelled",
+  "expired",
 ] as const;
 
 export const platformFeeRate = 0.1;
@@ -26,7 +29,7 @@ export const paymentProviderPreparation = [
   {
     id: "bank_of_georgia",
     name: "Bank of Georgia",
-    role: "Likely local card payment provider for Georgian customers.",
+    role: "Primary Georgian card payment provider for production checkout.",
   },
   {
     id: "tbc_bank",
@@ -59,14 +62,14 @@ export const paymentArchitectureNotes = {
   currentFlow: [
     "Customer opens checkout for an active offer.",
     "Customer confirms the reservation rules.",
-    "Frontend calls mock_pay_and_reserve_offer(p_offer_id).",
-    "RPC creates order, payment row, pickup code, and decreases inventory atomically.",
+    "Frontend asks the server to create a Bank of Georgia checkout session.",
+    "RPC creates a pending order and payment hold, then decreases inventory atomically.",
+    "Verified provider callback marks the order reserved and creates the pickup code.",
   ],
   futureFlow: [
-    "Customer opens checkout for an active offer.",
-    "Backend creates a pending payment intent/session with a selected provider.",
-    "Provider confirms authorization or payment through a verified callback/webhook.",
-    "Only after provider success does ArGadaagdo reserve inventory and create the pickup code.",
+    "Additional providers can implement the same provider abstraction.",
+    "TBC, Stripe or wallet methods can be added without changing order lifecycle rules.",
+    "Webhook verification must remain server-side for every provider.",
   ],
   refundFlow: [
     "Customer cancels inside the allowed cancellation window.",

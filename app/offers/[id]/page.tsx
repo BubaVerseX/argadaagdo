@@ -171,8 +171,8 @@ export default function OfferDetailPage() {
           question: language === "ka" ? "როდის ვიხდი?" : "When do I pay?",
           answer:
             language === "ka"
-              ? "პილოტის პერიოდში ჯავშანი ArGadaagdo-ში დასტურდება. ონლაინ ბარათით გადახდა დაემატება ფასიანი გაშვების წინ."
-              : "During the pilot, reservations are confirmed in ArGadaagdo. Online card payments will be added before the paid launch.",
+              ? "Checkout-ზე გადახდა Bank of Georgia-ს მეშვეობით სრულდება. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
+              : "Payment is completed through Bank of Georgia checkout. Your reservation is confirmed only after payment succeeds.",
         },
         {
           question:

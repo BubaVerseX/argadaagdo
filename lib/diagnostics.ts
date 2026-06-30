@@ -1,5 +1,6 @@
 import { formatAppError } from "@/lib/errors";
 import { supabase } from "@/lib/supabase";
+import type { HealthReport, HealthStatus } from "@/lib/monitoring";
 
 export type ApplicationHealthStatus = "ok" | "warning" | "error";
 
@@ -22,7 +23,56 @@ export function getApplicationHealthStatusLabel(
   return getStatusLabel(status);
 }
 
+function mapHealthStatus(status: HealthStatus): ApplicationHealthStatus {
+  if (status === "ok") return "ok";
+  if (status === "warning") return "warning";
+  return "error";
+}
+
+function getHealthValue(status: HealthStatus) {
+  if (status === "ok") return "Healthy";
+  if (status === "warning") return "Review";
+  return "Problem";
+}
+
+async function loadServerHealth(): Promise<ApplicationHealthItem[] | null> {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const response = await fetch("/api/health", {
+      cache: "no-store",
+    });
+    const report = (await response.json()) as Partial<HealthReport>;
+
+    if (!Array.isArray(report.checks)) return null;
+
+    const healthItems = report.checks.map((check) => ({
+      title: check.label,
+      status: mapHealthStatus(check.status),
+      value: getHealthValue(check.status),
+      detail: check.message,
+    }));
+
+    healthItems.push({
+      title: "Build version",
+      status: "ok",
+      value: report.version || "local",
+      detail: `Runtime health endpoint responded in ${
+        report.durationMs ?? "unknown"
+      }ms.`,
+    });
+
+    return healthItems;
+  } catch {
+    return null;
+  }
+}
+
 export async function checkApplicationHealth(): Promise<ApplicationHealthItem[]> {
+  const serverHealth = await loadServerHealth();
+
+  if (serverHealth) return serverHealth;
+
   const envOk = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY

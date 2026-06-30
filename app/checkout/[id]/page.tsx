@@ -10,7 +10,6 @@ import {
 } from "@/lib/auth";
 import { getUserErrorMessage } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
-import { notifyReservationConfirmed } from "@/lib/notifications";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -20,7 +19,6 @@ import {
 } from "@/lib/offerLifecycle";
 import {
   businessPayoutRate,
-  paymentProviderPreparation,
   platformFeeRate,
 } from "@/lib/paymentArchitecture";
 import { supabase } from "@/lib/supabase";
@@ -263,29 +261,44 @@ export default function CheckoutPage() {
 
     setPaying(true);
 
-    const { error } = await supabase.rpc("mock_pay_and_reserve_offer", {
-      p_offer_id: offer.id,
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setCheckoutBlocked(true);
+      router.replace(getLoginRedirectUrl(checkoutPath));
+      return;
+    }
+
+    const response = await fetch("/api/payments/checkout", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        offerId: offer.id,
+        provider: "bog",
+      }),
     });
 
-    if (error) {
+    const paymentSession = await response.json().catch(() => null);
+
+    if (!response.ok || !paymentSession?.redirectUrl) {
       setMessageTone("error");
-      setMessage(getReservationErrorMessage(error.message));
+      setMessage(
+        getReservationErrorMessage(
+          paymentSession?.error ||
+            "Secure payment checkout could not be started."
+        )
+      );
       setPaying(false);
       await refreshOffer();
       return;
     }
 
-    notifyReservationConfirmed({
-      offerId: offer.id,
-      offerTitle: offer.title,
-      businessName: offer.businesses?.name,
-      pickupStart: offer.pickup_start,
-      pickupEnd: offer.pickup_end,
-    });
-
-    setMessageTone("success");
-    setMessage(t("checkout.successMessage"));
-    router.push("/orders");
+    window.location.assign(paymentSession.redirectUrl);
   }
 
   return (
@@ -501,16 +514,8 @@ export default function CheckoutPage() {
                     <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
                       {t("checkout.paymentPreparationText")}
                     </p>
-
-                    <div className="mt-4 grid gap-2">
-                      {paymentProviderPreparation.slice(0, 3).map((provider) => (
-                        <div
-                          key={provider.id}
-                          className="rounded-2xl bg-green-50 px-3 py-2 text-sm font-black text-green-900"
-                        >
-                          {provider.name}
-                        </div>
-                      ))}
+                    <div className="mt-4 rounded-2xl bg-green-50 px-3 py-2 text-sm font-black text-green-900">
+                      Bank of Georgia
                     </div>
                   </div>
 

@@ -1,11 +1,12 @@
 export type EmailNotificationEvent =
-  | "account_created"
-  | "email_verified"
+  | "account_verification"
+  | "password_reset"
   | "business_approved"
   | "reservation_confirmed"
   | "reservation_cancelled"
   | "pickup_reminder"
   | "pickup_completed"
+  | "rating_reminder"
   | "new_rating_received";
 
 export type EmailNotificationPlaceholder = {
@@ -13,74 +14,74 @@ export type EmailNotificationPlaceholder = {
   title: string;
   recipient: "customer" | "business" | "admin";
   trigger: string;
-  status: "placeholder";
+  status: "provider" | "app" | "cron";
   note: string;
 };
 
 export const emailNotificationPlaceholders: EmailNotificationPlaceholder[] = [
   {
-    event: "account_created",
-    title: "Account created",
+    event: "account_verification",
+    title: "Account verification",
     recipient: "customer",
-    trigger: "After successful signup",
-    status: "placeholder",
-    note: "Supabase Auth handles verification email. Product welcome email can be added later.",
+    trigger: "Supabase Auth signup and resend verification",
+    status: "provider",
+    note: "Delivered by Supabase Auth through the configured Resend SMTP provider.",
   },
   {
-    event: "email_verified",
-    title: "Email verified",
+    event: "password_reset",
+    title: "Password reset",
     recipient: "customer",
-    trigger: "After confirmed email session",
-    status: "placeholder",
-    note: "No provider is connected yet, so the app should keep using in-app guidance.",
+    trigger: "Supabase Auth password reset request",
+    status: "provider",
+    note: "Delivered by Supabase Auth through the configured Resend SMTP provider.",
   },
   {
     event: "business_approved",
     title: "Business approved",
     recipient: "business",
     trigger: "Admin approves business",
-    status: "placeholder",
-    note: "Future email should tell the owner they can open the dashboard and publish offers.",
+    status: "app",
+    note: "Sent by the app through Resend after admin approval succeeds.",
   },
   {
     event: "reservation_confirmed",
     title: "Reservation confirmed",
     recipient: "customer",
-    trigger: "Reservation RPC succeeds",
-    status: "placeholder",
-    note: "Future email should include offer, pickup window, address and pickup code guidance.",
+    trigger: "Verified payment finalizes the order",
+    status: "app",
+    note: "Sent by the app through Resend after the order becomes reserved.",
   },
   {
     event: "reservation_cancelled",
     title: "Reservation cancelled",
     recipient: "customer",
     trigger: "Cancellation RPC succeeds",
-    status: "placeholder",
-    note: "Future email should confirm cancellation/refund status for paid reservations.",
+    status: "app",
+    note: "Sent by the app through Resend after cancellation/refund succeeds.",
   },
   {
     event: "pickup_reminder",
     title: "Pickup reminder",
     recipient: "customer",
-    trigger: "Before pickup window",
-    status: "placeholder",
-    note: "Future scheduled job can send this 2 hours before pickup.",
+    trigger: "Daily protected pickup-reminder cron",
+    status: "cron",
+    note: "Sent by the app through Resend for same-day reservations nearing pickup.",
   },
   {
     event: "pickup_completed",
     title: "Pickup completed",
     recipient: "customer",
     trigger: "Business completes pickup",
-    status: "placeholder",
-    note: "Future email should thank the customer and invite a rating.",
+    status: "app",
+    note: "Sent by the app through Resend after complete_pickup succeeds.",
   },
   {
-    event: "new_rating_received",
-    title: "New rating received",
-    recipient: "business",
-    trigger: "Customer submits rating",
-    status: "placeholder",
-    note: "Future email should notify the business that a new review is visible.",
+    event: "rating_reminder",
+    title: "Rating reminder",
+    recipient: "customer",
+    trigger: "Business completes pickup",
+    status: "app",
+    note: "Sent by the app through Resend after pickup completion.",
   },
 ];
 
@@ -97,9 +98,9 @@ export function createEmailNotificationPlaceholder(
 
   return {
     event,
-    status: "placeholder" as const,
+    status: placeholder?.status || ("app" as const),
     message: placeholder
-      ? `${placeholder.title} email is prepared as a future notification event.`
+      ? `${placeholder.title} email is configured through ${placeholder.status}.`
       : "Email notification placeholder is not configured yet.",
   };
 }

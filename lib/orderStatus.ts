@@ -9,6 +9,10 @@ export function isConfirmedOrderStatus(status: OrderStatus) {
   return status === "reserved" || status === "confirmed";
 }
 
+export function isPendingPaymentOrderStatus(status: OrderStatus) {
+  return status === "pending_payment";
+}
+
 export function isCollectedOrderStatus(status: OrderStatus) {
   return status === "collected" || status === "completed";
 }
@@ -38,6 +42,9 @@ export function getEffectiveOrderStatus(order: Order): OrderStatus {
 }
 
 export function getOrderStatusLabel(status: OrderStatus, language: Language = "en") {
+  if (isPendingPaymentOrderStatus(status)) {
+    return language === "ka" ? "გადახდა მუშავდება" : "Payment pending";
+  }
   if (isConfirmedOrderStatus(status)) {
     return language === "ka" ? "დაჯავშნილი" : "Reserved";
   }
@@ -57,6 +64,7 @@ export function getOrderStatusLabel(status: OrderStatus, language: Language = "e
 }
 
 export function getOrderStatusClassName(status: OrderStatus) {
+  if (isPendingPaymentOrderStatus(status)) return "bg-blue-100 text-blue-700";
   if (isCollectedOrderStatus(status)) return "bg-green-100 text-green-700";
   if (isExpiredOrderStatus(status)) return "bg-gray-100 text-gray-700";
   if (isCancelledOrderStatus(status)) return "bg-red-100 text-red-700";
@@ -64,6 +72,11 @@ export function getOrderStatusClassName(status: OrderStatus) {
 }
 
 export function getInactiveOrderMessage(status: OrderStatus, language: Language = "en") {
+  if (isPendingPaymentOrderStatus(status)) {
+    return language === "ka"
+      ? "ჯავშანი დადასტურდება გადახდის შემდეგ"
+      : "Reservation will be confirmed after payment";
+  }
   if (isCollectedOrderStatus(status)) {
     return language === "ka" ? "ჯავშანი წაღებულია" : "Reservation collected";
   }

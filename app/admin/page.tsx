@@ -27,6 +27,7 @@ import {
   checkApplicationHealth,
   type ApplicationHealthItem,
 } from "@/lib/diagnostics";
+import { triggerTransactionalEmail } from "@/lib/email/client";
 import { logAppError } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
@@ -224,6 +225,10 @@ export default function AdminPage() {
     if (approvedBusiness) {
       notifyBusinessApproved({ businessName: approvedBusiness.name });
     }
+    void triggerTransactionalEmail({
+      event: "business_approval",
+      businessId: id,
+    });
     setUpdatingBusinessId(null);
     await checkAdminAndLoadData();
   }

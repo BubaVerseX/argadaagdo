@@ -31,6 +31,7 @@ import {
   getConfirmedProfile,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import { triggerTransactionalEmail } from "@/lib/email/client";
 import {
   actionCooldownMs,
   createImageFileName,
@@ -1052,6 +1053,10 @@ export default function BusinessDashboardPage() {
       orderId,
       offerTitle: completedOrder?.offers?.title,
       businessName: completedOrder?.offers?.businesses?.name,
+    });
+    void triggerTransactionalEmail({
+      event: "pickup_completed",
+      orderId,
     });
     setOrders((currentOrders) =>
       currentOrders.map((order) =>

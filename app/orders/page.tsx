@@ -33,15 +33,52 @@ import { validateTextField } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+type MessageTone = "success" | "error" | "warning";
+
+function getInitialPaymentReturnMessage():
+  | { tone: MessageTone; message: string }
+  | null {
+  if (typeof window === "undefined") return null;
+
+  const paymentStatus = new URLSearchParams(window.location.search).get(
+    "payment"
+  );
+
+  if (paymentStatus === "success") {
+    return {
+      tone: "success",
+      message: "Payment confirmed. Your pickup code is ready below.",
+    };
+  }
+
+  if (paymentStatus === "pending") {
+    return {
+      tone: "warning",
+      message:
+        "Payment is still being confirmed. Refresh this page in a moment.",
+    };
+  }
+
+  if (paymentStatus === "failed") {
+    return {
+      tone: "error",
+      message: "Payment was not completed. The offer quantity was released.",
+    };
+  }
+
+  return null;
+}
+
 export default function OrdersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
+  const initialPaymentMessage = getInitialPaymentReturnMessage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [message, setMessage] = useState("");
-  const [messageTone, setMessageTone] = useState<
-    "success" | "error" | "warning"
-  >("success");
+  const [message, setMessage] = useState(initialPaymentMessage?.message || "");
+  const [messageTone, setMessageTone] = useState<MessageTone>(
+    initialPaymentMessage?.tone || "success"
+  );
   const [loading, setLoading] = useState(true);
   const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(
     null
@@ -168,13 +205,30 @@ export default function OrdersPage() {
     setCancellingOrderId(order.id);
     setMessage("");
 
-    const { error: orderError } = await supabase.rpc("cancel_paid_order", {
-      p_order_id: order.id,
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setCancellingOrderId(null);
+      router.replace(getLoginRedirectUrl("/orders"));
+      return;
+    }
+
+    const response = await fetch("/api/payments/refund", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ orderId: order.id }),
     });
 
-    if (orderError) {
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
       setMessageTone("error");
-      setMessage(getCancellationErrorMessage(orderError.message));
+      setMessage(getCancellationErrorMessage(result?.error));
       await loadOrders(order.user_id);
       setCancellingOrderId(null);
       return;

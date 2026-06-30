@@ -5,6 +5,7 @@ import {
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isPendingPaymentOrderStatus,
 } from "@/lib/orderStatus";
 import type { Order, OrderStatus } from "@/lib/types";
 import type { TimelineStep } from "@/components/TimelineSteps";
@@ -147,6 +148,7 @@ export function getCustomerTimelineSteps(
   language: Language
 ): TimelineStep[] {
   const displayStatus = getEffectiveOrderStatus(order);
+  const isPendingPayment = isPendingPaymentOrderStatus(displayStatus);
   const isCollected = isCollectedOrderStatus(displayStatus);
   const isStopped =
     isCancelledOrderStatus(displayStatus) || displayStatus === "expired";
@@ -154,18 +156,31 @@ export function getCustomerTimelineSteps(
   const rated = Boolean(order.rated_at);
   const labels =
     language === "ka"
-      ? ["დაჯავშნილი", "წასაღებად მზად", "წაღებული", "შეფასებული"]
-      : ["Reserved", "Ready for pickup", "Collected", "Rated"];
+      ? [
+          "გადახდა",
+          "დაჯავშნილი",
+          "წასაღებად მზად",
+          "წაღებული",
+          "შეფასებული",
+        ]
+      : ["Payment", "Reserved", "Ready for pickup", "Collected", "Rated"];
+
+  if (isPendingPayment) {
+    return labels.map((label, index) => ({
+      label,
+      state: index === 0 ? "current" : "pending",
+    }));
+  }
 
   if (isStopped) {
     return labels.map((label, index) => ({
       label,
       state:
-        index === 0 ? "done" : index === 1 ? "stopped" : "pending",
+        index <= 1 ? "done" : index === 2 ? "stopped" : "pending",
     }));
   }
 
-  const currentIndex = rated ? 3 : isCollected ? 2 : readyForPickup ? 1 : 0;
+  const currentIndex = rated ? 4 : isCollected ? 3 : readyForPickup ? 2 : 1;
 
   return labels.map((label, index) => ({
     label,
@@ -182,6 +197,9 @@ export function getCustomerStatusLabel(
   status: OrderStatus,
   language: Language
 ) {
+  if (isPendingPaymentOrderStatus(status)) {
+    return language === "ka" ? "გადახდა მუშავდება" : "Payment pending";
+  }
   if (isConfirmedOrderStatus(status)) {
     return language === "ka" ? "წაღების მოლოდინში" : "Waiting for pickup";
   }

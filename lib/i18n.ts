@@ -510,14 +510,14 @@ const translations = {
 
     "checkout.title": "Reservation Confirmation",
     "checkout.subtitle":
-      "Your reservation will be confirmed immediately. Please collect your order during the pickup window shown below.",
+      "Review your order and complete secure online payment before pickup.",
     "checkout.summary": "Reservation summary",
     "checkout.stepReservationTitle": "Reservation",
     "checkout.stepReservationText":
       "Review the offer, pickup time and cancellation rules.",
     "checkout.stepPaymentTitle": "Payment",
     "checkout.stepPaymentText":
-      "Real online payment provider integration is prepared for a future release.",
+      "Complete secure online payment through Bank of Georgia before the reservation is finalized.",
     "checkout.stepPickupTitle": "Pickup",
     "checkout.stepPickupText":
       "After confirmation, use your pickup code during the pickup window.",
@@ -532,15 +532,15 @@ const translations = {
     "checkout.noShowWarning": "No-show warning",
     "checkout.noShowText": "If you do not pick up your order, it may count as a no-show.",
     "checkout.regularPrice": "Regular price",
-    "checkout.paymentMethod": "Reservation method",
+    "checkout.paymentMethod": "Payment method",
     "checkout.pilotReservationMethod":
-      "Reservations are processed directly through ArGadaagdo during the pilot phase.",
-    "checkout.paymentPreparationTitle": "Payment preparation",
+      "Online card payment via Bank of Georgia.",
+    "checkout.paymentPreparationTitle": "Secure payment",
     "checkout.paymentPreparationText":
-      "Online card payment is not connected yet. The checkout is structured so Bank of Georgia, TBC, Stripe or another provider can be added later.",
-    "checkout.futurePaymentTitle": "Future online payment",
+      "You will be redirected to Bank of Georgia checkout. ArGadaagdo confirms the reservation only after payment succeeds.",
+    "checkout.futurePaymentTitle": "Payment safety",
     "checkout.futurePaymentText":
-      "When payments are enabled, payment confirmation will happen before the reservation is finalized.",
+      "If payment fails, is cancelled, or expires, the held quantity is released automatically.",
     "checkout.financialSplitTitle": "Financial split prepared",
     "checkout.financialSplitText":
       "The database already records platform fee and business payout amounts for each reservation.",
@@ -548,10 +548,10 @@ const translations = {
     "checkout.reservationIdAfterConfirmation":
       "Reservation ID appears after confirmation.",
     "checkout.paymentReferenceFuture":
-      "Payment reference will appear when a real provider is connected.",
+      "Payment reference appears after bank confirmation.",
     "checkout.rules": "I understand the pickup and cancellation rules.",
-    "checkout.payReserve": "Confirm reservation",
-    "checkout.reserving": "Reserving...",
+    "checkout.payReserve": "Pay and reserve",
+    "checkout.reserving": "Creating secure checkout...",
     "checkout.successMessage":
       "Reservation confirmed. Your pickup code is in Orders.",
     "checkout.address": "Address",
@@ -1233,14 +1233,14 @@ const translations = {
 
     "checkout.title": "დაადასტურე საკვების ყუთი",
     "checkout.subtitle":
-      "შენი ჯავშანი დაუყოვნებლივ დადასტურდება. შეკვეთა წაიღე ქვემოთ მითითებულ ფანჯარაში.",
+      "გადაამოწმე შეკვეთა და წაღებამდე უსაფრთხო ონლაინ გადახდა დაასრულე.",
     "checkout.summary": "ჯავშნის შეჯამება",
     "checkout.stepReservationTitle": "ჯავშანი",
     "checkout.stepReservationText":
       "გადაამოწმე შეთავაზება, წაღების დრო და გაუქმების წესები.",
     "checkout.stepPaymentTitle": "გადახდა",
     "checkout.stepPaymentText":
-      "რეალური ონლაინ გადახდის პროვაიდერის ინტეგრაცია მომავალი ვერსიისთვის მზადდება.",
+      "ჯავშნის დასასრულებლად Bank of Georgia-ს მეშვეობით უსაფრთხო ონლაინ გადახდა დაასრულე.",
     "checkout.stepPickupTitle": "წაღება",
     "checkout.stepPickupText":
       "დადასტურების შემდეგ გამოიყენე წაღების კოდი მითითებულ ფანჯარაში.",
@@ -1255,15 +1255,15 @@ const translations = {
     "checkout.noShowWarning": "არ გამოცხადების გაფრთხილება",
     "checkout.noShowText": "თუ შეკვეთას არ წაიღებ, ეს შეიძლება ჩაითვალოს არ გამოცხადებად.",
     "checkout.regularPrice": "სტანდარტული ფასი",
-    "checkout.paymentMethod": "დაჯავშნის მეთოდი",
+    "checkout.paymentMethod": "გადახდის მეთოდი",
     "checkout.pilotReservationMethod":
-      "ჯავშნები პილოტის პერიოდში პირდაპირ ArGadaagdo-ს სისტემით მუშავდება.",
-    "checkout.paymentPreparationTitle": "გადახდის მომზადება",
+      "ონლაინ ბარათით გადახდა Bank of Georgia-ს მეშვეობით.",
+    "checkout.paymentPreparationTitle": "უსაფრთხო გადახდა",
     "checkout.paymentPreparationText":
-      "ონლაინ ბარათით გადახდა ჯერ არ არის ჩართული. Checkout ისეა მოწყობილი, რომ მომავალში Bank of Georgia, TBC, Stripe ან სხვა პროვაიდერი დაემატოს.",
-    "checkout.futurePaymentTitle": "მომავალი ონლაინ გადახდა",
+      "გადახდის დასასრულებლად Bank of Georgia-ს checkout-ზე გადახვალ. ArGadaagdo ჯავშანს მხოლოდ წარმატებული გადახდის შემდეგ დაადასტურებს.",
+    "checkout.futurePaymentTitle": "გადახდის უსაფრთხოება",
     "checkout.futurePaymentText":
-      "გადახდების ჩართვის შემდეგ გადახდის დადასტურება ჯავშნის დასრულებამდე მოხდება.",
+      "თუ გადახდა ვერ შესრულდა, გაუქმდა ან ვადა გაუვიდა, დაჭერილი რაოდენობა ავტომატურად გათავისუფლდება.",
     "checkout.financialSplitTitle": "ფინანსური გაყოფა მომზადებულია",
     "checkout.financialSplitText":
       "მონაცემთა ბაზა უკვე ინახავს პლატფორმის საკომისიოს და ბიზნესის თანხას თითოეული ჯავშნისთვის.",
@@ -1271,10 +1271,10 @@ const translations = {
     "checkout.reservationIdAfterConfirmation":
       "ჯავშნის ID დადასტურების შემდეგ გამოჩნდება.",
     "checkout.paymentReferenceFuture":
-      "გადახდის reference რეალური პროვაიდერის ჩართვის შემდეგ გამოჩნდება.",
+      "გადახდის reference ბანკის დადასტურების შემდეგ გამოჩნდება.",
     "checkout.rules": "მესმის წაღებისა და გაუქმების წესები.",
-    "checkout.payReserve": "ჯავშნის დადასტურება",
-    "checkout.reserving": "იჯავშნება...",
+    "checkout.payReserve": "გადახდა და დაჯავშნა",
+    "checkout.reserving": "უსაფრთხო checkout იქმნება...",
     "checkout.successMessage":
       "ჯავშანი დადასტურდა. წაღების კოდი შეკვეთებშია.",
     "checkout.address": "მისამართი",
