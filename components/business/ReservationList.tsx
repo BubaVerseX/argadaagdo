@@ -233,19 +233,19 @@ export function ReservationList({
                   </div>
                   <div>
                     <p className="text-xs font-black uppercase tracking-wide text-gray-500">
-                      Payout prep
+                      Payout estimate
                     </p>
                     <p>
                       Platform fee:{" "}
                       {order.platform_fee
                         ? formatMoney(order.platform_fee)
-                        : "prepared"}
+                        : t("common.unavailable")}
                     </p>
                     <p>
                       Business amount:{" "}
                       {order.business_amount
                         ? formatMoney(order.business_amount)
-                        : "prepared"}
+                        : t("common.unavailable")}
                     </p>
                   </div>
                 </div>

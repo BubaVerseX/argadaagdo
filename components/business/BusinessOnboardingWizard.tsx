@@ -310,8 +310,8 @@ export function BusinessOnboardingWizard({
               ["Type", businessType || "Not provided"],
               ["Address", address || "Not provided"],
               ["Phone", phone || "Not provided"],
-              ["Description draft", description || "Not prepared yet"],
-              ["Images", imagePlan || "Not prepared yet"],
+              ["Description draft", description || "Not added yet"],
+              ["Images", imagePlan || "Not added yet"],
             ].map(([label, value]) => (
               <div key={label} className="rounded-2xl bg-[#F7F6EF] p-4">
                 <p className="text-xs font-black uppercase tracking-wide text-gray-500">

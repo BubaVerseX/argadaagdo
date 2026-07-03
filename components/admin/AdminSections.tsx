@@ -15,7 +15,7 @@ import { formatDisplayDateTime } from "@/lib/offerLifecycle";
 import {
   adminPaymentPanelSections,
   currentDatabasePaymentStatuses,
-  paymentProviderPreparation,
+  paymentProviderOptions,
   paymentStatuses,
 } from "@/lib/paymentArchitecture";
 import type { Business, Profile } from "@/lib/types";
@@ -142,13 +142,13 @@ export function AdminRevenueInsights({
     {
       title: "Marketplace Revenue",
       value: formatAnalyticsMoney(analytics.estimatedMarketplaceRevenue),
-      helper: "Prepared 10% platform commission estimate",
+      helper: "Estimated 10% platform commission",
       tone: "green",
     },
     {
       title: "Business Revenue",
       value: formatAnalyticsMoney(analytics.estimatedBusinessRevenue),
-      helper: "Prepared 90% business earnings estimate",
+      helper: "Estimated 90% business earnings",
       tone: "green",
     },
   ];
@@ -284,22 +284,11 @@ export function AdminSupportTools({
 
         <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
           Use the admin search box below to look up reservations, customers,
-          businesses and orders. Support notes are prepared as a future workflow.
+          businesses and orders during pilot operations.
         </p>
       </div>
 
       <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-5" />
-
-      <div className="mt-6 rounded-3xl bg-[#F7F6EF] p-5">
-        <h3 className="text-xl font-black text-gray-950">
-          Future support notes
-        </h3>
-        <p className="mt-2 font-semibold leading-7 text-gray-600">
-          For now, admins can identify records quickly and handle support
-          manually. A future support-notes table can store internal follow-up
-          history without changing the customer flow.
-        </p>
-      </div>
     </section>
   );
 }
@@ -461,7 +450,7 @@ export function AdminHealthSections({
   );
 }
 
-export function AdminPaymentPreparation({
+export function AdminPaymentsOverview({
   metrics,
 }: {
   metrics: MetricCard[];
@@ -471,7 +460,7 @@ export function AdminPaymentPreparation({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-            Payment preparation
+            Payments overview
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             Financial architecture overview
@@ -479,9 +468,9 @@ export function AdminPaymentPreparation({
         </div>
 
         <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
-          Bank of Georgia checkout support is prepared in the app. This panel
-          shows the financial fields recorded by orders and the states admins
-          should monitor when provider credentials are enabled.
+          Bank of Georgia checkout support is wired through server route
+          handlers. This panel shows the financial fields recorded by orders and
+          the states admins should monitor during pilot operations.
         </p>
       </div>
 
@@ -490,7 +479,7 @@ export function AdminPaymentPreparation({
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <div className="rounded-3xl bg-[#F7F6EF] p-5">
           <h3 className="text-xl font-black text-gray-950">
-            Future payment states
+            Payment states
           </h3>
           <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
             Current database payments support{" "}
@@ -512,10 +501,10 @@ export function AdminPaymentPreparation({
 
         <div className="rounded-3xl bg-green-50 p-5">
           <h3 className="text-xl font-black text-green-950">
-            Provider-ready plan
+            Provider options
           </h3>
           <div className="mt-4 grid gap-2">
-            {paymentProviderPreparation.map((provider) => (
+            {paymentProviderOptions.map((provider) => (
               <div key={provider.id} className="rounded-2xl bg-white p-3 text-sm">
                 <p className="font-black text-gray-950">{provider.name}</p>
                 <p className="mt-1 font-semibold leading-5 text-gray-600">
@@ -806,8 +795,8 @@ export function PendingBusinesses({
               </div>
 
               <p className="mt-3 text-xs font-semibold leading-5 text-gray-500">
-                Current database stores approval as approved or pending. Request
-                and reject notes are prepared for operator workflow only.
+                Current database stores approval as approved or pending. Notes
+                help the operator decide what to tell the business manually.
               </p>
             </form>
           </div>

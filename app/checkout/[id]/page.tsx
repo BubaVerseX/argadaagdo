@@ -17,10 +17,6 @@ import {
   getOfferDateLabel,
   isOfferReservable,
 } from "@/lib/offerLifecycle";
-import {
-  businessPayoutRate,
-  platformFeeRate,
-} from "@/lib/paymentArchitecture";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -525,10 +521,6 @@ export default function CheckoutPage() {
                     </p>
                     <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
                       {t("checkout.futurePaymentText")}
-                    </p>
-                    <p className="mt-3 text-sm font-black text-green-800">
-                      {Math.round(platformFeeRate * 100)}% platform fee ·{" "}
-                      {Math.round(businessPayoutRate * 100)}% business payout
                     </p>
                   </div>
 

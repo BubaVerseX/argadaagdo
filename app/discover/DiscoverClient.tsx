@@ -272,14 +272,14 @@ export default function DiscoverClient() {
 
               <section className="rounded-[2rem] bg-green-50 p-5 shadow-sm sm:p-8">
                 <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
-                  Nearby
+                  Location
                 </p>
                 <h2 className="mt-2 text-2xl font-black sm:text-3xl">
-                  Nearby discovery is prepared
+                  Find pickup addresses easily
                 </h2>
                 <p className="mt-3 max-w-3xl font-semibold leading-7 text-green-900">
-                  Location ranking can be added later. For now, every offer shows
-                  the business address and a map link.
+                  Every offer shows the business address and a map link so you
+                  can plan pickup before reserving.
                 </p>
               </section>
             </div>

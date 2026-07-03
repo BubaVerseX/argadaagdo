@@ -1,39 +1,32 @@
-# ArGadaagdo Payment Preparation
+# ArGadaagdo Payment Architecture
 
-This document prepares the marketplace for real online payments without changing the current reservation flow.
+This document describes the current production payment architecture. Bank of
+Georgia is the primary provider, and the old mock reservation RPC remains only
+for database compatibility.
 
 ## Current Flow
 
 1. Customer opens checkout for an active offer.
 2. Customer accepts pickup and cancellation rules.
-3. Frontend calls `mock_pay_and_reserve_offer(p_offer_id)`.
-4. The RPC creates:
-   - `orders` row
-   - `payments` row
-   - pickup code
-   - inventory decrease
-5. If quantity reaches zero, the offer becomes sold out.
+3. Frontend calls `POST /api/payments/checkout`.
+4. The server validates the signed-in, email-confirmed user.
+5. The server calls `create_provider_payment_order(p_offer_id, 'bog')`.
+6. The RPC creates:
+   - a `pending_payment` order
+   - a `pending` payment
+   - an inventory hold by decreasing offer quantity once
+7. The server creates a Bank of Georgia checkout session.
+8. Bank of Georgia confirms payment through callback or return verification.
+9. The server calls `finalize_provider_payment(...)`.
+10. Paid orders become `reserved` and receive a pickup code.
 
-Current payment rows use:
-
-- `status = paid`
-- `provider = mock`
-- `provider_reference = mock_*`
-
-## Future Flow
-
-1. Customer opens checkout.
-2. ArGadaagdo creates a pending payment session with a provider.
-3. Customer completes payment with the provider.
-4. Provider confirms success through a secure callback or webhook.
-5. ArGadaagdo creates or confirms the reservation only after provider success.
-6. Customer receives pickup code.
-
-Reservation inventory should never be reduced before payment success in the real provider flow.
+The inventory hold prevents overselling the last available surprise bag. If the
+provider session fails, expires, is cancelled, or is refunded, inventory is
+restored through RPC logic exactly once.
 
 ## Payment States
 
-Prepared future states:
+Supported states:
 
 - `pending`
 - `authorized`
@@ -43,18 +36,9 @@ Prepared future states:
 - `cancelled`
 - `expired`
 
-Current database constraint supports:
-
-- `paid`
-- `refunded`
-- `failed`
-- `cancelled`
-
-A future migration should add `pending`, `authorized`, and `expired` before real provider sessions are stored.
-
 ## Provider Abstraction
 
-Future providers can share the same internal shape:
+Providers share the same internal shape:
 
 - provider name
 - provider payment/session id
@@ -65,7 +49,7 @@ Future providers can share the same internal shape:
 - offer id
 - user id
 
-Provider candidates:
+Provider candidates for future expansion:
 
 - Bank of Georgia
 - TBC Bank
@@ -76,21 +60,11 @@ Provider candidates:
 
 ## Refund Flow
 
-Current cancellation:
-
 1. Customer cancels through `cancel_paid_order(p_order_id)`.
-2. RPC validates customer ownership, status, and deadline.
-3. Order becomes refunded.
-4. Payment becomes refunded.
-5. Inventory is restored exactly once.
-
-Future real refund:
-
-1. Validate cancellation eligibility.
-2. Request provider refund.
-3. Store provider refund reference.
-4. Mark local payment as refunded.
-5. Restore inventory exactly once.
+2. The refund route first validates ownership, status, and cancellation deadline.
+3. For Bank of Georgia payments, the provider refund is requested.
+4. Local payment and order state are updated through `cancel_paid_order`.
+5. Inventory is restored exactly once through the RPC.
 
 ## Payout Preparation
 
@@ -114,7 +88,7 @@ Future payout architecture:
 
 No payout table exists yet.
 
-## Receipt Preparation
+## Receipts
 
 Customer receipt should show:
 
@@ -137,7 +111,7 @@ Business receipt should show:
 
 ## Admin Payment Panel
 
-Prepared admin sections:
+Admin sections:
 
 - Payments
 - Refunds
@@ -145,4 +119,12 @@ Prepared admin sections:
 - Failed payments
 - Pending payouts
 
-The current admin dashboard uses order financial fields for preparation only. It does not process real money.
+The current admin dashboard uses order financial fields for operational
+visibility. It does not initiate payouts yet.
+
+## Pending Payment Cleanup
+
+If a customer closes the browser or abandons Bank of Georgia checkout, the order
+can remain `pending_payment` while inventory is held. The protected cron route
+`/api/cron/payment-maintenance` runs `expire_pending_provider_payments(20)` to
+release abandoned holds and mark expired local payments safely.

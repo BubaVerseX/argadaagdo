@@ -15,7 +15,7 @@ import {
   AdminOperationalDashboard,
   AdminRevenueInsights,
   AdminModerationVisibility,
-  AdminPaymentPreparation,
+  AdminPaymentsOverview,
   AdminSupportTools,
   ApprovedBusinesses,
   PendingBusinesses,
@@ -41,7 +41,7 @@ import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
-import { calculatePaymentPreparationSummary } from "@/lib/paymentArchitecture";
+import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
 import { supabase } from "@/lib/supabase";
 import type { Offer, Order, Profile } from "@/lib/types";
@@ -261,7 +261,7 @@ export default function AdminPage() {
     const business = businesses.find((item) => item.id === id);
     setMessageTone("warning");
     setMessage(
-      `Change request prepared for ${
+      `Change request noted for ${
         business?.name || "this business"
       }. Reason: ${reason || "No reason provided yet."} Current pilot data model keeps the business pending until the owner updates details.`
     );
@@ -271,7 +271,7 @@ export default function AdminPage() {
     const business = businesses.find((item) => item.id === id);
     setMessageTone("warning");
     setMessage(
-      `Rejection prepared for ${
+      `Rejection noted for ${
         business?.name || "this business"
       }. Reason: ${reason || "No reason provided yet."} Because the current schema only stores approved or pending, no database status was changed.`
     );
@@ -570,8 +570,7 @@ export default function AdminPage() {
       className: "bg-red-50 text-red-800",
     },
   ];
-  const paymentPreparationSummary =
-    calculatePaymentPreparationSummary(orders);
+  const paymentSummary = calculatePaymentSummary(orders);
   const normalizedAdminSearch = adminSearch.trim().toLowerCase();
   const filteredPendingBusinesses = pendingBusinesses.filter((business) => {
     const searchText =
@@ -780,40 +779,40 @@ export default function AdminPage() {
   const paymentOverview = [
     {
       title: "Paid reservations",
-      value: paymentPreparationSummary.activePaidCount,
+      value: paymentSummary.activePaidCount,
       helper: "Current reserved/completed orders with recorded amounts",
       className: "bg-green-50 text-green-900",
     },
     {
       title: "Refunded/cancelled",
-      value: paymentPreparationSummary.refundedCount,
+      value: paymentSummary.refundedCount,
       helper: `${formatMoney(
-        paymentPreparationSummary.refundedAmount
+        paymentSummary.refundedAmount
       )} marked for refund history`,
       className: "bg-yellow-50 text-yellow-900",
     },
     {
       title: "Platform revenue",
-      value: formatMoney(paymentPreparationSummary.platformRevenue),
-      helper: "Prepared 10% marketplace fee estimate",
+      value: formatMoney(paymentSummary.platformRevenue),
+      helper: "Estimated 10% marketplace fee",
       className: "bg-white text-gray-950",
     },
     {
       title: "Business payout",
-      value: formatMoney(paymentPreparationSummary.businessPayout),
-      helper: "Prepared 90% business revenue estimate",
+      value: formatMoney(paymentSummary.businessPayout),
+      helper: "Estimated 90% business revenue",
       className: "bg-white text-gray-950",
     },
     {
       title: "Pending payouts",
-      value: formatMoney(paymentPreparationSummary.pendingPayoutEstimate),
-      helper: "Future weekly payout estimate from completed pickups",
+      value: formatMoney(paymentSummary.pendingPayoutEstimate),
+      helper: "Manual payout estimate from completed pickups",
       className: "bg-green-50 text-green-900",
     },
     {
       title: "Failed payments",
       value: 0,
-      helper: "Provider failures will appear after real payment integration",
+      helper: "Provider failures to review during payment operations",
       className: "bg-red-50 text-red-800",
     },
   ];
@@ -886,12 +885,6 @@ export default function AdminPage() {
       value: filteredAdminOrders.length,
       helper: "Orders matching the selected status and search term",
       className: "bg-white text-gray-950",
-    },
-    {
-      title: "Future notes",
-      value: "Prepared",
-      helper: "Internal support notes can be added later with a dedicated table",
-      className: "bg-[#F7F6EF] text-gray-900",
     },
   ];
   const marketplaceIntelligenceMetrics = [
@@ -987,7 +980,7 @@ export default function AdminPage() {
           applicationHealth={applicationHealth}
         />
 
-        <AdminPaymentPreparation metrics={paymentOverview} />
+        <AdminPaymentsOverview metrics={paymentOverview} />
 
         <AdminAccountView metrics={accountOverview} profiles={profiles} />
 

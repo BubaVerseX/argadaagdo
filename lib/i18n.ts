@@ -541,9 +541,6 @@ const translations = {
     "checkout.futurePaymentTitle": "Payment safety",
     "checkout.futurePaymentText":
       "If payment fails, is cancelled, or expires, the held quantity is released automatically.",
-    "checkout.financialSplitTitle": "Financial split prepared",
-    "checkout.financialSplitText":
-      "The database already records platform fee and business payout amounts for each reservation.",
     "checkout.receiptTitle": "Receipt preview",
     "checkout.reservationIdAfterConfirmation":
       "Reservation ID appears after confirmation.",
@@ -1264,9 +1261,6 @@ const translations = {
     "checkout.futurePaymentTitle": "გადახდის უსაფრთხოება",
     "checkout.futurePaymentText":
       "თუ გადახდა ვერ შესრულდა, გაუქმდა ან ვადა გაუვიდა, დაჭერილი რაოდენობა ავტომატურად გათავისუფლდება.",
-    "checkout.financialSplitTitle": "ფინანსური გაყოფა მომზადებულია",
-    "checkout.financialSplitText":
-      "მონაცემთა ბაზა უკვე ინახავს პლატფორმის საკომისიოს და ბიზნესის თანხას თითოეული ჯავშნისთვის.",
     "checkout.receiptTitle": "ქვითრის წინასწარი ხედი",
     "checkout.reservationIdAfterConfirmation":
       "ჯავშნის ID დადასტურების შემდეგ გამოჩნდება.",

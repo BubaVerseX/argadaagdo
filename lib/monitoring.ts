@@ -77,6 +77,12 @@ const envRequirements: EnvRequirement[] = [
     description: "Protects payment provider callback handling.",
   },
   {
+    name: "BOG_REQUIRE_CALLBACK_SIGNATURE",
+    required: false,
+    productionCritical: true,
+    description: "Must be true in production so payment callbacks require Bank of Georgia signatures.",
+  },
+  {
     name: "RESEND_API_KEY",
     required: false,
     productionCritical: true,

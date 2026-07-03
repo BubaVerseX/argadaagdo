@@ -85,7 +85,7 @@ export function BusinessRevenueInsights({
     {
       title: "Business Earnings",
       value: formatAnalyticsMoney(analytics.estimatedBusinessEarnings),
-      helper: "Prepared 90% future payout estimate",
+      helper: "Estimated 90% business earnings before payout review",
       tone: "green",
     },
   ];
@@ -146,16 +146,16 @@ export function BusinessRevenueInsights({
             Business performance snapshot
           </h2>
           <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-600">
-            Estimated revenue uses existing order payment fields. Real payout
-            settlement will come later with a payment provider.
+            Estimated revenue uses existing order payment fields. Final business
+            payouts are still reviewed manually during the pilot.
           </p>
         </div>
 
         <div className="rounded-3xl bg-green-50 p-4 text-sm font-semibold leading-6 text-green-900 lg:max-w-sm">
-          <p className="font-black">Future commission model</p>
+          <p className="font-black">Pilot commission model</p>
           <p className="mt-1">
-            Prepared split: 10% platform commission and 90% business earnings.
-            No real payments are processed yet.
+            Current estimate: 10% platform commission and 90% business
+            earnings. Reconcile against payment provider records before payout.
           </p>
         </div>
       </div>
@@ -203,7 +203,7 @@ export function BusinessRevenueInsights({
 
       <div className="mt-6 rounded-3xl bg-[#F7F6EF] p-5">
         <h3 className="text-xl font-black text-gray-950">
-          Marketing insights prepared
+          Marketing insights
         </h3>
         <p className="mt-2 max-w-3xl font-semibold leading-7 text-gray-600">
           These signals prepare the dashboard for growth campaigns. View and

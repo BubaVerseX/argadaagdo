@@ -88,19 +88,3 @@ export const emailNotificationPlaceholders: EmailNotificationPlaceholder[] = [
 export function getEmailNotificationPlaceholders() {
   return emailNotificationPlaceholders;
 }
-
-export function createEmailNotificationPlaceholder(
-  event: EmailNotificationEvent
-) {
-  const placeholder = emailNotificationPlaceholders.find(
-    (item) => item.event === event
-  );
-
-  return {
-    event,
-    status: placeholder?.status || ("app" as const),
-    message: placeholder
-      ? `${placeholder.title} email is configured through ${placeholder.status}.`
-      : "Email notification placeholder is not configured yet.",
-  };
-}

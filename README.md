@@ -231,6 +231,7 @@ The app sends:
 - Pickup completed after `complete_pickup` succeeds
 - Rating reminder after pickup completion
 - Pickup reminder through `/api/cron/pickup-reminders`
+- Pending payment cleanup through `/api/cron/payment-maintenance`
 
 Supabase Auth remains responsible for account verification and password reset
 emails. Configure Supabase Authentication SMTP with the verified Resend sender
@@ -252,9 +253,9 @@ back successful reservations, cancellations, approvals, or pickups.
 - Set `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`,
   `TRANSACTIONAL_EMAIL_REPLY_TO`, and `CRON_SECRET` in Vercel.
 - Set `HEALTH_CHECK_SECRET` in Vercel for detailed authenticated health checks.
-- The Vercel cron in `vercel.json` calls `/api/cron/pickup-reminders` once per
-  day. Vercel sends `Authorization: Bearer $CRON_SECRET`; keep that secret set
-  in production.
+- The Vercel crons in `vercel.json` call `/api/cron/pickup-reminders` once per
+  day and `/api/cron/payment-maintenance` every 30 minutes. Vercel sends
+  `Authorization: Bearer $CRON_SECRET`; keep that secret set in production.
 - Use `/api/health` for public uptime checks. Use
   `Authorization: Bearer $HEALTH_CHECK_SECRET` for detailed operational checks.
 - The production branch should deploy from the GitHub repository that is treated

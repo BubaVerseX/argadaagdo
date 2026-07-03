@@ -297,22 +297,17 @@ export default function SettingsPage() {
               </p>
               <h2 className="mt-2 text-2xl font-black">Data controls</h2>
               <p className="mt-2 font-semibold leading-7 text-gray-600">
-                Export and account deletion are prepared as support workflows.
-                They are not self-service yet.
+                For data export or account deletion requests, contact support.
+                We review these requests carefully because reservations,
+                ratings and business records may need to remain in marketplace
+                history.
               </p>
               <div className="mt-5 grid gap-3">
-                <button
-                  type="button"
-                  disabled
-                  className="min-h-12 rounded-full bg-gray-100 px-5 py-3 text-left font-black text-gray-500"
-                >
-                  Download my data · Prepared
-                </button>
                 <Link
                   href="/contact"
                   className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
                 >
-                  Contact support
+                  Contact support about my data
                 </Link>
               </div>
             </div>

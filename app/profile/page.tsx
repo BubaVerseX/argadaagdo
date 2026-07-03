@@ -1,9 +1,6 @@
 "use client";
 
 import Footer from "@/components/Footer";
-import { LoyaltyProgress } from "@/components/growth/LoyaltyProgress";
-import { PromoCodePrep } from "@/components/growth/PromoCodePrep";
-import { ReferralPrepCard } from "@/components/growth/ReferralPrepCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import {
@@ -71,16 +68,6 @@ function getRoleLabel(role?: string | null) {
   if (role === "admin") return "Admin";
   if (role === "business") return "Business";
   return "Customer";
-}
-
-function getReferralPreviewCode(user: User | null) {
-  const source = user?.email || user?.id || "ARG";
-  const normalized = source
-    .replace(/[^a-z0-9]/gi, "")
-    .slice(0, 8)
-    .toUpperCase();
-
-  return `ARG-${normalized || "FOOD"}`;
 }
 
 export default function ProfilePage() {
@@ -263,7 +250,6 @@ export default function ProfilePage() {
 
   const verified = isEmailConfirmed(user);
   const roleLabel = getRoleLabel(profile?.role);
-  const referralCode = getReferralPreviewCode(user);
 
   return (
     <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
@@ -420,44 +406,23 @@ export default function ProfilePage() {
                   Account tools
                 </p>
                 <h2 className="mt-2 text-2xl font-black">Data controls</h2>
-                <div className="mt-5 grid gap-3">
-                  <button
-                    type="button"
-                    disabled
-                    className="min-h-12 rounded-full bg-gray-100 px-5 py-3 text-left font-black text-gray-500"
-                  >
-                    Download my data · Prepared
-                  </button>
-                  <button
-                    type="button"
-                    disabled
-                    className="min-h-12 rounded-full bg-red-50 px-5 py-3 text-left font-black text-red-500"
-                  >
-                    Delete account request · Contact support
-                  </button>
-                </div>
-                <p className="mt-4 text-sm font-semibold leading-6 text-gray-600">
-                  Data export and account deletion need a support workflow before
-                  they are enabled for self-service.
+                <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                  Need a data export or account deletion review? Contact
+                  support and we will help with the request.
                 </p>
+                <div className="mt-5 grid gap-3">
+                  <Link
+                    href="/contact"
+                    className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                  >
+                    Contact support about my data
+                  </Link>
+                </div>
               </div>
             </aside>
           </div>
 
-          <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr]">
-            <ReferralPrepCard
-              referralCode={referralCode}
-              invitedFriends={0}
-              successfulReferrals={0}
-            />
-            <LoyaltyProgress
-              reservations={growthStats.reservations}
-              completedPickups={growthStats.completedPickups}
-              ratingsGiven={growthStats.ratingsGiven}
-            />
-          </div>
-
-          <div className="mt-6 grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+          <div className="mt-6">
             <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                 Marketplace activity
@@ -507,8 +472,6 @@ export default function ProfilePage() {
                 ))}
               </div>
             </section>
-
-            <PromoCodePrep />
           </div>
 
           <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-8">

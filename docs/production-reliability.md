@@ -96,6 +96,14 @@ checks with Vercel logs.
 5. If a payment was taken but an order did not reserve, handle manually before
    asking the customer to retry.
 
+### Pending Payments Block Inventory
+
+1. Check Vercel function logs for `/api/cron/payment-maintenance`.
+2. Confirm `CRON_SECRET` is configured in Vercel.
+3. Confirm `expire_pending_provider_payments(20)` exists in Supabase.
+4. Run the protected maintenance endpoint manually if abandoned checkouts are
+   holding inventory longer than expected.
+
 ### Emails Fail
 
 1. Check `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM` and sender domain status.
@@ -166,6 +174,7 @@ Critical:
 - Resend API key server-only
 - `HEALTH_CHECK_SECRET` configured
 - `CRON_SECRET` configured
+- `/api/cron/payment-maintenance` running successfully
 - Email confirmation enabled
 - Storage bucket available
 

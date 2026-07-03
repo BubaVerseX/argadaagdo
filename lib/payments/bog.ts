@@ -33,12 +33,24 @@ tcBuHV4f7qsynQT+f2UYbESX/TLHwT5qFWZDHZ0YUOUIvb8n7JujVSGZO9/+ll/g
 PwIDAQAB
 -----END PUBLIC KEY-----`;
 
+function isProductionPaymentRuntime() {
+  return (
+    process.env.VERCEL_ENV === "production" ||
+    process.env.NODE_ENV === "production"
+  );
+}
+
 function getBogConfig(): BogConfig {
   const clientId = process.env.BOG_CLIENT_ID;
   const clientSecret = process.env.BOG_CLIENT_SECRET;
+  const callbackSecret = process.env.BOG_CALLBACK_SECRET || "";
 
   if (!clientId || !clientSecret) {
     throw new Error("Bank of Georgia payment credentials are not configured.");
+  }
+
+  if (isProductionPaymentRuntime() && !callbackSecret) {
+    throw new Error("Bank of Georgia callback secret is not configured.");
   }
 
   return {
@@ -48,7 +60,7 @@ function getBogConfig(): BogConfig {
       process.env.BOG_AUTH_URL ||
       "https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token",
     apiBaseUrl: process.env.BOG_API_BASE_URL || "https://api.bog.ge",
-    callbackSecret: process.env.BOG_CALLBACK_SECRET || "",
+    callbackSecret,
   };
 }
 
@@ -361,7 +373,7 @@ export async function refundBogPayment(input: {
 export function isBogCallbackSecretValid(secret: string | null) {
   const expectedSecret = process.env.BOG_CALLBACK_SECRET;
 
-  if (!expectedSecret) return true;
+  if (!expectedSecret) return !isProductionPaymentRuntime();
 
   return Boolean(secret && secret === expectedSecret);
 }
@@ -371,7 +383,8 @@ export function verifyBogCallbackSignature(
   callbackSignature: string | null
 ) {
   const requireSignature =
-    process.env.BOG_REQUIRE_CALLBACK_SIGNATURE === "true";
+    process.env.BOG_REQUIRE_CALLBACK_SIGNATURE === "true" ||
+    isProductionPaymentRuntime();
 
   if (!callbackSignature) return !requireSignature;
 

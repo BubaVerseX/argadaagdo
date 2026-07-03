@@ -11,7 +11,6 @@ import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHe
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
 import { BusinessIntelligencePanel } from "@/components/business/BusinessIntelligencePanel";
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
-import { BusinessPromotionToolkit } from "@/components/growth/BusinessPromotionToolkit";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
 import { BusinessRevenueInsights } from "@/components/business/BusinessRevenueInsights";
 import { BusinessReviews } from "@/components/business/BusinessReviews";
@@ -1729,8 +1728,6 @@ export default function BusinessDashboardPage() {
           weeklySummary={weeklySummary}
           recommendations={businessRecommendations}
         />
-
-        <BusinessPromotionToolkit />
 
         {!canCreateOffers && (
           <div className="mt-6 rounded-3xl bg-yellow-100 p-5 sm:mt-8 sm:p-8">
