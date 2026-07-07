@@ -188,14 +188,14 @@ export default function OfferDetailPage() {
     : [];
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <Link
             href="/offers"
-            className="inline-flex min-h-11 items-center rounded-full bg-white px-5 py-2.5 font-black text-green-800 shadow-sm"
+            className="premium-button-secondary px-5 py-2.5"
           >
             ← {t("offerDetail.back")}
           </Link>
@@ -216,8 +216,8 @@ export default function OfferDetailPage() {
           {!loading && offer && (
             <>
               <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                <div className="overflow-hidden rounded-[2rem] bg-white shadow-sm">
-                  <div className="relative h-72 bg-green-100 sm:h-96">
+                <div className="premium-card overflow-hidden rounded-[2rem]">
+                  <div className="relative h-72 bg-[#eef1e8] sm:h-96">
                     <OfferImage
                       src={offer.image_url}
                       alt={offer.title}
@@ -226,7 +226,7 @@ export default function OfferDetailPage() {
                   </div>
                 </div>
 
-                <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+                <div className="premium-card rounded-[2rem] p-5 sm:p-8">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-xs font-black uppercase tracking-widest text-green-700">
                       {t("offerDetail.title")}
@@ -253,8 +253,8 @@ export default function OfferDetailPage() {
                   </Link>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-green-50 p-5">
-                      <p className="text-sm font-black text-green-700">
+                    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                      <p className="text-sm font-black text-gray-500">
                         {t("common.price")}
                       </p>
                       <p className="mt-2 text-4xl font-black text-green-800">
@@ -278,7 +278,7 @@ export default function OfferDetailPage() {
                       </p>
                     </div>
 
-                    <div className="rounded-3xl bg-[#F7F6EF] p-5">
+                    <div className="premium-muted-card rounded-3xl p-5">
                       <p className="text-sm font-black text-gray-600">
                         {t("offerDetail.pickupDate")}
                       </p>
@@ -290,12 +290,12 @@ export default function OfferDetailPage() {
                       </p>
                     </div>
 
-                    <div className="rounded-3xl bg-yellow-50 p-5">
-                      <p className="text-sm font-black text-yellow-700">
+                    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                      <p className="text-sm font-black text-gray-500">
                         {t("offerDetail.reviewSummary")}
                       </p>
                       <p className="mt-2 text-2xl font-black text-gray-950">
-                        {averageRating ? `⭐ ${averageRating}` : t("common.noReviews")}
+                        {averageRating ? `${averageRating}/5` : t("common.noReviews")}
                       </p>
                       <p className="mt-1 text-sm font-bold text-gray-600">
                         {reviewCount > 0
@@ -304,8 +304,8 @@ export default function OfferDetailPage() {
                       </p>
                     </div>
 
-                    <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
-                      <p className="text-sm font-black text-green-700">
+                    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                      <p className="text-sm font-black text-gray-500">
                         {t("common.quantity")}
                       </p>
                       <p className="mt-2 text-3xl font-black text-green-800">
@@ -318,18 +318,18 @@ export default function OfferDetailPage() {
                   </div>
 
                   {urgencyMessage && (
-                    <div className="mt-4 rounded-3xl border border-orange-100 bg-orange-50 p-4">
-                      <p className="font-black text-orange-800">
+                    <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                      <p className="font-black text-gray-950">
                         {urgencyMessage}
                       </p>
-                      <p className="mt-1 text-sm font-bold text-orange-900">
+                      <p className="mt-1 text-sm font-bold text-gray-600">
                         {t("offerDetail.urgencyHint")}
                       </p>
                     </div>
                   )}
 
-                  <div className="mt-4 rounded-3xl bg-green-50 p-4">
-                    <p className="font-black text-green-900">
+                  <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                    <p className="font-black text-gray-950">
                       {t("offerDetail.afterReservationTitle")}
                     </p>
                     <div className="mt-3 grid gap-2 sm:grid-cols-3">
@@ -340,18 +340,18 @@ export default function OfferDetailPage() {
                       ].map((step) => (
                         <p
                           key={step}
-                          className="rounded-2xl bg-white px-4 py-3 text-sm font-black text-green-900"
+                          className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-black text-gray-800"
                         >
-                          ✓ {step}
+                          {step}
                         </p>
                       ))}
                     </div>
-                    <p className="mt-3 text-sm font-bold leading-6 text-green-900">
+                    <p className="mt-3 text-sm font-bold leading-6 text-gray-600">
                       {t("offerDetail.cancellationReminderText")}
                     </p>
                   </div>
 
-                  <div className="mt-4 rounded-3xl bg-white p-4 ring-1 ring-green-100">
+                  <div className="mt-4 rounded-3xl border border-green-100 bg-white p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-green-700">
                       {t("home.trustBadge")}
                     </p>
@@ -372,7 +372,7 @@ export default function OfferDetailPage() {
                     {reservable ? (
                       <Link
                         href={`/checkout/${offer.id}`}
-                        className="min-h-12 rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800"
+                        className="premium-button px-6 py-3"
                       >
                         {t("common.continueCheckout")}
                       </Link>
@@ -389,7 +389,7 @@ export default function OfferDetailPage() {
                       href={mapsUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="min-h-12 rounded-full bg-green-50 px-6 py-3 text-center font-black text-green-800 transition hover:bg-green-100"
+                      className="premium-button-secondary px-6 py-3 text-green-800"
                     >
                       {t("common.openMap")}
                     </a>
@@ -399,7 +399,7 @@ export default function OfferDetailPage() {
 
               <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
                 <div className="grid gap-6">
-                  <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+                  <div className="premium-card rounded-[2rem] p-5 sm:p-8">
                     <h2 className="text-2xl font-black">
                       {t("offerDetail.about")}
                     </h2>
@@ -427,10 +427,10 @@ export default function OfferDetailPage() {
                         ? "ეს არის ფასდაკლებული საკვების ყუთი, რომელიც ბიზნესმა კარგი დარჩენილი საკვებიდან მოამზადა. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს."
                         : "It is a discounted food bag prepared from good surplus food. The exact contents can vary, but the price, business and pickup window are clear before you reserve."
                     }
-                    icon="🥡"
+                    icon="A"
                   />
 
-                  <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+                  <div className="premium-card rounded-[2rem] p-5 sm:p-8">
                     <h2 className="text-2xl font-black">
                       {language === "ka"
                         ? "კითხვები დაჯავშნამდე"
@@ -453,7 +453,7 @@ export default function OfferDetailPage() {
                       {t("offerDetail.pickupInfoTitle")}
                     </h2>
                     <div className="mt-5 grid gap-3">
-                      <div className="rounded-3xl bg-[#F7F6EF] p-4">
+                      <div className="premium-muted-card rounded-3xl p-4">
                         <p className="font-black text-gray-950">
                           {t("offerDetail.pickupVisit")}
                         </p>
@@ -461,7 +461,7 @@ export default function OfferDetailPage() {
                           {formatPickupWindow(offer, language)}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-[#F7F6EF] p-4">
+                      <div className="premium-muted-card rounded-3xl p-4">
                         <p className="font-black text-gray-950">
                           {t("offerDetail.pickupCode")}
                         </p>
@@ -469,7 +469,7 @@ export default function OfferDetailPage() {
                           {t("offerDetail.pickupCodeHint")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-[#F7F6EF] p-4">
+                      <div className="premium-muted-card rounded-3xl p-4">
                         <p className="font-black text-gray-950">
                           {t("offerDetail.pickupCollect")}
                         </p>
@@ -480,13 +480,13 @@ export default function OfferDetailPage() {
                     </div>
                   </div>
 
-                  <div className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+                  <div className="premium-card rounded-[2rem] p-5 sm:p-8">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-2xl font-black">
                         {t("offerDetail.businessProfile")}
                       </h2>
                       {verifiedBusiness && (
-                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800">
+                        <span className="rounded-full bg-[#F7F6EF] px-3 py-1 text-xs font-black uppercase tracking-wide text-gray-800">
                           {t("businessProfile.verified")}
                         </span>
                       )}
@@ -499,13 +499,13 @@ export default function OfferDetailPage() {
                         t("common.addressUnavailable")}
                     </p>
                     {verifiedBusiness && (
-                      <p className="mt-4 rounded-3xl bg-green-50 p-4 font-semibold leading-7 text-green-900">
+                      <p className="mt-4 rounded-3xl bg-[#F7F6EF] p-4 font-semibold leading-7 text-gray-700">
                         {t("businessProfile.trustMessage")}
                       </p>
                     )}
                     <Link
                       href={`/businesses/${offer.business_id}`}
-                      className="mt-5 inline-flex min-h-11 rounded-full bg-green-700 px-5 py-2.5 font-black text-white"
+                      className="premium-button mt-5 px-5 py-2.5"
                     >
                       {t("businessProfile.title")}
                     </Link>
@@ -513,7 +513,7 @@ export default function OfferDetailPage() {
                 </div>
               </div>
 
-              <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+              <div className="premium-card mt-6 rounded-[2rem] p-5 sm:p-8">
                 <h2 className="text-2xl font-black">
                   {t("offerDetail.reviewsTitle")}
                 </h2>
@@ -533,8 +533,8 @@ export default function OfferDetailPage() {
                   {reviews.map((review) => (
                     <div key={review.id} className="rounded-3xl bg-[#F7F6EF] p-5">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-black text-yellow-700">
-                          {review.rating} ⭐
+                        <p className="font-black text-gray-950">
+                          {review.rating}/5
                         </p>
                         {formatReviewDate(review.created_at, language) && (
                           <p className="text-sm font-bold text-gray-500">

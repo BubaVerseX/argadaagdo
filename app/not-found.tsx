@@ -8,13 +8,13 @@ export default function NotFound() {
   const { t } = useLanguage();
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-8 sm:px-6">
-        <div className="w-full max-w-xl rounded-3xl bg-white p-6 text-center shadow-sm sm:rounded-[2rem] sm:p-10">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl sm:h-20 sm:w-20 sm:text-4xl">
-            🥡
+        <div className="premium-card w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef1e8] text-2xl font-black text-gray-950 sm:h-20 sm:w-20">
+            404
           </div>
 
           <h1 className="mt-5 text-3xl font-black sm:mt-6 sm:text-5xl">
@@ -27,7 +27,7 @@ export default function NotFound() {
 
           <Link
             href="/offers"
-            className="mt-7 inline-block min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 sm:mt-8 sm:w-auto sm:py-4"
+            className="premium-button mt-7 inline-block min-h-12 w-full px-8 py-3 sm:mt-8 sm:w-auto sm:py-4"
           >
             {t("common.browseOffers")}
           </Link>

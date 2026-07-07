@@ -1651,7 +1651,7 @@ export default function BusinessDashboardPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F7F6EF]">
+      <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
           <LoadingState
@@ -1664,7 +1664,7 @@ export default function BusinessDashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">

@@ -327,7 +327,7 @@ export default function OrdersPage() {
     !loading && orders.length > 0 && collectedCount === 0;
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
@@ -342,7 +342,7 @@ export default function OrdersPage() {
         />
 
         {!loading && orders.length > 0 && (
-          <div className="mt-5 rounded-3xl bg-green-50 p-5 shadow-sm sm:mt-6 sm:p-6">
+          <div className="premium-card mt-5 rounded-3xl bg-green-50 p-5 sm:mt-6 sm:p-6">
             <p className="text-lg font-black text-green-900">
               {t("orders.pickupInstructionTitle")}
             </p>
@@ -359,7 +359,7 @@ export default function OrdersPage() {
         )}
 
         {shouldShowRatingEducation && (
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+          <div className="premium-card mt-6 rounded-3xl p-5 sm:p-6">
             <p className="text-lg font-black text-green-800">
               {t("orders.ratingEducationTitle")}
             </p>

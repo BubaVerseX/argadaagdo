@@ -32,19 +32,19 @@ export default function TermsPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
               {t("terms.badge")}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {t("terms.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-green-50 sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg sm:leading-8">
               {t("terms.subtitle")}
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function TermsPage() {
               </Link>
               <Link
                 href="/contact"
-                className="min-h-12 rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800"
+                className="premium-button px-6 py-3 text-center"
               >
                 {t("contact.cta")}
               </Link>

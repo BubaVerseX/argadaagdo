@@ -80,7 +80,7 @@ export function OfferForm({
   return (
     <div
       id="create-offer"
-      className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
+      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
       <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
         Offer Management
@@ -91,17 +91,17 @@ export function OfferForm({
 
       {canCreateOffers ? (
         <>
-          <div className="mt-5 rounded-2xl bg-green-50 p-4 sm:p-5">
-            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+          <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
+            <p className="text-sm font-black uppercase tracking-widest text-gray-500">
               {t("businessOnboarding.firstOfferGuidanceTitle")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {guidance.map((item) => (
                 <span
                   key={item.label}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-black text-green-900"
+                  className="rounded-full bg-white px-4 py-2 text-sm font-black text-gray-800 shadow-sm ring-1 ring-black/5"
                 >
-                  ✓ {item.label}: {item.value}
+                  {item.label}: {item.value}
                 </span>
               ))}
             </div>
@@ -258,9 +258,9 @@ export function OfferForm({
                 type="file"
                 accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
                 onChange={onImageFileChange}
-                className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-green-50 file:px-4 file:py-2 file:font-black file:text-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
-              />
-            </label>
+              className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-[#F7F6EF] file:px-4 file:py-2 file:font-black file:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+            />
+          </label>
           </div>
 
           <div className="mt-4 grid gap-2 md:grid-cols-3">
@@ -273,17 +273,17 @@ export function OfferForm({
                 key={helper}
                 className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-semibold leading-6 text-gray-700"
               >
-                ✓ {helper}
+                {helper}
               </p>
             ))}
           </div>
 
-          <p className="mt-4 rounded-2xl bg-yellow-50 px-4 py-3 text-sm font-bold leading-6 text-yellow-900">
+          <p className="mt-4 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold leading-6 text-gray-700">
             {t("businessOnboarding.offerValidationHint")}
           </p>
 
           {imageFile && (
-            <p className="mt-4 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold text-green-800">
+            <p className="mt-4 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold text-gray-800">
               {t("businessDashboard.selectedImage")}: {imageFile.name}
             </p>
           )}
@@ -291,7 +291,7 @@ export function OfferForm({
           <button
             onClick={(event) => onCreateOffer(event.timeStamp)}
             disabled={publishing}
-            className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-8 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
+            className="premium-button mt-6 w-full px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4"
           >
             {publishing
               ? t("businessDashboard.publishing")
@@ -299,7 +299,7 @@ export function OfferForm({
           </button>
         </>
       ) : (
-        <div className="mt-6 rounded-2xl bg-yellow-50 p-5 font-bold text-yellow-800">
+        <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-5 font-bold text-gray-800">
           {businessStatusMessage}
         </div>
       )}

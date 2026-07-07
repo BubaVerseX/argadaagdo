@@ -26,7 +26,7 @@ export function BusinessProfileSection({
   onSave,
 }: BusinessProfileSectionProps) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -127,7 +127,7 @@ export function BusinessProfileSection({
         type="button"
         onClick={(event) => onSave(event.timeStamp)}
         disabled={savingProfile}
-        className="mt-5 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        className="premium-button mt-5 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         {savingProfile ? "Saving profile..." : "Save profile"}
       </button>

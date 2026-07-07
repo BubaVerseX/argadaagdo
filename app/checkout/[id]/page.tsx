@@ -298,19 +298,19 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-10">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-10">
+            <p className="premium-badge px-4 py-2">
               {t("common.continueCheckout")}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-5xl">
               {t("checkout.title")}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
               {t("checkout.subtitle")}
             </p>
           </div>
@@ -319,10 +319,10 @@ export default function CheckoutPage() {
             {checkoutSteps.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl bg-white p-4 shadow-sm"
+                className="premium-card rounded-2xl p-4"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-700 text-sm font-black text-white">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
                     {item.number}
                   </span>
                   <h2 className="font-black text-gray-950">{item.title}</h2>
@@ -350,8 +350,8 @@ export default function CheckoutPage() {
 
           {!loading && offer && (
             <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className="overflow-hidden rounded-3xl bg-white shadow-sm sm:rounded-[2rem]">
-                <div className="relative h-64 bg-gradient-to-br from-green-100 to-yellow-100 sm:h-80">
+              <div className="premium-card overflow-hidden rounded-3xl sm:rounded-[2rem]">
+                <div className="relative h-64 bg-[#eef1e8] sm:h-80">
                   <OfferImage
                     src={offer.image_url}
                     alt={offer.title}
@@ -373,11 +373,11 @@ export default function CheckoutPage() {
                       </p>
                     </div>
 
-                    <div className="rounded-2xl bg-green-50 px-5 py-4 text-center">
-                      <p className="text-xs font-black text-green-700">
+                    <div className="rounded-2xl bg-[#F7F6EF] px-5 py-4 text-center">
+                      <p className="text-xs font-black text-gray-500">
                         {t("offers.boxesLeft")}
                       </p>
-                      <p className="text-3xl font-black text-green-800">
+                      <p className="text-3xl font-black text-gray-950">
                         {offer.quantity}
                       </p>
                     </div>
@@ -393,11 +393,11 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <aside className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
+              <aside className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
                 <h2 className="text-2xl font-black">{t("checkout.summary")}</h2>
 
                 <div className="mt-6 grid gap-4">
-                  <div className="rounded-3xl bg-[#F7F6EF] p-4">
+                  <div className="premium-muted-card rounded-3xl p-4">
                     <div className="grid gap-4">
                       <div>
                         <p className="text-xs font-black uppercase tracking-wide text-gray-500">
@@ -437,11 +437,11 @@ export default function CheckoutPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-end justify-between gap-4 rounded-2xl bg-green-50 p-4">
-                        <span className="font-black text-green-700">
+                      <div className="flex items-end justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                        <span className="font-black text-gray-600">
                           {t("checkout.price")}
                         </span>
-                        <span className="text-3xl font-black text-green-800">
+                        <span className="text-3xl font-black text-green-700">
                           {formatMoney(offer.price)}
                         </span>
                       </div>
@@ -457,17 +457,17 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
-                  <div className="rounded-2xl bg-green-50 p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("checkout.cancellationPolicy")}
                     </p>
-                    <p className="mt-2 text-sm font-bold text-green-900">
+                    <p className="mt-2 text-sm font-bold text-gray-700">
                       {t("checkout.cancelReminder")}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-green-100">
-                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("checkout.trustTitle")}
                     </p>
                     <div className="mt-3 grid gap-2">
@@ -494,7 +494,7 @@ export default function CheckoutPage() {
                     </div>
                   )}
 
-                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <div className="premium-muted-card rounded-2xl p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("checkout.paymentMethod")}
                     </p>
@@ -503,19 +503,19 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-green-100 bg-white p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("checkout.paymentPreparationTitle")}
                     </p>
                     <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
                       {t("checkout.paymentPreparationText")}
                     </p>
-                    <div className="mt-4 rounded-2xl bg-green-50 px-3 py-2 text-sm font-black text-green-900">
+                    <div className="mt-4 rounded-2xl bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
                       Bank of Georgia
                     </div>
                   </div>
 
-                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                  <div className="premium-muted-card rounded-2xl p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("checkout.futurePaymentTitle")}
                     </p>
@@ -524,8 +524,8 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-white p-4 ring-1 ring-green-100">
-                    <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                       {t("checkout.receiptTitle")}
                     </p>
                     <div className="mt-3 grid gap-2 text-sm font-bold text-gray-700">
@@ -540,7 +540,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <label className="flex items-start gap-3 rounded-2xl border border-green-100 bg-white p-4 font-bold text-gray-800">
+                  <label className="flex items-start gap-3 rounded-2xl bg-white p-4 font-bold text-gray-800 shadow-sm ring-1 ring-black/5">
                     <input
                       type="checkbox"
                       checked={rulesAccepted}
@@ -564,7 +564,7 @@ export default function CheckoutPage() {
                     !rulesAccepted ||
                     !isOfferReservable(offer)
                   }
-                  className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="premium-button mt-6 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {paying
                     ? t("checkout.reserving")
@@ -578,7 +578,7 @@ export default function CheckoutPage() {
                 {checkoutBlocked && (
                   <Link
                     href="/login"
-                    className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 py-3 font-black text-green-700 ring-1 ring-green-100 transition hover:bg-green-50"
+                    className="premium-button-secondary mt-3 w-full px-6 py-3 text-green-700"
                   >
                     {t("nav.signIn")}
                   </Link>
@@ -586,7 +586,7 @@ export default function CheckoutPage() {
 
                 <Link
                   href="/offers"
-                  className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-50 px-6 py-3 font-black text-green-700 transition hover:bg-green-100"
+                  className="premium-button-secondary mt-3 w-full px-6 py-3 text-green-700"
                 >
                   {t("offerDetail.back")}
                 </Link>

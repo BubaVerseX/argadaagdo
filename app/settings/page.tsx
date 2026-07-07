@@ -86,7 +86,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+      <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
           <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-white" />
@@ -130,19 +130,19 @@ export default function SettingsPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
+            <p className="premium-badge px-4 py-2">
               Settings
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-5xl">
               Account management
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-green-50 sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
               Manage language, profile, notifications and account security from
               one simple place.
             </p>
@@ -158,7 +158,7 @@ export default function SettingsPage() {
             {settingsCards.map((card) => (
               <div
                 key={card.title}
-                className="rounded-3xl bg-white p-5 shadow-sm sm:p-6"
+                className="premium-card rounded-3xl p-5 sm:p-6"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
 
                 <Link
                   href={card.href}
-                  className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 sm:w-auto"
+                  className="premium-button mt-5 w-full px-5 py-3 sm:w-auto"
                 >
                   {card.action}
                 </Link>
@@ -185,7 +185,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+            <div className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                 Language
               </p>
@@ -202,7 +202,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+            <div className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                 Account security
               </p>
@@ -291,7 +291,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+            <div className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                 Privacy
               </p>
@@ -305,7 +305,7 @@ export default function SettingsPage() {
               <div className="mt-5 grid gap-3">
                 <Link
                   href="/contact"
-                  className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800"
+                  className="premium-button px-5 py-3 text-center"
                 >
                   Contact support about my data
                 </Link>
@@ -333,14 +333,14 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+          <div className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
             <h2 className="text-2xl font-black">Password management</h2>
             <p className="mt-2 font-semibold leading-7 text-gray-600">
               Forgot your password? Request a reset link from the sign-in page.
             </p>
             <Link
               href="/login?mode=forgot-password"
-              className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 sm:w-auto"
+              className="mt-5 inline-flex premium-button w-full px-6 py-3 sm:w-auto"
             >
               Reset password
             </Link>

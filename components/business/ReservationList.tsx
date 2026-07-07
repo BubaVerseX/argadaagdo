@@ -63,7 +63,7 @@ export function ReservationList({
   return (
     <div
       id="reservations"
-      className="mt-6 scroll-mt-24 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8"
+      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
       <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
         Pickup Operations
@@ -72,8 +72,8 @@ export function ReservationList({
         {t("businessDashboard.reservations")}
       </h2>
 
-      <div className="mt-5 rounded-2xl bg-green-50 p-4 sm:p-5">
-        <p className="text-sm font-black uppercase tracking-widest text-green-700">
+      <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
+        <p className="text-sm font-black uppercase tracking-widest text-gray-500">
           {t("businessOnboarding.reservationGuidanceTitle")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -85,19 +85,19 @@ export function ReservationList({
           ].map((step) => (
             <span
               key={step}
-              className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-green-900"
+              className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-gray-800 shadow-sm ring-1 ring-black/5"
             >
-              ✓ {step}
+              {step}
             </span>
           ))}
         </div>
       </div>
 
       {orders.length > 0 && (
-        <div className="mt-6 rounded-3xl border border-green-100 bg-green-50/60 p-5 sm:p-6">
+        <div className="mt-6 rounded-3xl bg-[#F7F6EF] p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700">
+              <p className="text-xs font-black uppercase tracking-widest text-gray-500">
                 {t("businessDashboard.reservationSummary")}
               </p>
               <h3 className="mt-2 text-2xl font-black text-gray-950">
@@ -150,8 +150,8 @@ export function ReservationList({
               }
               className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
                 isActive
-                  ? "bg-green-700 text-white"
-                  : "bg-green-50 text-green-800 hover:bg-green-100"
+                  ? "bg-gray-950 text-white"
+                  : "bg-white text-gray-700 shadow-sm ring-1 ring-black/5 hover:text-green-700"
               }`}
             >
               {filter.label}
@@ -162,9 +162,9 @@ export function ReservationList({
 
       <div className="mt-6 grid gap-4">
         {filteredOrders.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
-              ✓
+          <div className="rounded-3xl border border-dashed border-black/10 bg-[#F7F6EF] p-6 text-center sm:p-8">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl font-black text-gray-950 shadow-sm">
+              R
             </div>
             <h3 className="mt-4 text-2xl font-black text-gray-950">
               {orders.length === 0
@@ -193,7 +193,7 @@ export function ReservationList({
           return (
             <div
               key={order.id}
-              className="flex flex-col gap-5 rounded-2xl border p-5 lg:flex-row lg:items-center lg:justify-between"
+              className="flex flex-col gap-5 rounded-3xl border border-black/5 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between"
             >
               <div>
                 <h3 className="text-xl font-black sm:text-2xl">
@@ -284,14 +284,14 @@ export function ReservationList({
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
-                  <p className="mt-3 rounded-2xl bg-green-50 px-4 py-3 text-sm font-bold leading-6 text-green-900">
+                  <p className="mt-3 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold leading-6 text-gray-700">
                     Ask the customer for the full code, then use Verify &
                     Complete Pickup.
                   </p>
                 )}
 
-                <div className="mt-4 rounded-3xl border border-green-100 bg-[#F7F6EF] p-4">
-                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-green-700">
+                <div className="mt-4 rounded-3xl bg-[#F7F6EF] p-4">
+                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-gray-500">
                     Reservation timeline
                   </p>
                   <TimelineSteps
@@ -320,7 +320,7 @@ export function ReservationList({
                     <button
                       onClick={() => onOpenPickupVerification(order)}
                       disabled={updatingOrderId !== null}
-                      className="min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="premium-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                     >
                       {updatingOrderId === order.id
                         ? "Completing..."

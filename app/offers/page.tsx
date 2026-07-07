@@ -402,21 +402,21 @@ export default function OffersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="relative mx-auto max-w-7xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-6 md:rounded-[2.5rem] md:p-10">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 md:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-6 md:rounded-[2.5rem] md:p-10">
+            <p className="premium-badge px-4 py-2">
               {t("offers.badge")}
             </p>
 
-            <h1 className="mt-3 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight text-gray-950 sm:text-4xl md:text-6xl">
               {t("offers.title")}
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-green-50 md:text-lg">
+            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-gray-600 md:text-lg">
               {t("offers.subtitle")}
             </p>
 
@@ -428,12 +428,13 @@ export default function OffersPage() {
                   setPage(1);
                 }}
                 placeholder={t("offers.search")}
-                className="min-h-12 w-full rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4 md:max-w-xl"
+                aria-label={t("offers.search")}
+                className="premium-input w-full px-4 py-3 md:max-w-xl"
               />
 
               <button
                 onClick={resetFilters}
-                className="min-h-12 rounded-2xl bg-white/15 px-6 py-3 font-black text-white hover:bg-white/20 sm:py-4"
+                className="premium-button-secondary px-6 py-3"
               >
                 {t("offers.reset")}
               </button>
@@ -447,7 +448,7 @@ export default function OffersPage() {
                   setPage(1);
                 }}
                 aria-label="Filter offers by category"
-                className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
+                className="premium-input px-4 py-3"
               >
                 <option value="all">{t("offers.allCategories")}</option>
                 {categoryOptions.map((category) => (
@@ -464,7 +465,7 @@ export default function OffersPage() {
                   setPage(1);
                 }}
                 aria-label="Filter offers by price"
-                className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
+                className="premium-input px-4 py-3"
               >
                 <option value="all">All prices</option>
                 <option value="under-5">₾ 5 or less</option>
@@ -479,7 +480,7 @@ export default function OffersPage() {
                   setPage(1);
                 }}
                 aria-label="Filter offers by pickup date"
-                className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
+                className="premium-input px-4 py-3"
               >
                 <option value="all">Any pickup date</option>
                 <option value="today">Pickup today</option>
@@ -494,7 +495,7 @@ export default function OffersPage() {
                   setPage(1);
                 }}
                 aria-label="Sort offers"
-                className="min-h-12 rounded-2xl bg-white p-3 font-bold text-gray-950 outline-none sm:p-4"
+                className="premium-input px-4 py-3"
               >
                 <option value="recommended">Recommended</option>
                 <option value="price-asc">{t("offers.sortLowest")}</option>
@@ -503,7 +504,7 @@ export default function OffersPage() {
                 <option value="rating-desc">Highest rated businesses</option>
               </select>
 
-              <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl bg-white/15 px-5 py-3 font-black text-white md:justify-start">
+              <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl border border-green-100 bg-green-50 px-5 py-3 font-black text-green-900 md:justify-start">
                 <input
                   type="checkbox"
                   checked={availableOnly}
@@ -517,8 +518,8 @@ export default function OffersPage() {
               </label>
             </div>
 
-            <div className="mt-4 rounded-2xl bg-white/10 p-4 text-sm font-bold leading-6 text-green-50">
-              <span className="font-black text-white">
+            <div className="mt-4 rounded-3xl bg-white p-5 text-sm font-bold leading-6 text-gray-600 shadow-sm ring-1 ring-black/5">
+              <span className="font-black text-gray-950">
                 {t("offers.surpriseBagTitle")}
               </span>{" "}
               {t("offers.surpriseBagText")}
@@ -552,12 +553,9 @@ export default function OffersPage() {
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="mt-8 overflow-hidden rounded-[2rem] bg-white shadow-sm">
-              <div className="bg-gradient-to-br from-green-50 via-white to-yellow-50 px-5 py-10 text-center sm:px-8 sm:py-12">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl shadow-sm">
-                  🥡
-                </div>
-
+            <div className="mt-8 overflow-hidden rounded-[2rem] bg-white shadow-sm ring-1 ring-black/5">
+              <div className="px-5 py-10 text-center sm:px-8 sm:py-12">
+                <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-green-700" />
                 <h3 className="mt-5 text-2xl font-black text-gray-950 sm:text-3xl">
                   {offers.length === 0
                     ? t("offers.noOffers")
@@ -581,7 +579,7 @@ export default function OffersPage() {
                     <button
                       type="button"
                       onClick={resetFilters}
-                      className="min-h-12 rounded-full bg-green-700 px-7 py-3 font-black text-white transition hover:bg-green-800"
+                      className="premium-button px-7 py-3"
                     >
                       {t("offers.clearFilters")}
                     </button>
@@ -589,7 +587,7 @@ export default function OffersPage() {
 
                   <Link
                     href="/"
-                    className="min-h-12 rounded-full border border-green-200 bg-white px-7 py-3 text-center font-black text-green-800 transition hover:bg-green-50"
+                    className="premium-button-secondary px-7 py-3"
                   >
                     {t("offers.backHome")}
                   </Link>
@@ -638,9 +636,9 @@ export default function OffersPage() {
                       return (
                         <div
                           key={offer.id}
-                          className="group overflow-hidden rounded-3xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:rounded-[2rem]"
+                          className="group overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_70px_rgba(15,23,42,0.075)] ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(15,23,42,0.1)]"
                         >
-                          <div className="relative h-52 overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 sm:h-56 md:h-60">
+                          <div className="relative h-52 overflow-hidden bg-[#eef1e8] sm:h-56 md:h-60">
                             <OfferImage
                               src={offer.image_url}
                               alt={offer.title}
@@ -653,12 +651,12 @@ export default function OffersPage() {
                             </div>
 
                             {discount && (
-                              <div className="absolute right-4 top-4 rounded-full bg-red-600 px-4 py-2 text-sm font-black text-white shadow-sm">
+                              <div className="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-gray-900 shadow-sm">
                                 Save {discount}%
                               </div>
                             )}
 
-                            <div className="absolute bottom-4 left-4 rounded-full bg-green-800/95 px-4 py-2 text-sm font-black text-white shadow-sm">
+                            <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-gray-900 shadow-sm">
                               {getOfferDateLabel(offer, language)}
                             </div>
                           </div>
@@ -697,16 +695,16 @@ export default function OffersPage() {
                               <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
                                 {offer.businesses?.name}
                               </span>
-                              <span className="rounded-full bg-green-50 px-3 py-2 text-sm font-black text-green-800">
-                                ⏰ {formatPickupWindow(offer, language)}
+                              <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
+                                {t("common.pickup")}: {formatPickupWindow(offer, language)}
                               </span>
-                              <span className="rounded-full bg-yellow-50 px-3 py-2 text-sm font-black text-yellow-800">
-                                ⭐ {getRatingLabel(rating, language)}
+                              <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
+                                {getRatingLabel(rating, language)}
                               </span>
                             </div>
 
                             <p className="mt-3 text-sm font-semibold text-gray-600">
-                              📍 {businessAddress}
+                              {businessAddress}
                             </p>
 
                             <a
@@ -714,7 +712,7 @@ export default function OffersPage() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-800 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
                             >
                               {t("common.openMap")}
                             </a>
@@ -729,7 +727,7 @@ export default function OffersPage() {
                                       ? `Remove ${offer.title} from favorites`
                                       : `Add ${offer.title} to favorites`
                                   }
-                                  className="min-h-12 w-full rounded-full border border-green-200 bg-green-50 px-6 py-3 font-black text-green-800 transition hover:bg-green-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="min-h-12 w-full rounded-full bg-[#F7F6EF] px-6 py-3 font-black text-gray-800 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   {updatingFavoriteId === offer.id
                                     ? t("offers.updatingFavorite")
@@ -743,7 +741,7 @@ export default function OffersPage() {
                                   className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   {reservable
-                                    ? t("common.reserve")
+                                    ? t("common.viewDetails")
                                     : Number(offer.quantity || 0) <= 0
                                     ? t("common.soldOut")
                                     : t("common.unavailable")}

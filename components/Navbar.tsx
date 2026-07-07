@@ -33,6 +33,7 @@ export default function Navbar() {
   const [showBusinessDashboard, setShowBusinessDashboard] = useState(false);
   const [showBusinessRegister, setShowBusinessRegister] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [profileMenu, setProfileMenu] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function Navbar() {
     setShowBusinessRegister(false);
     setAuthReady(true);
     setMobileMenu(false);
+    setProfileMenu(false);
     router.replace("/");
     router.refresh();
   }
@@ -109,16 +111,16 @@ export default function Navbar() {
     const base =
       surface === "mobile"
         ? "flex min-h-12 w-full items-center rounded-2xl px-4 py-3 text-base font-black transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
-        : "inline-flex min-h-10 items-center rounded-full px-4 py-2 text-sm font-black transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300";
+        : "inline-flex min-h-9 items-center rounded-full px-3.5 py-2 text-sm font-black transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300";
 
     if (active) {
-      return `${base} bg-green-700 text-white shadow-sm`;
+      return `${base} bg-gray-950 text-white shadow-sm`;
     }
 
     return `${base} ${
       surface === "mobile"
-        ? "bg-[#F7F6EF] text-gray-800 hover:bg-green-50 hover:text-green-900"
-        : "text-gray-700 hover:bg-white hover:text-gray-950"
+        ? "bg-[#F7F6EF] text-gray-800 hover:bg-white hover:text-gray-950"
+        : "text-gray-600 hover:bg-white hover:text-gray-950"
     }`;
   };
 
@@ -130,20 +132,23 @@ export default function Navbar() {
     showBusinessDashboard || showBusinessRegister || !user;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/5 bg-[#F7F6EF]/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 sm:py-4 md:px-10">
+    <nav className="sticky top-0 z-50 border-b border-black/5 bg-white/82 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-5 md:px-10">
         <Link
           href="/"
-          onClick={() => setMobileMenu(false)}
+          onClick={() => {
+            setMobileMenu(false);
+            setProfileMenu(false);
+          }}
           className="flex items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
           aria-label={t("nav.home")}
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-700 text-lg text-white shadow-sm sm:h-12 sm:w-12 sm:rounded-2xl sm:text-xl">
-            🥡
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-950 text-base font-black text-white shadow-sm sm:h-10 sm:w-10">
+            A
           </div>
 
           <div>
-            <p className="text-lg font-black leading-none text-green-800 sm:text-xl md:text-2xl">
+            <p className="text-lg font-black leading-none text-gray-950 sm:text-xl">
               ArGadaagdo
             </p>
             <p className="hidden text-xs font-bold text-gray-500 md:block">
@@ -153,7 +158,7 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <div className="flex items-center gap-1 rounded-full bg-white/60 p-1 shadow-sm ring-1 ring-black/5">
+          <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
             <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
               {showCustomerNavigation
                 ? t("nav.customerSection")
@@ -212,37 +217,10 @@ export default function Navbar() {
               {t("nav.faq")}
             </Link>
 
-            <Link
-              href="/support"
-              className={linkClass("/support")}
-              aria-current={ariaCurrent("/support")}
-            >
-              {t("nav.support")}
-            </Link>
-
-            {user && (
-              <Link
-                href="/profile"
-                className={linkClass("/profile")}
-                aria-current={ariaCurrent("/profile")}
-              >
-                {t("nav.profile")}
-              </Link>
-            )}
-
-            {user && (
-              <Link
-                href="/settings"
-                className={linkClass("/settings")}
-                aria-current={ariaCurrent("/settings")}
-              >
-                {t("nav.settings")}
-              </Link>
-            )}
           </div>
 
           {showBusinessNavigation && (
-            <div className="flex items-center gap-1 rounded-full bg-white/60 p-1 shadow-sm ring-1 ring-black/5">
+            <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
               <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
                 {t("nav.businessSection")}
               </span>
@@ -270,7 +248,7 @@ export default function Navbar() {
           )}
 
           {role === "admin" && (
-            <div className="flex items-center gap-1 rounded-full bg-white/60 p-1 shadow-sm ring-1 ring-black/5">
+            <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
               <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
                 {t("nav.adminSection")}
               </span>
@@ -294,23 +272,73 @@ export default function Navbar() {
           {!authReady ? (
             <div className="hidden h-11 w-24 rounded-full bg-white/60 lg:block" />
           ) : user ? (
-            <button
-              onClick={handleLogout}
-              className="hidden rounded-full bg-red-600 px-5 py-2.5 font-black text-white transition hover:bg-red-700 lg:block"
-            >
-              {t("nav.logout")}
-            </button>
+            <div className="relative hidden lg:block">
+              <button
+                onClick={() => setProfileMenu((current) => !current)}
+                className="flex min-h-11 items-center gap-3 rounded-full bg-gray-950 py-1.5 pl-2 pr-4 font-black text-white shadow-sm transition hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                aria-haspopup="menu"
+                aria-expanded={profileMenu}
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-gray-950">
+                  {(user.email || "A").slice(0, 1).toUpperCase()}
+                </span>
+                <span>{t("nav.profile")}</span>
+              </button>
+
+              {profileMenu && (
+                <div
+                  className="absolute right-0 mt-3 w-64 rounded-3xl bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.14)] ring-1 ring-black/5"
+                  role="menu"
+                >
+                  <div className="px-4 py-3">
+                    <p className="truncate text-sm font-black text-gray-950">
+                      {user.email}
+                    </p>
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                      {role || t("nav.customerSection")}
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setProfileMenu(false)}
+                    className="block rounded-2xl px-4 py-3 text-sm font-black text-gray-700 transition hover:bg-[#F7F6EF] hover:text-gray-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    role="menuitem"
+                  >
+                    {t("nav.profile")}
+                  </Link>
+                  <Link
+                    href="/settings"
+                    onClick={() => setProfileMenu(false)}
+                    className="block rounded-2xl px-4 py-3 text-sm font-black text-gray-700 transition hover:bg-[#F7F6EF] hover:text-gray-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    role="menuitem"
+                  >
+                    {t("nav.settings")}
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="mt-1 min-h-11 w-full rounded-2xl px-4 py-3 text-left text-sm font-black text-gray-700 transition hover:bg-gray-950 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    role="menuitem"
+                  >
+                    {t("nav.logout")}
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <Link
               href="/login"
-              className="hidden rounded-full bg-green-700 px-5 py-2.5 font-black text-white transition hover:bg-green-800 lg:block"
+              className="hidden rounded-full bg-green-700 px-5 py-2.5 font-black text-white shadow-sm transition hover:bg-green-800 lg:block"
             >
               {t("nav.signIn")}
             </Link>
           )}
 
           <button
-            onClick={() => setMobileMenu(!mobileMenu)}
+            onClick={() => {
+              setMobileMenu(!mobileMenu);
+              setProfileMenu(false);
+            }}
             className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg font-black text-gray-900 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 lg:hidden"
             aria-label={mobileMenu ? t("nav.closeMenu") : t("nav.openMenu")}
             aria-expanded={mobileMenu}
@@ -324,7 +352,7 @@ export default function Navbar() {
       {mobileMenu && (
         <div
           id="mobile-navigation"
-          className="border-t border-gray-100 bg-[#F7F6EF] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
+          className="border-t border-gray-100 bg-white px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
         >
           <div className="grid gap-4">
             <div className="rounded-3xl bg-white p-3 shadow-sm">
@@ -486,7 +514,7 @@ export default function Navbar() {
                 ) : user ? (
                   <button
                     onClick={handleLogout}
-                    className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+                    className="min-h-12 w-full rounded-full bg-gray-950 px-5 py-3 font-black text-white transition hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
                   >
                     {t("nav.logout")}
                   </button>

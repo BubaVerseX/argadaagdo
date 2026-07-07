@@ -26,7 +26,7 @@ export function BusinessHealthScore({
 
   return (
     <section className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
+      <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -86,7 +86,7 @@ export function BusinessHealthScore({
         </div>
       </div>
 
-      <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8">
+      <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
         <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
           Operations checklist
         </p>

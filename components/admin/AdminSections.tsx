@@ -52,14 +52,14 @@ type AdminHeroProps = {
 
 export function AdminHero({ t }: AdminHeroProps) {
   return (
-    <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-12">
-      <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+    <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-12">
+      <p className="premium-badge px-4 py-2">
         {t("admin.analytics")}
       </p>
-      <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+      <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-6xl">
         {t("admin.title")}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
+      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
         {t("admin.subtitle")}
       </p>
     </div>
@@ -72,7 +72,7 @@ export function AdminMarketplaceOverview({
   metrics: MetricCard[];
 }) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -154,7 +154,7 @@ export function AdminRevenueInsights({
   ];
 
   return (
-    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -211,7 +211,7 @@ export function AdminOperationalDashboard({
   metrics: SimpleStat[];
 }) {
   return (
-    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -243,7 +243,7 @@ export function AdminMarketplaceIntelligence({
   metrics: MetricCard[];
 }) {
   return (
-    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -271,7 +271,7 @@ export function AdminSupportTools({
   metrics: MetricCard[];
 }) {
   return (
-    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -317,22 +317,22 @@ export function AdminHealthSections({
   return (
     <>
       <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="rounded-3xl bg-green-800 p-5 text-white shadow-sm sm:p-8">
-          <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+        <div className="premium-card rounded-3xl p-5 sm:p-8">
+          <p className="premium-badge px-4 py-2">
             Admin guidance
           </p>
-          <h2 className="mt-3 text-2xl font-black sm:text-3xl">
+          <h2 className="mt-4 text-2xl font-black text-gray-950 sm:text-3xl">
             Use this dashboard to approve businesses and monitor marketplace
             activity.
           </h2>
-          <p className="mt-4 font-semibold leading-7 text-green-50">
+          <p className="mt-4 font-semibold leading-7 text-gray-600">
             Review pending businesses before they can publish offers, then watch
             orders, active offers, ratings and reliability signals as the pilot
             grows.
           </p>
         </div>
 
-        <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+        <div className="premium-card rounded-3xl p-5 sm:p-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -357,7 +357,7 @@ export function AdminHealthSections({
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -381,7 +381,7 @@ export function AdminHealthSections({
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -419,7 +419,7 @@ export function AdminHealthSections({
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+      <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -456,7 +456,7 @@ export function AdminPaymentsOverview({
   metrics: MetricCard[];
 }) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -541,7 +541,7 @@ export function AdminAccountView({
   profiles: Profile[];
 }) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -601,7 +601,7 @@ export function AdminModerationVisibility({
   metrics: MetricCard[];
 }) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
@@ -661,7 +661,7 @@ export function PendingBusinesses({
   }
 
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-yellow-700 sm:text-sm">
@@ -748,7 +748,7 @@ export function PendingBusinesses({
 
             <form
               onSubmit={(event) => handleReviewAction(event, business.id)}
-              className="rounded-3xl bg-white p-4 shadow-sm"
+              className="premium-card rounded-3xl p-4"
             >
               <label className="grid gap-2 text-sm font-black text-gray-700">
                 Review reason
@@ -816,7 +816,7 @@ export function ApprovedBusinesses({
   onMoveToPending: (id: number) => void;
 }) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <h2 className="text-xl font-black sm:text-2xl">Approved businesses</h2>
 
       <div className="mt-6 grid gap-4">

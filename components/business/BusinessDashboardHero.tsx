@@ -16,43 +16,43 @@ export function BusinessDashboardHero({
   reservedOrders,
 }: BusinessDashboardHeroProps) {
   return (
-    <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-12">
-      <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+    <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-12">
+      <p className="premium-badge px-4 py-2">
         Business control center
       </p>
 
-      <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
+      <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-5xl">
         {t("businessDashboard.welcome")}, {businessName}
       </h1>
 
-      <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:mt-4 sm:text-lg">
+      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:mt-4 sm:text-lg">
         {t("businessDashboard.welcomeText")}
       </p>
 
       <div className="mt-6 grid gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-4">
-        <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-green-100">
+        <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
+          <p className="text-sm font-black text-green-700">
             {t("businessDashboard.myOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-black sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-black text-gray-950 sm:text-4xl">
             {totalOffers}
           </h2>
         </div>
 
-        <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-green-100">
+        <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
+          <p className="text-sm font-black text-green-700">
             {t("businessProfile.activeOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-black sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-black text-gray-950 sm:text-4xl">
             {activeOffers}
           </h2>
         </div>
 
-        <div className="rounded-2xl bg-white/10 p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-green-100">
+        <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
+          <p className="text-sm font-black text-green-700">
             {t("orders.reserved")}
           </p>
-          <h2 className="mt-1 text-3xl font-black sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-black text-gray-950 sm:text-4xl">
             {reservedOrders}
           </h2>
         </div>

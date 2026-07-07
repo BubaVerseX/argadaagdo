@@ -31,7 +31,7 @@ export function BusinessIntelligencePanel({
   recommendations,
 }: BusinessIntelligencePanelProps) {
   return (
-    <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <section className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">

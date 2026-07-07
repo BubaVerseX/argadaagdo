@@ -15,19 +15,19 @@ export default function AboutPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
               {t("about.badge")}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {t("about.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-green-50 sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg sm:leading-8">
               {t("about.subtitle")}
             </p>
           </div>
@@ -78,23 +78,23 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <div className="mt-6 rounded-[2rem] bg-green-800 p-5 text-center text-white shadow-sm sm:p-8">
-            <h2 className="text-2xl font-black sm:text-3xl">
+          <div className="premium-card mt-6 rounded-[2rem] p-5 text-center sm:p-8">
+            <h2 className="text-2xl font-black text-gray-950 sm:text-3xl">
               {t("about.ctaTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-green-50">
+            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-gray-600">
               {t("about.ctaText")}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/offers"
-                className="min-h-12 rounded-full bg-white px-6 py-3 text-center font-black text-green-800 transition hover:bg-green-50"
+                className="premium-button-secondary px-6 py-3 text-center text-green-800"
               >
                 {t("common.browseOffers")}
               </Link>
               <Link
                 href="/contact"
-                className="min-h-12 rounded-full bg-green-700 px-6 py-3 text-center font-black text-white ring-1 ring-white/20 transition hover:bg-green-900"
+                className="premium-button px-6 py-3 text-center"
               >
                 {t("contact.cta")}
               </Link>

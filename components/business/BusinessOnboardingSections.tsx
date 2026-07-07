@@ -18,7 +18,7 @@ export function BusinessOnboardingSections({
 }: BusinessOnboardingSectionsProps) {
   return (
     <>
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+      <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
         <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
           {t("businessOnboarding.badge")}
         </p>
@@ -30,13 +30,13 @@ export function BusinessOnboardingSections({
         </p>
         <a
           href="#create-offer"
-          className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 text-center font-black text-white transition hover:bg-green-800 sm:w-auto"
+          className="premium-button mt-6 w-full px-6 py-3 text-center sm:w-auto"
         >
           {t("businessOnboarding.createFirstBag")}
         </a>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+      <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
         <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
           {t("businessOnboarding.checklistBadge")}
         </p>

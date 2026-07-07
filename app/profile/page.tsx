@@ -239,7 +239,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+      <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
           <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-white" />
@@ -252,19 +252,19 @@ export default function ProfilePage() {
   const roleLabel = getRoleLabel(profile?.role);
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-12">
+            <p className="premium-badge px-4 py-2">
               Account
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-5xl">
               Profile settings
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-green-50 sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
               Manage your personal account details without changing your account
               role or marketplace permissions.
             </p>
@@ -277,7 +277,7 @@ export default function ProfilePage() {
           )}
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+            <div className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                 Personal details
               </p>
@@ -348,14 +348,14 @@ export default function ProfilePage() {
                 type="button"
                 onClick={saveProfile}
                 disabled={saving || !user || !profile}
-                className="mt-6 min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                className="premium-button mt-6 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
                 {saving ? "Saving account..." : "Save account details"}
               </button>
             </div>
 
             <aside className="grid gap-6">
-              <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+              <div className="premium-card rounded-3xl p-5 sm:p-8">
                 <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                   Account security
                 </p>
@@ -401,7 +401,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+              <div className="premium-card rounded-3xl p-5 sm:p-8">
                 <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                   Account tools
                 </p>
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                 <div className="mt-5 grid gap-3">
                   <Link
                     href="/contact"
-                    className="min-h-12 rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="premium-button px-5 py-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
                   >
                     Contact support about my data
                   </Link>
@@ -423,7 +423,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="mt-6">
-            <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+            <section className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
                 Marketplace activity
               </p>
@@ -474,7 +474,7 @@ export default function ProfilePage() {
             </section>
           </div>
 
-          <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:p-8">
+          <div className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
             <h2 className="text-2xl font-black">Need password help?</h2>
             <p className="mt-2 font-semibold leading-7 text-gray-600">
               Use the password reset flow from the sign-in page. We will email a
@@ -482,7 +482,7 @@ export default function ProfilePage() {
             </p>
             <Link
               href="/login?mode=forgot-password"
-              className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 sm:w-auto"
+              className="mt-5 inline-flex premium-button w-full px-6 py-3 sm:w-auto"
             >
               Reset password
             </Link>

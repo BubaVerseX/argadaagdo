@@ -16,7 +16,7 @@ export function BusinessReviews({
   businessNameById,
 }: BusinessReviewsProps) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
         Customer Feedback
       </p>

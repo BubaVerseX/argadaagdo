@@ -106,7 +106,7 @@ export function OfferList({
   };
 
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
         Offer History
       </p>
@@ -129,7 +129,7 @@ export function OfferList({
             {!emptyTitle && (
               <a
                 href="#create-offer"
-                className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800"
+                className="premium-button mt-5 px-6 py-3"
               >
                 {t("businessDashboard.createFirstOffer")}
               </a>
@@ -147,7 +147,7 @@ export function OfferList({
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
-            <div key={offer.id} className="grid gap-5 rounded-2xl border p-5">
+            <div key={offer.id} className="grid gap-5 rounded-3xl border border-black/5 bg-white p-5 shadow-sm">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-3 sm:gap-4">
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
@@ -250,7 +250,7 @@ export function OfferList({
                   <button
                     onClick={() => onDelete(offer)}
                     disabled={updatingOfferId !== null}
-                    className="min-h-12 rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="min-h-12 rounded-full bg-gray-950 px-5 py-3 font-black text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
                   </button>
@@ -439,7 +439,7 @@ export function OfferList({
                   <button
                     onClick={() => onSaveEdits(offer)}
                     disabled={updatingOfferId !== null}
-                    className="mt-4 min-h-12 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="premium-button mt-4 w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {updatingOfferId === offer.id ? "Saving..." : "Save changes"}
                   </button>

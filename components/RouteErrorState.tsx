@@ -27,7 +27,7 @@ export function RouteErrorState({
   }, [error, route]);
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-8 sm:px-6">

@@ -936,7 +936,7 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F7F6EF]">
+      <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
           <LoadingState
@@ -949,7 +949,7 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF]">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-12">
@@ -1095,7 +1095,7 @@ export default function AdminPage() {
         </div>
 
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="premium-card rounded-3xl p-5">
             <h3 className="text-lg font-black text-gray-950">Offer matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminOffers.slice(0, 5).map((offer) => (
@@ -1113,7 +1113,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="premium-card rounded-3xl p-5">
             <h3 className="text-lg font-black text-gray-950">Order matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminOrders.slice(0, 5).map((order) => (
@@ -1130,7 +1130,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="premium-card rounded-3xl p-5">
             <h3 className="text-lg font-black text-gray-950">Account matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminProfiles.slice(0, 5).map((profile) => (

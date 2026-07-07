@@ -81,7 +81,7 @@ export function OrderCard({
   const timelineSteps = getCustomerTimelineSteps(order, language);
 
   return (
-    <div className="rounded-3xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-5 md:p-8">
+    <div className="premium-card rounded-3xl p-4 sm:rounded-[2rem] sm:p-5 md:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="order-2 lg:order-1">
           <div className="flex flex-wrap items-center gap-3">
@@ -91,12 +91,12 @@ export function OrderCard({
               {getCustomerStatusLabel(displayStatus, language)}
             </span>
 
-            <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700">
+            <span className="rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-700">
               {order.offers?.businesses?.business_type || t("common.food")}
             </span>
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
-              <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-black text-yellow-900">
+              <span className="rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-800">
                 Ready to rate
               </span>
             )}
@@ -110,26 +110,26 @@ export function OrderCard({
             {order.offers?.businesses?.name || t("common.businessUnavailable")}
           </p>
 
-          <div className="mt-4 rounded-3xl border border-green-100 bg-white p-4">
-            <p className="mb-3 text-sm font-black uppercase tracking-widest text-green-700">
+          <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+            <p className="mb-3 text-sm font-black uppercase tracking-widest text-gray-500">
               Order timeline
             </p>
             <TimelineSteps steps={timelineSteps} ariaLabel="Order timeline" />
           </div>
 
           {pickupReminderMessage && (
-            <div className="mt-4 rounded-3xl border border-yellow-200 bg-yellow-50 p-4">
-              <p className="text-sm font-black uppercase tracking-widest text-yellow-800">
+            <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+              <p className="text-sm font-black uppercase tracking-widest text-gray-500">
                 Pickup reminder
               </p>
-              <p className="mt-2 font-bold leading-7 text-yellow-950">
+              <p className="mt-2 font-bold leading-7 text-gray-700">
                 {pickupReminderMessage}
               </p>
             </div>
           )}
 
-          <div className="mt-4 rounded-3xl bg-[#F7F6EF] p-4">
-            <p className="text-sm font-black uppercase tracking-widest text-green-700">
+          <div className="premium-muted-card mt-4 rounded-3xl p-4">
+            <p className="text-sm font-black uppercase tracking-widest text-gray-500">
               {t("orders.pickupReminder")}
             </p>
 
@@ -179,7 +179,7 @@ export function OrderCard({
                       order.offers?.title ||
                       "pickup location"
                     }`}
-                    className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
+                    className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-800 transition hover:bg-white sm:w-auto"
                   >
                     {t("common.openMap")}
                   </a>
@@ -187,7 +187,7 @@ export function OrderCard({
               </div>
             </div>
 
-            <p className="mt-3 font-black text-green-700">
+            <p className="mt-3 font-black text-gray-700">
               {t("common.price")}:{" "}
               {order.offers
                 ? formatMoney(order.offers.price)
@@ -214,7 +214,7 @@ export function OrderCard({
           </div>
         </div>
 
-        <div className="order-1 rounded-3xl bg-[#F7F6EF] p-4 text-center sm:rounded-[2rem] sm:p-5 lg:order-2 lg:min-w-[280px]">
+        <div className="premium-muted-card order-1 rounded-3xl p-4 text-center sm:rounded-[2rem] sm:p-5 lg:order-2 lg:min-w-[280px]">
           <p className="text-sm font-black uppercase tracking-widest text-gray-500">
             {t("orders.pickupCode")}
           </p>
@@ -222,7 +222,7 @@ export function OrderCard({
           {isConfirmed ? (
             <>
               <div className="mt-3 rounded-2xl border-2 border-green-200 bg-white px-4 py-5 shadow-sm sm:rounded-3xl sm:px-6 sm:py-6">
-                <p className="text-sm font-black text-green-700">
+                <p className="text-sm font-black text-gray-500">
                   {t("orders.pickupCode")}:
                 </p>
                 <p className="font-mono text-3xl font-black tracking-[0.18em] text-green-700 sm:text-4xl">
@@ -234,8 +234,8 @@ export function OrderCard({
                 {t("orders.showCode")}
               </p>
 
-              <div className="mt-4 rounded-2xl bg-green-50 p-4 text-left">
-                <p className="text-sm font-black leading-6 text-green-900">
+              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-sm">
+                <p className="text-sm font-black leading-6 text-gray-800">
                   {t("orders.activePickupReminder")}
                 </p>
               </div>
@@ -261,7 +261,7 @@ export function OrderCard({
             <button
               onClick={() => onCancelOrder(order)}
               disabled={cancellingOrderId !== null}
-              className="mt-5 min-h-12 w-full rounded-full bg-red-600 px-6 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-5 min-h-12 w-full rounded-full bg-gray-950 px-6 py-3 font-black text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {cancellingOrderId === order.id
                 ? "Cancelling..."
@@ -291,13 +291,13 @@ export function OrderCard({
                         aria-label={`Rate this pickup ${rating} out of 5`}
                         onClick={() => onRatingChange(order.id, rating)}
                         disabled={ratingOrderId !== null}
-                        className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           selectedRating === rating
-                            ? "bg-yellow-400 text-yellow-950"
-                            : "bg-yellow-50 text-yellow-800 hover:bg-yellow-100"
+                            ? "bg-gray-950 text-white"
+                            : "bg-[#F7F6EF] text-gray-800 hover:bg-white"
                         }`}
                       >
-                        ⭐ {rating}
+                        {rating}
                       </button>
                     ))}
                   </div>

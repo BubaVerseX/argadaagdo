@@ -201,14 +201,14 @@ export default function BusinessRegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-900">
+    <main className="app-shell text-gray-900">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
-        <div className="mx-auto max-w-5xl rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 md:p-12">
+        <div className="premium-surface mx-auto max-w-5xl rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:p-12">
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              <p className="premium-badge px-4 py-2">
                 {t("businessRegister.badge")}
               </p>
 

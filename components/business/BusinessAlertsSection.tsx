@@ -10,7 +10,7 @@ type BusinessAlertsSectionProps = {
 
 export function BusinessAlertsSection({ alerts }: BusinessAlertsSectionProps) {
   return (
-    <div className="mt-6 rounded-3xl bg-white p-5 shadow-sm sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">

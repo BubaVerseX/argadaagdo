@@ -437,42 +437,46 @@ export default function LoginPage() {
   const redirectMessage = getRedirectMessage(redirectPath, t);
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-900">
+    <main className="app-shell text-gray-900">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
-          <div className="rounded-3xl bg-green-800 p-6 text-white shadow-sm sm:rounded-[2rem] sm:p-8 md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+          <div className="premium-surface rounded-3xl p-6 sm:rounded-[2rem] sm:p-8 md:p-12">
+            <p className="premium-badge px-4 py-2">
               {t("login.title")}
             </p>
 
-            <h1 className="mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 text-3xl font-black leading-tight text-gray-950 sm:text-4xl md:text-6xl">
               {t("login.signIn")} · ArGadaagdo
             </h1>
 
-            <p className="mt-4 text-base font-medium leading-7 text-green-50 sm:mt-5 sm:text-lg sm:leading-8">
+            <p className="mt-4 text-base font-semibold leading-7 text-gray-600 sm:mt-5 sm:text-lg sm:leading-8">
               {t("home.subtitle")}
             </p>
 
             <div className="mt-8 grid gap-4">
-              <div className="rounded-3xl bg-white/10 p-5">
-                <h3 className="text-xl font-black">{t("login.forCustomers")}</h3>
-                <p className="mt-2 font-medium text-green-50">
+              <div className="premium-card rounded-3xl p-5">
+                <h3 className="text-xl font-black text-gray-950">
+                  {t("login.forCustomers")}
+                </h3>
+                <p className="mt-2 font-semibold text-gray-600">
                   {t("login.forCustomersText")}
                 </p>
               </div>
 
-              <div className="rounded-3xl bg-white/10 p-5">
-                <h3 className="text-xl font-black">{t("login.forBusinesses")}</h3>
-                <p className="mt-2 font-medium text-green-50">
+              <div className="premium-card rounded-3xl p-5">
+                <h3 className="text-xl font-black text-gray-950">
+                  {t("login.forBusinesses")}
+                </h3>
+                <p className="mt-2 font-semibold text-gray-600">
                   {t("login.forBusinessesText")}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 md:p-10">
+          <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:p-10">
             <h2 className="text-2xl font-black text-gray-950 sm:text-3xl">
               {authMode === "login"
                 ? t("login.signInTitle")
@@ -527,7 +531,7 @@ export default function LoginPage() {
                 type="email"
                 aria-label="Email address"
                 placeholder={t("login.email")}
-                className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input px-4 py-3"
               />
 
               <input
@@ -536,7 +540,7 @@ export default function LoginPage() {
                 type="password"
                 aria-label="Password"
                 placeholder={t("login.password")}
-                className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input px-4 py-3"
               />
 
               {authMode === "login" && (
@@ -639,7 +643,9 @@ export default function LoginPage() {
                           : "bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
-                      <div className="text-2xl">🥡</div>
+                      <div className="inline-flex rounded-full bg-green-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-green-800">
+                        {t("login.customer")}
+                      </div>
                       <p className="mt-2">{t("login.customer")}</p>
                       <p className="mt-1 text-sm font-medium leading-5 text-gray-600">
                         {t("login.customerHint")}
@@ -655,7 +661,9 @@ export default function LoginPage() {
                           : "bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
-                      <div className="text-2xl">🏪</div>
+                      <div className="inline-flex rounded-full bg-green-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-green-800">
+                        {t("login.business")}
+                      </div>
                       <p className="mt-2">{t("login.business")}</p>
                       <p className="mt-1 text-sm font-medium leading-5 text-gray-600">
                         {t("login.businessHint")}
@@ -669,7 +677,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={authMode === "login" ? signIn : createAccount}
                 disabled={submitting}
-                className="min-h-12 rounded-full bg-green-700 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
+                className="premium-button w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
                 {authMode === "login" ? t("login.signIn") : t("login.signUp")}
               </button>

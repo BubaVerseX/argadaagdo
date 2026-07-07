@@ -11,9 +11,9 @@ export function LoadingState({
 }: LoadingStateProps) {
   return (
     <div
-      className={`w-full rounded-3xl bg-white p-6 text-center shadow-sm sm:rounded-[2rem] sm:p-10 ${className}`}
+      className={`premium-card w-full rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10 ${className}`}
     >
-      <div className="mx-auto h-12 w-12 animate-pulse rounded-full bg-green-100 sm:h-16 sm:w-16" />
+      <div className="mx-auto h-12 w-12 animate-pulse rounded-full bg-[#eef1e8] sm:h-16 sm:w-16" />
       <h1 className="mt-5 text-2xl font-black text-gray-950 sm:text-3xl">
         {title}
       </h1>

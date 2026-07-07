@@ -128,14 +128,14 @@ export default function BusinessProfilePage() {
     reviewCount > 0 ? `${reviewCount}+` : "Not published yet";
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <Link
             href="/offers"
-            className="inline-flex min-h-11 items-center rounded-full bg-white px-5 py-2.5 font-black text-green-800 shadow-sm"
+            className="premium-button-secondary px-5 py-2.5"
           >
             ← {t("businessProfile.back")}
           </Link>
@@ -152,9 +152,9 @@ export default function BusinessProfilePage() {
 
           {!loading && business && (
             <>
-              <div className="mt-6 overflow-hidden rounded-[2rem] bg-white shadow-sm">
+              <div className="premium-card mt-6 overflow-hidden rounded-[2rem]">
                 <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
-                  <div className="relative h-72 bg-gradient-to-br from-green-100 to-yellow-100 sm:h-96 lg:h-full">
+                  <div className="relative h-72 bg-[#eef1e8] sm:h-96 lg:h-full">
                     {heroOffer ? (
                       <OfferImage
                         src={heroOffer.image_url}
@@ -163,7 +163,7 @@ export default function BusinessProfilePage() {
                       />
                     ) : (
                       <div className="flex h-full min-h-72 items-center justify-center">
-                        <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white text-4xl font-black text-green-800 shadow-sm">
+                        <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white text-4xl font-black text-gray-950 shadow-sm">
                           {getBusinessInitials(business.name)}
                         </div>
                       </div>
@@ -179,7 +179,7 @@ export default function BusinessProfilePage() {
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-2xl font-black text-green-800">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#eef1e8] text-2xl font-black text-gray-950">
                         {getBusinessInitials(business.name)}
                       </div>
                       <div>
@@ -192,7 +192,7 @@ export default function BusinessProfilePage() {
                       </div>
                     </div>
 
-                    <div className="mt-5 grid gap-3 rounded-3xl bg-[#F7F6EF] p-4 font-semibold text-gray-700">
+                    <div className="mt-5 grid gap-3 premium-muted-card rounded-3xl p-4 font-semibold text-gray-700">
                       <p>
                         <span className="font-black text-gray-950">
                           {t("businessProfile.businessType")}:
@@ -217,22 +217,22 @@ export default function BusinessProfilePage() {
                       <HelpCard
                         title={t("businessProfile.localBusinessTitle")}
                         text={t("businessProfile.localBusinessText")}
-                        icon="🏪"
+                        icon="B"
                       />
                       <HelpCard
                         title={t("businessProfile.pickupOnlyTitle")}
                         text={t("businessProfile.pickupOnlyText")}
-                        icon="📍"
+                        icon="P"
                       />
                     </div>
 
                     <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                      <div className="rounded-3xl bg-yellow-50 p-5">
-                        <p className="text-sm font-black text-yellow-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           {t("common.rating")}
                         </p>
                         <p className="mt-2 text-3xl font-black text-gray-950">
-                          {averageRating ? `⭐ ${averageRating}` : t("common.noRatings")}
+                          {averageRating ? `${averageRating}/5` : t("common.noRatings")}
                         </p>
                         <p className="mt-1 text-sm font-bold text-gray-600">
                           {averageRating
@@ -240,8 +240,8 @@ export default function BusinessProfilePage() {
                             : t("common.noRatings")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-orange-50 p-5">
-                        <p className="text-sm font-black text-orange-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           {t("common.reviews")}
                         </p>
                         <p className="mt-2 text-3xl font-black text-gray-950">
@@ -251,8 +251,8 @@ export default function BusinessProfilePage() {
                           {t("businessProfile.customerReviews")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
-                        <p className="text-sm font-black text-green-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           Completed pickups
                         </p>
                         <p className="mt-2 text-3xl font-black text-gray-950">
@@ -262,8 +262,8 @@ export default function BusinessProfilePage() {
                           Public signal from completed rated pickups
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-green-50 p-5">
-                        <p className="text-sm font-black text-green-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           {t("businessProfile.activeOffers")}
                         </p>
                         <p className="mt-2 text-3xl font-black">
@@ -273,8 +273,8 @@ export default function BusinessProfilePage() {
                           {t("businessProfile.activeOffersHint")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
-                        <p className="text-sm font-black text-green-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           Joined
                         </p>
                         <p className="mt-2 text-2xl font-black text-gray-950">
@@ -284,8 +284,8 @@ export default function BusinessProfilePage() {
                           Approved local marketplace member
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
-                        <p className="text-sm font-black text-green-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           Response rate
                         </p>
                         <p className="mt-2 text-2xl font-black text-gray-950">
@@ -295,8 +295,8 @@ export default function BusinessProfilePage() {
                           Support requests are handled by ArGadaagdo
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 ring-1 ring-green-100">
-                        <p className="text-sm font-black text-green-700">
+                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+                        <p className="text-sm font-black text-gray-500">
                           Opening hours
                         </p>
                         <p className="mt-2 text-2xl font-black text-gray-950">
@@ -326,7 +326,7 @@ export default function BusinessProfilePage() {
                 </div>
               </div>
 
-              <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+              <div className="premium-card mt-6 rounded-[2rem] p-5 sm:p-8">
                 <h2 className="text-2xl font-black">
                   {t("businessProfile.activeOffers")}
                 </h2>
@@ -336,7 +336,7 @@ export default function BusinessProfilePage() {
                     <HelpCard
                       title={t("businessProfile.noActiveOffers")}
                       text={t("businessProfile.noActiveOffersHint")}
-                      icon="🥡"
+                      icon="A"
                       href="/offers"
                       actionLabel={t("common.browseOffers")}
                     />
@@ -357,9 +357,9 @@ export default function BusinessProfilePage() {
                       <Link
                         key={offer.id}
                         href={`/offers/${offer.id}`}
-                        className="overflow-hidden rounded-3xl bg-[#F7F6EF] shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                        className="premium-card overflow-hidden rounded-3xl transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
                       >
-                        <div className="relative h-48 bg-green-100">
+                        <div className="relative h-48 bg-[#eef1e8]">
                           <OfferImage
                             src={offer.image_url}
                             alt={offer.title}
@@ -369,7 +369,7 @@ export default function BusinessProfilePage() {
                             {normalizeOfferCategory(offer.category)}
                           </span>
                           {discount && (
-                            <span className="absolute right-4 top-4 rounded-full bg-red-600 px-3 py-1 text-sm font-black text-white shadow-sm">
+                            <span className="absolute right-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-gray-800 shadow-sm">
                               Save {discount}%
                             </span>
                           )}
@@ -377,7 +377,7 @@ export default function BusinessProfilePage() {
                         <div className="p-5">
                           <h3 className="text-xl font-black">{offer.title}</h3>
                           <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-green-800">
+                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-gray-800 shadow-sm ring-1 ring-black/5">
                               {formatPickupWindow(offer, language)}
                             </span>
                             <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-gray-700">
@@ -388,7 +388,7 @@ export default function BusinessProfilePage() {
                             <p className="text-2xl font-black text-green-700">
                               {formatMoney(offer.price)}
                             </p>
-                            <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-green-700">
+                            <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-gray-700 shadow-sm ring-1 ring-black/5">
                               {isOfferReservable(offer)
                                 ? t("common.available")
                                 : t("common.unavailable")}
@@ -404,7 +404,7 @@ export default function BusinessProfilePage() {
                 </div>
               </div>
 
-              <div className="mt-6 rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+              <div className="premium-card mt-6 rounded-[2rem] p-5 sm:p-8">
                 <h2 className="text-2xl font-black">
                   {t("businessProfile.customerReviews")}
                 </h2>
@@ -414,9 +414,9 @@ export default function BusinessProfilePage() {
 
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (
-                    <div className="rounded-3xl border border-dashed border-yellow-200 bg-yellow-50/70 p-6 text-center">
+                    <div className="rounded-3xl border border-dashed border-black/10 bg-[#F7F6EF] p-6 text-center">
                       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
-                        ⭐
+                        R
                       </div>
                       <p className="mt-4 text-lg font-black text-gray-950">
                         {t("common.noReviews")}
@@ -433,8 +433,8 @@ export default function BusinessProfilePage() {
                   {reviews.map((review) => (
                     <div key={review.id} className="rounded-3xl bg-[#F7F6EF] p-5">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-black text-yellow-700">
-                          {review.rating} ⭐
+                        <p className="font-black text-gray-950">
+                          {review.rating}/5
                         </p>
                         {formatReviewDate(review.created_at, language) && (
                           <p className="text-sm font-bold text-gray-500">

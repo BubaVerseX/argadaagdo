@@ -172,19 +172,19 @@ export default function BusinessesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-7xl">
-          <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-10">
-            <p className="text-xs font-black uppercase tracking-widest text-green-100 md:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-10">
+            <p className="text-xs font-black uppercase tracking-widest text-green-700 md:text-sm">
               Local businesses
             </p>
             <h1 className="mt-3 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
               Discover verified Tbilisi businesses
             </h1>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-green-50 md:text-lg">
+            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-gray-600 md:text-lg">
               Search bakeries, cafes, restaurants and shops that are approved
               to publish surprise bags on ArGadaagdo.
             </p>
@@ -307,7 +307,7 @@ export default function BusinessesPage() {
                 <Link
                   key={business.id}
                   href={`/businesses/${business.id}`}
-                  className="rounded-3xl bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl sm:p-6"
+                  className="premium-card rounded-3xl p-5 transition hover:-translate-y-1 hover:shadow-xl sm:p-6"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-2xl font-black text-green-800">

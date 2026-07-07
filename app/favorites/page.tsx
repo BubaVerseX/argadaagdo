@@ -217,20 +217,20 @@ export default function FavoritesPage() {
   const unavailableFavorites = favorites.length - availableFavorites.length;
 
   return (
-    <main className="min-h-screen bg-[#F7F6EF] text-gray-950">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
-        <div className="rounded-3xl bg-green-800 p-5 text-white shadow-xl sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-          <p className="text-xs font-black uppercase tracking-widest text-green-100 sm:text-sm">
+        <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
+          <p className="premium-badge px-4 py-2">
             {t("favorites.badge")}
           </p>
 
-          <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+          <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-6xl">
             {t("favorites.title")}
           </h1>
 
-          <p className="mt-3 max-w-2xl text-sm font-semibold text-green-50 sm:text-lg">
+          <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
             {t("favorites.subtitle")}
           </p>
 
@@ -256,7 +256,7 @@ export default function FavoritesPage() {
         )}
 
         {loading && (
-          <div className="mt-8 rounded-3xl bg-white p-8 shadow-sm">
+          <div className="mt-8 premium-card rounded-3xl p-8">
             <p className="font-semibold text-gray-600">
               {t("favorites.loading")}
             </p>
@@ -264,8 +264,8 @@ export default function FavoritesPage() {
         )}
 
         {!loading && favorites.length === 0 && !message && (
-          <div className="mt-8 rounded-[2rem] bg-white p-10 text-center shadow-sm">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl">
+          <div className="mt-8 premium-card rounded-[2rem] p-10 text-center">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#eef1e8] text-4xl text-gray-950">
               ♥
             </div>
 
@@ -287,7 +287,7 @@ export default function FavoritesPage() {
 
             <Link
               href="/offers"
-              className="mt-6 inline-block min-h-12 rounded-full bg-green-700 px-8 py-3 font-black text-white sm:py-4"
+              className="mt-6 premium-button px-8 py-3 sm:py-4"
             >
               {t("common.browseOffers")}
             </Link>
@@ -295,8 +295,8 @@ export default function FavoritesPage() {
         )}
 
         {!loading && favorites.length > 0 && (
-          <div className="mt-6 rounded-3xl border border-green-100 bg-white p-5 shadow-sm sm:p-6">
-            <p className="font-black text-green-800">
+          <div className="mt-6 premium-muted-card rounded-3xl p-5 sm:p-6">
+            <p className="font-black text-gray-900">
               {t("favorites.trustReminder")}
             </p>
           </div>
@@ -317,9 +317,9 @@ export default function FavoritesPage() {
             return (
               <div
                 key={favorite.id}
-                className="overflow-hidden rounded-3xl bg-white shadow-sm sm:rounded-[2rem]"
+                className="premium-card overflow-hidden rounded-3xl sm:rounded-[2rem]"
               >
-                <div className="relative h-52 overflow-hidden bg-gradient-to-br from-green-100 to-yellow-100 sm:h-56">
+                <div className="relative h-52 overflow-hidden bg-[#eef1e8] sm:h-56">
                   {offer ? (
                     <OfferImage
                       src={offer.image_url}
@@ -327,7 +327,7 @@ export default function FavoritesPage() {
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-center text-xl font-black text-green-800">
+                    <div className="flex h-full w-full items-center justify-center text-center text-xl font-black text-gray-950">
                       {t("common.offerUnavailable")}
                     </div>
                   )}
@@ -339,7 +339,7 @@ export default function FavoritesPage() {
                   </div>
 
                   {offer && (
-                    <div className="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
+                    <div className="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-gray-800 shadow-sm ring-1 ring-black/5">
                       {normalizeOfferCategory(offer.category)}
                     </div>
                   )}
@@ -394,7 +394,7 @@ export default function FavoritesPage() {
                             aria-label={`${t("common.openMap")} ${
                               offer.businesses?.name || offer.title
                             }`}
-                            className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-700 transition hover:bg-green-100 sm:w-auto"
+                            className="inline-flex min-h-10 w-full items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-black text-gray-800 shadow-sm ring-1 ring-black/5 transition hover:text-green-700 sm:w-auto"
                           >
                             {t("common.openMap")}
                           </a>
@@ -404,10 +404,10 @@ export default function FavoritesPage() {
                   </div>
 
                   <div className="mt-6 flex flex-col gap-4">
-                    <div className="rounded-3xl bg-green-50 p-4">
+                    <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
                       {offer && (
                         <>
-                          <p className="text-xs font-black uppercase tracking-wide text-green-700">
+                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
                             {t("common.price")}
                           </p>
                           <div className="mt-1 flex flex-wrap items-end gap-3">
@@ -421,7 +421,7 @@ export default function FavoritesPage() {
                               </span>
                             )}
                           </div>
-                          <p className="mt-2 text-sm font-black text-green-800">
+                          <p className="mt-2 text-sm font-black text-gray-700">
                             {t("offerDetail.savings")}:{" "}
                             {savings > 0
                               ? formatMoney(savings)
