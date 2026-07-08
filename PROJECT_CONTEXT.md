@@ -58,11 +58,49 @@ notes, marketplace flow) — check it before re-deriving things by hand.
 
 ## Bank of Georgia payment integration — current state
 
-**Bottom line: the code is fully built out, not a stub.** Real BOG API
-calls, real OAuth2 client-credentials flow, real RSA callback-signature
-verification, real DB-side inventory holds via RPC. What's actually unverified
-is whether it has been exercised end-to-end against BOG's live/sandbox API
-with real credentials.
+**Bottom line: the application code is fully built out, not a stub — but the
+required database migration has NOT been applied to the live Supabase
+project, so checkout is currently broken in production.** This was verified
+directly on 2026-07-08 (see "Confirmed live-DB state" below), not inferred
+from reading the migration files.
+
+### Confirmed live-DB state (verified 2026-07-08 against the live Supabase REST API)
+No CLI/DB credentials (no `supabase`/`psql`, no service-role key) were
+available in-session, so existence was checked by calling each RPC through
+PostgREST (`POST {SUPABASE_URL}/rest/v1/rpc/<name>`) with the anon key and
+reading the error code: a `PGRST202` "not found in the schema cache" error
+means the function doesn't exist; a `42501 permission denied for function`
+error means it exists but the calling role lacks grant. A deliberately
+made-up function name was used as a control and produced the identical
+`PGRST202` shape.
+
+- `create_provider_payment_order` — **does not exist** (`PGRST202`)
+- `finalize_provider_payment` — **does not exist** (`PGRST202`)
+- `expire_pending_provider_payments` — **does not exist** (`PGRST202`)
+- `attach_provider_payment_reference` — **does not exist** (`PGRST202`)
+- `record_provider_payment_failure` — **does not exist** (`PGRST202`)
+- `get_customer_refund_payment` — **does not exist** (`PGRST202`)
+- `cancel_paid_order` — exists (`42501`, pre-dates this migration)
+- `complete_pickup` — exists (`42501`, pre-dates this migration)
+- `mock_pay_and_reserve_offer` — exists (`42501`, the old mock RPC — still
+  live, i.e. the DB schema is stuck at least one migration behind the app)
+- `reserve_offer` — exists (`42501`, even older RPC)
+- `process_expired_marketplace` — exists and runs (200 OK)
+
+**Conclusion: migration `supabase/migrations/20260630120000_real_payment_integration_bog.sql`
+has not been run against the live database.** Since
+`app/api/payments/checkout/route.ts` calls `create_provider_payment_order`
+directly, every real checkout attempt in production right now should be
+failing (surfaced to the user as "Secure checkout could not be started").
+This has not yet been confirmed by an actual end-user checkout attempt or by
+reading application logs — only by direct RPC-existence probing — but the
+evidence is unambiguous.
+
+**Do not apply this migration to the live database without asking the user
+first** — it's a real schema/RPC change to a live production project (see
+the standing rule at the top of this file). Applying it requires either the
+Supabase SQL editor, the `supabase` CLI linked to the project, or a direct
+Postgres connection — none of which were available in this session.
 
 ### Done (real implementation, not mocked)
 - `lib/payments/bog.ts` — full BOG client: OAuth2 token fetch, create
@@ -86,23 +124,30 @@ with real credentials.
 - `app/api/payments/refund/route.ts` — validates ownership/deadline via
   `get_customer_refund_payment` RPC, calls BOG refund API, then
   `cancel_paid_order` RPC.
-- DB layer (`supabase/migrations/20260630120000_real_payment_integration_bog.sql`)
-  — `create_provider_payment_order`, `attach_provider_payment_reference`,
-  `record_provider_payment_failure`, `get_customer_refund_payment`,
-  `finalize_provider_payment`, `expire_pending_provider_payments`. Inventory
-  is decremented at hold time and restored exactly once on
-  failure/expiry/refund. `finalize_provider_payment` is service-role-only —
-  browser clients cannot mark a payment paid directly. All functions are
-  `security definer` with `search_path = ''` and explicit grants/revokes.
+- DB layer, **as written in migration file**
+  `supabase/migrations/20260630120000_real_payment_integration_bog.sql`
+  (⚠️ this migration is NOT applied to the live database — see confirmed
+  state above) — `create_provider_payment_order`,
+  `attach_provider_payment_reference`, `record_provider_payment_failure`,
+  `get_customer_refund_payment`, `finalize_provider_payment`,
+  `expire_pending_provider_payments`. As designed, inventory is decremented
+  at hold time and restored exactly once on failure/expiry/refund;
+  `finalize_provider_payment` is service-role-only so browser clients can't
+  mark a payment paid directly; all functions are `security definer` with
+  `search_path = ''` and explicit grants/revokes. This is good design on
+  paper — it just isn't live yet.
 - `app/api/cron/payment-maintenance/route.ts` — Vercel cron (every 30 min
-  per `vercel.json`) calls `expire_pending_provider_payments(20)` to release
-  abandoned checkout holds.
+  per `vercel.json`) calls `expire_pending_provider_payments(20)`; this will
+  currently fail the same way (function not found) until the migration is
+  applied.
 - `lib/monitoring.ts` / `/api/health` — checks presence of `BOG_CLIENT_ID`,
   `BOG_CLIENT_SECRET`, `BOG_CALLBACK_SECRET`, `BOG_REQUIRE_CALLBACK_SIGNATURE`
-  as part of operational health reporting.
-- Old mock reservation RPC still exists in the DB for backward compatibility
-  but the app no longer uses it — checkout must go through
-  `/api/payments/checkout`.
+  as part of operational health reporting. Note this only checks env vars
+  are set, not that the DB-side RPCs the code depends on actually exist.
+- The old mock RPC (`mock_pay_and_reserve_offer`, plus an even older
+  `reserve_offer`) is confirmed still live in the DB — right now it is the
+  *only* working reservation path, even though the frontend/checkout code
+  no longer calls it and calls the (missing) provider RPCs instead.
 
 ### Stubbed / hardcoded / needs attention
 - `lib/payments/bog.ts` has a **hardcoded fallback RSA public key**
@@ -123,6 +168,10 @@ with real credentials.
   the correctness claims above come from code review, not test runs.
 
 ### Missing / unconfigured (verify before assuming it works)
+- **Confirmed: the live database is missing the entire `20260630120000`
+  migration** (see "Confirmed live-DB state" above) — this is the top
+  priority, not a nice-to-have. Checkout is broken in production until
+  this migration is applied.
 - **Local `.env.local` has no BOG variables at all** — only Supabase URL/anon
   key are set. Locally, any checkout attempt will throw "Bank of Georgia
   payment credentials are not configured." You cannot exercise the BOG flow
@@ -133,17 +182,27 @@ with real credentials.
 - Whether **production Vercel env vars actually contain real BOG
   credentials** (vs. placeholders) was not verified in this pass — the
   Vercel CLI isn't available in this environment, so this needs to be
-  checked in the Vercel dashboard directly, or by asking the user.
+  checked in the Vercel dashboard directly, or by asking the user. Moot
+  until the migration above is applied, since the checkout RPC will fail
+  before BOG is ever called.
 - No evidence in-repo of an actual completed sandbox/production transaction
   against BOG's API — this integration reads as "correctly built against
-  BOG's documented API shape" rather than "confirmed working against BOG."
+  BOG's documented API shape" rather than "confirmed working against BOG,"
+  and it cannot have completed successfully in its current state given the
+  missing migration.
 
 ### Suggested first task for a fresh session working on this
-Before writing new payment code, confirm with the user: (1) whether BOG
-sandbox credentials exist and can be dropped into `.env.local` for a live
-test, (2) whether the hardcoded public key in `bog.ts` is legitimate, and
-(3) whether any real transaction has ever completed successfully. Don't
-assume "code looks complete" means "integration is verified."
+The highest-priority, concrete next step is applying
+`supabase/migrations/20260630120000_real_payment_integration_bog.sql` to
+the live database — **ask the user first**, then apply via the Supabase SQL
+editor or a linked `supabase` CLI (neither was available in the session that
+discovered this). After that's confirmed applied (re-run the RPC-existence
+probe described above and expect `42501`/success instead of `PGRST202`),
+confirm with the user: (1) whether BOG sandbox credentials exist and can be
+dropped into `.env.local` for a live test, (2) whether the hardcoded public
+key in `bog.ts` is legitimate, and (3) whether any real transaction has ever
+completed successfully. Don't assume "code looks complete" means "integration
+is verified" — this file exists because that assumption was wrong once already.
 
 ## Database
 
