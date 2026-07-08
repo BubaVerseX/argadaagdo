@@ -108,14 +108,14 @@ export function OfferForm({
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Business <RequiredMark />
               </span>
               <select
                 value={businessId}
                 onChange={(event) => onBusinessIdChange(event.target.value)}
-                className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
               >
                 {approvedBusinesses.map((business) => (
                   <option key={business.id} value={business.id}>
@@ -125,7 +125,7 @@ export function OfferForm({
               </select>
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Title <RequiredMark />
               </span>
@@ -133,23 +133,23 @@ export function OfferForm({
                 value={title}
                 onChange={(event) => onTitleChange(event.target.value)}
                 maxLength={120}
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 placeholder="Bakery Surprise Bag"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700 md:col-span-2">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700 md:col-span-2">
               Description
               <textarea
                 value={description}
                 onChange={(event) => onDescriptionChange(event.target.value)}
                 maxLength={500}
-                className="min-h-28 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-28 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 placeholder="Fresh bakery items saved from today's closing stock."
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Category <RequiredMark />
               </span>
@@ -159,7 +159,7 @@ export function OfferForm({
                   onCategoryChange(normalizeOfferCategory(event.target.value))
                 }
                 required
-                className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
               >
                 {OFFER_CATEGORIES.map((offerCategory) => (
                   <option key={offerCategory} value={offerCategory}>
@@ -169,7 +169,7 @@ export function OfferForm({
               </select>
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Price <RequiredMark />
               </span>
@@ -180,12 +180,12 @@ export function OfferForm({
                 min="0.01"
                 step="0.01"
                 inputMode="decimal"
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 placeholder="5.00"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               Original price
               <input
                 value={oldPrice}
@@ -194,12 +194,12 @@ export function OfferForm({
                 min="0.01"
                 step="0.01"
                 inputMode="decimal"
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 placeholder="10.00"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Quantity <RequiredMark />
               </span>
@@ -210,12 +210,12 @@ export function OfferForm({
                 min="1"
                 step="1"
                 inputMode="numeric"
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
                 placeholder="3"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Pickup date <RequiredMark />
               </span>
@@ -224,11 +224,11 @@ export function OfferForm({
                 onChange={(event) => onPickupDateChange(event.target.value)}
                 type="date"
                 min={getTbilisiDateKey()}
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Pickup start <RequiredMark />
               </span>
@@ -236,11 +236,11 @@ export function OfferForm({
                 value={pickupStart}
                 onChange={(event) => onPickupStartChange(event.target.value)}
                 type="time"
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
               <span>
                 Pickup end <RequiredMark />
               </span>
@@ -248,17 +248,17 @@ export function OfferForm({
                 value={pickupEnd}
                 onChange={(event) => onPickupEndChange(event.target.value)}
                 type="time"
-                className="min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-gray-700 md:col-span-2">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700 md:col-span-2">
               Offer image
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
                 onChange={onImageFileChange}
-              className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-[#F7F6EF] file:px-4 file:py-2 file:font-black file:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+              className="w-full min-w-0 min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-[#F7F6EF] file:px-4 file:py-2 file:font-black file:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
             />
           </label>
           </div>
