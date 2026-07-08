@@ -247,6 +247,18 @@ export default function DiscoverClient() {
                 </div>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  {discoverSections.bestRatedBusinesses.length === 0 && (
+                    <div className="rounded-3xl bg-[#F7F6EF] p-6 md:col-span-2 xl:col-span-4">
+                      <p className="text-lg font-black text-gray-950">
+                        No rated businesses yet.
+                      </p>
+                      <p className="mt-2 font-semibold leading-7 text-gray-600">
+                        Businesses will appear here once customers start rating
+                        completed pickups.
+                      </p>
+                    </div>
+                  )}
+
                   {discoverSections.bestRatedBusinesses.map((business) => (
                     <Link
                       key={business.id}
