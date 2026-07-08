@@ -199,7 +199,7 @@ export default function Home() {
 
         <div className="premium-container relative">
           <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-            <div className="max-w-3xl">
+            <div className="min-w-0 max-w-3xl">
               <p className="inline-flex rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-green-700 shadow-[0_10px_35px_rgba(20,20,20,0.06)] ring-1 ring-black/5">
                 {t("home.badge")}
               </p>
@@ -262,7 +262,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-xl lg:mx-0">
+            <div className="relative mx-auto w-full min-w-0 max-w-xl lg:mx-0">
               <div className="absolute -left-5 top-10 hidden h-24 w-24 rounded-full bg-green-100/80 blur-2xl sm:block" />
               <div className="absolute -right-4 bottom-10 hidden h-28 w-28 rounded-full bg-gray-200/70 blur-3xl sm:block" />
 
@@ -428,7 +428,7 @@ export default function Home() {
             {featuredOffers.map((offer) => (
               <article
                 key={offer.id}
-                className="group overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(20,20,20,0.08)] ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_30px_100px_rgba(20,20,20,0.12)]"
+                className="group min-w-0 overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_80px_rgba(20,20,20,0.08)] ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_30px_100px_rgba(20,20,20,0.12)]"
               >
                 <div className="relative h-72 overflow-hidden bg-[#eef1e8]">
                   <OfferImage
