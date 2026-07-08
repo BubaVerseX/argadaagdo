@@ -100,7 +100,53 @@ evidence is unambiguous.
 first** — it's a real schema/RPC change to a live production project (see
 the standing rule at the top of this file). Applying it requires either the
 Supabase SQL editor, the `supabase` CLI linked to the project, or a direct
-Postgres connection — none of which were available in this session.
+Postgres connection — none of which were available in this session (no
+`supabase` CLI, no `psql`, no service-role key).
+
+### Confirmed live-Vercel env state (verified 2026-07-08 via `vercel env ls`)
+**Correction to earlier notes in this file**: the `vercel` CLI *is* installed
+and already authenticated in this environment (as `bublika99-4343`, project
+`bidzina-abesadze-s-projects/argadaagdo`) — an earlier pass in this project
+incorrectly concluded it wasn't available (that was a shell artifact: the
+`timeout` command doesn't exist on this machine, and the compound command
+using it masked the real `vercel` check). Re-verify tool availability
+directly (`which <tool>`) before trusting a prior "not available" note in
+this file — don't propagate a stale negative.
+
+Running `vercel env ls` (no environment filter, so this covers
+Production/Preview/Development together) returned **exactly four** variables
+project-wide:
+
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+**None of the following exist in Vercel, in any environment**: `BOG_CLIENT_ID`,
+`BOG_CLIENT_SECRET`, `BOG_AUTH_URL`, `BOG_API_BASE_URL`, `BOG_CALLBACK_SECRET`,
+`BOG_CALLBACK_PUBLIC_KEY`, `BOG_REQUIRE_CALLBACK_SIGNATURE`,
+`BOG_REFUND_PATH_TEMPLATE`, `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`,
+`TRANSACTIONAL_EMAIL_REPLY_TO`, `TRANSACTIONAL_EMAILS_ENABLED`, `CRON_SECRET`,
+`HEALTH_CHECK_SECRET`.
+
+**This is a second, independent production blocker on top of the missing
+migration** — fixing the DB alone is not sufficient to unbreak checkout:
+- `lib/payments/bog.ts`'s `getBogConfig()` throws immediately
+  ("Bank of Georgia payment credentials are not configured") without
+  `BOG_CLIENT_ID`/`BOG_CLIENT_SECRET`, regardless of DB state.
+- Both cron routes (`/api/cron/pickup-reminders`,
+  `/api/cron/payment-maintenance`) unconditionally return 401, because
+  `isCronAuthorized()` does `if (!secret) return false` when `CRON_SECRET`
+  is unset — so Vercel's scheduled cron hits have been failing auth this
+  whole time, independent of everything else in this file.
+- No transactional email can send (`RESEND_API_KEY` missing) — reservation
+  confirmations, cancellations, approvals, pickup/rating emails are all
+  silently no-op-ing (the email sender logs failures but doesn't roll back
+  the underlying action, per `README.md`).
+
+Don't add or change any Vercel environment variables without asking the user
+first — same standing-rule logic as the database: this is live production
+configuration, not local scratch state.
 
 ### Done (real implementation, not mocked)
 - `lib/payments/bog.ts` — full BOG client: OAuth2 token fetch, create
