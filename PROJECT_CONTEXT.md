@@ -270,16 +270,88 @@ tables — see the standing rule above before changing any of this.
 
 ## 2026-07-08 design polish + QA session
 
-A same-day follow-up session (branch `design-polish-and-qa`) ran a scoped
-pass with explicit standing rules: no RLS/auth/payment changes, no real data
-deletion, no prod env var changes without asking. Scope was: (1) visual
-redesign toward "70% Apple, 30% Linear" — off-white background, near-black
-text, green as a small accent only, generous whitespace, pill buttons —
-page by page, no logic changes; (2) non-payment QA pass over customer and
-business flows (links, console errors, layout, a11y, mobile); (3) optional
-low-risk component splitting for the largest client files, only if time
-allowed; (4) generating a `CRON_SECRET` value and Resend signup steps,
-without touching Vercel directly. See git log on that branch / the PR it
-opened for exactly what changed — this section intentionally doesn't
-duplicate that detail so it doesn't rot; check the branch's commit history
-for specifics.
+A same-day follow-up session (branch `design-polish-and-qa`, merged to main
+via PR #2, commit `7e331f5`) ran a scoped pass with explicit standing rules:
+no RLS/auth/payment changes, no real data deletion, no prod env var changes
+without asking. Scope was: (1) visual redesign toward "70% Apple, 30% Linear"
+— off-white background, near-black text, green as a small accent only,
+generous whitespace, pill buttons — page by page, no logic changes; (2)
+non-payment QA pass over customer and business flows (links, console errors,
+layout, a11y, mobile); (3) optional low-risk component splitting for the
+largest client files, only if time allowed; (4) generating a `CRON_SECRET`
+value and Resend signup steps, without touching Vercel directly. See git log
+on that branch for exactly what changed.
+
+**Later the same day**, with the user's explicit go-ahead (a new, specific
+instruction overriding the "don't touch Vercel" default from earlier),
+`CRON_SECRET`, `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`, and
+`TRANSACTIONAL_EMAILS_ENABLED` were all set directly in Vercel production via
+the `vercel` CLI, followed by a `vercel deploy --prod` to bake them into a
+new deployment (env var changes don't apply to already-built deployments).
+A real reservation-confirmation email was sent via Resend's live API to
+confirm the pipeline works (see 2026-07-08 test-data note below). **All four
+of these vars were saved as Vercel's "Sensitive" type**, meaning their values
+can never be read back via `vercel env pull`/CLI/dashboard by anyone,
+including future sessions — if you need to verify or rotate them, you'll
+need to re-add them (ask the user for values first, per standing rules) or
+have the user check Vercel's dashboard directly.
+
+## 2026-07-08 QA/a11y/RLS-audit/health-review session
+
+A third same-day session (branch `qa-a11y-audit-pass`) ran with payments
+explicitly on hold for a few weeks (user is sorting out real business
+banking) — standing rule: don't touch any payment/BOG code, env vars, or
+logic at all this session, on top of the usual RLS/auth/no-deletion rules.
+Findings, in brief (full detail lives in that branch's commits/PR, and in
+the conversation transcript — check there for specifics rather than trusting
+a paraphrase here to stay current):
+
+- **No regressions** from the design-polish-and-qa merge — re-swept all
+  routes, desktop + mobile, zero console errors/broken links/overflow.
+- **Fixed**: a real WCAG contrast failure (`text-gray-400` on white/off-white
+  measured ~2.5:1, below the 4.5:1 AA minimum for normal text; bumped to
+  `text-gray-500` at ~4.8:1 across 6 files/16 spots) and a missing
+  `aria-label` on the order review textarea (previously placeholder-only).
+- **Email confirmation**: strong empirical evidence (via `auth.users`
+  signup-to-confirm timing) that auto-confirm has been active since shortly
+  after the very first account (2026-05-20) — every account since confirms
+  in ~30-60ms, not humanly possible for a real email click. Contradicts
+  `README.md`'s stated intent that confirmation "should be enabled for
+  production." Not changed — flagged for the user to decide.
+- **Site URL / redirect URLs**: could not be verified — this lives in
+  GoTrue's own config, not any Postgres table, and no `supabase` CLI or
+  Management API token was available. User needs to check the Supabase
+  Dashboard directly (Authentication → URL Configuration) if this matters.
+- **RLS audit**: overall design is solid (SELECT-only client access to
+  `orders`/`payments`, all mutations via `SECURITY DEFINER` RPCs; `offers`
+  and `businesses` correctly scoped to owner+approved-status; helper
+  functions in the `private` schema are all `SECURITY DEFINER` with
+  `search_path = ''` and check both ownership and approval consistently).
+  **One confirmed real bug**: `businesses` has no owner UPDATE policy, only
+  an admin-approval one — so the "Save profile" feature on the business
+  dashboard (`app/business/dashboard/page.tsx`, direct `.update()` on
+  `businesses`) silently fails for every business owner. Confirmed live with
+  a test account: the request errors and the row genuinely never changes.
+  Not fixed — needs the user's explicit approval to add an RLS policy.
+- **Tech debt**: checked for dead code, duplicated date/status helpers, and
+  overly-broad `select("*")` queries. Found nothing safe to change — an
+  initial dead-code scan had a scope bug (missed root files like
+  `instrumentation.ts`) and produced false positives; the corrected
+  whole-repo scan found zero genuinely unused exports. `select("*")`
+  tightening was judged too risky to verify safely in a codebase with zero
+  test coverage (every instance either feeds the admin dashboard's
+  intentionally-full record view, or merges into a shared array state with
+  fully-populated sibling rows).
+- **Health/monitoring**: `/api/health` checks env var presence (12 tracked
+  vars, currently 4 missing — all `BOG_*`, expected) + DB + Storage
+  reachability, 503 only on real "error" (not "warning"). Recommended
+  (not implemented) pointing a free UptimeRobot-style monitor at it every
+  5 minutes. Cron: couldn't directly test `pickup-reminders` with the real
+  `CRON_SECRET` (it's a Vercel "Sensitive" var, unreadable after creation),
+  but indirect evidence (health check's env-var-missing count dropping by
+  exactly 3 after setting those vars) confirms the secret is really present
+  in the live deployment; no scheduled invocation has occurred yet since it
+  was set (daily at 12:00 UTC) to observe directly.
+- **Test data inventory**: compiled full list with exact IDs (2 auth users,
+  2 profiles, 1 business id=1, 2 offers id=1/2, 1 order id=1) for the user to
+  review before approving any real deletion. Nothing deleted this session.
