@@ -27,10 +27,17 @@ email, Vercel for hosting/cron. No test framework is configured anywhere in
 the repo (no `*.test.*` / `*.spec.*` files, no Jest/Vitest/Playwright config)
 — verification currently means manual QA plus `npm run lint` / `npm run build`.
 
-**Note on `AGENTS.md`**: it claims this is a modified/non-standard Next.js
-and says to read `node_modules/next/dist/docs/` before writing code. That
-doc folder does not actually exist in this install — treat that instruction
-as unreliable/stale, not as a real constraint.
+**Correction (2026-07-08, later pass)**: an earlier version of this note said
+`node_modules/next/dist/docs/` doesn't exist — that was wrong. It exists and
+contains real Next.js 16 docs (including an "AI agent hint" comment in
+`index.md`, apparently shipped intentionally for coding agents). Version
+installed is `16.2.6`. Checked `01-app/02-guides/upgrading/version-16.md` for
+breaking changes before doing styling work: nothing there affects
+client-component styling/JSX (the async `params`/`searchParams`/`cookies`/
+`headers` breaking change matters only if you touch dynamic-route data
+fetching, which none of the design/QA work in this pass did). Re-check that
+doc if a future task touches `app/*/[id]/page.tsx` data fetching, `sitemap`,
+or `opengraph-image` files.
 
 ## File structure
 
@@ -58,13 +65,22 @@ notes, marketplace flow) — check it before re-deriving things by hand.
 
 ## Bank of Georgia payment integration — current state
 
-**Bottom line: the application code is fully built out, not a stub — but the
-required database migration has NOT been applied to the live Supabase
-project, so checkout is currently broken in production.** This was verified
-directly on 2026-07-08 (see "Confirmed live-DB state" below), not inferred
-from reading the migration files.
+**Update (2026-07-08, later pass): the migration is now applied.** A
+follow-up session re-ran the RPC-existence check directly against Postgres
+via the Supabase MCP tools (not just PostgREST probing) and confirmed
+`create_provider_payment_order`, `finalize_provider_payment`, and
+`expire_pending_provider_payments` all exist live in `public`, all
+`security definer`, with the expected signatures. The functions were found
+to already be live in the database (applied by some other means — dashboard
+SQL editor or direct connection — not through the tracked migration
+history), so that session additionally inserted a row into
+`supabase_migrations.schema_migrations` for version `20260630120000` so the
+migration history matches reality. **No schema/DDL was re-run** — only the
+tracking-table bookkeeping was fixed. Bottom line: the DB-side blocker
+described below is resolved; the code that follows was accurate at the time
+it was written and is kept for history.
 
-### Confirmed live-DB state (verified 2026-07-08 against the live Supabase REST API)
+### Historical: confirmed live-DB state (verified 2026-07-08, early pass, against the live Supabase REST API — now stale, see update above)
 No CLI/DB credentials (no `supabase`/`psql`, no service-role key) were
 available in-session, so existence was checked by calling each RPC through
 PostgREST (`POST {SUPABASE_URL}/rest/v1/rpc/<name>`) with the anon key and
@@ -74,34 +90,22 @@ error means it exists but the calling role lacks grant. A deliberately
 made-up function name was used as a control and produced the identical
 `PGRST202` shape.
 
-- `create_provider_payment_order` — **does not exist** (`PGRST202`)
-- `finalize_provider_payment` — **does not exist** (`PGRST202`)
-- `expire_pending_provider_payments` — **does not exist** (`PGRST202`)
-- `attach_provider_payment_reference` — **does not exist** (`PGRST202`)
-- `record_provider_payment_failure` — **does not exist** (`PGRST202`)
-- `get_customer_refund_payment` — **does not exist** (`PGRST202`)
+- `create_provider_payment_order` — **did not exist yet** (`PGRST202`) — now exists, see update above
+- `finalize_provider_payment` — **did not exist yet** (`PGRST202`) — now exists, see update above
+- `expire_pending_provider_payments` — **did not exist yet** (`PGRST202`) — now exists, see update above
+- `attach_provider_payment_reference` — did not exist yet at that check (not re-verified in the later pass)
+- `record_provider_payment_failure` — did not exist yet at that check (not re-verified in the later pass)
+- `get_customer_refund_payment` — did not exist yet at that check (not re-verified in the later pass)
 - `cancel_paid_order` — exists (`42501`, pre-dates this migration)
 - `complete_pickup` — exists (`42501`, pre-dates this migration)
-- `mock_pay_and_reserve_offer` — exists (`42501`, the old mock RPC — still
-  live, i.e. the DB schema is stuck at least one migration behind the app)
+- `mock_pay_and_reserve_offer` — exists (`42501`, the old mock RPC)
 - `reserve_offer` — exists (`42501`, even older RPC)
 - `process_expired_marketplace` — exists and runs (200 OK)
 
-**Conclusion: migration `supabase/migrations/20260630120000_real_payment_integration_bog.sql`
-has not been run against the live database.** Since
-`app/api/payments/checkout/route.ts` calls `create_provider_payment_order`
-directly, every real checkout attempt in production right now should be
-failing (surfaced to the user as "Secure checkout could not be started").
-This has not yet been confirmed by an actual end-user checkout attempt or by
-reading application logs — only by direct RPC-existence probing — but the
-evidence is unambiguous.
-
-**Do not apply this migration to the live database without asking the user
-first** — it's a real schema/RPC change to a live production project (see
-the standing rule at the top of this file). Applying it requires either the
-Supabase SQL editor, the `supabase` CLI linked to the project, or a direct
-Postgres connection — none of which were available in this session (no
-`supabase` CLI, no `psql`, no service-role key).
+**This session's standing rule (2026-07-08 design/QA pass): payment/BOG code
+and RLS/auth logic are explicitly off-limits — being handled separately by
+the user. Don't touch `lib/payments/`, `app/api/payments/`, RLS policies, or
+auth logic in this pass even if you notice something that looks wrong.**
 
 ### Confirmed live-Vercel env state (verified 2026-07-08 via `vercel env ls`)
 **Correction to earlier notes in this file**: the `vercel` CLI *is* installed
@@ -214,10 +218,8 @@ configuration, not local scratch state.
   the correctness claims above come from code review, not test runs.
 
 ### Missing / unconfigured (verify before assuming it works)
-- **Confirmed: the live database is missing the entire `20260630120000`
-  migration** (see "Confirmed live-DB state" above) — this is the top
-  priority, not a nice-to-have. Checkout is broken in production until
-  this migration is applied.
+- ~~The live database is missing the entire `20260630120000` migration~~ —
+  **resolved 2026-07-08, see "Update" above.** The RPCs are confirmed live.
 - **Local `.env.local` has no BOG variables at all** — only Supabase URL/anon
   key are set. Locally, any checkout attempt will throw "Bank of Georgia
   payment credentials are not configured." You cannot exercise the BOG flow
@@ -237,18 +239,26 @@ configuration, not local scratch state.
   and it cannot have completed successfully in its current state given the
   missing migration.
 
-### Suggested first task for a fresh session working on this
-The highest-priority, concrete next step is applying
-`supabase/migrations/20260630120000_real_payment_integration_bog.sql` to
-the live database — **ask the user first**, then apply via the Supabase SQL
-editor or a linked `supabase` CLI (neither was available in the session that
-discovered this). After that's confirmed applied (re-run the RPC-existence
-probe described above and expect `42501`/success instead of `PGRST202`),
-confirm with the user: (1) whether BOG sandbox credentials exist and can be
-dropped into `.env.local` for a live test, (2) whether the hardcoded public
-key in `bog.ts` is legitimate, and (3) whether any real transaction has ever
-completed successfully. Don't assume "code looks complete" means "integration
-is verified" — this file exists because that assumption was wrong once already.
+### Suggested next task for a fresh session working on this
+The migration is applied, but nothing about production readiness beyond
+the DB is confirmed yet. Still open, in priority order:
+1. Confirm whether the Vercel project actually has real BOG credentials set
+   (`BOG_CLIENT_ID`, `BOG_CLIENT_SECRET`, etc.) — the last direct check
+   (2026-07-08, early pass) found **zero** of the BOG/Resend/cron env vars
+   set in Vercel across all environments. That may have changed since; ask
+   the user or re-run `vercel env ls` rather than trusting this note.
+2. Whether the hardcoded fallback RSA public key in `bog.ts` is a real
+   BOG-issued key or a scaffolding placeholder.
+3. Whether any real BOG sandbox/production transaction has ever completed
+   successfully end-to-end.
+4. `RESEND_API_KEY` and `CRON_SECRET` are also still unconfirmed/unset in
+   Vercel as of the last check — see the "design/QA pass" session notes
+   below (a 2026-07-08 session generated a `CRON_SECRET` value and gave the
+   user Resend signup steps, but did not set anything in Vercel itself).
+Don't assume "code looks complete" means "integration is verified" — this
+file exists because that assumption was wrong once already. And remember:
+payment/BOG code is off-limits to modify without the user's explicit go-ahead
+(see standing rule above) — this is about verifying config, not writing code.
 
 ## Database
 
@@ -257,3 +267,19 @@ See `README.md`'s Database Overview table for the seven core tables
 `favorites`). Migrations in `supabase/migrations/` are the source of truth
 and are meant to be applied in filename order. RLS is enabled on public
 tables — see the standing rule above before changing any of this.
+
+## 2026-07-08 design polish + QA session
+
+A same-day follow-up session (branch `design-polish-and-qa`) ran a scoped
+pass with explicit standing rules: no RLS/auth/payment changes, no real data
+deletion, no prod env var changes without asking. Scope was: (1) visual
+redesign toward "70% Apple, 30% Linear" — off-white background, near-black
+text, green as a small accent only, generous whitespace, pill buttons —
+page by page, no logic changes; (2) non-payment QA pass over customer and
+business flows (links, console errors, layout, a11y, mobile); (3) optional
+low-risk component splitting for the largest client files, only if time
+allowed; (4) generating a `CRON_SECRET` value and Resend signup steps,
+without touching Vercel directly. See git log on that branch / the PR it
+opened for exactly what changed — this section intentionally doesn't
+duplicate that detail so it doesn't rot; check the branch's commit history
+for specifics.

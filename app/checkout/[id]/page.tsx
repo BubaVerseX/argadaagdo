@@ -349,7 +349,7 @@ export default function CheckoutPage() {
           )}
 
           {!loading && offer && (
-            <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
               <div className="premium-card overflow-hidden rounded-3xl sm:rounded-[2rem]">
                 <div className="relative h-64 bg-[#eef1e8] sm:h-80">
                   <OfferImage
