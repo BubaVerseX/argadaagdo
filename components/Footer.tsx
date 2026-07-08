@@ -52,7 +52,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-gray-400">
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-gray-500">
             {t("footer.platform")}
           </h3>
 
@@ -70,7 +70,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-gray-400">
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-gray-500">
             {t("nav.support")}
           </h3>
 

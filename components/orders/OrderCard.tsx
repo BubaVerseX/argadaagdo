@@ -309,6 +309,7 @@ export function OrderCard({
                     }
                     maxLength={500}
                     placeholder={t("orders.reviewPlaceholder")}
+                    aria-label={t("orders.reviewPlaceholder")}
                     className="mt-3 min-h-24 w-full rounded-2xl border bg-white p-3 text-sm font-semibold text-gray-800 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
                   />
 

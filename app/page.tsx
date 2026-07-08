@@ -233,7 +233,7 @@ export default function Home() {
               </div>
 
               <div className="mt-6" aria-label={homepageCopy.categoriesLabel}>
-                <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-gray-400">
+                <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-gray-500">
                   {homepageCopy.categoriesLabel}
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -328,7 +328,7 @@ export default function Home() {
                           {previewOffer ? formatMoney(previewOffer.price) : "₾"}
                         </p>
                         {previewOffer?.old_price && (
-                          <p className="text-sm font-bold text-gray-400 line-through">
+                          <p className="text-sm font-bold text-gray-500 line-through">
                             {formatMoney(previewOffer.old_price)}
                           </p>
                         )}
@@ -339,7 +339,7 @@ export default function Home() {
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_0.78fr]">
                   <div className="rounded-[1.5rem] bg-[#fbfaf6] p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">
                       {homepageCopy.trustedByDesign}
                     </p>
                     <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
@@ -467,7 +467,7 @@ export default function Home() {
                         {formatMoney(offer.price)}
                       </p>
                       {offer.old_price && (
-                        <p className="text-sm font-bold text-gray-400 line-through">
+                        <p className="text-sm font-bold text-gray-500 line-through">
                           {formatMoney(offer.old_price)}
                         </p>
                       )}

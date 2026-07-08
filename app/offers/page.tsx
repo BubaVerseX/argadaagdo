@@ -674,7 +674,7 @@ export default function OffersPage() {
                                   </span>
 
                                   {offer.old_price && (
-                                    <span className="pb-1 font-bold text-gray-400 line-through">
+                                    <span className="pb-1 font-bold text-gray-500 line-through">
                                       {formatMoney(offer.old_price)}
                                     </span>
                                   )}

@@ -159,7 +159,7 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-            <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
+            <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
               {showCustomerNavigation
                 ? t("nav.customerSection")
                 : t("nav.exploreSection")}
@@ -221,7 +221,7 @@ export default function Navbar() {
 
           {showBusinessNavigation && (
             <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-              <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
+              <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
                 {t("nav.businessSection")}
               </span>
 
@@ -249,7 +249,7 @@ export default function Navbar() {
 
           {role === "admin" && (
             <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-              <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
+              <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-500">
                 {t("nav.adminSection")}
               </span>
 
@@ -294,7 +294,7 @@ export default function Navbar() {
                     <p className="truncate text-sm font-black text-gray-950">
                       {user.email}
                     </p>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
                       {role || t("nav.customerSection")}
                     </p>
                   </div>
@@ -356,7 +356,7 @@ export default function Navbar() {
         >
           <div className="grid gap-4">
             <div className="rounded-3xl bg-white p-3 shadow-sm">
-              <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+              <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-500">
                 {showCustomerNavigation
                   ? t("nav.customerSection")
                   : t("nav.exploreSection")}
@@ -455,7 +455,7 @@ export default function Navbar() {
 
             {showBusinessNavigation && (
               <div className="rounded-3xl bg-white p-3 shadow-sm">
-                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-500">
                   {t("nav.businessSection")}
                 </p>
                 <div className="grid gap-2">
@@ -486,7 +486,7 @@ export default function Navbar() {
 
             {role === "admin" && (
               <div className="rounded-3xl bg-white p-3 shadow-sm">
-                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-500">
                   {t("nav.adminSection")}
                 </p>
                 <Link

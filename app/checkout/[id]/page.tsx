@@ -488,7 +488,7 @@ export default function CheckoutPage() {
                       <span className="font-semibold text-gray-600">
                         {t("checkout.regularPrice")}
                       </span>
-                      <span className="font-black text-gray-400 line-through">
+                      <span className="font-black text-gray-500 line-through">
                         {formatMoney(offer.old_price)}
                       </span>
                     </div>
