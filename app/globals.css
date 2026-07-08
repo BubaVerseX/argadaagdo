@@ -1,27 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbfaf6;
-  --foreground: #171717;
-  --surface: #ffffff;
-  --surface-muted: #f5f3ec;
-  --brand: #0f7a3a;
-  --brand-strong: #0b5f2e;
-  --border-soft: rgba(15, 23, 42, 0.08);
-  --shadow-soft: 0 18px 50px rgba(15, 23, 42, 0.065);
+  --background: #d9d5cb;
+  --foreground: #1a1815;
+  --surface: #f2efe6;
+  --surface-muted: #ece7da;
+  --text-secondary: #6b6558;
+  --text-tertiary: #8a8272;
+  --brand: #5c7a5c;
+  --brand-strong: #4a654a;
+  --brand-soft: rgba(92, 122, 92, 0.12);
+  --dark: #1a1815;
+  --dark-strong: #2c2822;
+  --border-soft: rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 3px 16px rgba(37, 34, 32, 0.06);
+  --shadow-hero: 0 30px 80px rgba(37, 34, 32, 0.16);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -45,7 +51,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #15803d;
+  outline: 2px solid #5c7a5c;
   outline-offset: 2px;
 }
 
@@ -61,7 +67,7 @@ textarea {
 }
 
 ::selection {
-  background: rgba(21, 128, 61, 0.18);
+  background: rgba(92, 122, 92, 0.22);
 }
 
 .app-shell {
@@ -78,22 +84,23 @@ textarea {
 .premium-surface {
   border: 1px solid var(--border-soft);
   border-radius: 2rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(242, 239, 230, 0.82);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .premium-card {
   border: 1px solid var(--border-soft);
   border-radius: 1.75rem;
   background: var(--surface);
-  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.052);
+  box-shadow: var(--shadow-soft);
 }
 
 .premium-muted-card {
   border: 1px solid var(--border-soft);
   border-radius: 1.5rem;
-  background: rgba(247, 246, 239, 0.82);
+  background: var(--surface-muted);
 }
 
 .premium-button {
@@ -102,15 +109,24 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--brand);
+  background: var(--dark);
   color: white;
-  font-weight: 900;
-  box-shadow: 0 14px 28px rgba(15, 122, 58, 0.18);
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
 }
 
 .premium-button:hover {
-  background: var(--brand-strong);
+  background: var(--dark-strong);
   transform: translateY(-1px);
+}
+
+.premium-button:disabled,
+.premium-button[aria-disabled="true"] {
+  background: #b9b4a6;
+  color: #ece7da;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
 }
 
 .premium-button-secondary {
@@ -119,15 +135,22 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  border: 1px solid var(--border-soft);
-  background: white;
-  color: #111827;
-  font-weight: 900;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: transparent;
+  color: var(--foreground);
+  font-weight: 700;
 }
 
 .premium-button-secondary:hover {
-  background: #f8faf8;
+  background: rgba(0, 0, 0, 0.04);
   transform: translateY(-1px);
+}
+
+.premium-button-secondary:disabled,
+.premium-button-secondary[aria-disabled="true"] {
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #b9b4a6;
+  cursor: not-allowed;
 }
 
 .premium-icon {
@@ -137,42 +160,113 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: #f5f3ec;
-  color: #111827;
-  font-weight: 900;
+  background: var(--surface-muted);
+  color: var(--foreground);
+  font-weight: 700;
 }
 
 .premium-badge {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  border: 1px solid rgba(21, 128, 61, 0.14);
-  background: rgba(240, 253, 244, 0.92);
-  color: #166534;
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  color: var(--text-secondary);
   font-size: 0.75rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.premium-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: var(--brand);
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
 }
 
 .premium-input {
   min-height: 3rem;
   border-radius: 1rem;
   border: 1px solid var(--border-soft);
-  background: white;
-  color: #111827;
-  font-weight: 700;
+  background: var(--surface);
+  color: var(--foreground);
+  font-weight: 500;
   outline: none;
 }
 
 .premium-input:focus {
-  border-color: rgba(21, 128, 61, 0.55);
-  box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.09);
+  border-color: rgba(92, 122, 92, 0.55);
+  box-shadow: 0 0 0 4px rgba(92, 122, 92, 0.12);
 }
 
 .subtle-lift:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-hero);
+}
+
+/* Warm color-graded photo overlay — applied over every real photo in the
+   app so photography reads as one consistent, warm-toned system. */
+.photo-warm-overlay {
+  position: relative;
+}
+
+.photo-warm-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(90, 62, 40, 0.38),
+    rgba(140, 100, 60, 0.12) 55%,
+    rgba(40, 30, 20, 0.3)
+  );
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* Trust/partner marquee strip: continuous left-scroll, pauses on hover,
+   fades out at both edges. */
+.trust-marquee {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+.trust-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: trust-marquee-scroll 28s linear infinite;
+}
+
+.trust-marquee:hover .trust-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes trust-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
