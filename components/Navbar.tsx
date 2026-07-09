@@ -110,17 +110,17 @@ export default function Navbar() {
     const active = isActivePath(href);
     const base =
       surface === "mobile"
-        ? "flex min-h-12 w-full items-center rounded-2xl px-4 py-3 text-base font-black transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
-        : "inline-flex min-h-9 items-center rounded-full px-3.5 py-2 text-sm font-black transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300";
+        ? "flex min-h-12 w-full items-center rounded-2xl px-4 py-3 text-base font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+        : "inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]";
 
     if (active) {
-      return `${base} bg-gray-950 text-white shadow-sm`;
+      return `${base} bg-white text-[#1a1815] shadow-[0_3px_16px_rgba(37,34,32,0.08)]`;
     }
 
     return `${base} ${
       surface === "mobile"
-        ? "bg-[#F7F6EF] text-gray-800 hover:bg-white hover:text-gray-950"
-        : "text-gray-600 hover:bg-white hover:text-gray-950"
+        ? "bg-[#ece7da] text-[#6b6558] hover:bg-white hover:text-[#1a1815]"
+        : "text-[#6b6558] hover:bg-white/60 hover:text-[#1a1815]"
     }`;
   };
 
@@ -132,135 +132,112 @@ export default function Navbar() {
     showBusinessDashboard || showBusinessRegister || !user;
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/5 bg-white/82 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-5 md:px-10">
+    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#f2efe6]/75 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 md:px-10">
         <Link
           href="/"
           onClick={() => {
             setMobileMenu(false);
             setProfileMenu(false);
           }}
-          className="flex items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+          className="flex items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
           aria-label={t("nav.home")}
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-950 text-base font-black text-white shadow-sm sm:h-10 sm:w-10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1a1815] text-base font-bold text-white shadow-sm sm:h-10 sm:w-10">
             A
           </div>
 
           <div>
-            <p className="text-lg font-black leading-none text-gray-950 sm:text-xl">
+            <p className="text-lg font-bold leading-none tracking-tight text-[#1a1815] sm:text-xl">
               ArGadaagdo
             </p>
-            <p className="hidden text-xs font-bold text-gray-500 md:block">
+            <p className="hidden text-xs font-medium text-[#6b6558] md:block">
               {t("brand.tagline")}
             </p>
           </div>
         </Link>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-            <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
-              {showCustomerNavigation
-                ? t("nav.customerSection")
-                : t("nav.exploreSection")}
-            </span>
+        <div className="hidden items-center gap-1 lg:flex">
+          <Link
+            href="/offers"
+            className={linkClass("/offers")}
+            aria-current={ariaCurrent("/offers")}
+          >
+            {t("common.browseOffers")}
+          </Link>
 
+          <Link
+            href="/businesses"
+            className={linkClass("/businesses")}
+            aria-current={ariaCurrent("/businesses")}
+          >
+            {t("nav.businesses")}
+          </Link>
+
+          <Link
+            href="/discover"
+            className={linkClass("/discover")}
+            aria-current={ariaCurrent("/discover")}
+          >
+            {t("nav.discover")}
+          </Link>
+
+          {showCustomerNavigation && (
             <Link
-              href="/offers"
-              className={linkClass("/offers")}
-              aria-current={ariaCurrent("/offers")}
+              href="/favorites"
+              className={linkClass("/favorites")}
+              aria-current={ariaCurrent("/favorites")}
             >
-              {t("common.browseOffers")}
+              {t("nav.favorites")}
             </Link>
+          )}
 
+          {showCustomerNavigation && (
             <Link
-              href="/businesses"
-              className={linkClass("/businesses")}
-              aria-current={ariaCurrent("/businesses")}
+              href="/orders"
+              className={linkClass("/orders")}
+              aria-current={ariaCurrent("/orders")}
             >
-              {t("nav.businesses")}
+              {t("nav.orders")}
             </Link>
+          )}
 
+          <Link
+            href="/faq"
+            className={linkClass("/faq")}
+            aria-current={ariaCurrent("/faq")}
+          >
+            {t("nav.faq")}
+          </Link>
+
+          {showBusinessDashboard && (
             <Link
-              href="/discover"
-              className={linkClass("/discover")}
-              aria-current={ariaCurrent("/discover")}
+              href="/business/dashboard"
+              className={linkClass("/business/dashboard")}
+              aria-current={ariaCurrent("/business/dashboard")}
             >
-              {t("nav.discover")}
+              {t("nav.dashboard")}
             </Link>
+          )}
 
-            {showCustomerNavigation && (
-              <Link
-                href="/favorites"
-                className={linkClass("/favorites")}
-                aria-current={ariaCurrent("/favorites")}
-              >
-                {t("nav.favorites")}
-              </Link>
-            )}
-
-            {showCustomerNavigation && (
-              <Link
-                href="/orders"
-                className={linkClass("/orders")}
-                aria-current={ariaCurrent("/orders")}
-              >
-                {t("nav.orders")}
-              </Link>
-            )}
-
+          {(showBusinessRegister || !user) && (
             <Link
-              href="/faq"
-              className={linkClass("/faq")}
-              aria-current={ariaCurrent("/faq")}
+              href="/business/register"
+              className={linkClass("/business/register")}
+              aria-current={ariaCurrent("/business/register")}
             >
-              {t("nav.faq")}
+              {t("nav.forBusiness")}
             </Link>
-
-          </div>
-
-          {showBusinessNavigation && (
-            <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-              <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
-                {t("nav.businessSection")}
-              </span>
-
-              {showBusinessDashboard && (
-                <Link
-                  href="/business/dashboard"
-                  className={linkClass("/business/dashboard")}
-                  aria-current={ariaCurrent("/business/dashboard")}
-                >
-                  {t("nav.dashboard")}
-                </Link>
-              )}
-
-              {(showBusinessRegister || !user) && (
-                <Link
-                  href="/business/register"
-                  className={linkClass("/business/register")}
-                  aria-current={ariaCurrent("/business/register")}
-                >
-                  {t("nav.forBusiness")}
-                </Link>
-              )}
-            </div>
           )}
 
           {role === "admin" && (
-            <div className="flex items-center gap-0.5 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-              <span className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
-                {t("nav.adminSection")}
-              </span>
-
-              <Link
-                href="/admin"
-                className={linkClass("/admin")}
-                aria-current={ariaCurrent("/admin")}
-              >
-                {t("nav.admin")}
-              </Link>
-            </div>
+            <Link
+              href="/admin"
+              className={linkClass("/admin")}
+              aria-current={ariaCurrent("/admin")}
+            >
+              {t("nav.admin")}
+            </Link>
           )}
         </div>
 
@@ -275,11 +252,11 @@ export default function Navbar() {
             <div className="relative hidden lg:block">
               <button
                 onClick={() => setProfileMenu((current) => !current)}
-                className="flex min-h-11 items-center gap-3 rounded-full bg-gray-950 py-1.5 pl-2 pr-4 font-black text-white shadow-sm transition hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                className="flex min-h-11 items-center gap-3 rounded-full bg-[#1a1815] py-1.5 pl-2 pr-4 font-semibold text-white shadow-[0_3px_16px_rgba(37,34,32,0.14)] transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                 aria-haspopup="menu"
                 aria-expanded={profileMenu}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-gray-950">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-bold text-[#1a1815]">
                   {(user.email || "A").slice(0, 1).toUpperCase()}
                 </span>
                 <span>{t("nav.profile")}</span>
@@ -287,14 +264,14 @@ export default function Navbar() {
 
               {profileMenu && (
                 <div
-                  className="absolute right-0 mt-3 w-64 rounded-3xl bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.14)] ring-1 ring-black/5"
+                  className="absolute right-0 mt-3 w-64 rounded-3xl bg-white p-2 shadow-[0_24px_70px_rgba(37,34,32,0.18)]"
                   role="menu"
                 >
                   <div className="px-4 py-3">
-                    <p className="truncate text-sm font-black text-gray-950">
+                    <p className="truncate text-sm font-semibold text-[#1a1815]">
                       {user.email}
                     </p>
-                    <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
                       {role || t("nav.customerSection")}
                     </p>
                   </div>
@@ -302,7 +279,7 @@ export default function Navbar() {
                   <Link
                     href="/profile"
                     onClick={() => setProfileMenu(false)}
-                    className="block rounded-2xl px-4 py-3 text-sm font-black text-gray-700 transition hover:bg-[#F7F6EF] hover:text-gray-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="block rounded-2xl px-4 py-3 text-sm font-semibold text-[#6b6558] transition hover:bg-[#ece7da] hover:text-[#1a1815] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                     role="menuitem"
                   >
                     {t("nav.profile")}
@@ -310,14 +287,14 @@ export default function Navbar() {
                   <Link
                     href="/settings"
                     onClick={() => setProfileMenu(false)}
-                    className="block rounded-2xl px-4 py-3 text-sm font-black text-gray-700 transition hover:bg-[#F7F6EF] hover:text-gray-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="block rounded-2xl px-4 py-3 text-sm font-semibold text-[#6b6558] transition hover:bg-[#ece7da] hover:text-[#1a1815] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                     role="menuitem"
                   >
                     {t("nav.settings")}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="mt-1 min-h-11 w-full rounded-2xl px-4 py-3 text-left text-sm font-black text-gray-700 transition hover:bg-gray-950 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="mt-1 min-h-11 w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#6b6558] transition hover:bg-[#1a1815] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                     role="menuitem"
                   >
                     {t("nav.logout")}
@@ -328,7 +305,7 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="hidden rounded-full bg-green-700 px-5 py-2.5 font-black text-white shadow-sm transition hover:bg-green-800 lg:block"
+              className="hidden rounded-full bg-[#1a1815] px-5 py-2.5 font-semibold text-white shadow-[0_3px_16px_rgba(37,34,32,0.14)] transition hover:bg-[#2c2822] lg:block"
             >
               {t("nav.signIn")}
             </Link>
@@ -339,7 +316,7 @@ export default function Navbar() {
               setMobileMenu(!mobileMenu);
               setProfileMenu(false);
             }}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-lg font-black text-gray-900 shadow-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 lg:hidden"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-black/[0.06] bg-white px-3 py-2 text-lg font-semibold text-[#1a1815] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c] lg:hidden"
             aria-label={mobileMenu ? t("nav.closeMenu") : t("nav.openMenu")}
             aria-expanded={mobileMenu}
             aria-controls="mobile-navigation"
@@ -352,11 +329,11 @@ export default function Navbar() {
       {mobileMenu && (
         <div
           id="mobile-navigation"
-          className="border-t border-gray-100 bg-white px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
+          className="border-t border-black/[0.06] bg-[#f2efe6] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
         >
           <div className="grid gap-4">
-            <div className="rounded-3xl bg-white p-3 shadow-sm">
-              <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+            <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
+              <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
                 {showCustomerNavigation
                   ? t("nav.customerSection")
                   : t("nav.exploreSection")}
@@ -454,8 +431,8 @@ export default function Navbar() {
             </div>
 
             {showBusinessNavigation && (
-              <div className="rounded-3xl bg-white p-3 shadow-sm">
-                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+              <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
+                <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
                   {t("nav.businessSection")}
                 </p>
                 <div className="grid gap-2">
@@ -485,8 +462,8 @@ export default function Navbar() {
             )}
 
             {role === "admin" && (
-              <div className="rounded-3xl bg-white p-3 shadow-sm">
-                <p className="px-2 pb-2 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+              <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
+                <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
                   {t("nav.adminSection")}
                 </p>
                 <Link
@@ -500,21 +477,21 @@ export default function Navbar() {
               </div>
             )}
 
-            <div className="rounded-3xl bg-white p-3 shadow-sm">
-              <div className="flex items-center justify-between rounded-2xl bg-[#F7F6EF] p-3">
-                <span className="text-sm font-black text-gray-600">
+            <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
+              <div className="flex items-center justify-between rounded-2xl bg-[#ece7da] p-3">
+                <span className="text-sm font-semibold text-[#6b6558]">
                   {t("language.switcherLabel")}
                 </span>
                 <LanguageSwitcher />
               </div>
 
-              <div className="mt-3 border-t border-gray-100 pt-3">
+              <div className="mt-3 border-t border-black/[0.06] pt-3">
                 {!authReady ? (
                   <div className="min-h-12 w-full rounded-full bg-white" />
                 ) : user ? (
                   <button
                     onClick={handleLogout}
-                    className="min-h-12 w-full rounded-full bg-gray-950 px-5 py-3 font-black text-white transition hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="min-h-12 w-full rounded-full bg-[#1a1815] px-5 py-3 font-semibold text-white transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                   >
                     {t("nav.logout")}
                   </button>
@@ -522,7 +499,7 @@ export default function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMobileMenu(false)}
-                    className="block min-h-12 w-full rounded-full bg-green-700 px-5 py-3 text-center font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="block min-h-12 w-full rounded-full bg-[#1a1815] px-5 py-3 text-center font-semibold text-white transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                   >
                     {t("nav.signIn")}
                   </Link>
