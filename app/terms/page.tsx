@@ -38,13 +38,13 @@ export default function TermsPage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               {t("terms.badge")}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {t("terms.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg sm:leading-8">
               {t("terms.subtitle")}
             </p>
           </div>
@@ -53,17 +53,17 @@ export default function TermsPage() {
             {sections.map((section, index) => (
               <section
                 key={section.title}
-                className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8"
+                className="rounded-[2rem] bg-white p-5 shadow-[var(--shadow-soft)] sm:p-8"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-xl font-black text-green-800">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#eef1e8] text-xl font-black text-[#5c7a5c]">
                     {index + 1}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-950">
+                    <h2 className="text-2xl font-black text-[#1a1815]">
                       {section.title}
                     </h2>
-                    <p className="mt-3 font-semibold leading-8 text-gray-700">
+                    <p className="mt-3 font-semibold leading-8 text-[#6b6558]">
                       {section.text}
                     </p>
                   </div>
@@ -72,17 +72,17 @@ export default function TermsPage() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-[2rem] bg-green-50 p-5 text-center shadow-sm sm:p-8">
-            <h2 className="text-2xl font-black text-gray-950">
+          <div className="mt-6 rounded-[2rem] bg-white p-5 text-center shadow-[var(--shadow-soft)] sm:p-8">
+            <h2 className="text-2xl font-black text-[#1a1815]">
               {t("terms.helpTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6558]">
               {t("terms.helpText")}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/faq"
-                className="min-h-12 rounded-full bg-white px-6 py-3 text-center font-black text-green-700 ring-1 ring-green-100 transition hover:bg-green-100"
+                className="premium-button-secondary px-6 py-3 text-center"
               >
                 {t("nav.faq")}
               </Link>

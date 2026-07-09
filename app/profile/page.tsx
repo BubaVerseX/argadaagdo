@@ -261,10 +261,10 @@ export default function ProfilePage() {
             <p className="premium-badge px-4 py-2">
               Account
             </p>
-            <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black text-[#1a1815] sm:text-4xl md:text-5xl">
               Profile settings
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg">
               Manage your personal account details without changing your account
               role or marketplace permissions.
             </p>
@@ -278,7 +278,7 @@ export default function ProfilePage() {
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             <div className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
                 Personal details
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -286,44 +286,44 @@ export default function ProfilePage() {
               </h2>
 
               <div className="mt-6 grid gap-4">
-                <label className="grid gap-2 text-sm font-black text-gray-700">
+                <label className="grid gap-2 text-sm font-black text-[#6b6558]">
                   Email address
                   <input
                     value={user?.email || ""}
                     disabled
-                    className="min-h-12 rounded-2xl border bg-gray-50 p-4 font-semibold text-gray-600"
+                    className="premium-input p-4 font-semibold opacity-70"
                   />
                 </label>
 
-                <label className="grid gap-2 text-sm font-black text-gray-700">
+                <label className="grid gap-2 text-sm font-black text-[#6b6558]">
                   Display name
                   <input
                     value={displayName}
                     onChange={(event) => setDisplayName(event.target.value)}
                     maxLength={80}
                     placeholder="Your name"
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    className="premium-input p-4 font-semibold"
                   />
-                  <span className="text-xs font-bold text-gray-500">
+                  <span className="text-xs font-bold text-[#6b6558]">
                     Optional · {displayName.length}/80
                   </span>
                 </label>
 
-                <label className="grid gap-2 text-sm font-black text-gray-700">
+                <label className="grid gap-2 text-sm font-black text-[#6b6558]">
                   Phone number
                   <input
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
                     maxLength={40}
                     placeholder="+995 555 123 456"
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    className="premium-input p-4 font-semibold"
                   />
-                  <span className="text-xs font-bold text-gray-500">
+                  <span className="text-xs font-bold text-[#6b6558]">
                     Optional · {phone.length}/40
                   </span>
                 </label>
 
-                <label className="grid gap-2 text-sm font-black text-gray-700">
+                <label className="grid gap-2 text-sm font-black text-[#6b6558]">
                   Preferred language
                   <select
                     value={preferredLanguage}
@@ -333,7 +333,7 @@ export default function ProfilePage() {
                         setPreferredLanguage(nextLanguage);
                       }
                     }}
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    className="premium-input p-4 font-semibold"
                   >
                     {supportedLanguages.map((nextLanguage) => (
                       <option key={nextLanguage} value={nextLanguage}>
@@ -356,45 +356,45 @@ export default function ProfilePage() {
 
             <aside className="grid gap-6">
               <div className="premium-card rounded-3xl p-5 sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
                   Account security
                 </p>
                 <h2 className="mt-2 text-2xl font-black">Security status</h2>
 
                 <div className="mt-5 grid gap-3">
-                  <div className="rounded-2xl bg-green-50 p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-green-800">
+                  <div className="rounded-2xl bg-[#eef1e8] p-4">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
                       Email
                     </p>
-                    <p className="mt-1 font-black text-gray-950">
+                    <p className="mt-1 font-black text-[#1a1815]">
                       {verified ? "Verified email" : "Email not verified"}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                  <div className="rounded-2xl bg-[#ece7da] p-4">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                       Account type
                     </p>
-                    <p className="mt-1 font-black text-gray-950">{roleLabel}</p>
-                    <p className="mt-1 text-sm font-semibold text-gray-600">
+                    <p className="mt-1 font-black text-[#1a1815]">{roleLabel}</p>
+                    <p className="mt-1 text-sm font-semibold text-[#6b6558]">
                       Roles are managed by ArGadaagdo and cannot be changed here.
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                  <div className="rounded-2xl bg-[#ece7da] p-4">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                       Created
                     </p>
-                    <p className="mt-1 font-black text-gray-950">
+                    <p className="mt-1 font-black text-[#1a1815]">
                       {formatAccountDate(user?.created_at)}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#F7F6EF] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                  <div className="rounded-2xl bg-[#ece7da] p-4">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                       Last sign-in
                     </p>
-                    <p className="mt-1 font-black text-gray-950">
+                    <p className="mt-1 font-black text-[#1a1815]">
                       {formatAccountDate(user?.last_sign_in_at)}
                     </p>
                   </div>
@@ -402,18 +402,18 @@ export default function ProfilePage() {
               </div>
 
               <div className="premium-card rounded-3xl p-5 sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+                <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
                   Account tools
                 </p>
                 <h2 className="mt-2 text-2xl font-black">Data controls</h2>
-                <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                <p className="mt-3 text-sm font-semibold leading-6 text-[#6b6558]">
                   Need a data export or account deletion review? Contact
                   support and we will help with the request.
                 </p>
                 <div className="mt-5 grid gap-3">
                   <Link
                     href="/contact"
-                    className="premium-button px-5 py-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                    className="premium-button px-5 py-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                   >
                     Contact support about my data
                   </Link>
@@ -424,7 +424,7 @@ export default function ProfilePage() {
 
           <div className="mt-6">
             <section className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
                 Marketplace activity
               </p>
               <h2 className="mt-2 text-2xl font-black">
@@ -458,14 +458,14 @@ export default function ProfilePage() {
                     helper: "Offers saved for later",
                   },
                 ].map((stat) => (
-                  <div key={stat.title} className="rounded-2xl bg-[#F7F6EF] p-4">
-                    <p className="text-sm font-black text-gray-500">
+                  <div key={stat.title} className="rounded-2xl bg-[#ece7da] p-4">
+                    <p className="text-sm font-black text-[#6b6558]">
                       {stat.title}
                     </p>
-                    <p className="mt-2 text-3xl font-black text-gray-950">
+                    <p className="mt-2 text-3xl font-black text-[#1a1815]">
                       {stat.value}
                     </p>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
                       {stat.helper}
                     </p>
                   </div>
@@ -476,7 +476,7 @@ export default function ProfilePage() {
 
           <div className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
             <h2 className="text-2xl font-black">Need password help?</h2>
-            <p className="mt-2 font-semibold leading-7 text-gray-600">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
               Use the password reset flow from the sign-in page. We will email a
               secure reset link to your account email.
             </p>
