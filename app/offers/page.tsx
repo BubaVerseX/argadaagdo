@@ -402,21 +402,21 @@ export default function OffersPage() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="min-h-screen bg-[#d9d5cb] text-[#1a1815]">
       <Navbar />
 
       <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="relative mx-auto max-w-7xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-6 md:rounded-[2.5rem] md:p-10">
+          <div className="rounded-[1.75rem] bg-[#f2efe6] p-5 shadow-[var(--shadow-soft)] sm:p-6 md:rounded-[2rem] md:p-10">
             <p className="premium-badge px-4 py-2">
               {t("offers.badge")}
             </p>
 
-            <h1 className="mt-4 max-w-3xl text-3xl font-black leading-tight text-gray-950 sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#1a1815] sm:text-4xl md:text-6xl">
               {t("offers.title")}
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-gray-600 md:text-lg">
+            <p className="mt-3 max-w-2xl text-base leading-[1.55] text-[#6b6558] md:text-lg">
               {t("offers.subtitle")}
             </p>
 
@@ -504,7 +504,7 @@ export default function OffersPage() {
                 <option value="rating-desc">Highest rated businesses</option>
               </select>
 
-              <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl border border-green-100 bg-green-50 px-5 py-3 font-black text-green-900 md:justify-start">
+              <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl bg-white px-5 py-3 font-semibold text-[#1a1815] shadow-[var(--shadow-soft)] md:justify-start">
                 <input
                   type="checkbox"
                   checked={availableOnly}
@@ -512,14 +512,14 @@ export default function OffersPage() {
                     setAvailableOnly(event.target.checked);
                     setPage(1);
                   }}
-                  className="h-5 w-5 accent-green-600"
+                  className="h-5 w-5 accent-[#5c7a5c]"
                 />
                 {t("offers.availableOnly")}
               </label>
             </div>
 
-            <div className="mt-4 rounded-3xl bg-white p-5 text-sm font-bold leading-6 text-gray-600 shadow-sm ring-1 ring-black/5">
-              <span className="font-black text-gray-950">
+            <div className="mt-4 rounded-3xl bg-white p-5 text-sm leading-6 text-[#6b6558] shadow-[var(--shadow-soft)]">
+              <span className="font-semibold text-[#1a1815]">
                 {t("offers.surpriseBagTitle")}
               </span>{" "}
               {t("offers.surpriseBagText")}
@@ -533,10 +533,10 @@ export default function OffersPage() {
           )}
 
           <div className="mt-8 sm:mt-10">
-            <h2 className="text-2xl font-black sm:text-3xl md:text-4xl">
+            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl">
               {t("offers.heading")}
             </h2>
-            <p className="mt-2 text-sm font-black text-gray-600">
+            <p className="mt-2 text-sm font-semibold text-[#6b6558]">
               {formatAvailableOfferCount(filteredOffers.length, language)}
             </p>
           </div>
@@ -546,30 +546,30 @@ export default function OffersPage() {
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="h-[430px] animate-pulse rounded-[2rem] bg-white shadow-sm"
+                  className="h-[430px] animate-pulse rounded-[1.75rem] bg-[#f2efe6]"
                 />
               ))}
             </div>
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="mt-8 overflow-hidden rounded-[2rem] bg-white shadow-sm ring-1 ring-black/5">
+            <div className="mt-8 overflow-hidden rounded-[1.75rem] bg-[#f2efe6] shadow-[var(--shadow-soft)]">
               <div className="px-5 py-10 text-center sm:px-8 sm:py-12">
-                <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-green-700" />
-                <h3 className="mt-5 text-2xl font-black text-gray-950 sm:text-3xl">
+                <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-[#5c7a5c]" />
+                <h3 className="mt-5 text-2xl font-extrabold text-[#1a1815] sm:text-3xl">
                   {offers.length === 0
                     ? t("offers.noOffers")
                     : t("offers.noMatching")}
                 </h3>
 
-                <p className="mx-auto mt-3 max-w-xl text-base font-semibold leading-7 text-gray-600 sm:text-lg">
+                <p className="mx-auto mt-3 max-w-xl text-base leading-[1.55] text-[#6b6558] sm:text-lg">
                   {offers.length === 0
                     ? t("offers.noOffersHint")
                     : t("offers.noMatchingHint")}
                 </p>
 
                 {offers.length === 0 && (
-                  <p className="mx-auto mt-3 max-w-xl text-sm font-bold leading-6 text-green-700 sm:text-base">
+                  <p className="mx-auto mt-3 max-w-xl text-sm font-semibold leading-6 text-[#5c7a5c] sm:text-base">
                     {t("offers.checkBackSoon")}
                   </p>
                 )}
@@ -604,10 +604,10 @@ export default function OffersPage() {
                 <section key={section.key}>
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <h3 className="text-xl font-black sm:text-2xl">
+                      <h3 className="text-xl font-bold tracking-tight sm:text-2xl">
                         {section.title}
                       </h3>
-                      <p className="mt-1 text-sm font-semibold text-gray-600">
+                      <p className="mt-1 text-sm font-medium text-[#6b6558]">
                         {formatAvailableOfferCount(section.offers.length, language)}
                       </p>
                     </div>
@@ -632,13 +632,14 @@ export default function OffersPage() {
                           : null;
                       const rating = ratingSummaries[offer.business_id];
                       const reservable = isOfferReservable(offer);
+                      const isFavorite = favoriteOfferIds.includes(offer.id);
 
                       return (
                         <div
                           key={offer.id}
-                          className="group overflow-hidden rounded-[2rem] bg-white shadow-[0_20px_70px_rgba(15,23,42,0.075)] ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-[0_28px_90px_rgba(15,23,42,0.1)]"
+                          className="group overflow-hidden rounded-[1.75rem] bg-[#f2efe6] shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-hero)]"
                         >
-                          <div className="relative h-52 overflow-hidden bg-[#eef1e8] sm:h-56 md:h-60">
+                          <div className="photo-warm-overlay relative h-52 overflow-hidden sm:h-56 md:h-60">
                             <OfferImage
                               src={offer.image_url}
                               alt={offer.title}
@@ -646,65 +647,58 @@ export default function OffersPage() {
                               className="transition duration-500 group-hover:scale-105"
                             />
 
-                            <div className="absolute left-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-green-700 shadow-sm">
-                              {getOfferCategory(offer)}
-                            </div>
-
                             {discount && (
-                              <div className="absolute right-4 top-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-gray-900 shadow-sm">
-                                Save {discount}%
+                              <div className="premium-discount-badge pointer-events-none absolute left-4 top-4 px-3 py-1.5">
+                                -{discount}%
                               </div>
                             )}
 
-                            <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-4 py-2 text-sm font-black text-gray-900 shadow-sm">
-                              {getOfferDateLabel(offer, language)}
+                            <div className="pointer-events-none absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#1a1815] shadow-sm">
+                              {getOfferCategory(offer)}
                             </div>
                           </div>
 
                           <div className="p-4 sm:p-5 md:p-6">
                             <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0">
-                                <h4 className="text-2xl font-black leading-tight">
+                                <h4 className="text-xl font-bold leading-tight tracking-tight text-[#1a1815]">
                                   {offer.title}
                                 </h4>
-
-                                <div className="mt-3 flex flex-wrap items-end gap-2">
-                                  <span className="text-4xl font-black text-green-700">
-                                    {formatMoney(offer.price)}
-                                  </span>
-
-                                  {offer.old_price && (
-                                    <span className="pb-1 font-bold text-gray-400 line-through">
-                                      {formatMoney(offer.old_price)}
-                                    </span>
-                                  )}
-                                </div>
+                                <p className="mt-1.5 truncate text-sm font-medium text-[#6b6558]">
+                                  {offer.businesses?.name} · {businessAddress}
+                                </p>
                               </div>
 
-                              <div className="rounded-2xl bg-green-50 px-4 py-3 text-center">
-                                <p className="text-2xl font-black text-green-800">
+                              <div className="shrink-0 rounded-2xl bg-white px-3 py-2 text-center shadow-sm">
+                                <p className="text-xl font-bold text-[#1a1815]">
                                   {offer.quantity}
                                 </p>
-                                <p className="text-xs font-black text-green-700">
+                                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-[#8a8272]">
                                   {t("offers.boxesLeft")}
                                 </p>
                               </div>
                             </div>
 
-                            <div className="mt-4 flex flex-wrap gap-2">
-                              <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
-                                {offer.businesses?.name}
-                              </span>
-                              <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
-                                {t("common.pickup")}: {formatPickupWindow(offer, language)}
-                              </span>
-                              <span className="rounded-full bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
-                                {getRatingLabel(rating, language)}
-                              </span>
+                            <div className="mt-4 flex items-end justify-between gap-4">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-2xl font-bold tracking-tight text-[#5c7a5c]">
+                                  {formatMoney(offer.price)}
+                                </span>
+                                {offer.old_price && (
+                                  <span className="text-sm font-medium text-[#8a8272] line-through">
+                                    {formatMoney(offer.old_price)}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-right text-xs font-semibold leading-5 text-[#8a8272]">
+                                {getOfferDateLabel(offer, language)}
+                                <br />
+                                {formatPickupWindow(offer, language)}
+                              </p>
                             </div>
 
-                            <p className="mt-3 text-sm font-semibold text-gray-600">
-                              {businessAddress}
+                            <p className="mt-4 truncate text-xs font-semibold text-[#8a8272]">
+                              {getRatingLabel(rating, language)}
                             </p>
 
                             <a
@@ -712,41 +706,40 @@ export default function OffersPage() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-800 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#1a1815] shadow-sm transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                             >
                               {t("common.openMap")}
                             </a>
 
-                            <div className="mt-5">
-                              <div className="grid gap-3 sm:grid-cols-2">
-                                <button
-                                  onClick={() => toggleFavorite(offer)}
-                                  disabled={updatingFavoriteId !== null}
-                                  aria-label={
-                                    favoriteOfferIds.includes(offer.id)
-                                      ? `Remove ${offer.title} from favorites`
-                                      : `Add ${offer.title} to favorites`
-                                  }
-                                  className="min-h-12 w-full rounded-full bg-[#F7F6EF] px-6 py-3 font-black text-gray-800 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                  {updatingFavoriteId === offer.id
-                                    ? t("offers.updatingFavorite")
-                                    : favoriteOfferIds.includes(offer.id)
-                                    ? t("offers.removeFavorite")
-                                    : t("offers.addFavorite")}
-                                </button>
+                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                              <button
+                                onClick={() => toggleFavorite(offer)}
+                                disabled={updatingFavoriteId !== null}
+                                aria-label={
+                                  isFavorite
+                                    ? `Remove ${offer.title} from favorites`
+                                    : `Add ${offer.title} to favorites`
+                                }
+                                aria-pressed={isFavorite}
+                                className="premium-button-secondary min-h-12 w-full px-6 py-3"
+                              >
+                                {updatingFavoriteId === offer.id
+                                  ? t("offers.updatingFavorite")
+                                  : isFavorite
+                                  ? t("offers.removeFavorite")
+                                  : t("offers.addFavorite")}
+                              </button>
 
-                                <button
-                                  onClick={() => openOfferDetails(offer)}
-                                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 disabled:cursor-not-allowed disabled:opacity-60"
-                                >
-                                  {reservable
-                                    ? t("common.viewDetails")
-                                    : Number(offer.quantity || 0) <= 0
-                                    ? t("common.soldOut")
-                                    : t("common.unavailable")}
-                                </button>
-                              </div>
+                              <button
+                                onClick={() => openOfferDetails(offer)}
+                                className="premium-button min-h-12 w-full px-6 py-3"
+                              >
+                                {reservable
+                                  ? t("common.viewDetails")
+                                  : Number(offer.quantity || 0) <= 0
+                                  ? t("common.soldOut")
+                                  : t("common.unavailable")}
+                              </button>
                             </div>
                           </div>
                         </div>

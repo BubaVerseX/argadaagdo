@@ -29,26 +29,26 @@ export function BusinessHealthScore({
       <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               Business health
             </p>
-            <h2 className="mt-2 text-2xl font-black text-gray-950 sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-black text-[#1a1815] sm:text-3xl">
               {score}% ready
             </h2>
-            <p className="mt-2 font-semibold leading-7 text-gray-600">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
               A simple operations score for profile quality, active offers and
               pickup history.
             </p>
           </div>
 
-          <span className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-800">
+          <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#5c7a5c] shadow-[var(--shadow-soft)]">
             {completedChecks}/{checks.length} complete
           </span>
         </div>
 
-        <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#F7F6EF]">
+        <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#ece7da]">
           <div
-            className="h-full rounded-full bg-green-700 transition-all"
+            className="h-full rounded-full bg-[#5c7a5c] transition-all"
             style={{ width: `${score}%` }}
           />
         </div>
@@ -59,8 +59,8 @@ export function BusinessHealthScore({
               key={check.label}
               className={`rounded-2xl p-4 ${
                 check.complete
-                  ? "bg-green-50 text-green-900"
-                  : "bg-[#F7F6EF] text-gray-700"
+                  ? "bg-white text-[#1a1815]"
+                  : "bg-[#ece7da] text-[#6b6558]"
               }`}
             >
               <div className="flex items-start gap-3">
@@ -68,8 +68,8 @@ export function BusinessHealthScore({
                   aria-hidden="true"
                   className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-black ${
                     check.complete
-                      ? "bg-green-700 text-white"
-                      : "bg-white text-gray-500"
+                      ? "bg-[#5c7a5c] text-white"
+                      : "bg-white text-[#6b6558]"
                   }`}
                 >
                   {check.complete ? "✓" : "!"}
@@ -87,13 +87,13 @@ export function BusinessHealthScore({
       </div>
 
       <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+        <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
           Operations checklist
         </p>
-        <h2 className="mt-2 text-2xl font-black text-gray-950 sm:text-3xl">
+        <h2 className="mt-2 text-2xl font-black text-[#1a1815] sm:text-3xl">
           First business milestones
         </h2>
-        <p className="mt-2 font-semibold leading-7 text-gray-600">
+        <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
           Keep the pilot simple: publish one strong offer, verify pickups and
           build trust through ratings.
         </p>
@@ -104,8 +104,8 @@ export function BusinessHealthScore({
               <div
                 className={`rounded-2xl p-4 transition ${
                   item.complete
-                    ? "bg-green-50 text-green-900"
-                    : "bg-[#F7F6EF] text-gray-800 hover:bg-green-50"
+                    ? "bg-white text-[#1a1815]"
+                    : "bg-[#ece7da] text-[#6b6558] hover:bg-white"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -113,8 +113,8 @@ export function BusinessHealthScore({
                     aria-hidden="true"
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
                       item.complete
-                        ? "bg-green-700 text-white"
-                        : "bg-white text-gray-500"
+                        ? "bg-[#5c7a5c] text-white"
+                        : "bg-white text-[#6b6558]"
                     }`}
                   >
                     {item.complete ? "✓" : index + 1}

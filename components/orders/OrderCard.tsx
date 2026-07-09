@@ -91,12 +91,12 @@ export function OrderCard({
               {getCustomerStatusLabel(displayStatus, language)}
             </span>
 
-            <span className="rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-700">
+            <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#6b6558] shadow-[var(--shadow-soft)]">
               {order.offers?.businesses?.business_type || t("common.food")}
             </span>
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
-              <span className="rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-800">
+              <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#1a1815] shadow-[var(--shadow-soft)]">
                 Ready to rate
               </span>
             )}
@@ -106,67 +106,67 @@ export function OrderCard({
             {order.offers?.title || t("common.offerUnavailable")}
           </h2>
 
-          <p className="mt-2 text-lg font-bold text-gray-800">
+          <p className="mt-2 text-lg font-bold text-[#1a1815]">
             {order.offers?.businesses?.name || t("common.businessUnavailable")}
           </p>
 
-          <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-            <p className="mb-3 text-sm font-black uppercase tracking-widest text-gray-500">
+          <div className="mt-4 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
+            <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6558]">
               Order timeline
             </p>
             <TimelineSteps steps={timelineSteps} ariaLabel="Order timeline" />
           </div>
 
           {pickupReminderMessage && (
-            <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-              <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+            <div className="mt-4 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
+              <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                 Pickup reminder
               </p>
-              <p className="mt-2 font-bold leading-7 text-gray-700">
+              <p className="mt-2 font-bold leading-7 text-[#6b6558]">
                 {pickupReminderMessage}
               </p>
             </div>
           )}
 
           <div className="premium-muted-card mt-4 rounded-3xl p-4">
-            <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+            <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
               {t("orders.pickupReminder")}
             </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                   {t("orders.pickupDate")}
                 </p>
-                <p className="mt-1 font-black text-gray-950">
+                <p className="mt-1 font-black text-[#1a1815]">
                   {pickupDateLabel}
                 </p>
               </div>
 
               <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                   {t("orders.pickupTime")}
                 </p>
-                <p className="mt-1 font-black text-gray-950">
+                <p className="mt-1 font-black text-[#1a1815]">
                   {pickupTimeLabel}
                 </p>
               </div>
 
               <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                   {t("orders.businessName")}
                 </p>
-                <p className="mt-1 font-black text-gray-950">
+                <p className="mt-1 font-black text-[#1a1815]">
                   {order.offers?.businesses?.name ||
                     t("common.businessUnavailable")}
                 </p>
               </div>
 
               <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                   {t("orders.businessAddress")}
                 </p>
-                <p className="mt-1 font-semibold text-gray-700">
+                <p className="mt-1 font-semibold text-[#6b6558]">
                   {businessAddress}
                 </p>
                 {order.offers?.businesses?.address && (
@@ -179,7 +179,7 @@ export function OrderCard({
                       order.offers?.title ||
                       "pickup location"
                     }`}
-                    className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#F7F6EF] px-4 py-2 text-sm font-black text-gray-800 transition hover:bg-white sm:w-auto"
+                    className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#ece7da] px-4 py-2 text-sm font-black text-[#1a1815] transition hover:bg-[#d9d5cb] sm:w-auto"
                   >
                     {t("common.openMap")}
                   </a>
@@ -187,7 +187,7 @@ export function OrderCard({
               </div>
             </div>
 
-            <p className="mt-3 font-black text-gray-700">
+            <p className="mt-3 font-black text-[#6b6558]">
               {t("common.price")}:{" "}
               {order.offers
                 ? formatMoney(order.offers.price)
@@ -195,10 +195,10 @@ export function OrderCard({
             </p>
 
             <div className="mt-4 rounded-2xl bg-white p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+              <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                 Receipt
               </p>
-              <div className="mt-2 grid gap-1 text-sm font-semibold text-gray-700">
+              <div className="mt-2 grid gap-1 text-sm font-semibold text-[#6b6558]">
                 <p>Reservation ID: #{order.id}</p>
                 <p>
                   Amount:{" "}
@@ -215,44 +215,44 @@ export function OrderCard({
         </div>
 
         <div className="premium-muted-card order-1 rounded-3xl p-4 text-center sm:rounded-[2rem] sm:p-5 lg:order-2 lg:min-w-[280px]">
-          <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+          <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
             {t("orders.pickupCode")}
           </p>
 
           {isConfirmed ? (
             <>
-              <div className="mt-3 rounded-2xl border-2 border-green-200 bg-white px-4 py-5 shadow-sm sm:rounded-3xl sm:px-6 sm:py-6">
-                <p className="text-sm font-black text-gray-500">
+              <div className="mt-3 rounded-2xl bg-white px-4 py-5 shadow-[var(--shadow-soft)] sm:rounded-3xl sm:px-6 sm:py-6">
+                <p className="text-sm font-black text-[#6b6558]">
                   {t("orders.pickupCode")}:
                 </p>
-                <p className="font-mono text-3xl font-black tracking-[0.18em] text-green-700 sm:text-4xl">
+                <p className="font-mono text-3xl font-black tracking-[0.18em] text-[#5c7a5c] sm:text-4xl">
                   {order.pickup_code || t("common.pending")}
                 </p>
               </div>
 
-              <p className="mt-3 text-sm font-bold text-gray-600">
+              <p className="mt-3 text-sm font-bold text-[#6b6558]">
                 {t("orders.showCode")}
               </p>
 
-              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-sm">
-                <p className="text-sm font-black leading-6 text-gray-800">
+              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-[var(--shadow-soft)]">
+                <p className="text-sm font-black leading-6 text-[#1a1815]">
                   {t("orders.activePickupReminder")}
                 </p>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-sm">
-                <p className="text-sm font-black text-gray-800">
+              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-[var(--shadow-soft)]">
+                <p className="text-sm font-black text-[#1a1815]">
                   {isCancellationAvailable
                     ? t("orders.cancelAvailable")
                     : t("orders.cancelUnavailable")}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-gray-600">
+                <p className="mt-2 text-sm font-semibold text-[#6b6558]">
                   {t("orders.ratingBeforePickup")}
                 </p>
               </div>
             </>
           ) : (
-            <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-gray-600 shadow-sm">
+            <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-[#6b6558] shadow-[var(--shadow-soft)]">
               {inactiveOrderMessage}
             </div>
           )}
@@ -261,7 +261,7 @@ export function OrderCard({
             <button
               onClick={() => onCancelOrder(order)}
               disabled={cancellingOrderId !== null}
-              className="mt-5 min-h-12 w-full rounded-full bg-gray-950 px-6 py-3 font-black text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-5 min-h-12 w-full rounded-full bg-[#1a1815] px-6 py-3 font-black text-white transition hover:bg-[#2c2822] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {cancellingOrderId === order.id
                 ? "Cancelling..."
@@ -270,17 +270,17 @@ export function OrderCard({
           )}
 
           {isCollectedOrderStatus(displayStatus) && (
-            <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-sm">
+            <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-[var(--shadow-soft)]">
               {order.rated_at ? (
-                <p className="text-center font-black text-green-700">
+                <p className="text-center font-black text-[#5c7a5c]">
                   {t("orders.reviewThanks")}
                 </p>
               ) : (
                 <>
-                  <p className="text-center text-base font-black text-green-800">
+                  <p className="text-center text-base font-black text-[#1a1815]">
                     {t("orders.ratePickup")}
                   </p>
-                  <p className="mt-1 text-center text-sm font-semibold text-gray-600">
+                  <p className="mt-1 text-center text-sm font-semibold text-[#6b6558]">
                     {t("orders.ratingAvailable")}
                   </p>
                   <div className="mt-3 grid grid-cols-5 gap-2">
@@ -293,8 +293,8 @@ export function OrderCard({
                         disabled={ratingOrderId !== null}
                     className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           selectedRating === rating
-                            ? "bg-gray-950 text-white"
-                            : "bg-[#F7F6EF] text-gray-800 hover:bg-white"
+                            ? "bg-[#1a1815] text-white"
+                            : "bg-[#ece7da] text-[#6b6558] hover:bg-white"
                         }`}
                       >
                         {rating}
@@ -309,14 +309,14 @@ export function OrderCard({
                     }
                     maxLength={500}
                     placeholder={t("orders.reviewPlaceholder")}
-                    className="mt-3 min-h-24 w-full rounded-2xl border bg-white p-3 text-sm font-semibold text-gray-800 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+                    className="premium-input mt-3 min-h-24 w-full p-3 text-sm font-semibold"
                   />
 
                   <button
                     type="button"
                     onClick={() => onRateOrder(order)}
                     disabled={ratingOrderId !== null || !selectedRating}
-                    className="mt-3 min-h-11 w-full rounded-full bg-green-700 px-5 py-2.5 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="premium-button mt-3 min-h-11 w-full py-2.5 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {ratingOrderId === order.id
                       ? "Saving review..."

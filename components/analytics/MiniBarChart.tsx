@@ -16,11 +16,11 @@ export function MiniBarChart({
   const maxValue = Math.max(...data.map((item) => item.value), 0);
 
   return (
-    <section className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+    <section className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h3 className="text-lg font-black text-gray-950">{title}</h3>
-          <p className="mt-1 text-sm font-semibold leading-6 text-gray-600">
+          <h3 className="text-lg font-black text-[#1a1815]">{title}</h3>
+          <p className="mt-1 text-sm font-semibold leading-6 text-[#6b6558]">
             {description}
           </p>
         </div>
@@ -28,7 +28,7 @@ export function MiniBarChart({
 
       <div className="mt-5 grid gap-3">
         {data.length === 0 && (
-          <div className="rounded-2xl bg-[#F7F6EF] p-4 text-sm font-semibold text-gray-600">
+          <div className="rounded-2xl bg-[#ece7da] p-4 text-sm font-semibold text-[#6b6558]">
             Not enough data yet.
           </div>
         )}
@@ -40,10 +40,10 @@ export function MiniBarChart({
           return (
             <div key={item.label} className="grid gap-2">
               <div className="flex items-center justify-between gap-3 text-sm font-black">
-                <span className="min-w-0 truncate text-gray-700">
+                <span className="min-w-0 truncate text-[#6b6558]">
                   {item.label}
                 </span>
-                <span className="text-gray-950">
+                <span className="text-[#1a1815]">
                   {valuePrefix}
                   {Number.isInteger(item.value)
                     ? item.value
@@ -51,12 +51,12 @@ export function MiniBarChart({
                 </span>
               </div>
               <div
-                className="h-3 overflow-hidden rounded-full bg-green-100"
+                className="h-3 overflow-hidden rounded-full bg-[#ece7da]"
                 role="img"
                 aria-label={`${item.label}: ${item.value}`}
               >
                 <div
-                  className="h-full rounded-full bg-green-700"
+                  className="h-full rounded-full bg-[#5c7a5c]"
                   style={{ width: `${percentage}%` }}
                 />
               </div>

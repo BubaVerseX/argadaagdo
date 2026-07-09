@@ -91,23 +91,23 @@ export function OfferList({
     OfferIntelligence["badges"][number]["tone"],
     string
   > = {
-    green: "bg-green-100 text-green-800",
+    green: "bg-[#eef1e8] text-[#5c7a5c]",
     yellow: "bg-yellow-100 text-yellow-900",
     red: "bg-red-100 text-red-800",
-    gray: "bg-gray-100 text-gray-700",
+    gray: "bg-[#ece7da] text-[#6b6558]",
   };
   const recommendationToneStyles: Record<
     OfferIntelligence["recommendations"][number]["tone"],
     string
   > = {
-    green: "bg-green-50 text-green-900",
+    green: "bg-white text-[#1a1815]",
     yellow: "bg-yellow-50 text-yellow-950",
     red: "bg-red-50 text-red-800",
   };
 
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-      <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
         Offer History
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -116,14 +116,14 @@ export function OfferList({
 
       <div className="mt-6 grid gap-4">
         {offers.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/60 p-6 text-center sm:p-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
+          <div className="rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-soft)] sm:p-8">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ece7da] text-2xl">
               +
             </div>
-            <h3 className="mt-4 text-2xl font-black text-gray-950">
+            <h3 className="mt-4 text-2xl font-black text-[#1a1815]">
               {emptyTitle || t("businessDashboard.noOffers")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
               {emptyText || t("businessDashboard.noOffersHint")}
             </p>
             {!emptyTitle && (
@@ -147,7 +147,7 @@ export function OfferList({
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
-            <div key={offer.id} className="grid gap-5 rounded-3xl border border-black/5 bg-white p-5 shadow-sm">
+            <div key={offer.id} className="grid gap-5 rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-3 sm:gap-4">
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
@@ -157,7 +157,7 @@ export function OfferList({
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-xl font-black">{offer.title}</h3>
-                      <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-black text-green-700">
+                      <span className="rounded-full bg-[#ece7da] px-3 py-1 text-xs font-black text-[#5c7a5c]">
                         {normalizeOfferCategory(offer.category)}
                       </span>
                       <span
@@ -167,16 +167,16 @@ export function OfferList({
                       </span>
                     </div>
 
-                    <p className="font-medium text-gray-700">
+                    <p className="font-medium text-[#6b6558]">
                       {formatMoney(offer.price)} · Quantity: {offer.quantity}
                     </p>
-                    <p className="text-gray-600">
+                    <p className="text-[#6b6558]">
                       {t("common.pickup")}: {formatPickupWindow(offer, language)}
                     </p>
                     <p className="text-sm font-bold text-yellow-700">
                       ⭐ {getRatingLabel(rating, language)}
                     </p>
-                    <p className="mt-1 text-xs font-bold text-gray-500">
+                    <p className="mt-1 text-xs font-bold text-[#6b6558]">
                       {t("businessDashboard.created")}:{" "}
                       {formatDisplayDateTime(offer.created_at, language)}
                     </p>
@@ -203,7 +203,7 @@ export function OfferList({
                     disabled={
                       updatingOfferId !== null && updatingOfferId !== offer.id
                     }
-                    className="min-h-12 rounded-full border border-green-200 bg-green-50 px-5 py-3 font-black text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="premium-button-secondary px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isEditing ? "Cancel" : "Edit"}
                   </button>
@@ -214,8 +214,8 @@ export function OfferList({
                     aria-label={`Toggle ${offer.title} active status`}
                     className={`min-h-12 rounded-full px-5 py-3 font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
                       offer.active
-                        ? "bg-green-700 hover:bg-green-800"
-                        : "bg-gray-600 hover:bg-gray-700"
+                        ? "bg-[#5c7a5c] hover:bg-[#4a654a]"
+                        : "bg-[#8a8272] hover:bg-[#6b6558]"
                     }`}
                   >
                     {updatingOfferId === offer.id
@@ -228,7 +228,7 @@ export function OfferList({
                   <button
                     onClick={() => onDuplicate(offer)}
                     disabled={updatingOfferId !== null}
-                    className="min-h-12 rounded-full border border-green-200 bg-white px-5 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="premium-button-secondary px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {updatingOfferId === offer.id
                       ? "Working..."
@@ -250,7 +250,7 @@ export function OfferList({
                   <button
                     onClick={() => onDelete(offer)}
                     disabled={updatingOfferId !== null}
-                    className="min-h-12 rounded-full bg-gray-950 px-5 py-3 font-black text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="min-h-12 rounded-full bg-[#1a1815] px-5 py-3 font-black text-white transition hover:bg-[#2c2822] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
                   </button>
@@ -258,7 +258,7 @@ export function OfferList({
               </div>
 
               {analytics && (
-                <div className="grid gap-3 rounded-2xl bg-[#F7F6EF] p-4 sm:grid-cols-2 xl:grid-cols-6">
+                <div className="grid gap-3 rounded-2xl bg-[#ece7da] p-4 sm:grid-cols-2 xl:grid-cols-6">
                   {[
                     {
                       label: "Reservations",
@@ -286,10 +286,10 @@ export function OfferList({
                     },
                   ].map((item) => (
                     <div key={item.label} className="rounded-2xl bg-white p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                      <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                         {item.label}
                       </p>
-                      <p className="mt-1 text-xl font-black text-gray-950">
+                      <p className="mt-1 text-xl font-black text-[#1a1815]">
                         {item.value}
                       </p>
                     </div>
@@ -298,7 +298,7 @@ export function OfferList({
               )}
 
               {intelligence && (
-                <div className="grid gap-3 rounded-2xl bg-green-50 p-4 lg:grid-cols-[0.9fr_1.1fr]">
+                <div className="grid gap-3 rounded-2xl bg-[#ece7da] p-4 lg:grid-cols-[0.9fr_1.1fr]">
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     {[
                       {
@@ -319,10 +319,10 @@ export function OfferList({
                       },
                     ].map((item) => (
                       <div key={item.label} className="rounded-2xl bg-white p-4">
-                        <p className="text-xs font-black uppercase tracking-wide text-green-700">
+                        <p className="text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
                           {item.label}
                         </p>
-                        <p className="mt-1 text-sm font-black text-gray-950">
+                        <p className="mt-1 text-sm font-black text-[#1a1815]">
                           {item.value}
                         </p>
                       </div>
@@ -346,13 +346,13 @@ export function OfferList({
               )}
 
               {isEditing && (
-                <div className="rounded-2xl bg-[#F7F6EF] p-4">
+                <div className="rounded-2xl bg-[#ece7da] p-4">
                   <div className="grid gap-3 md:grid-cols-2">
                     <input
                       value={editTitle}
                       onChange={(event) => onEditTitleChange(event.target.value)}
                       maxLength={120}
-                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                       aria-label="Offer title"
                       placeholder="Bakery Surprise Bag"
                     />
@@ -366,7 +366,7 @@ export function OfferList({
                       }
                       required
                       aria-label="Offer category"
-                      className="min-h-12 rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                     >
                       {OFFER_CATEGORIES.map((offerCategory) => (
                         <option key={offerCategory} value={offerCategory}>
@@ -382,7 +382,7 @@ export function OfferList({
                       min="0.01"
                       step="0.01"
                       inputMode="decimal"
-                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                       aria-label="Offer price"
                       placeholder="5.00"
                     />
@@ -396,7 +396,7 @@ export function OfferList({
                       min="0.01"
                       step="0.01"
                       inputMode="decimal"
-                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                       aria-label="Original price"
                       placeholder="10.00"
                     />
@@ -410,7 +410,7 @@ export function OfferList({
                       min="0"
                       step="1"
                       inputMode="numeric"
-                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                       aria-label="Quantity"
                       placeholder="3"
                     />
@@ -421,7 +421,7 @@ export function OfferList({
                         onEditPickupStartChange(event.target.value)
                       }
                       type="time"
-                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                       aria-label="Pickup start"
                     />
 
@@ -431,7 +431,7 @@ export function OfferList({
                         onEditPickupEndChange(event.target.value)
                       }
                       type="time"
-                      className="rounded-2xl border bg-white p-4 font-semibold"
+                      className="premium-input p-4 font-semibold"
                       aria-label="Pickup end"
                     />
                   </div>

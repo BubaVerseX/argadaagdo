@@ -19,22 +19,19 @@ export function HelpCard({
   children,
 }: HelpCardProps) {
   return (
-    <article className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+    <article className="rounded-[1.75rem] bg-white p-5 shadow-[var(--shadow-soft)]">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-green-50 text-lg font-black text-green-800">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#ece7da] text-lg font-bold text-[#5c7a5c]">
           {icon}
         </span>
         <div>
-          <h3 className="text-lg font-black text-gray-950">{title}</h3>
-          <p className="mt-2 font-semibold leading-7 text-gray-700">{text}</p>
+          <h3 className="text-lg font-bold text-[#1a1815]">{title}</h3>
+          <p className="mt-2 leading-[1.55] text-[#6b6558]">{text}</p>
         </div>
       </div>
       {children && <div className="mt-4">{children}</div>}
       {href && actionLabel && (
-        <Link
-          href={href}
-          className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-green-700 px-5 py-2.5 text-center font-black text-white transition hover:bg-green-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300 sm:w-auto"
-        >
+        <Link href={href} className="premium-button mt-5 w-full sm:w-auto">
           {actionLabel}
         </Link>
       )}

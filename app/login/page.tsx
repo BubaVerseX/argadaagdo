@@ -437,7 +437,7 @@ export default function LoginPage() {
   const redirectMessage = getRedirectMessage(redirectPath, t);
 
   return (
-    <main className="app-shell text-gray-900">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
@@ -447,29 +447,29 @@ export default function LoginPage() {
               {t("login.title")}
             </p>
 
-            <h1 className="mt-4 text-3xl font-black leading-tight text-gray-950 sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 text-3xl font-black leading-tight text-[#1a1815] sm:text-4xl md:text-6xl">
               {t("login.signIn")} · ArGadaagdo
             </h1>
 
-            <p className="mt-4 text-base font-semibold leading-7 text-gray-600 sm:mt-5 sm:text-lg sm:leading-8">
+            <p className="mt-4 text-base font-semibold leading-7 text-[#6b6558] sm:mt-5 sm:text-lg sm:leading-8">
               {t("home.subtitle")}
             </p>
 
             <div className="mt-8 grid gap-4">
               <div className="premium-card rounded-3xl p-5">
-                <h3 className="text-xl font-black text-gray-950">
+                <h3 className="text-xl font-black text-[#1a1815]">
                   {t("login.forCustomers")}
                 </h3>
-                <p className="mt-2 font-semibold text-gray-600">
+                <p className="mt-2 font-semibold text-[#6b6558]">
                   {t("login.forCustomersText")}
                 </p>
               </div>
 
               <div className="premium-card rounded-3xl p-5">
-                <h3 className="text-xl font-black text-gray-950">
+                <h3 className="text-xl font-black text-[#1a1815]">
                   {t("login.forBusinesses")}
                 </h3>
-                <p className="mt-2 font-semibold text-gray-600">
+                <p className="mt-2 font-semibold text-[#6b6558]">
                   {t("login.forBusinessesText")}
                 </p>
               </div>
@@ -477,19 +477,19 @@ export default function LoginPage() {
           </div>
 
           <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:p-10">
-            <h2 className="text-2xl font-black text-gray-950 sm:text-3xl">
+            <h2 className="text-2xl font-black text-[#1a1815] sm:text-3xl">
               {authMode === "login"
                 ? t("login.signInTitle")
                 : t("login.signUpTitle")}
             </h2>
 
-            <p className="mt-2 text-sm font-medium leading-6 text-gray-600 sm:text-base">
+            <p className="mt-2 text-sm font-medium leading-6 text-[#6b6558] sm:text-base">
               {authMode === "login"
                 ? t("login.signInHint")
                 : t("login.signUpHint")}
             </p>
 
-            <div className="mt-6 grid gap-2 rounded-3xl bg-[#F7F6EF] p-2 sm:grid-cols-2">
+            <div className="mt-6 grid gap-2 rounded-3xl bg-[#ece7da] p-2 sm:grid-cols-2">
               {authModeOptions.map((option) => {
                 const isActive = authMode === option.value;
 
@@ -501,16 +501,16 @@ export default function LoginPage() {
                       setMessage("");
                       setAuthMode(option.value);
                     }}
-                    className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                    className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-[#5c7a5c] ${
                       isActive
-                        ? "bg-green-700 text-white shadow-sm"
-                        : "bg-white text-gray-700 hover:bg-green-50"
+                        ? "bg-[#1a1815] text-white shadow-[var(--shadow-soft)]"
+                        : "bg-white text-[#6b6558] hover:bg-white/70"
                     }`}
                   >
                     <span className="block font-black">{option.label}</span>
                     <span
                       className={`mt-1 block text-sm font-semibold ${
-                        isActive ? "text-green-50" : "text-gray-500"
+                        isActive ? "text-white/80" : "text-[#6b6558]"
                       }`}
                     >
                       {option.helper}
@@ -544,7 +544,7 @@ export default function LoginPage() {
               />
 
               {authMode === "login" && (
-                <div className="flex flex-col gap-2 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold text-gray-700 sm:flex-row sm:items-center sm:justify-between sm:text-base">
+                <div className="flex flex-col gap-2 rounded-2xl bg-[#ece7da] px-4 py-3 text-sm font-bold text-[#6b6558] sm:flex-row sm:items-center sm:justify-between sm:text-base">
                   <span>Need help signing in?</span>
                   <button
                     type="button"
@@ -556,7 +556,7 @@ export default function LoginPage() {
                           : "forgot"
                       );
                     }}
-                    className="text-left font-black text-green-700 underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-green-200 sm:text-right"
+                    className="text-left font-black text-[#5c7a5c] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#5c7a5c] sm:text-right"
                   >
                     Forgot password?
                   </button>
@@ -564,9 +564,9 @@ export default function LoginPage() {
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "forgot" && (
-                <div className="rounded-3xl border border-green-100 bg-green-50 p-4">
-                  <h3 className="font-black text-green-950">Reset password</h3>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                <div className="rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
+                  <h3 className="font-black text-[#1a1815]">Reset password</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
                     Enter your account email above. We will send a secure reset
                     link if the account exists.
                   </p>
@@ -574,7 +574,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={requestPasswordReset}
                     disabled={submitting}
-                    className="mt-4 min-h-11 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="premium-button mt-4 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {submitting ? "Sending..." : "Send reset link"}
                   </button>
@@ -582,12 +582,12 @@ export default function LoginPage() {
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "reset" && (
-                <div className="grid gap-4 rounded-3xl border border-green-100 bg-green-50 p-4">
+                <div className="grid gap-4 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
                   <div>
-                    <h3 className="font-black text-green-950">
+                    <h3 className="font-black text-[#1a1815]">
                       Choose a new password
                     </h3>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-green-900">
+                    <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
                       Use at least 6 characters. Avoid passwords you use on
                       other websites.
                     </p>
@@ -599,7 +599,7 @@ export default function LoginPage() {
                     type="password"
                     aria-label="New password"
                     placeholder="New password"
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    className="premium-input p-4 font-medium"
                   />
 
                   <input
@@ -610,14 +610,14 @@ export default function LoginPage() {
                     type="password"
                     aria-label="Confirm new password"
                     placeholder="Confirm new password"
-                    className="min-h-12 rounded-2xl border bg-white p-4 font-medium outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                    className="premium-input p-4 font-medium"
                   />
 
                   <button
                     type="button"
                     onClick={updatePassword}
                     disabled={submitting}
-                    className="min-h-11 w-full rounded-full bg-green-700 px-5 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="premium-button min-h-11 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {submitting ? "Updating..." : "Update password"}
                   </button>
@@ -626,10 +626,10 @@ export default function LoginPage() {
 
               {authMode === "signup" && (
                 <div>
-                  <p className="mb-3 font-black text-gray-800">
+                  <p className="mb-3 font-black text-[#1a1815]">
                     {t("login.accountType")}
                   </p>
-                  <p className="mb-4 text-sm font-semibold leading-6 text-gray-600">
+                  <p className="mb-4 text-sm font-semibold leading-6 text-[#6b6558]">
                     {t("login.accountTypeHint")}
                   </p>
 
@@ -637,17 +637,17 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setRole("customer")}
-                      className={`rounded-2xl border p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                      className={`rounded-2xl p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-[#5c7a5c] ${
                         role === "customer"
-                          ? "border-green-700 bg-green-50 text-green-800"
-                          : "bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                          ? "bg-white text-[#1a1815] shadow-[var(--shadow-soft)]"
+                          : "bg-[#ece7da] text-[#6b6558] hover:bg-white/60"
                       }`}
                     >
-                      <div className="inline-flex rounded-full bg-green-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-green-800">
+                      <div className="inline-flex rounded-full bg-[#eef1e8] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
                         {t("login.customer")}
                       </div>
                       <p className="mt-2">{t("login.customer")}</p>
-                      <p className="mt-1 text-sm font-medium leading-5 text-gray-600">
+                      <p className="mt-1 text-sm font-medium leading-5 text-[#6b6558]">
                         {t("login.customerHint")}
                       </p>
                     </button>
@@ -655,17 +655,17 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setRole("business")}
-                      className={`rounded-2xl border p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-green-200 ${
+                      className={`rounded-2xl p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-[#5c7a5c] ${
                         role === "business"
-                          ? "border-green-700 bg-green-50 text-green-800"
-                          : "bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                          ? "bg-white text-[#1a1815] shadow-[var(--shadow-soft)]"
+                          : "bg-[#ece7da] text-[#6b6558] hover:bg-white/60"
                       }`}
                     >
-                      <div className="inline-flex rounded-full bg-green-50 px-3 py-1 text-xs font-black uppercase tracking-widest text-green-800">
+                      <div className="inline-flex rounded-full bg-[#eef1e8] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
                         {t("login.business")}
                       </div>
                       <p className="mt-2">{t("login.business")}</p>
-                      <p className="mt-1 text-sm font-medium leading-5 text-gray-600">
+                      <p className="mt-1 text-sm font-medium leading-5 text-[#6b6558]">
                         {t("login.businessHint")}
                       </p>
                     </button>
@@ -682,7 +682,7 @@ export default function LoginPage() {
                 {authMode === "login" ? t("login.signIn") : t("login.signUp")}
               </button>
 
-              <div className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-center text-sm font-bold text-gray-700 sm:text-base">
+              <div className="rounded-2xl bg-[#ece7da] px-4 py-3 text-center text-sm font-bold text-[#6b6558] sm:text-base">
                 {authMode === "login"
                   ? t("login.dontHaveAccount")
                   : t("login.alreadyHaveAccount")}{" "}
@@ -692,7 +692,7 @@ export default function LoginPage() {
                     setMessage("");
                     setAuthMode(authMode === "login" ? "signup" : "login");
                   }}
-                  className="font-black text-green-700 underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-green-200"
+                  className="font-black text-[#5c7a5c] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#5c7a5c]"
                 >
                   {authMode === "login"
                     ? t("login.signUp")
@@ -701,13 +701,13 @@ export default function LoginPage() {
               </div>
 
               {authMode === "login" && (
-                <div className="rounded-2xl bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-900 sm:text-base">
+                <div className="rounded-2xl bg-white px-4 py-3 text-center text-sm font-bold text-[#1a1815] shadow-[var(--shadow-soft)] sm:text-base">
                   Need to verify your email?{" "}
                   <button
                     type="button"
                     onClick={resendVerificationEmail}
                     disabled={resendingVerification || submitting}
-                    className="font-black text-green-800 underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-green-200"
+                    className="font-black text-[#5c7a5c] underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#5c7a5c]"
                   >
                     {resendingVerification
                       ? "Sending..."

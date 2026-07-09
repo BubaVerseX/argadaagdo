@@ -25,14 +25,14 @@ export const metricToneStyles: Record<
   { card: string; label: string; value: string }
 > = {
   neutral: {
-    card: "bg-gray-50 text-gray-950",
-    label: "text-gray-600",
-    value: "text-gray-950",
+    card: "bg-[#ece7da] text-[#1a1815]",
+    label: "text-[#6b6558]",
+    value: "text-[#1a1815]",
   },
   green: {
-    card: "bg-green-50 text-green-950",
-    label: "text-green-700",
-    value: "text-green-800",
+    card: "bg-white text-[#1a1815]",
+    label: "text-[#5c7a5c]",
+    value: "text-[#1a1815]",
   },
   yellow: {
     card: "bg-yellow-50 text-yellow-950",

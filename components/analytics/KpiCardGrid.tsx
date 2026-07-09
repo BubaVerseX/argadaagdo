@@ -12,10 +12,10 @@ type KpiCardGridProps = {
 };
 
 const toneClasses: Record<KpiTone, string> = {
-  green: "bg-green-50 text-green-950",
+  green: "bg-white text-[#1a1815]",
   yellow: "bg-yellow-50 text-yellow-950",
   red: "bg-red-50 text-red-950",
-  white: "bg-white text-gray-950",
+  white: "bg-white text-[#1a1815]",
 };
 
 export function KpiCardGrid({ cards }: KpiCardGridProps) {
@@ -24,7 +24,7 @@ export function KpiCardGrid({ cards }: KpiCardGridProps) {
       {cards.map((card) => (
         <article
           key={card.title}
-          className={`rounded-3xl p-5 shadow-sm ring-1 ring-black/5 ${
+          className={`rounded-3xl p-5 shadow-[var(--shadow-soft)] ${
             toneClasses[card.tone || "white"]
           }`}
         >

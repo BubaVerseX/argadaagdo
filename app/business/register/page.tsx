@@ -201,7 +201,7 @@ export default function BusinessRegisterPage() {
   }
 
   return (
-    <main className="app-shell text-gray-900">
+    <main className="app-shell">
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
@@ -212,20 +212,20 @@ export default function BusinessRegisterPage() {
                 {t("businessRegister.badge")}
               </p>
 
-              <h1 className="mt-3 text-3xl font-black text-gray-950 sm:text-4xl md:text-6xl">
+              <h1 className="mt-3 text-3xl font-black text-[#1a1815] sm:text-4xl md:text-6xl">
                 {t("businessRegister.title")}
               </h1>
 
-              <p className="mt-4 text-base font-medium leading-7 text-gray-700 sm:mt-5 sm:text-lg sm:leading-8">
+              <p className="mt-4 text-base font-medium leading-7 text-[#6b6558] sm:mt-5 sm:text-lg sm:leading-8">
                 {t("businessRegister.subtitle")}
               </p>
 
               <div className="mt-8 grid gap-4">
-                <div className="rounded-3xl bg-green-50 p-5">
-                  <h3 className="text-xl font-black text-green-800">
+                <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                  <h3 className="text-xl font-black text-[#1a1815]">
                     {t("businessRegister.step1")}
                   </h3>
-                  <p className="mt-2 font-medium text-green-700">
+                  <p className="mt-2 font-medium text-[#5c7a5c]">
                     {t("businessRegister.step1Text")}
                   </p>
                 </div>
@@ -239,11 +239,11 @@ export default function BusinessRegisterPage() {
                   </p>
                 </div>
 
-                <div className="rounded-3xl bg-green-50 p-5">
-                  <h3 className="text-xl font-black text-green-800">
+                <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                  <h3 className="text-xl font-black text-[#1a1815]">
                     {t("businessRegister.step3")}
                   </h3>
-                  <p className="mt-2 font-medium text-green-700">
+                  <p className="mt-2 font-medium text-[#5c7a5c]">
                     {t("businessRegister.step3Text")}
                   </p>
                 </div>

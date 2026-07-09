@@ -22,8 +22,8 @@ export function OrdersHeader({
   reliabilityTone,
 }: OrdersHeaderProps) {
   return (
-    <div className="rounded-3xl bg-white p-5 shadow-sm sm:rounded-[2rem] sm:p-6 md:p-10">
-      <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+    <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-6 md:p-10">
+      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
         {t("orders.reserved")}
       </p>
 
@@ -31,7 +31,7 @@ export function OrdersHeader({
         {t("orders.title")}
       </h1>
 
-      <p className="mt-4 max-w-2xl text-base font-semibold text-gray-700 md:text-lg">
+      <p className="mt-4 max-w-2xl text-base font-semibold text-[#6b6558] md:text-lg">
         {t("orders.subtitle")}
       </p>
 

@@ -307,10 +307,10 @@ export default function CheckoutPage() {
             <p className="premium-badge px-4 py-2">
               {t("common.continueCheckout")}
             </p>
-            <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black text-[#1a1815] sm:text-4xl md:text-5xl">
               {t("checkout.title")}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg">
               {t("checkout.subtitle")}
             </p>
           </div>
@@ -322,12 +322,12 @@ export default function CheckoutPage() {
                 className="premium-card rounded-2xl p-4"
               >
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-950 text-sm font-black text-white">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1a1815] text-sm font-black text-white">
                     {item.number}
                   </span>
-                  <h2 className="font-black text-gray-950">{item.title}</h2>
+                  <h2 className="font-black text-[#1a1815]">{item.title}</h2>
                 </div>
-                <p className="mt-3 text-sm font-semibold leading-6 text-gray-600">
+                <p className="mt-3 text-sm font-semibold leading-6 text-[#6b6558]">
                   {item.text}
                 </p>
               </div>
@@ -351,7 +351,7 @@ export default function CheckoutPage() {
           {!loading && offer && (
             <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
               <div className="premium-card overflow-hidden rounded-3xl sm:rounded-[2rem]">
-                <div className="relative h-64 bg-[#eef1e8] sm:h-80">
+                <div className="photo-warm-overlay relative h-64 bg-[#eef1e8] sm:h-80">
                   <OfferImage
                     src={offer.image_url}
                     alt={offer.title}
@@ -362,28 +362,28 @@ export default function CheckoutPage() {
                 <div className="p-5 sm:p-8">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-sm font-black uppercase tracking-widest text-green-700">
+                      <p className="text-sm font-black uppercase tracking-widest text-[#5c7a5c]">
                         {offer.businesses?.business_type || t("common.food")}
                       </p>
                       <h2 className="mt-2 text-3xl font-black">
                         {offer.title}
                       </h2>
-                      <p className="mt-2 text-lg font-bold text-gray-800">
+                      <p className="mt-2 text-lg font-bold text-[#1a1815]">
                         {offer.businesses?.name || t("common.business")}
                       </p>
                     </div>
 
-                    <div className="rounded-2xl bg-[#F7F6EF] px-5 py-4 text-center">
-                      <p className="text-xs font-black text-gray-500">
+                    <div className="rounded-2xl bg-[#ece7da] px-5 py-4 text-center">
+                      <p className="text-xs font-black text-[#6b6558]">
                         {t("offers.boxesLeft")}
                       </p>
-                      <p className="text-3xl font-black text-gray-950">
+                      <p className="text-3xl font-black text-[#1a1815]">
                         {offer.quantity}
                       </p>
                     </div>
                   </div>
 
-                  <div className="mt-6 grid gap-3 font-semibold text-gray-700">
+                  <div className="mt-6 grid gap-3 font-semibold text-[#6b6558]">
                     <p>{t("common.pickup")}: {formatPickupWindow(offer, language)}</p>
                     <p>
                       {t("checkout.address")}:{" "}
@@ -400,48 +400,48 @@ export default function CheckoutPage() {
                   <div className="premium-muted-card rounded-3xl p-4">
                     <div className="grid gap-4">
                       <div>
-                        <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                        <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                           {t("checkout.offerTitle")}
                         </p>
-                        <p className="mt-1 text-xl font-black text-gray-950">
+                        <p className="mt-1 text-xl font-black text-[#1a1815]">
                           {offer.title}
                         </p>
                       </div>
 
                       <div>
-                        <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                        <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                           {t("checkout.businessName")}
                         </p>
-                        <p className="mt-1 font-black text-gray-950">
+                        <p className="mt-1 font-black text-[#1a1815]">
                           {offer.businesses?.name || t("common.business")}
                         </p>
                       </div>
 
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                         <div className="rounded-2xl bg-white p-4">
-                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                          <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                             {t("checkout.pickupDate")}
                           </p>
-                          <p className="mt-1 font-black text-gray-950">
+                          <p className="mt-1 font-black text-[#1a1815]">
                             {getOfferDateLabel(offer, language)}
                           </p>
                         </div>
 
                         <div className="rounded-2xl bg-white p-4">
-                          <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                          <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                             {t("checkout.pickupWindow")}
                           </p>
-                          <p className="mt-1 font-black text-gray-950">
+                          <p className="mt-1 font-black text-[#1a1815]">
                             {formatPickupTimeRange(offer, language)}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-end justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                        <span className="font-black text-gray-600">
+                      <div className="flex items-end justify-between gap-4 rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
+                        <span className="font-black text-[#6b6558]">
                           {t("checkout.price")}
                         </span>
-                        <span className="text-3xl font-black text-green-700">
+                        <span className="text-3xl font-black text-[#5c7a5c]">
                           {formatMoney(offer.price)}
                         </span>
                       </div>
@@ -449,34 +449,34 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-600">
+                    <span className="font-semibold text-[#6b6558]">
                       {t("checkout.quantityRemaining")}
                     </span>
-                    <span className="font-black text-gray-950">
+                    <span className="font-black text-[#1a1815]">
                       {offer.quantity}
                     </span>
                   </div>
 
-                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                  <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                       {t("checkout.cancellationPolicy")}
                     </p>
-                    <p className="mt-2 text-sm font-bold text-gray-700">
+                    <p className="mt-2 text-sm font-bold text-[#6b6558]">
                       {t("checkout.cancelReminder")}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                  <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                       {t("checkout.trustTitle")}
                     </p>
                     <div className="mt-3 grid gap-2">
                       {trustItems.map((item) => (
                         <p
                           key={item}
-                          className="flex gap-2 text-sm font-bold leading-6 text-gray-700"
+                          className="flex gap-2 text-sm font-bold leading-6 text-[#6b6558]"
                         >
-                          <span className="font-black text-green-700">✓</span>
+                          <span className="font-black text-[#5c7a5c]">✓</span>
                           <span>{item}</span>
                         </p>
                       ))}
@@ -485,50 +485,50 @@ export default function CheckoutPage() {
 
                   {offer.old_price && (
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-600">
+                      <span className="font-semibold text-[#6b6558]">
                         {t("checkout.regularPrice")}
                       </span>
-                      <span className="font-black text-gray-400 line-through">
+                      <span className="font-black text-[#8a8272] line-through">
                         {formatMoney(offer.old_price)}
                       </span>
                     </div>
                   )}
 
                   <div className="premium-muted-card rounded-2xl p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                       {t("checkout.paymentMethod")}
                     </p>
-                    <p className="mt-1 font-black text-gray-950">
+                    <p className="mt-1 font-black text-[#1a1815]">
                       {t("checkout.pilotReservationMethod")}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                  <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                       {t("checkout.paymentPreparationTitle")}
                     </p>
-                    <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
+                    <p className="mt-2 text-sm font-bold leading-6 text-[#6b6558]">
                       {t("checkout.paymentPreparationText")}
                     </p>
-                    <div className="mt-4 rounded-2xl bg-[#F7F6EF] px-3 py-2 text-sm font-black text-gray-800">
+                    <div className="mt-4 rounded-2xl bg-[#ece7da] px-3 py-2 text-sm font-black text-[#1a1815]">
                       Bank of Georgia
                     </div>
                   </div>
 
                   <div className="premium-muted-card rounded-2xl p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                       {t("checkout.futurePaymentTitle")}
                     </p>
-                    <p className="mt-2 text-sm font-bold leading-6 text-gray-700">
+                    <p className="mt-2 text-sm font-bold leading-6 text-[#6b6558]">
                       {t("checkout.futurePaymentText")}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                    <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+                  <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
                       {t("checkout.receiptTitle")}
                     </p>
-                    <div className="mt-3 grid gap-2 text-sm font-bold text-gray-700">
+                    <div className="mt-3 grid gap-2 text-sm font-bold text-[#6b6558]">
                       <p>
                         {t("checkout.offerTitle")}: {offer.title}
                       </p>
@@ -540,14 +540,14 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <label className="flex items-start gap-3 rounded-2xl bg-white p-4 font-bold text-gray-800 shadow-sm ring-1 ring-black/5">
+                  <label className="flex items-start gap-3 rounded-2xl bg-white p-4 font-bold text-[#1a1815] shadow-[var(--shadow-soft)]">
                     <input
                       type="checkbox"
                       checked={rulesAccepted}
                       onChange={(event) =>
                         setRulesAccepted(event.target.checked)
                       }
-                      className="mt-1 h-5 w-5 shrink-0 accent-green-700"
+                      className="mt-1 h-5 w-5 shrink-0 accent-[#5c7a5c]"
                     />
                     <span>
                       {t("checkout.rules")}
@@ -578,7 +578,7 @@ export default function CheckoutPage() {
                 {checkoutBlocked && (
                   <Link
                     href="/login"
-                    className="premium-button-secondary mt-3 w-full px-6 py-3 text-green-700"
+                    className="premium-button-secondary mt-3 w-full px-6 py-3"
                   >
                     {t("nav.signIn")}
                   </Link>
@@ -586,7 +586,7 @@ export default function CheckoutPage() {
 
                 <Link
                   href="/offers"
-                  className="premium-button-secondary mt-3 w-full px-6 py-3 text-green-700"
+                  className="premium-button-secondary mt-3 w-full px-6 py-3"
                 >
                   {t("offerDetail.back")}
                 </Link>

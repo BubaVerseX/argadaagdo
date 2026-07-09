@@ -24,7 +24,7 @@ export function BusinessStatsSection({
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div>
-        <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+        <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
           Dashboard Overview
         </p>
         <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -33,7 +33,7 @@ export function BusinessStatsSection({
       </div>
 
       {!hasAnalyticsActivity && (
-        <div className="mt-6 rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-5 text-center font-bold text-green-800 sm:p-6">
+        <div className="mt-6 rounded-3xl bg-white p-5 text-center font-bold text-[#1a1815] shadow-[var(--shadow-soft)] sm:p-6">
           {t("businessDashboard.emptyAnalytics")}
         </div>
       )}
@@ -45,7 +45,7 @@ export function BusinessStatsSection({
           return (
             <div
               key={metric.title}
-              className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${styles.card}`}
+              className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] sm:rounded-3xl sm:p-5 ${styles.card}`}
             >
               <p className={`text-sm font-black ${styles.label}`}>
                 {metric.title}

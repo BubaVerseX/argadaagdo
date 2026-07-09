@@ -82,7 +82,7 @@ export function OfferForm({
       id="create-offer"
       className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
-      <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
         Offer Management
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -92,14 +92,14 @@ export function OfferForm({
       {canCreateOffers ? (
         <>
           <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-            <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+            <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
               {t("businessOnboarding.firstOfferGuidanceTitle")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {guidance.map((item) => (
                 <span
                   key={item.label}
-                  className="rounded-full bg-white px-4 py-2 text-sm font-black text-gray-800 shadow-sm ring-1 ring-black/5"
+                  className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#1a1815] shadow-[var(--shadow-soft)]"
                 >
                   {item.label}: {item.value}
                 </span>
@@ -108,14 +108,14 @@ export function OfferForm({
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Business <RequiredMark />
               </span>
               <select
                 value={businessId}
                 onChange={(event) => onBusinessIdChange(event.target.value)}
-                className="w-full min-w-0 min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
               >
                 {approvedBusinesses.map((business) => (
                   <option key={business.id} value={business.id}>
@@ -125,7 +125,7 @@ export function OfferForm({
               </select>
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Title <RequiredMark />
               </span>
@@ -133,23 +133,23 @@ export function OfferForm({
                 value={title}
                 onChange={(event) => onTitleChange(event.target.value)}
                 maxLength={120}
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
                 placeholder="Bakery Surprise Bag"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700 md:col-span-2">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558] md:col-span-2">
               Description
               <textarea
                 value={description}
                 onChange={(event) => onDescriptionChange(event.target.value)}
                 maxLength={500}
-                className="w-full min-w-0 min-h-28 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input min-h-28 w-full min-w-0 p-4 font-semibold"
                 placeholder="Fresh bakery items saved from today's closing stock."
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Category <RequiredMark />
               </span>
@@ -159,7 +159,7 @@ export function OfferForm({
                   onCategoryChange(normalizeOfferCategory(event.target.value))
                 }
                 required
-                className="w-full min-w-0 min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
               >
                 {OFFER_CATEGORIES.map((offerCategory) => (
                   <option key={offerCategory} value={offerCategory}>
@@ -169,7 +169,7 @@ export function OfferForm({
               </select>
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Price <RequiredMark />
               </span>
@@ -180,12 +180,12 @@ export function OfferForm({
                 min="0.01"
                 step="0.01"
                 inputMode="decimal"
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
                 placeholder="5.00"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               Original price
               <input
                 value={oldPrice}
@@ -194,12 +194,12 @@ export function OfferForm({
                 min="0.01"
                 step="0.01"
                 inputMode="decimal"
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
                 placeholder="10.00"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Quantity <RequiredMark />
               </span>
@@ -210,12 +210,12 @@ export function OfferForm({
                 min="1"
                 step="1"
                 inputMode="numeric"
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
                 placeholder="3"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Pickup date <RequiredMark />
               </span>
@@ -224,11 +224,11 @@ export function OfferForm({
                 onChange={(event) => onPickupDateChange(event.target.value)}
                 type="date"
                 min={getTbilisiDateKey()}
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Pickup start <RequiredMark />
               </span>
@@ -236,11 +236,11 @@ export function OfferForm({
                 value={pickupStart}
                 onChange={(event) => onPickupStartChange(event.target.value)}
                 type="time"
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558]">
               <span>
                 Pickup end <RequiredMark />
               </span>
@@ -248,17 +248,17 @@ export function OfferForm({
                 value={pickupEnd}
                 onChange={(event) => onPickupEndChange(event.target.value)}
                 type="time"
-                className="w-full min-w-0 min-h-12 rounded-2xl border p-4 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                className="premium-input w-full min-w-0 p-4 font-semibold"
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-gray-700 md:col-span-2">
+            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6558] md:col-span-2">
               Offer image
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
                 onChange={onImageFileChange}
-              className="w-full min-w-0 min-h-12 rounded-2xl border bg-white p-4 font-semibold text-gray-950 file:mr-4 file:rounded-full file:border-0 file:bg-[#F7F6EF] file:px-4 file:py-2 file:font-black file:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+              className="premium-input w-full min-w-0 p-4 font-semibold file:mr-4 file:rounded-full file:border-0 file:bg-[#d9d5cb] file:px-4 file:py-2 file:font-black file:text-[#1a1815] focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
             />
           </label>
           </div>
@@ -271,19 +271,19 @@ export function OfferForm({
             ].map((helper) => (
               <p
                 key={helper}
-                className="rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-semibold leading-6 text-gray-700"
+                className="rounded-2xl bg-[#ece7da] px-4 py-3 text-sm font-semibold leading-6 text-[#6b6558]"
               >
                 {helper}
               </p>
             ))}
           </div>
 
-          <p className="mt-4 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold leading-6 text-gray-700">
+          <p className="mt-4 rounded-2xl bg-[#ece7da] px-4 py-3 text-sm font-bold leading-6 text-[#6b6558]">
             {t("businessOnboarding.offerValidationHint")}
           </p>
 
           {imageFile && (
-            <p className="mt-4 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold text-gray-800">
+            <p className="mt-4 rounded-2xl bg-[#ece7da] px-4 py-3 text-sm font-bold text-[#1a1815]">
               {t("businessDashboard.selectedImage")}: {imageFile.name}
             </p>
           )}
@@ -299,7 +299,7 @@ export function OfferForm({
           </button>
         </>
       ) : (
-        <div className="mt-6 rounded-2xl bg-[#F7F6EF] p-5 font-bold text-gray-800">
+        <div className="mt-6 rounded-2xl bg-[#ece7da] p-5 font-bold text-[#1a1815]">
           {businessStatusMessage}
         </div>
       )}
