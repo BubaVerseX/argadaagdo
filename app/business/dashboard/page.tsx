@@ -1430,7 +1430,7 @@ export default function BusinessDashboardPage() {
     {
       label: t("orders.reserved"),
       value: reservedOrders.length,
-      className: "bg-green-50 text-green-800",
+      className: "bg-white text-[#5c7a5c]",
     },
     {
       label: t("orders.collected"),
@@ -1445,7 +1445,7 @@ export default function BusinessDashboardPage() {
     {
       label: t("businessDashboard.noShow"),
       value: noShowOrders.length,
-      className: "bg-gray-100 text-gray-700",
+      className: "bg-[#ece7da] text-[#1a1815]",
     },
   ];
   const businessAlerts = [
@@ -1456,14 +1456,14 @@ export default function BusinessDashboardPage() {
             text: `${reservedOrders.length} active ${
               reservedOrders.length === 1 ? "reservation needs" : "reservations need"
             } pickup attention.`,
-            className: "border-green-100 bg-green-50 text-green-900",
+            className: "bg-white text-[#1a1815]",
           },
         ]
       : [
           {
             title: "No active reservations",
             text: "New reservations will appear here when customers reserve your offers.",
-            className: "border-gray-100 bg-gray-50 text-gray-800",
+            className: "bg-[#ece7da] text-[#1a1815]",
           },
         ]),
     ...(offersExpiringToday.length > 0
@@ -1484,7 +1484,7 @@ export default function BusinessDashboardPage() {
             text: `${reservationsWithStartedPickupWindow.length} reservation ${
               reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
             } inside the pickup window now.`,
-            className: "border-green-100 bg-green-50 text-green-900",
+            className: "bg-white text-[#1a1815]",
           },
         ]
       : []),
@@ -1502,7 +1502,7 @@ export default function BusinessDashboardPage() {
           {
             title: "No reservations today",
             text: "Nothing needs pickup action today. New reservations will appear here automatically.",
-            className: "border-gray-100 bg-gray-50 text-gray-800",
+            className: "bg-[#ece7da] text-[#1a1815]",
           },
         ]),
     ...(nearlySoldOutOffers.length > 0
@@ -1523,7 +1523,7 @@ export default function BusinessDashboardPage() {
             text: `${inactiveOffers.length} offer ${
               inactiveOffers.length === 1 ? "is" : "are"
             } hidden from public browsing.`,
-            className: "border-gray-100 bg-gray-50 text-gray-800",
+            className: "bg-[#ece7da] text-[#1a1815]",
           },
         ]
       : []),
@@ -1798,7 +1798,7 @@ export default function BusinessDashboardPage() {
               setOfferManagementPage(1);
             }}
             aria-label="Filter offers by status"
-            className="min-h-12 rounded-2xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+            className="premium-input px-4 py-3 font-semibold"
           >
             <option value="all">All offers</option>
             <option value="active">Active</option>

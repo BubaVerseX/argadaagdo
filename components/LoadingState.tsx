@@ -13,11 +13,11 @@ export function LoadingState({
     <div
       className={`premium-card w-full rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10 ${className}`}
     >
-      <div className="mx-auto h-12 w-12 animate-pulse rounded-full bg-[#eef1e8] sm:h-16 sm:w-16" />
-      <h1 className="mt-5 text-2xl font-black text-gray-950 sm:text-3xl">
+      <div className="mx-auto h-12 w-12 animate-pulse rounded-full bg-[#ece7da] sm:h-16 sm:w-16" />
+      <h1 className="mt-5 text-2xl font-black text-[#1a1815] sm:text-3xl">
         {title}
       </h1>
-      <p className="mx-auto mt-3 max-w-md font-semibold leading-7 text-gray-600">
+      <p className="mx-auto mt-3 max-w-md font-semibold leading-7 text-[#6b6558]">
         {description}
       </p>
     </div>

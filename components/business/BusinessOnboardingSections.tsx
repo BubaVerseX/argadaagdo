@@ -19,13 +19,13 @@ export function BusinessOnboardingSections({
   return (
     <>
       <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+        <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
           {t("businessOnboarding.badge")}
         </p>
-        <h2 className="mt-3 text-3xl font-black text-gray-950 sm:text-4xl">
+        <h2 className="mt-3 text-3xl font-black text-[#1a1815] sm:text-4xl">
           {t("businessOnboarding.welcomeTitle")}
         </h2>
-        <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-700">
+        <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6558]">
           {t("businessOnboarding.welcomeText")}
         </p>
         <a
@@ -37,7 +37,7 @@ export function BusinessOnboardingSections({
       </div>
 
       <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+        <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
           {t("businessOnboarding.checklistBadge")}
         </p>
         <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -50,16 +50,16 @@ export function BusinessOnboardingSections({
               key={item.label}
               className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
                 item.completed
-                  ? "bg-green-50 text-green-800"
-                  : "bg-[#F7F6EF] text-gray-700"
+                  ? "bg-white text-[#1a1815]"
+                  : "bg-[#ece7da] text-[#6b6558]"
               }`}
             >
               <span
                 aria-hidden="true"
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
                   item.completed
-                    ? "bg-green-700 text-white"
-                    : "bg-white text-gray-500"
+                    ? "bg-[#5c7a5c] text-white"
+                    : "bg-white text-[#6b6558]"
                 }`}
               >
                 {item.completed ? "✓" : item.step}
@@ -77,7 +77,7 @@ export function BusinessOnboardingSections({
           ].map((tip) => (
             <span
               key={tip}
-              className="rounded-full bg-green-50 px-4 py-2 text-sm font-black text-green-800"
+              className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#5c7a5c] shadow-[var(--shadow-soft)]"
             >
               ✓ {tip}
             </span>

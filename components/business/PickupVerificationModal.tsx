@@ -26,7 +26,7 @@ export function PickupVerificationModal({
   onSubmit,
 }: PickupVerificationModalProps) {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-gray-950/60 px-4 py-6 sm:py-10">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1a1815]/60 px-4 py-6 sm:py-10">
       <div className="mx-auto flex min-h-full max-w-lg items-center">
         <div
           role="dialog"
@@ -36,12 +36,12 @@ export function PickupVerificationModal({
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700">
+              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
                 Pickup Operations
               </p>
               <h3
                 id="pickup-verification-title"
-                className="mt-2 text-2xl font-black text-gray-950"
+                className="mt-2 text-2xl font-black text-[#1a1815]"
               >
                 Verify Customer Pickup Code
               </h3>
@@ -52,21 +52,21 @@ export function PickupVerificationModal({
               onClick={onClose}
               disabled={updatingOrderId !== null}
               aria-label="Close pickup verification"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 font-black text-gray-700 transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#ece7da] font-black text-[#1a1815] transition hover:bg-[#d9d5cb] disabled:cursor-not-allowed disabled:opacity-60"
             >
               ×
             </button>
           </div>
 
-          <div className="mt-5 rounded-3xl bg-[#F7F6EF] p-4">
-            <p className="text-lg font-black text-gray-950">
+          <div className="mt-5 rounded-3xl bg-[#ece7da] p-4">
+            <p className="text-lg font-black text-[#1a1815]">
               {order.offers?.title || t("common.offerUnavailable")}
             </p>
-            <p className="mt-2 font-semibold text-gray-700">
+            <p className="mt-2 font-semibold text-[#6b6558]">
               {t("businessDashboard.customer")}:{" "}
               {order.profiles?.email || t("common.unavailable")}
             </p>
-            <p className="mt-1 font-semibold text-gray-600">
+            <p className="mt-1 font-semibold text-[#6b6558]">
               {t("common.pickup")}:{" "}
               {order.offers
                 ? formatPickupWindow(order.offers, language)
@@ -74,14 +74,14 @@ export function PickupVerificationModal({
             </p>
           </div>
 
-          <p className="mt-5 font-semibold leading-7 text-gray-700">
+          <p className="mt-5 font-semibold leading-7 text-[#6b6558]">
             Ask the customer to show the pickup code from their Orders page.
             Enter it here before handing over the order.
           </p>
 
           <label
             htmlFor="pickup-verification-code"
-            className="mt-5 block text-sm font-black uppercase tracking-wide text-gray-600"
+            className="mt-5 block text-sm font-black uppercase tracking-wide text-[#6b6558]"
           >
             Pickup Code
           </label>
@@ -98,7 +98,7 @@ export function PickupVerificationModal({
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}
-            className="mt-2 min-h-12 w-full rounded-2xl border bg-white p-4 font-mono text-2xl font-black tracking-widest text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+            className="premium-input mt-2 w-full p-4 font-mono text-2xl tracking-widest"
             placeholder="123456"
           />
 
@@ -113,7 +113,7 @@ export function PickupVerificationModal({
               type="button"
               onClick={onClose}
               disabled={updatingOrderId !== null}
-              className="min-h-12 rounded-full border border-green-200 bg-white px-6 py-3 font-black text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="premium-button-secondary px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Cancel
             </button>
@@ -122,7 +122,7 @@ export function PickupVerificationModal({
               type="button"
               onClick={onSubmit}
               disabled={updatingOrderId !== null}
-              className="min-h-12 rounded-full bg-green-700 px-6 py-3 font-black text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="premium-button px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {updatingOrderId === order.id
                 ? "Completing..."

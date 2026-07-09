@@ -65,8 +65,8 @@ export function getOrderStatusLabel(status: OrderStatus, language: Language = "e
 
 export function getOrderStatusClassName(status: OrderStatus) {
   if (isPendingPaymentOrderStatus(status)) return "bg-blue-100 text-blue-700";
-  if (isCollectedOrderStatus(status)) return "bg-green-100 text-green-700";
-  if (isExpiredOrderStatus(status)) return "bg-gray-100 text-gray-700";
+  if (isCollectedOrderStatus(status)) return "bg-[#eef1e8] text-[#5c7a5c]";
+  if (isExpiredOrderStatus(status)) return "bg-[#ece7da] text-[#6b6558]";
   if (isCancelledOrderStatus(status)) return "bg-red-100 text-red-700";
   return "bg-yellow-100 text-yellow-700";
 }

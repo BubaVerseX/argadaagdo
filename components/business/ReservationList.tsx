@@ -65,7 +65,7 @@ export function ReservationList({
       id="reservations"
       className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
-      <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
         Pickup Operations
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -73,7 +73,7 @@ export function ReservationList({
       </h2>
 
       <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-        <p className="text-sm font-black uppercase tracking-widest text-gray-500">
+        <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
           {t("businessOnboarding.reservationGuidanceTitle")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -85,7 +85,7 @@ export function ReservationList({
           ].map((step) => (
             <span
               key={step}
-              className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-gray-800 shadow-sm ring-1 ring-black/5"
+              className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-[#1a1815] shadow-[var(--shadow-soft)]"
             >
               {step}
             </span>
@@ -94,13 +94,13 @@ export function ReservationList({
       </div>
 
       {orders.length > 0 && (
-        <div className="mt-6 rounded-3xl bg-[#F7F6EF] p-5 sm:p-6">
+        <div className="mt-6 rounded-3xl bg-[#ece7da] p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-gray-500">
+              <p className="text-xs font-black uppercase tracking-widest text-[#6b6558]">
                 {t("businessDashboard.reservationSummary")}
               </p>
-              <h3 className="mt-2 text-2xl font-black text-gray-950">
+              <h3 className="mt-2 text-2xl font-black text-[#1a1815]">
                 {t("businessDashboard.totalReservationsMetric")}: {orders.length}
               </h3>
             </div>
@@ -110,7 +110,7 @@ export function ReservationList({
             {reservationSummary.map((item) => (
               <div
                 key={item.label}
-                className={`rounded-2xl p-4 shadow-sm ${item.className}`}
+                className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] ${item.className}`}
               >
                 <p className="text-sm font-black">{item.label}</p>
                 <p className="mt-2 text-3xl font-black">{item.value}</p>
@@ -124,7 +124,7 @@ export function ReservationList({
         <input
           value={reservationSearch}
           onChange={(event) => onReservationSearchChange(event.target.value)}
-          className="min-h-12 rounded-2xl border bg-white px-4 py-3 font-semibold text-gray-950 outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+          className="premium-input px-4 py-3 font-semibold"
           placeholder="Search customer email..."
           aria-label="Search reservations by customer email"
         />
@@ -150,8 +150,8 @@ export function ReservationList({
               }
               className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
                 isActive
-                  ? "bg-gray-950 text-white"
-                  : "bg-white text-gray-700 shadow-sm ring-1 ring-black/5 hover:text-green-700"
+                  ? "bg-[#1a1815] text-white"
+                  : "bg-white text-[#6b6558] shadow-[var(--shadow-soft)] hover:text-[#5c7a5c]"
               }`}
             >
               {filter.label}
@@ -162,11 +162,11 @@ export function ReservationList({
 
       <div className="mt-6 grid gap-4">
         {filteredOrders.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-black/10 bg-[#F7F6EF] p-6 text-center sm:p-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl font-black text-gray-950 shadow-sm">
+          <div className="rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-soft)] sm:p-8">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ece7da] text-2xl font-black text-[#1a1815]">
               R
             </div>
-            <h3 className="mt-4 text-2xl font-black text-gray-950">
+            <h3 className="mt-4 text-2xl font-black text-[#1a1815]">
               {orders.length === 0
                 ? t("businessDashboard.noReservations")
                 : normalizedReservationSearch
@@ -175,7 +175,7 @@ export function ReservationList({
                 ? "No active reservations"
                 : t("businessDashboard.noFilteredReservations")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
               {orders.length === 0
                 ? t("businessDashboard.noReservationsHint")
                 : normalizedReservationSearch
@@ -193,32 +193,32 @@ export function ReservationList({
           return (
             <div
               key={order.id}
-              className="flex flex-col gap-5 rounded-3xl border border-black/5 bg-white p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between"
+              className="flex flex-col gap-5 rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)] lg:flex-row lg:items-center lg:justify-between"
             >
               <div>
                 <h3 className="text-xl font-black sm:text-2xl">
                   {order.offers?.title || t("common.offerUnavailable")}
                 </h3>
 
-                <p className="mt-2 font-semibold text-gray-700">
+                <p className="mt-2 font-semibold text-[#6b6558]">
                   {t("businessDashboard.customer")}:{" "}
                   {order.profiles?.email || t("common.unavailable")}
                 </p>
 
-                <p className="mt-1 font-semibold text-gray-600">
+                <p className="mt-1 font-semibold text-[#6b6558]">
                   {t("businessDashboard.created")}:{" "}
                   {formatDisplayDateTime(order.created_at, language)}
                 </p>
 
-                <p className="mt-1 font-black text-green-700">
+                <p className="mt-1 font-black text-[#5c7a5c]">
                   {order.offers
                     ? formatMoney(order.offers.price)
                     : t("common.unavailable")}
                 </p>
 
-                <div className="mt-3 grid gap-2 rounded-2xl bg-[#F7F6EF] p-4 text-sm font-semibold text-gray-700 sm:grid-cols-2">
+                <div className="mt-3 grid gap-2 rounded-2xl bg-[#ece7da] p-4 text-sm font-semibold text-[#6b6558] sm:grid-cols-2">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                       Business receipt
                     </p>
                     <p className="mt-1">Reservation ID: #{order.id}</p>
@@ -232,7 +232,7 @@ export function ReservationList({
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
                       Payout estimate
                     </p>
                     <p>
@@ -250,14 +250,14 @@ export function ReservationList({
                   </div>
                 </div>
 
-                <p className="mt-1 font-semibold text-gray-600">
+                <p className="mt-1 font-semibold text-[#6b6558]">
                   {t("common.pickup")}:{" "}
                   {order.offers
                     ? formatPickupWindow(order.offers, language)
                     : t("orders.pickupUnavailable")}
                 </p>
 
-                <p className="mt-1 text-sm font-bold text-gray-500">
+                <p className="mt-1 text-sm font-bold text-[#6b6558]">
                   {t("businessDashboard.reliability")}:{" "}
                   {order.profiles?.reliability_score ??
                     t("common.unavailable")}{" "}
@@ -274,7 +274,7 @@ export function ReservationList({
                   </span>
 
                   {isConfirmedOrderStatus(order.status) && (
-                    <span className="rounded-full bg-gray-100 px-4 py-2 text-sm font-black text-gray-700">
+                    <span className="rounded-full bg-[#ece7da] px-4 py-2 text-sm font-black text-[#6b6558]">
                       Pickup code:{" "}
                       {order.pickup_code
                         ? `••••${String(order.pickup_code).slice(-2)}`
@@ -284,14 +284,14 @@ export function ReservationList({
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
-                  <p className="mt-3 rounded-2xl bg-[#F7F6EF] px-4 py-3 text-sm font-bold leading-6 text-gray-700">
+                  <p className="mt-3 rounded-2xl bg-[#ece7da] px-4 py-3 text-sm font-bold leading-6 text-[#6b6558]">
                     Ask the customer for the full code, then use Verify &
                     Complete Pickup.
                   </p>
                 )}
 
-                <div className="mt-4 rounded-3xl bg-[#F7F6EF] p-4">
-                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-gray-500">
+                <div className="mt-4 rounded-3xl bg-[#ece7da] p-4">
+                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6558]">
                     Reservation timeline
                   </p>
                   <TimelineSteps

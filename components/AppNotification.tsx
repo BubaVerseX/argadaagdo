@@ -7,22 +7,22 @@ const toneStyles: Record<
   { wrapper: string; icon: string; role: "status" | "alert" }
 > = {
   success: {
-    wrapper: "border-green-200 bg-green-50 text-green-900",
-    icon: "bg-green-700 text-white",
+    wrapper: "bg-white text-[#1a1815]",
+    icon: "bg-[#5c7a5c] text-white",
     role: "status",
   },
   info: {
-    wrapper: "border-blue-100 bg-blue-50 text-blue-950",
+    wrapper: "bg-blue-50 text-blue-950",
     icon: "bg-blue-600 text-white",
     role: "status",
   },
   warning: {
-    wrapper: "border-yellow-200 bg-yellow-50 text-yellow-950",
+    wrapper: "bg-yellow-50 text-yellow-950",
     icon: "bg-yellow-500 text-yellow-950",
     role: "status",
   },
   error: {
-    wrapper: "border-red-200 bg-red-50 text-red-900",
+    wrapper: "bg-red-50 text-red-900",
     icon: "bg-red-600 text-white",
     role: "alert",
   },
@@ -54,7 +54,7 @@ export default function AppNotification({
 
   return (
     <div
-      className={`rounded-2xl border p-4 shadow-sm ${styles.wrapper}`}
+      className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] ${styles.wrapper}`}
       role={styles.role}
     >
       <div className="flex items-start gap-3">
@@ -78,7 +78,7 @@ export default function AppNotification({
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss notification"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 font-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 font-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
           >
             ×
           </button>

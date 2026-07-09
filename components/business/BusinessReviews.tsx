@@ -17,27 +17,27 @@ export function BusinessReviews({
 }: BusinessReviewsProps) {
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-      <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
         Customer Feedback
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
         {t("businessDashboard.businessReviews")}
       </h2>
 
-      <p className="mt-2 font-semibold text-gray-600">
+      <p className="mt-2 font-semibold text-[#6b6558]">
         ✓ {t("businessOnboarding.ratingsGuidanceText")}
       </p>
 
       <div className="mt-6 grid gap-4">
         {reviews.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-yellow-200 bg-yellow-50/70 p-6 text-center sm:p-8">
+          <div className="rounded-3xl bg-yellow-50/70 p-6 text-center sm:p-8">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
               ⭐
             </div>
-            <h3 className="mt-4 text-2xl font-black text-gray-950">
+            <h3 className="mt-4 text-2xl font-black text-[#1a1815]">
               {t("businessDashboard.noReviews")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
               {t("businessDashboard.noReviewsHint")}
             </p>
             <a
@@ -52,24 +52,24 @@ export function BusinessReviews({
         {reviews.map((review) => (
           <div
             key={review.id}
-            className="rounded-2xl border bg-[#F7F6EF] p-5"
+            className="rounded-2xl bg-[#ece7da] p-5"
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-xl font-black text-yellow-700">
                   {review.rating} ⭐
                 </p>
-                <p className="mt-1 font-bold text-gray-700">
+                <p className="mt-1 font-bold text-[#1a1815]">
                   {businessNameById[Number(review.business_id)] || "Business"}
                 </p>
               </div>
 
-              <p className="text-sm font-bold text-gray-500">
+              <p className="text-sm font-bold text-[#6b6558]">
                 {formatDisplayDateTime(review.created_at, language)}
               </p>
             </div>
 
-            <p className="mt-4 font-semibold text-gray-700">
+            <p className="mt-4 font-semibold text-[#6b6558]">
               {review.review?.trim() || t("common.noWrittenReview")}
             </p>
           </div>
