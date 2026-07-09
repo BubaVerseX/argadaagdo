@@ -32,13 +32,13 @@ export default function ContactPage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               {t("contact.badge")}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {t("contact.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg sm:leading-8">
               {t("contact.subtitle")}
             </p>
           </div>
@@ -49,10 +49,10 @@ export default function ContactPage() {
                 key={card.title}
                 className="premium-card rounded-3xl p-5 sm:p-6"
               >
-                <h2 className="text-xl font-black text-gray-950">
+                <h2 className="text-xl font-black text-[#1a1815]">
                   {card.title}
                 </h2>
-                <p className="mt-3 font-semibold leading-7 text-gray-700">
+                <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
                   {card.text}
                 </p>
               </div>
@@ -60,14 +60,14 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <section className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
+            <section className="rounded-[2rem] bg-white p-5 shadow-[var(--shadow-soft)] sm:p-8">
+              <p className="text-sm font-black uppercase tracking-widest text-[#5c7a5c]">
                 {t("contact.supportEmailLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black text-gray-950">
+              <h2 className="mt-3 text-3xl font-black text-[#1a1815]">
                 {t("contact.emailTitle")}
               </h2>
-              <p className="mt-4 font-semibold leading-7 text-gray-700">
+              <p className="mt-4 font-semibold leading-7 text-[#6b6558]">
                 {t("contact.emailText")}
               </p>
 
@@ -79,20 +79,20 @@ export default function ContactPage() {
               </a>
             </section>
 
-            <section className="rounded-[2rem] bg-green-50 p-5 shadow-sm sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
+            <section className="rounded-[2rem] bg-[#ece7da] p-5 shadow-[var(--shadow-soft)] sm:p-8">
+              <p className="text-sm font-black uppercase tracking-widest text-[#5c7a5c]">
                 {t("contact.businessInquiriesLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black text-gray-950">
+              <h2 className="mt-3 text-3xl font-black text-[#1a1815]">
                 {t("contact.businessInquiriesTitle")}
               </h2>
-              <p className="mt-4 font-semibold leading-7 text-gray-700">
+              <p className="mt-4 font-semibold leading-7 text-[#6b6558]">
                 {t("contact.businessInquiriesText")}
               </p>
 
               <Link
                 href="/business/register"
-                className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 py-3 text-center font-black text-green-700 ring-1 ring-green-100 transition hover:bg-green-100 sm:w-auto"
+                className="premium-button-secondary mt-6 w-full sm:w-auto"
               >
                 {t("home.joinBusiness")}
               </Link>
@@ -101,41 +101,41 @@ export default function ContactPage() {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <section className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              <p className="text-sm font-black uppercase tracking-widest text-[#5c7a5c]">
                 {t("contact.responseTimeLabel")}
               </p>
-              <h2 className="mt-3 text-2xl font-black text-gray-950">
+              <h2 className="mt-3 text-2xl font-black text-[#1a1815]">
                 {t("contact.responseTimeTitle")}
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-gray-700">
+              <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
                 {t("contact.responseTimeText")}
               </p>
             </section>
 
             <section className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-green-700">
+              <p className="text-sm font-black uppercase tracking-widest text-[#5c7a5c]">
                 {t("contact.serviceAreaLabel")}
               </p>
-              <h2 className="mt-3 text-2xl font-black text-gray-950">
+              <h2 className="mt-3 text-2xl font-black text-[#1a1815]">
                 {t("contact.serviceAreaTitle")}
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-gray-700">
+              <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
                 {t("contact.serviceAreaText")}
               </p>
             </section>
           </div>
 
-          <div className="mt-6 rounded-[2rem] bg-white p-5 text-center shadow-sm sm:p-8">
-            <h2 className="text-2xl font-black text-gray-950">
+          <div className="mt-6 rounded-[2rem] bg-white p-5 text-center shadow-[var(--shadow-soft)] sm:p-8">
+            <h2 className="text-2xl font-black text-[#1a1815]">
               {t("contact.footerTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6558]">
               {t("contact.footerText")}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/faq"
-                className="min-h-12 rounded-full bg-green-50 px-6 py-3 text-center font-black text-green-800 transition hover:bg-green-100"
+                className="premium-button-secondary px-6 py-3 text-center"
               >
                 {t("nav.faq")}
               </Link>

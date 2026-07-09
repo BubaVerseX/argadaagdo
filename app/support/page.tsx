@@ -57,13 +57,13 @@ export default function SupportPage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               Support Center
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               Help for reservations, pickups and businesses.
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg sm:leading-8">
               Clear answers for customers and businesses using ArGadaagdo during
               the Tbilisi pilot.
             </p>
@@ -99,24 +99,24 @@ export default function SupportPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-            <section className="rounded-[2rem] bg-white p-5 shadow-sm sm:p-8">
+            <section className="rounded-[2rem] bg-white p-5 shadow-[var(--shadow-soft)] sm:p-8">
               <h2 className="text-2xl font-black sm:text-3xl">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-gray-700">
+              <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
                 Start here if you are unsure how surprise bags, reservations,
                 pickups, cancellations or ratings work.
               </p>
 
               <div className="mt-6 grid gap-6">
                 <div>
-                  <h3 className="mb-3 text-lg font-black text-green-800">
+                  <h3 className="mb-3 text-lg font-black text-[#5c7a5c]">
                     Customers
                   </h3>
                   <FAQAccordion items={customerQuestions} />
                 </div>
                 <div>
-                  <h3 className="mb-3 text-lg font-black text-green-800">
+                  <h3 className="mb-3 text-lg font-black text-[#5c7a5c]">
                     Businesses
                   </h3>
                   <FAQAccordion items={businessQuestions} />
@@ -151,13 +151,13 @@ export default function SupportPage() {
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Link
                     href="/faq"
-                    className="min-h-11 rounded-full bg-green-700 px-5 py-2.5 text-center font-black text-white transition hover:bg-green-800"
+                    className="premium-button min-h-11 px-5 py-2.5 text-center"
                   >
                     Open FAQ
                   </Link>
                   <Link
                     href="/contact"
-                    className="min-h-11 rounded-full bg-white px-5 py-2.5 text-center font-black text-green-800 ring-1 ring-green-100 transition hover:bg-green-50"
+                    className="premium-button-secondary min-h-11 px-5 py-2.5 text-center"
                   >
                     Contact Us
                   </Link>
