@@ -163,7 +163,7 @@ export default function BusinessProfilePage() {
                       />
                     ) : (
                       <div className="flex h-full min-h-72 items-center justify-center">
-                        <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white text-4xl font-black text-gray-950 shadow-sm">
+                        <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-white text-4xl font-black text-[#1a1815] shadow-[var(--shadow-soft)]">
                           {getBusinessInitials(business.name)}
                         </div>
                       </div>
@@ -172,41 +172,41 @@ export default function BusinessProfilePage() {
 
                   <div className="p-5 sm:p-8 md:p-10">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-xs font-black uppercase tracking-widest text-green-700">
+                      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
                         {t("businessProfile.title")}
                       </p>
                       {isVerified && <TrustBadge label={t("businessProfile.verified")} />}
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#eef1e8] text-2xl font-black text-gray-950">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#eef1e8] text-2xl font-black text-[#1a1815]">
                         {getBusinessInitials(business.name)}
                       </div>
                       <div>
                         <h1 className="text-3xl font-black sm:text-5xl">
                           {business.name}
                         </h1>
-                        <p className="mt-2 font-semibold leading-7 text-gray-600">
+                        <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
                           {businessDescription}
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-5 grid gap-3 premium-muted-card rounded-3xl p-4 font-semibold text-gray-700">
+                    <div className="mt-5 grid gap-3 premium-muted-card rounded-3xl p-4 font-semibold text-[#6b6558]">
                       <p>
-                        <span className="font-black text-gray-950">
+                        <span className="font-black text-[#1a1815]">
                           {t("businessProfile.businessType")}:
                         </span>{" "}
                         {business.business_type || t("common.food")}
                       </p>
                       <p>
-                        <span className="font-black text-gray-950">
+                        <span className="font-black text-[#1a1815]">
                           {t("businessProfile.address")}:
                         </span>{" "}
                         {business.address || t("common.addressUnavailable")}
                       </p>
                       <p>
-                        <span className="font-black text-gray-950">
+                        <span className="font-black text-[#1a1815]">
                           Phone:
                         </span>{" "}
                         {business.phone || "Contact through ArGadaagdo support"}
@@ -227,82 +227,82 @@ export default function BusinessProfilePage() {
                     </div>
 
                     <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           {t("common.rating")}
                         </p>
-                        <p className="mt-2 text-3xl font-black text-gray-950">
+                        <p className="mt-2 text-3xl font-black text-[#1a1815]">
                           {averageRating ? `${averageRating}/5` : t("common.noRatings")}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           {averageRating
                             ? t("businessProfile.outOfFive")
                             : t("common.noRatings")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           {t("common.reviews")}
                         </p>
-                        <p className="mt-2 text-3xl font-black text-gray-950">
+                        <p className="mt-2 text-3xl font-black text-[#1a1815]">
                           {reviewCount}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           {t("businessProfile.customerReviews")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           Completed pickups
                         </p>
-                        <p className="mt-2 text-3xl font-black text-gray-950">
+                        <p className="mt-2 text-3xl font-black text-[#1a1815]">
                           {completedPickupSignal}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           Public signal from completed rated pickups
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           {t("businessProfile.activeOffers")}
                         </p>
                         <p className="mt-2 text-3xl font-black">
                           {offers.length}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           {t("businessProfile.activeOffersHint")}
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           Joined
                         </p>
-                        <p className="mt-2 text-2xl font-black text-gray-950">
+                        <p className="mt-2 text-2xl font-black text-[#1a1815]">
                           {joinedDate || "Tbilisi pilot"}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           Approved local marketplace member
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           Response rate
                         </p>
-                        <p className="mt-2 text-2xl font-black text-gray-950">
+                        <p className="mt-2 text-2xl font-black text-[#1a1815]">
                           Pilot support
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           Support requests are handled by ArGadaagdo
                         </p>
                       </div>
-                      <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                        <p className="text-sm font-black text-gray-500">
+                      <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+                        <p className="text-sm font-black text-[#6b6558]">
                           Opening hours
                         </p>
-                        <p className="mt-2 text-2xl font-black text-gray-950">
+                        <p className="mt-2 text-2xl font-black text-[#1a1815]">
                           See each offer
                         </p>
-                        <p className="mt-1 text-sm font-bold text-gray-600">
+                        <p className="mt-1 text-sm font-bold text-[#6b6558]">
                           Pickup windows are shown on active offers
                         </p>
                       </div>
@@ -357,7 +357,7 @@ export default function BusinessProfilePage() {
                       <Link
                         key={offer.id}
                         href={`/offers/${offer.id}`}
-                        className="premium-card overflow-hidden rounded-3xl transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-green-300"
+                        className="premium-card overflow-hidden rounded-3xl transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                       >
                         <div className="relative h-48 bg-[#eef1e8]">
                           <OfferImage
@@ -365,11 +365,11 @@ export default function BusinessProfilePage() {
                             alt={offer.title}
                             sizes="(max-width: 768px) 100vw, 33vw"
                           />
-                          <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-green-700 shadow-sm">
+                          <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-[#5c7a5c] shadow-sm">
                             {normalizeOfferCategory(offer.category)}
                           </span>
                           {discount && (
-                            <span className="absolute right-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-gray-800 shadow-sm">
+                            <span className="absolute right-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-black text-[#1a1815] shadow-[var(--shadow-soft)]">
                               Save {discount}%
                             </span>
                           )}
@@ -377,24 +377,24 @@ export default function BusinessProfilePage() {
                         <div className="p-5">
                           <h3 className="text-xl font-black">{offer.title}</h3>
                           <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-gray-800 shadow-sm ring-1 ring-black/5">
+                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-[#1a1815] shadow-[var(--shadow-soft)]">
                               {formatPickupWindow(offer, language)}
                             </span>
-                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-gray-700">
+                            <span className="rounded-full bg-white px-3 py-2 text-sm font-black text-[#6b6558]">
                               {t("common.quantity")}: {offer.quantity}
                             </span>
                           </div>
                           <div className="mt-4 flex items-center justify-between gap-3">
-                            <p className="text-2xl font-black text-green-700">
+                            <p className="text-2xl font-black text-[#5c7a5c]">
                               {formatMoney(offer.price)}
                             </p>
-                            <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-gray-700 shadow-sm ring-1 ring-black/5">
+                            <span className="rounded-full bg-white px-3 py-1 text-sm font-black text-[#6b6558] shadow-[var(--shadow-soft)]">
                               {isOfferReservable(offer)
                                 ? t("common.available")
                                 : t("common.unavailable")}
                             </span>
                           </div>
-                          <p className="mt-4 inline-flex min-h-10 items-center rounded-full bg-green-700 px-4 py-2 text-sm font-black text-white">
+                          <p className="premium-button mt-4 inline-flex min-h-10 px-4 py-2 text-sm">
                             {t("common.viewDetails")}
                           </p>
                         </div>
@@ -408,20 +408,20 @@ export default function BusinessProfilePage() {
                 <h2 className="text-2xl font-black">
                   {t("businessProfile.customerReviews")}
                 </h2>
-                <p className="mt-2 max-w-2xl font-semibold leading-7 text-gray-600">
+                <p className="mt-2 max-w-2xl font-semibold leading-7 text-[#6b6558]">
                   {t("businessProfile.reviewsIntro")}
                 </p>
 
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (
-                    <div className="rounded-3xl border border-dashed border-black/10 bg-[#F7F6EF] p-6 text-center">
+                    <div className="rounded-3xl bg-[#ece7da] p-6 text-center">
                       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl">
                         R
                       </div>
-                      <p className="mt-4 text-lg font-black text-gray-950">
+                      <p className="mt-4 text-lg font-black text-[#1a1815]">
                         {t("common.noReviews")}
                       </p>
-                      <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-600">
+                      <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
                         {t("businessProfile.noReviewsHint")}
                       </p>
                       <div className="mt-5 flex justify-center">
@@ -431,18 +431,18 @@ export default function BusinessProfilePage() {
                   )}
 
                   {reviews.map((review) => (
-                    <div key={review.id} className="rounded-3xl bg-[#F7F6EF] p-5">
+                    <div key={review.id} className="rounded-3xl bg-[#ece7da] p-5">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-black text-gray-950">
+                        <p className="font-black text-[#1a1815]">
                           {review.rating}/5
                         </p>
                         {formatReviewDate(review.created_at, language) && (
-                          <p className="text-sm font-bold text-gray-500">
+                          <p className="text-sm font-bold text-[#6b6558]">
                             {formatReviewDate(review.created_at, language)}
                           </p>
                         )}
                       </div>
-                      <p className="mt-2 font-semibold text-gray-700">
+                      <p className="mt-2 font-semibold text-[#6b6558]">
                         {review.review?.trim() || t("common.noWrittenReview")}
                       </p>
                     </div>
