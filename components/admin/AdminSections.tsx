@@ -56,10 +56,10 @@ export function AdminHero({ t }: AdminHeroProps) {
       <p className="premium-badge px-4 py-2">
         {t("admin.analytics")}
       </p>
-      <h1 className="mt-4 text-3xl font-black text-gray-950 sm:text-4xl md:text-6xl">
+      <h1 className="mt-4 text-3xl font-black text-[#1a1815] sm:text-4xl md:text-6xl">
         {t("admin.title")}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-gray-600 sm:text-lg">
+      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg">
         {t("admin.subtitle")}
       </p>
     </div>
@@ -75,7 +75,7 @@ export function AdminMarketplaceOverview({
     <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Marketplace overview
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -83,7 +83,7 @@ export function AdminMarketplaceOverview({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           The core numbers admins need before approving businesses or checking
           marketplace activity.
         </p>
@@ -157,20 +157,20 @@ export function AdminRevenueInsights({
     <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Marketplace revenue
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             Financial and operational insight
           </h2>
-          <p className="mt-3 max-w-3xl font-semibold leading-7 text-gray-600">
+          <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6558]">
             These are pilot estimates from existing orders. They prepare the
             admin view for a future commission model without connecting real
             payment providers.
           </p>
         </div>
 
-        <div className="rounded-3xl bg-green-50 p-4 text-sm font-semibold leading-6 text-green-900 lg:max-w-sm">
+        <div className="rounded-3xl bg-white p-4 text-sm font-semibold leading-6 text-[#1a1815] shadow-[var(--shadow-soft)] lg:max-w-sm">
           <p className="font-black">Future commission model</p>
           <p className="mt-1">
             Current architecture prepares 10% platform revenue and 90% business
@@ -214,7 +214,7 @@ export function AdminOperationalDashboard({
     <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Operational dashboard
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -222,7 +222,7 @@ export function AdminOperationalDashboard({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           Fast pilot signals for reservations, pickups, cancellations,
           no-shows and marketplace activity.
         </p>
@@ -246,7 +246,7 @@ export function AdminMarketplaceIntelligence({
     <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Marketplace intelligence
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -254,7 +254,7 @@ export function AdminMarketplaceIntelligence({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           Rule-based operations view for spotting active partners, inactive
           businesses and offers that need admin attention.
         </p>
@@ -274,7 +274,7 @@ export function AdminSupportTools({
     <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Support tools
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -282,7 +282,7 @@ export function AdminSupportTools({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           Use the admin search box below to look up reservations, customers,
           businesses and orders during pilot operations.
         </p>
@@ -309,9 +309,9 @@ export function AdminHealthSections({
   applicationHealth: ApplicationHealthItem[];
 }) {
   const healthToneStyles = {
-    ok: "border-green-100 bg-green-50 text-green-900",
-    warning: "border-yellow-100 bg-yellow-50 text-yellow-950",
-    error: "border-red-100 bg-red-50 text-red-800",
+    ok: "bg-white text-[#1a1815]",
+    warning: "bg-yellow-50 text-yellow-950",
+    error: "bg-red-50 text-red-800",
   };
 
   return (
@@ -321,11 +321,11 @@ export function AdminHealthSections({
           <p className="premium-badge px-4 py-2">
             Admin guidance
           </p>
-          <h2 className="mt-4 text-2xl font-black text-gray-950 sm:text-3xl">
+          <h2 className="mt-4 text-2xl font-black text-[#1a1815] sm:text-3xl">
             Use this dashboard to approve businesses and monitor marketplace
             activity.
           </h2>
-          <p className="mt-4 font-semibold leading-7 text-gray-600">
+          <p className="mt-4 font-semibold leading-7 text-[#6b6558]">
             Review pending businesses before they can publish offers, then watch
             orders, active offers, ratings and reliability signals as the pilot
             grows.
@@ -335,7 +335,7 @@ export function AdminHealthSections({
         <div className="premium-card rounded-3xl p-5 sm:p-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
                 Live marketplace health
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -343,7 +343,7 @@ export function AdminHealthSections({
               </h2>
             </div>
 
-            <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+            <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
               Lightweight status cards based on the current businesses, offers,
               orders and ratings visible to admins.
             </p>
@@ -360,7 +360,7 @@ export function AdminHealthSections({
       <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               Marketplace operations
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -368,7 +368,7 @@ export function AdminHealthSections({
             </h2>
           </div>
 
-          <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+          <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
             Fast counts for approvals, today&apos;s reservations, pickups, expired
             offers and active customer demand.
           </p>
@@ -384,7 +384,7 @@ export function AdminHealthSections({
       <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               Application health
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -392,7 +392,7 @@ export function AdminHealthSections({
             </h2>
           </div>
 
-          <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+          <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
             Lightweight checks for environment variables, Supabase, Storage,
             Realtime and the deployed build identifier.
           </p>
@@ -402,7 +402,7 @@ export function AdminHealthSections({
           {applicationHealth.map((item) => (
             <div
               key={item.title}
-              className={`rounded-2xl border p-4 ${healthToneStyles[item.status]}`}
+              className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] ${healthToneStyles[item.status]}`}
             >
               <div className="flex items-center justify-between gap-3">
                 <p className="font-black">{item.title}</p>
@@ -422,7 +422,7 @@ export function AdminHealthSections({
       <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
               Operational details
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -430,7 +430,7 @@ export function AdminHealthSections({
             </h2>
           </div>
 
-          <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+          <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
             Extra signals for spotting sold-out offers, no-shows and customer
             reliability risks during the pilot.
           </p>
@@ -459,7 +459,7 @@ export function AdminPaymentsOverview({
     <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Payments overview
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -467,7 +467,7 @@ export function AdminPaymentsOverview({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           Bank of Georgia checkout support is wired through server route
           handlers. This panel shows the financial fields recorded by orders and
           the states admins should monitor during pilot operations.
@@ -477,11 +477,11 @@ export function AdminPaymentsOverview({
       <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-3" />
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-3xl bg-[#F7F6EF] p-5">
-          <h3 className="text-xl font-black text-gray-950">
+        <div className="rounded-3xl bg-[#ece7da] p-5">
+          <h3 className="text-xl font-black text-[#1a1815]">
             Payment states
           </h3>
-          <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+          <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
             Current database payments support{" "}
             {currentDatabasePaymentStatuses.join(", ")}. Pending sessions hold
             inventory until Bank of Georgia confirms, fails, cancels or expires
@@ -491,7 +491,7 @@ export function AdminPaymentsOverview({
             {paymentStatuses.map((status) => (
               <span
                 key={status}
-                className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-green-800"
+                className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-[#5c7a5c]"
               >
                 {status}
               </span>
@@ -499,15 +499,15 @@ export function AdminPaymentsOverview({
           </div>
         </div>
 
-        <div className="rounded-3xl bg-green-50 p-5">
-          <h3 className="text-xl font-black text-green-950">
+        <div className="rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+          <h3 className="text-xl font-black text-[#1a1815]">
             Provider options
           </h3>
           <div className="mt-4 grid gap-2">
             {paymentProviderOptions.map((provider) => (
-              <div key={provider.id} className="rounded-2xl bg-white p-3 text-sm">
-                <p className="font-black text-gray-950">{provider.name}</p>
-                <p className="mt-1 font-semibold leading-5 text-gray-600">
+              <div key={provider.id} className="rounded-2xl bg-[#ece7da] p-3 text-sm">
+                <p className="font-black text-[#1a1815]">{provider.name}</p>
+                <p className="mt-1 font-semibold leading-5 text-[#6b6558]">
                   {provider.role}
                 </p>
               </div>
@@ -520,10 +520,10 @@ export function AdminPaymentsOverview({
         {adminPaymentPanelSections.map((section) => (
           <div
             key={section.title}
-            className="rounded-2xl border border-green-100 bg-white p-4"
+            className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]"
           >
-            <p className="font-black text-gray-950">{section.title}</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-gray-600">
+            <p className="font-black text-[#1a1815]">{section.title}</p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
               {section.text}
             </p>
           </div>
@@ -544,7 +544,7 @@ export function AdminAccountView({
     <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Account view
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -552,7 +552,7 @@ export function AdminAccountView({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           Admins can review role distribution here. Roles still cannot be
           changed from this dashboard.
         </p>
@@ -560,16 +560,16 @@ export function AdminAccountView({
 
       <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-4" />
 
-      <div className="mt-6 overflow-hidden rounded-3xl border border-gray-100">
-        <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-[#F7F6EF] px-4 py-3 text-xs font-black uppercase tracking-wide text-gray-500">
+      <div className="mt-6 overflow-hidden rounded-3xl shadow-[var(--shadow-soft)]">
+        <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-[#ece7da] px-4 py-3 text-xs font-black uppercase tracking-wide text-[#6b6558]">
           <span>Email</span>
           <span>Role</span>
           <span>Reliability</span>
         </div>
 
-        <div className="divide-y divide-gray-100 bg-white">
+        <div className="divide-y divide-black/[0.06] bg-white">
           {profiles.length === 0 && (
-            <p className="px-4 py-5 font-semibold text-gray-600">
+            <p className="px-4 py-5 font-semibold text-[#6b6558]">
               No profiles available.
             </p>
           )}
@@ -577,7 +577,7 @@ export function AdminAccountView({
           {profiles.slice(0, 12).map((profile) => (
             <div
               key={profile.id}
-              className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 px-4 py-4 text-sm font-semibold text-gray-700"
+              className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 px-4 py-4 text-sm font-semibold text-[#6b6558]"
             >
               <span className="min-w-0 break-words">
                 {profile.email || "Email unavailable"}
@@ -604,7 +604,7 @@ export function AdminModerationVisibility({
     <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-green-700 sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
             Moderation visibility
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -612,7 +612,7 @@ export function AdminModerationVisibility({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-gray-600 sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
           Rejected businesses are not a separate state in the current approval
           model; unapproved businesses stay in the pending queue.
         </p>
@@ -670,7 +670,7 @@ export function PendingBusinesses({
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             {t("admin.pendingBusinesses")}
           </h2>
-          <p className="mt-2 max-w-2xl font-semibold leading-7 text-gray-600">
+          <p className="mt-2 max-w-2xl font-semibold leading-7 text-[#6b6558]">
             Review new business registrations before they can publish food
             rescue offers.
           </p>
@@ -696,9 +696,9 @@ export function PendingBusinesses({
             text: "Use marketplace health cards to watch offers, orders and ratings.",
           },
         ].map((step) => (
-          <div key={step.title} className="rounded-2xl bg-[#F7F6EF] p-4 text-sm">
-            <p className="font-black text-gray-950">{step.title}</p>
-            <p className="mt-2 font-semibold leading-6 text-gray-600">
+          <div key={step.title} className="rounded-2xl bg-[#ece7da] p-4 text-sm">
+            <p className="font-black text-[#1a1815]">{step.title}</p>
+            <p className="mt-2 font-semibold leading-6 text-[#6b6558]">
               {step.text}
             </p>
           </div>
@@ -707,14 +707,14 @@ export function PendingBusinesses({
 
       <div className="mt-6 grid gap-4">
         {businesses.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-6 text-center sm:p-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl font-black text-green-700">
+          <div className="rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-soft)] sm:p-8">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef1e8] text-2xl font-black text-[#5c7a5c]">
               ✓
             </div>
-            <h3 className="mt-4 text-2xl font-black text-gray-950">
+            <h3 className="mt-4 text-2xl font-black text-[#1a1815]">
               No businesses awaiting approval
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
               New registrations will appear here.
             </p>
           </div>
@@ -723,7 +723,7 @@ export function PendingBusinesses({
         {businesses.map((business) => (
           <div
             key={business.id}
-            className="grid gap-5 rounded-3xl border border-yellow-100 bg-yellow-50/40 p-5 sm:p-6 lg:grid-cols-[1fr_320px] lg:items-start"
+            className="grid gap-5 rounded-3xl bg-yellow-50 p-5 shadow-[var(--shadow-soft)] sm:p-6 lg:grid-cols-[1fr_320px] lg:items-start"
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -735,7 +735,7 @@ export function PendingBusinesses({
                 </span>
               </div>
 
-              <div className="mt-4 grid gap-3 text-sm font-semibold text-gray-700 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mt-4 grid gap-3 text-sm font-semibold text-[#6b6558] sm:grid-cols-2 xl:grid-cols-4">
                 <BusinessDetail label="Business type" value={business.business_type} />
                 <BusinessDetail label="Address" value={business.address} />
                 <BusinessDetail label="Phone" value={business.phone} />
@@ -750,14 +750,14 @@ export function PendingBusinesses({
               onSubmit={(event) => handleReviewAction(event, business.id)}
               className="premium-card rounded-3xl p-4"
             >
-              <label className="grid gap-2 text-sm font-black text-gray-700">
+              <label className="grid gap-2 text-sm font-black text-[#6b6558]">
                 Review reason
                 <textarea
                   name="reason"
                   rows={3}
                   placeholder="Optional note for rejection or requested changes"
                   maxLength={220}
-                  className="rounded-2xl border bg-white p-3 font-semibold outline-none focus:border-green-700 focus:ring-2 focus:ring-green-100"
+                  className="premium-input p-3 font-semibold"
                 />
               </label>
 
@@ -766,7 +766,7 @@ export function PendingBusinesses({
                   type="button"
                   onClick={() => onApprove(business.id)}
                   disabled={updatingBusinessId !== null}
-                  className="min-h-12 w-full rounded-full bg-green-700 px-6 py-3 font-black text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="premium-button min-h-12 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {updatingBusinessId === business.id
                     ? "Updating..."
@@ -794,7 +794,7 @@ export function PendingBusinesses({
                 </button>
               </div>
 
-              <p className="mt-3 text-xs font-semibold leading-5 text-gray-500">
+              <p className="mt-3 text-xs font-semibold leading-5 text-[#6b6558]">
                 Current database stores approval as approved or pending. Notes
                 help the operator decide what to tell the business manually.
               </p>
@@ -821,11 +821,11 @@ export function ApprovedBusinesses({
 
       <div className="mt-6 grid gap-4">
         {businesses.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-green-200 bg-green-50/70 p-6 text-center sm:p-8">
-            <h3 className="text-2xl font-black text-gray-950">
+          <div className="rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-soft)] sm:p-8">
+            <h3 className="text-2xl font-black text-[#1a1815]">
               No approved businesses yet
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-gray-700">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
               Approved businesses will appear here after you review new
               registrations.
             </p>
@@ -835,15 +835,15 @@ export function ApprovedBusinesses({
         {businesses.map((business) => (
           <div
             key={business.id}
-            className="flex flex-col gap-4 rounded-2xl border p-5 md:flex-row md:items-center md:justify-between"
+            className="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-[var(--shadow-soft)] md:flex-row md:items-center md:justify-between"
           >
             <div>
               <h3 className="text-xl font-black">{business.name}</h3>
-              <p className="text-gray-600">
+              <p className="text-[#6b6558]">
                 {business.business_type} · {business.address}
               </p>
-              <p className="text-gray-600">{business.phone}</p>
-              <p className="mt-2 inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-700">
+              <p className="text-[#6b6558]">{business.phone}</p>
+              <p className="mt-2 inline-block rounded-full bg-[#eef1e8] px-3 py-1 text-sm font-bold text-[#5c7a5c]">
                 Approved
               </p>
             </div>
@@ -876,7 +876,7 @@ function MetricCardGrid({
       {metrics.map((metric) => (
         <div
           key={metric.title}
-          className={`rounded-2xl p-4 shadow-sm sm:rounded-3xl sm:p-5 ${metric.className}`}
+          className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] sm:rounded-3xl sm:p-5 ${metric.className}`}
         >
           <p className="text-sm font-black opacity-75">{metric.title}</p>
           <p className="mt-2 text-3xl font-black sm:text-4xl">
@@ -900,10 +900,10 @@ function BusinessDetail({
 }) {
   return (
     <div className="rounded-2xl bg-white p-4">
-      <p className="text-xs font-black uppercase tracking-wide text-gray-500">
+      <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
         {label}
       </p>
-      <p className="mt-1 break-words text-gray-950">
+      <p className="mt-1 break-words text-[#1a1815]">
         {value || "Not provided"}
       </p>
     </div>
