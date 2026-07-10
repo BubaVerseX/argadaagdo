@@ -160,6 +160,7 @@ export default function BusinessProfilePage() {
                         src={heroOffer.image_url}
                         alt={business.name}
                         sizes="(max-width: 1024px) 100vw, 45vw"
+                        priority
                       />
                     ) : (
                       <div className="flex h-full min-h-72 items-center justify-center">

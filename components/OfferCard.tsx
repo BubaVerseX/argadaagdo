@@ -18,6 +18,7 @@ type OfferCardProps = {
   ratingLabel?: string;
   cornerAction?: OfferCardCornerAction;
   imageSizes?: string;
+  priority?: boolean;
 };
 
 function getDiscountPercent(offer: Offer) {
@@ -36,6 +37,7 @@ export function OfferCard({
   ratingLabel,
   cornerAction,
   imageSizes = "(max-width: 768px) 100vw, 33vw",
+  priority = false,
 }: OfferCardProps) {
   const discountPercent = getDiscountPercent(offer);
   const detailsHref = `/offers/${offer.id}`;
@@ -49,6 +51,7 @@ export function OfferCard({
               src={offer.image_url}
               alt={offer.title}
               sizes={imageSizes}
+              priority={priority}
               className="transition duration-500 group-hover:scale-105"
             />
           </div>

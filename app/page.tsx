@@ -401,13 +401,14 @@ export default function Home() {
               </>
             )}
 
-            {featuredOffers.map((offer) => (
+            {featuredOffers.map((offer, index) => (
               <OfferCard
                 key={offer.id}
                 offer={offer}
                 language={language}
                 detailsLabel={t("common.viewDetails")}
                 ratingLabel={getRatingLabel(ratingSummaries[offer.business_id], language)}
+                priority={index === 0}
               />
             ))}
 

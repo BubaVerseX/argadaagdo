@@ -222,6 +222,7 @@ export default function OfferDetailPage() {
                       src={offer.image_url}
                       alt={offer.title}
                       sizes="(max-width: 1024px) 100vw, 55vw"
+                      priority
                     />
                   </div>
                 </div>

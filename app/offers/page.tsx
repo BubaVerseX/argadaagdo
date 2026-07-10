@@ -597,7 +597,7 @@ export default function OffersPage() {
           )}
 
           <div className="mt-6 grid gap-8 sm:mt-8 sm:gap-10">
-            {offerSections.map((section) => {
+            {offerSections.map((section, sectionIndex) => {
               if (section.offers.length === 0) return null;
 
               return (
@@ -614,7 +614,7 @@ export default function OffersPage() {
                   </div>
 
                   <div className="mt-4 grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {section.offers.map((offer) => {
+                    {section.offers.map((offer, offerIndex) => {
                       const businessAddress =
                         offer.businesses?.address || "Tbilisi";
                       const mapsUrl = createMapsSearchUrl(
@@ -644,6 +644,7 @@ export default function OffersPage() {
                               src={offer.image_url}
                               alt={offer.title}
                               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                              priority={sectionIndex === 0 && offerIndex === 0}
                               className="transition duration-500 group-hover:scale-105"
                             />
 
