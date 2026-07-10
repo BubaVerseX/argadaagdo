@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     ],
     apple: [
       {
-        url: "/icons/argadaagdo-icon.svg",
-        type: "image/svg+xml",
-        sizes: "any",
+        url: "/apple-icon",
+        type: "image/png",
+        sizes: "180x180",
       },
     ],
   },
