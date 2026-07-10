@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { useLanguage } from "@/lib/useLanguage";
 
-// TODO: replace these "#" placeholders with real social account URLs once
-// ArGadaagdo has live Instagram/X/Facebook accounts.
 const socialLinks = [
   {
     name: "Instagram",
-    href: "#",
+    href: "https://www.instagram.com/argadaagdo/",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4.5 w-4.5">
         <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.6" />
@@ -19,23 +17,11 @@ const socialLinks = [
   },
   {
     name: "X (Twitter)",
-    href: "#",
+    href: "https://x.com/Przemos3k",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4.5 w-4.5">
         <path
           d="M4 4l7.2 9.6L4.4 20H6l6.1-6.6L16.8 20H20l-7.5-10L19.6 4H18l-5.7 6.1L8 4H4z"
-          fill="currentColor"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: "Facebook",
-    href: "#",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4.5 w-4.5">
-        <path
-          d="M13.5 21v-7.5h2.5l.4-3H13.5V8.5c0-.87.24-1.46 1.5-1.46H16.5V4.35C16.24 4.32 15.36 4.25 14.34 4.25c-2.13 0-3.59 1.3-3.59 3.68v2.27H8.25v3H10.75V21H13.5z"
           fill="currentColor"
         />
       </svg>
@@ -96,9 +82,9 @@ export default function Footer() {
                 key={social.name}
                 href={social.href}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 aria-label={social.name}
-                title={`${social.name} (coming soon)`}
+                title={social.name}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
               >
                 {social.icon}
