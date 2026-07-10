@@ -303,7 +303,7 @@ export default function FavoritesPage() {
         )}
 
         <div className="mt-6 grid gap-5 sm:mt-8 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {favorites.map((favorite) => {
+          {favorites.map((favorite, index) => {
             const offer = favorite.offers;
             const availability = getFavoriteAvailability(offer, t);
             const savings = offer ? getSavingsAmount(offer) : 0;
@@ -327,6 +327,7 @@ export default function FavoritesPage() {
                       src={offer.image_url}
                       alt={offer.title}
                       sizes="(max-width: 768px) 100vw, 33vw"
+                      priority={index === 0}
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-center text-xl font-black text-[#1a1815]">

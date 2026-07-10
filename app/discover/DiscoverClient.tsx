@@ -41,10 +41,12 @@ function DiscoverOfferCard({
   offer,
   rating,
   language,
+  priority = false,
 }: {
   offer: DiscoverOffer;
   rating?: RatingSummary;
   language: "en" | "ka";
+  priority?: boolean;
 }) {
   return (
     <Link
@@ -56,6 +58,7 @@ function DiscoverOfferCard({
           src={offer.image_url}
           alt={offer.title}
           sizes="(max-width: 768px) 100vw, 33vw"
+          priority={priority}
         />
         <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#1a1815] shadow-sm">
           {offer.category || "Other"}
@@ -212,6 +215,7 @@ export default function DiscoverClient() {
                 offers={discoverSections.popularToday}
                 ratingSummaries={ratingSummaries}
                 language={language}
+                prioritizeFirst
               />
               <DiscoverOfferSection
                 title="Newest Offers"
@@ -310,12 +314,14 @@ function DiscoverOfferSection({
   offers,
   ratingSummaries,
   language,
+  prioritizeFirst = false,
 }: {
   title: string;
   text: string;
   offers: DiscoverOffer[];
   ratingSummaries: Record<number, RatingSummary>;
   language: "en" | "ka";
+  prioritizeFirst?: boolean;
 }) {
   return (
     <section className="rounded-[1.75rem] bg-[#f2efe6] p-5 shadow-[var(--shadow-soft)] sm:p-8">
@@ -346,12 +352,13 @@ function DiscoverOfferSection({
           </div>
         )}
 
-        {offers.map((offer) => (
+        {offers.map((offer, index) => (
           <DiscoverOfferCard
             key={offer.id}
             offer={offer}
             rating={ratingSummaries[offer.business_id]}
             language={language}
+            priority={prioritizeFirst && index === 0}
           />
         ))}
       </div>

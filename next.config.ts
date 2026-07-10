@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
             pathname: "/storage/v1/object/public/offer-images/**",
           },
         ],
+        formats: ["image/avif", "image/webp"],
       }
     : undefined,
 };

@@ -8,6 +8,7 @@ type OfferImageProps = {
   alt: string;
   sizes: string;
   className?: string;
+  priority?: boolean;
 };
 
 function isAllowedOfferImage(src: string) {
@@ -33,6 +34,7 @@ export default function OfferImage({
   alt,
   sizes,
   className = "",
+  priority = false,
 }: OfferImageProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
@@ -53,6 +55,7 @@ export default function OfferImage({
       alt={alt}
       fill
       sizes={sizes}
+      priority={priority}
       className={`object-cover ${className}`}
       onError={() => setFailedSrc(src)}
     />

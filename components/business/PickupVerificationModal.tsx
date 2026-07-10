@@ -52,7 +52,7 @@ export function PickupVerificationModal({
               onClick={onClose}
               disabled={updatingOrderId !== null}
               aria-label="Close pickup verification"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#ece7da] font-black text-[#1a1815] transition hover:bg-[#d9d5cb] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#ece7da] font-black text-[#1a1815] transition hover:bg-[#d9d5cb] disabled:cursor-not-allowed disabled:opacity-60"
             >
               ×
             </button>

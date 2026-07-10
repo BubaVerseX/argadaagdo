@@ -266,7 +266,7 @@ export default function Home() {
                     <Link
                       key={category}
                       href="/offers"
-                      className="rounded-full bg-[#f2efe6] px-4 py-2 text-sm font-semibold text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                      className="flex min-h-11 items-center rounded-full bg-[#f2efe6] px-4 py-2 text-sm font-semibold text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
                     >
                       {category}
                     </Link>
@@ -401,13 +401,14 @@ export default function Home() {
               </>
             )}
 
-            {featuredOffers.map((offer) => (
+            {featuredOffers.map((offer, index) => (
               <OfferCard
                 key={offer.id}
                 offer={offer}
                 language={language}
                 detailsLabel={t("common.viewDetails")}
                 ratingLabel={getRatingLabel(ratingSummaries[offer.business_id], language)}
+                priority={index === 0}
               />
             ))}
 

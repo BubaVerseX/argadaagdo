@@ -222,6 +222,7 @@ export default function OfferDetailPage() {
                       src={offer.image_url}
                       alt={offer.title}
                       sizes="(max-width: 1024px) 100vw, 55vw"
+                      priority
                     />
                   </div>
                 </div>
@@ -247,7 +248,7 @@ export default function OfferDetailPage() {
 
                   <Link
                     href={`/businesses/${offer.business_id}`}
-                    className="mt-3 inline-flex font-bold text-[#1a1815] transition hover:text-[#5c7a5c]"
+                    className="mt-3 inline-flex min-h-11 items-center font-bold text-[#1a1815] transition hover:text-[#5c7a5c]"
                   >
                     {offer.businesses?.name || t("common.business")}
                   </Link>

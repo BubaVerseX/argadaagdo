@@ -556,7 +556,7 @@ export default function LoginPage() {
                           : "forgot"
                       );
                     }}
-                    className="text-left font-black text-[#5c7a5c] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#5c7a5c] sm:text-right"
+                    className="flex min-h-11 items-center text-left font-black text-[#5c7a5c] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#5c7a5c] sm:justify-end sm:text-right"
                   >
                     Forgot password?
                   </button>
@@ -692,7 +692,7 @@ export default function LoginPage() {
                     setMessage("");
                     setAuthMode(authMode === "login" ? "signup" : "login");
                   }}
-                  className="font-black text-[#5c7a5c] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#5c7a5c]"
+                  className="inline-flex min-h-11 items-center font-black text-[#5c7a5c] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#5c7a5c]"
                 >
                   {authMode === "login"
                     ? t("login.signUp")
@@ -707,7 +707,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={resendVerificationEmail}
                     disabled={resendingVerification || submitting}
-                    className="font-black text-[#5c7a5c] underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#5c7a5c]"
+                    className="inline-flex min-h-11 items-center font-black text-[#5c7a5c] underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#5c7a5c]"
                   >
                     {resendingVerification
                       ? "Sending..."
