@@ -66,7 +66,7 @@ export function OfferCard({
               href={cornerAction.href}
               aria-label={cornerAction.label}
               aria-pressed={cornerAction.active}
-              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-base text-[#1a1815] shadow-sm transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+              className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-base text-[#1a1815] shadow-sm transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
             >
               {cornerAction.active ? "♥" : "♡"}
             </Link>
@@ -76,7 +76,7 @@ export function OfferCard({
               onClick={cornerAction.onClick}
               aria-label={cornerAction.label}
               aria-pressed={cornerAction.active}
-              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-base text-[#1a1815] shadow-sm transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+              className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-base text-[#1a1815] shadow-sm transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
             >
               {cornerAction.active ? "♥" : "♡"}
             </button>

@@ -113,6 +113,8 @@ export function BusinessProfileSection({
           <input
             value={profilePhone}
             onChange={(event) => onProfilePhoneChange(event.target.value)}
+            type="tel"
+            inputMode="tel"
             maxLength={40}
             className="premium-input p-4 font-semibold"
             placeholder="+995 555 123 456"

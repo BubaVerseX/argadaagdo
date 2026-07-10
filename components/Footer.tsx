@@ -85,7 +85,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={social.name}
                 title={social.name}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
               >
                 {social.icon}
               </a>
@@ -98,12 +98,12 @@ export default function Footer() {
             {t("footer.platform")}
           </h3>
 
-          <div className="mt-4 grid gap-3 text-sm font-semibold text-[#6b6558]">
+          <div className="mt-2 grid text-sm font-semibold text-[#6b6558]">
             {platformLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-lg transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="flex min-h-11 items-center rounded-lg transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
               >
                 {link.label}
               </Link>
@@ -116,12 +116,12 @@ export default function Footer() {
             {t("nav.support")}
           </h3>
 
-          <div className="mt-4 grid gap-3 text-sm font-semibold text-[#6b6558]">
+          <div className="mt-2 grid text-sm font-semibold text-[#6b6558]">
             {companyLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-lg transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="flex min-h-11 items-center rounded-lg transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
               >
                 {link.label}
               </Link>

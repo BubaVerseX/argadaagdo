@@ -78,7 +78,7 @@ export default function AppNotification({
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss notification"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 font-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/70 font-black transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
           >
             ×
           </button>

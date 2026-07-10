@@ -140,7 +140,7 @@ export default function Navbar() {
             setMobileMenu(false);
             setProfileMenu(false);
           }}
-          className="flex items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+          className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
           aria-label={t("nav.home")}
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1a1815] text-base font-bold text-white shadow-sm sm:h-10 sm:w-10">

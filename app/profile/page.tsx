@@ -314,6 +314,8 @@ export default function ProfilePage() {
                   <input
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
+                    type="tel"
+                    inputMode="tel"
                     maxLength={40}
                     placeholder="+995 555 123 456"
                     className="premium-input p-4 font-semibold"

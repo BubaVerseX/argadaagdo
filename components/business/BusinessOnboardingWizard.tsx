@@ -256,6 +256,8 @@ export function BusinessOnboardingWizard({
             <input
               value={phone}
               onChange={(event) => onPhoneChange(event.target.value)}
+              type="tel"
+              inputMode="tel"
               placeholder="+995 ..."
               maxLength={40}
               className="premium-input p-4 font-medium"
