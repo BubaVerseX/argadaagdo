@@ -329,7 +329,7 @@ export default function Navbar() {
       {mobileMenu && (
         <div
           id="mobile-navigation"
-          className="border-t border-black/[0.06] bg-[#f2efe6] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-black/[0.06] bg-[#f2efe6] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
         >
           <div className="grid gap-4">
             <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
