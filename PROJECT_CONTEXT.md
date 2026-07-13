@@ -283,3 +283,43 @@ without touching Vercel directly. See git log on that branch / the PR it
 opened for exactly what changed — this section intentionally doesn't
 duplicate that detail so it doesn't rot; check the branch's commit history
 for specifics.
+
+## 2026-07-13 wrap-up session (pre-pause for domain purchase + TBC registration)
+
+Payments/BOG/TBC were explicitly out of scope this session — separate future
+work once TBC Split is confirmed with the bank.
+
+**TGTG-structure homepage/`for-businesses` page work is merged**: PR #9
+(`tgtg-structure-homepage-and-partner-page` → `main`) was already merged by
+the user between sessions, before this session started. This session
+re-verified the merged `main` state directly with Playwright (not just
+trusting the prior session's manual browser check): built `main` fresh,
+served it in production mode, and screenshotted `/` and `/for-businesses` at
+375px and 390px in both English and Georgian (8 combinations). Zero console
+errors, zero page errors, zero real horizontal-overflow (`document.
+documentElement.scrollWidth` matched `clientWidth` in all 8 cases). The only
+things an element-level overflow scan flagged were the `trust-marquee__track`
+ticker children — expected, since that component is an intentionally
+wider-than-viewport horizontal ticker clipped by `overflow: hidden` on its
+parent (pre-existing component, not touched this session), not a bug.
+
+**Email confirmation status (checked read-only, not changed)**: hitting the
+project's public GoTrue endpoint (`GET {SUPABASE_URL}/auth/v1/settings` with
+the anon key — no service role or dashboard access needed, side-effect-free)
+returned `"mailer_autoconfirm": true`, meaning **email confirmation is
+currently OFF** — new signups are auto-confirmed with no verification email
+required. This can only be changed from the Supabase Dashboard (Authentication
+→ email provider settings), not via SQL/CLI/MCP tooling available in this
+environment.
+
+**Resend/cron env vars — correction to earlier "none configured" notes
+above**: as of this session, `vercel env ls` shows `RESEND_API_KEY`,
+`TRANSACTIONAL_EMAIL_FROM`, `TRANSACTIONAL_EMAILS_ENABLED`, and
+`CRON_SECRET` are now all set in the Production environment (added ~5 days
+before this session, i.e. around 2026-07-08 — consistent with the design/QA
+session above generating a `CRON_SECRET` and Resend signup steps, which the
+user then evidently acted on between sessions). `BOG_*` payment variables
+are still unset (expected — payments are explicitly out of scope right now).
+Re-verify with `vercel env ls` rather than trusting this note once the
+domain/Resend production work lands, since sandbox-vs-verified-domain status
+isn't visible from env var names alone.
