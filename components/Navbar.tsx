@@ -7,6 +7,7 @@ import {
   isEmailConfirmed,
   logoutUser,
 } from "@/lib/auth";
+import { languageNames, supportedLanguages } from "@/lib/i18n";
 import { useLanguage } from "@/lib/useLanguage";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
@@ -26,7 +27,7 @@ function isApprovedValue(value: boolean | string | null) {
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState("");
@@ -34,6 +35,7 @@ export default function Navbar() {
   const [showBusinessRegister, setShowBusinessRegister] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [profileMenu, setProfileMenu] = useState(false);
+  const [moreExpanded, setMoreExpanded] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
@@ -128,8 +130,8 @@ export default function Navbar() {
     isActivePath(href) ? ("page" as const) : undefined;
 
   const showCustomerNavigation = role === "customer";
-  const showBusinessNavigation =
-    showBusinessDashboard || showBusinessRegister || !user;
+  const nextLanguage =
+    supportedLanguages.find((option) => option !== language) ?? language;
 
   return (
     <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#f2efe6]/75 backdrop-blur-xl">
@@ -312,6 +314,16 @@ export default function Navbar() {
           )}
 
           <button
+            onClick={() => setLanguage(nextLanguage)}
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-black/[0.06] bg-white text-lg shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c] lg:hidden"
+            aria-label={t("language.switcherLabel")}
+          >
+            <span aria-hidden="true">
+              {Array.from(languageNames[language]).slice(0, 2).join("")}
+            </span>
+          </button>
+
+          <button
             onClick={() => {
               setMobileMenu(!mobileMenu);
               setProfileMenu(false);
@@ -332,12 +344,9 @@ export default function Navbar() {
           className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-black/[0.06] bg-[#f2efe6] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
         >
           <div className="grid gap-4">
+            {/* Primary: the handful of things a customer actually needs
+                day-to-day. Kept deliberately short. */}
             <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-              <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
-                {showCustomerNavigation
-                  ? t("nav.customerSection")
-                  : t("nav.exploreSection")}
-              </p>
               <div className="grid gap-2">
                 <Link
                   href="/offers"
@@ -346,24 +355,6 @@ export default function Navbar() {
                   aria-current={ariaCurrent("/offers")}
                 >
                   {t("common.browseOffers")}
-                </Link>
-
-                <Link
-                  href="/businesses"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/businesses", "mobile")}
-                  aria-current={ariaCurrent("/businesses")}
-                >
-                  {t("nav.businesses")}
-                </Link>
-
-                <Link
-                  href="/discover"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/discover", "mobile")}
-                  aria-current={ariaCurrent("/discover")}
-                >
-                  {t("nav.discover")}
                 </Link>
 
                 {showCustomerNavigation && (
@@ -389,65 +380,25 @@ export default function Navbar() {
                 )}
 
                 <Link
-                  href="/faq"
+                  href={user ? "/profile" : "/login"}
                   onClick={() => setMobileMenu(false)}
-                  className={linkClass("/faq", "mobile")}
-                  aria-current={ariaCurrent("/faq")}
+                  className={linkClass(user ? "/profile" : "/login", "mobile")}
+                  aria-current={ariaCurrent(user ? "/profile" : "/login")}
                 >
-                  {t("nav.faq")}
+                  {user ? t("nav.profile") : t("nav.signIn")}
                 </Link>
 
-                <Link
-                  href="/support"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/support", "mobile")}
-                  aria-current={ariaCurrent("/support")}
-                >
-                  {t("nav.support")}
-                </Link>
-
-                {user && (
+                {showBusinessDashboard ? (
                   <Link
-                    href="/profile"
+                    href="/business/dashboard"
                     onClick={() => setMobileMenu(false)}
-                    className={linkClass("/profile", "mobile")}
-                    aria-current={ariaCurrent("/profile")}
+                    className={linkClass("/business/dashboard", "mobile")}
+                    aria-current={ariaCurrent("/business/dashboard")}
                   >
-                    {t("nav.profile")}
+                    {t("nav.dashboard")}
                   </Link>
-                )}
-
-                {user && (
-                  <Link
-                    href="/settings"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/settings", "mobile")}
-                    aria-current={ariaCurrent("/settings")}
-                  >
-                    {t("nav.settings")}
-                  </Link>
-                )}
-              </div>
-            </div>
-
-            {showBusinessNavigation && (
-              <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-                <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
-                  {t("nav.businessSection")}
-                </p>
-                <div className="grid gap-2">
-                  {showBusinessDashboard && (
-                    <Link
-                      href="/business/dashboard"
-                      onClick={() => setMobileMenu(false)}
-                      className={linkClass("/business/dashboard", "mobile")}
-                      aria-current={ariaCurrent("/business/dashboard")}
-                    >
-                      {t("nav.dashboard")}
-                    </Link>
-                  )}
-
-                  {(showBusinessRegister || !user) && (
+                ) : (
+                  (showBusinessRegister || !user) && (
                     <Link
                       href="/for-businesses"
                       onClick={() => setMobileMenu(false)}
@@ -456,56 +407,137 @@ export default function Navbar() {
                     >
                       {t("nav.forBusiness")}
                     </Link>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {role === "admin" && (
-              <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-                <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
-                  {t("nav.adminSection")}
-                </p>
-                <Link
-                  href="/admin"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/admin", "mobile")}
-                  aria-current={ariaCurrent("/admin")}
-                >
-                  {t("nav.admin")}
-                </Link>
-              </div>
-            )}
-
-            <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-              <div className="flex items-center justify-between rounded-2xl bg-[#ece7da] p-3">
-                <span className="text-sm font-semibold text-[#6b6558]">
-                  {t("language.switcherLabel")}
-                </span>
-                <LanguageSwitcher />
-              </div>
-
-              <div className="mt-3 border-t border-black/[0.06] pt-3">
-                {!authReady ? (
-                  <div className="min-h-12 w-full rounded-full bg-white" />
-                ) : user ? (
-                  <button
-                    onClick={handleLogout}
-                    className="min-h-12 w-full rounded-full bg-[#1a1815] px-5 py-3 font-semibold text-white transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                  >
-                    {t("nav.logout")}
-                  </button>
-                ) : (
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenu(false)}
-                    className="block min-h-12 w-full rounded-full bg-[#1a1815] px-5 py-3 text-center font-semibold text-white transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                  >
-                    {t("nav.signIn")}
-                  </Link>
+                  )
                 )}
               </div>
             </div>
+
+            {/* More: everything else, one destination each, collapsed by
+                default so it doesn't compete with the primary actions. */}
+            <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
+              <button
+                type="button"
+                onClick={() => setMoreExpanded((current) => !current)}
+                className="flex min-h-12 w-full items-center justify-between rounded-2xl px-4 py-3 text-base font-semibold text-[#6b6558] transition hover:bg-[#ece7da] hover:text-[#1a1815] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                aria-expanded={moreExpanded}
+                aria-controls="mobile-more-links"
+              >
+                <span>{t("nav.more")}</span>
+                <span
+                  className={`transition-transform ${moreExpanded ? "rotate-180" : ""}`}
+                  aria-hidden="true"
+                >
+                  ⌄
+                </span>
+              </button>
+
+              {moreExpanded && (
+                <div id="mobile-more-links" className="mt-2 grid gap-2">
+                  <Link
+                    href="/discover"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/discover", "mobile")}
+                    aria-current={ariaCurrent("/discover")}
+                  >
+                    {t("nav.discover")}
+                  </Link>
+
+                  <Link
+                    href="/businesses"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/businesses", "mobile")}
+                    aria-current={ariaCurrent("/businesses")}
+                  >
+                    {t("nav.businesses")}
+                  </Link>
+
+                  <Link
+                    href="/faq"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/faq", "mobile")}
+                    aria-current={ariaCurrent("/faq")}
+                  >
+                    {t("nav.faq")}
+                  </Link>
+
+                  <Link
+                    href="/about"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/about", "mobile")}
+                    aria-current={ariaCurrent("/about")}
+                  >
+                    {t("nav.about")}
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/contact", "mobile")}
+                    aria-current={ariaCurrent("/contact")}
+                  >
+                    {t("nav.contact")}
+                  </Link>
+
+                  <Link
+                    href="/support"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/support", "mobile")}
+                    aria-current={ariaCurrent("/support")}
+                  >
+                    {t("nav.support")}
+                  </Link>
+
+                  <Link
+                    href="/privacy"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/privacy", "mobile")}
+                    aria-current={ariaCurrent("/privacy")}
+                  >
+                    {t("nav.privacy")}
+                  </Link>
+
+                  <Link
+                    href="/terms"
+                    onClick={() => setMobileMenu(false)}
+                    className={linkClass("/terms", "mobile")}
+                    aria-current={ariaCurrent("/terms")}
+                  >
+                    {t("nav.terms")}
+                  </Link>
+
+                  {user && (
+                    <Link
+                      href="/settings"
+                      onClick={() => setMobileMenu(false)}
+                      className={linkClass("/settings", "mobile")}
+                      aria-current={ariaCurrent("/settings")}
+                    >
+                      {t("nav.settings")}
+                    </Link>
+                  )}
+
+                  {role === "admin" && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenu(false)}
+                      className={linkClass("/admin", "mobile")}
+                      aria-current={ariaCurrent("/admin")}
+                    >
+                      {t("nav.admin")}
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {authReady && user && (
+              <button
+                onClick={handleLogout}
+                className="min-h-12 w-full rounded-full bg-[#1a1815] px-5 py-3 font-semibold text-white transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+              >
+                {t("nav.logout")}
+              </button>
+            )}
           </div>
         </div>
       )}
