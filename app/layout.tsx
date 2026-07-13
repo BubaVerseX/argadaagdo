@@ -36,10 +36,23 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "ArGadaagdo",
+    // "default" (not "black-translucent"): our theme is light beige with
+    // dark text, and black-translucent forces white status bar icons —
+    // that would be a real legibility regression on this background, not
+    // just a subtle color mismatch. "default" gives an opaque light bar
+    // with correctly-contrasted black icons.
     statusBarStyle: "default",
   },
   formatDetection: {
     telephone: false,
+  },
+  other: {
+    // Next's `appleWebApp.capable` only emits the generic
+    // `mobile-web-app-capable` tag. Older/some iOS versions specifically
+    // look for this apple-prefixed one to enable proper standalone mode
+    // (hides Safari chrome) — without it, "Add to Home Screen" can silently
+    // fall back to opening inside Safari instead of full-screen.
+    "apple-mobile-web-app-capable": "yes",
   },
   openGraph: {
     title: "ArGadaagdo | Rescue Good Food in Tbilisi",

@@ -52,6 +52,19 @@
           "type": "image/svg+xml"
         }
       ]
+    },
+    {
+      "name": "Saved favorites",
+      "short_name": "Favorites",
+      "description": "Jump back to surprise bags you've saved.",
+      "url": "/favorites",
+      "icons": [
+        {
+          "src": "/icons/argadaagdo-icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
     }
   ]
 }
