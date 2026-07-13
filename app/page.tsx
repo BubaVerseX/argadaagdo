@@ -103,51 +103,41 @@ export default function Home() {
     heroSubtitle: isGeorgian
       ? "ArGadaagdo აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
       : "ArGadaagdo connects customers with cafes, bakeries and restaurants that have good food left at the end of the day.",
-    searchHint: isGeorgian
-      ? "მოძებნე სიურპრიზის ყუთები თბილისში"
-      : "Search surprise bags in Tbilisi",
     categoriesLabel: isGeorgian ? "პოპულარული კატეგორიები" : "Popular categories",
-    browseToday: isGeorgian ? "დღევანდელი შეთავაზებები" : "Browse today's offers",
-    forBusinesses: isGeorgian ? "ბიზნესებისთვის" : "For businesses",
-    liveOffersLabel: isGeorgian ? "აქტიური შეთავაზებები" : "Live offers",
-    verifiedLabel: isGeorgian ? "შემოწმებული ბიზნესები" : "Verified businesses",
-    pickupOnlyLabel: isGeorgian ? "მხოლოდ ადგილზე წაღება" : "Pickup-only",
+    browseToday: isGeorgian ? "შეთავაზებების ნახვა" : "Browse offers",
+    listSurplus: isGeorgian ? "განათავსე ჭარბი საკვები" : "List your surplus",
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
-    marketplacePreview: isGeorgian ? "მარკეტის ნახვა" : "Marketplace preview",
-    pickupToday: isGeorgian ? "წაღება" : "Pickup",
-    trustedByDesign: isGeorgian ? "ნდობა თავიდანვე" : "Trust built in",
-    trustedByDesignText: isGeorgian
-      ? "ბიზნესები მოწმდება, შეკვეთები კოდით დასტურდება."
-      : "Businesses are reviewed, and pickups are verified with a code.",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "ნახე ახლომდებარე სიურპრიზის ყუთები ადგილობრივი ბიზნესებიდან."
-      : "Browse surprise bags from local businesses near you.",
-    payTitle: isGeorgian ? "დაჯავშნე" : "Pay",
-    payText: isGeorgian
-      ? "დაადასტურე შეთავაზება და მიიღე წაღების კოდი."
-      : "Confirm your bag and get a pickup code for collection.",
-    pickupTitle: isGeorgian ? "წაიღე" : "Pick up",
-    pickupText: isGeorgian
-      ? "ეწვიე ბიზნესს მითითებულ დროს და აჩვენე კოდი."
-      : "Visit during the pickup window and show your code.",
-    customerReason: isGeorgian
-      ? "სიურპრიზის ყუთი კარგი საკვების უფრო ხელმისაწვდომ ფასად მიღების მარტივი გზაა."
-      : "A surprise bag is a simple way to enjoy good food for less.",
-    businessReason: isGeorgian
-      ? "გადააქციე დღის ბოლოს დარჩენილი კარგი საკვები დამატებით შემოსავალად."
-      : "Turn good end-of-day food into extra revenue.",
-    footerTagline: isGeorgian
-      ? "საკვების ნარჩენის შემცირება საქართველოში."
-      : "Reduce food waste in Georgia.",
-    saveLabel: isGeorgian ? "შენახვა" : "Save",
-    noPhoto: isGeorgian ? "სიურპრიზის ყუთი" : "Surprise bag",
+      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების სიურპრიზის ყუთები, სანამ გაქრება."
+      : "Spot surprise bags from real Tbilisi favorites before they're gone.",
+    reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
+    reserveText: isGeorgian
+      ? "გადაიხადე უსაფრთხოდ ერთი შეხებით და მაშინვე მიიღე წაღების კოდი."
+      : "Pay securely in a tap and get your pickup code instantly.",
+    collectTitle: isGeorgian ? "წაიღე" : "Collect",
+    collectText: isGeorgian
+      ? "ეწვიე მითითებულ დროს, აჩვენე კოდი და ისიამოვნე საკვებით."
+      : "Swing by during the pickup window, show your code, and dig in.",
+    howItWorksBadge: isGeorgian ? "როგორ მუშაობს" : "How it works",
+    howItWorksTitle: isGeorgian
+      ? "სამი ნაბიჯი შენს შემდეგ საუკეთესო შეთავაზებამდე."
+      : "Three steps to your next great deal.",
     launchBadge: isGeorgian
       ? "🇬🇪 უკვე ხელმისაწვდომია თბილისში"
       : "🇬🇪 Now live in Tbilisi",
     heroAccentPhrase: isGeorgian ? "კარგი საკვები" : "great food",
     reserveLabel: isGeorgian ? "დაჯავშნე" : "Reserve",
     statsBadge: isGeorgian ? "გავლენა" : "Our impact",
+    businessLearnMore: isGeorgian ? "გაიგე, როგორ მუშაობს" : "See how it works",
+    finalCtaBadge: isGeorgian ? "მზად ხარ, როცა მოისურვებ" : "Ready when you are",
+    finalCtaTitle: isGeorgian
+      ? "შენი შემდეგი გემრიელი კერძი უკვე გელოდება."
+      : "Your next great meal is already waiting.",
+    finalCtaText: isGeorgian
+      ? "შემოუერთდი თბილისელებს, რომლებიც უკვე ზოგავენ თანხას და გადაარჩენენ საკვებს — ან განათავსე ჭარბი საკვები და აქციე ის შემოსავლად."
+      : "Join the Tbilisi customers already saving money and rescuing food, or list your surplus and turn it into revenue.",
+    finalCtaSecondary: isGeorgian ? "დაამატე შენი ბიზნესი" : "List your business",
   };
   const testimonials = [
     {
@@ -182,19 +172,25 @@ export default function Home() {
       ];
   const stats = [
     {
-      value: loading ? "..." : `${offers.length}`,
-      label: homepageCopy.liveOffersLabel,
-      text: t("home.publishLater"),
+      value: "100%",
+      label: isGeorgian ? "მხოლოდ ადგილზე წაღება" : "Pickup-only, always",
+      text: isGeorgian
+        ? "არანაირი მიწოდების შეფუთვა და ზედმეტი ემისია — მხოლოდ საკვები, რომელიც ჭამენ ნაგვის ნაცვლად."
+        : "No delivery packaging, no extra emissions — just food that gets eaten instead of thrown away.",
     },
     {
-      value: "✓",
-      label: homepageCopy.verifiedLabel,
-      text: t("home.trustCardVerifiedText"),
+      value: "90%",
+      label: isGeorgian ? "ბიზნესთან რჩება" : "Stays with the business",
+      text: isGeorgian
+        ? "10%-იან საკომისიოს ვიღებთ მხოლოდ გაყიდვისას — ჭარბი საკვები რეალურ შემოსავლად იქცევა."
+        : "We take a 10% commission only when a bag actually sells — surplus food becomes real revenue.",
     },
     {
-      value: "Code",
-      label: homepageCopy.pickupOnlyLabel,
-      text: homepageCopy.trustedByDesignText,
+      value: isGeorgian ? "თბილისი" : "Tbilisi",
+      label: isGeorgian ? "საიდანაც ვიწყებთ" : "Where we're starting",
+      text: isGeorgian
+        ? "ყველა ბიზნესი ხელით მოწმდება გამოქვეყნებამდე — ვიწყებთ ერთი ქალაქიდან, გააზრებულად."
+        : "Every business is reviewed by hand before going live — starting local, on purpose.",
     },
   ];
   const steps = [
@@ -205,13 +201,27 @@ export default function Home() {
     },
     {
       label: "02",
-      title: homepageCopy.payTitle,
-      text: homepageCopy.payText,
+      title: homepageCopy.reserveTitle,
+      text: homepageCopy.reserveText,
     },
     {
       label: "03",
-      title: homepageCopy.pickupTitle,
-      text: homepageCopy.pickupText,
+      title: homepageCopy.collectTitle,
+      text: homepageCopy.collectText,
+    },
+  ];
+  const businessSolutions = [
+    {
+      title: t("forBusinesses.solutionListTitle"),
+      text: t("forBusinesses.solutionListText"),
+    },
+    {
+      title: t("forBusinesses.solutionReachTitle"),
+      text: t("forBusinesses.solutionReachText"),
+    },
+    {
+      title: t("forBusinesses.solutionRecoverTitle"),
+      text: t("forBusinesses.solutionRecoverText"),
     },
   ];
 
@@ -253,7 +263,7 @@ export default function Home() {
                   href="/business/register"
                   className="premium-button-secondary px-8 py-3.5"
                 >
-                  {homepageCopy.forBusinesses}
+                  {homepageCopy.listSurplus}
                 </Link>
               </div>
 
@@ -277,9 +287,12 @@ export default function Home() {
 
             <div className="relative mx-auto w-full min-w-0 max-w-lg lg:mx-0">
               <div className="photo-warm-overlay relative aspect-[4/5] overflow-hidden rounded-[1.75rem] shadow-[var(--shadow-hero)] sm:aspect-[5/6]">
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#c9b89a] to-[#8a7256] text-7xl">
-                  🥡
-                </div>
+                <OfferImage
+                  src={previewOffer?.image_url}
+                  alt={previewOffer?.title || homepageCopy.heroAccentPhrase}
+                  sizes="(min-width: 1024px) 32rem, 90vw"
+                  priority
+                />
               </div>
 
               {/* Floating product card: a genuine miniature offer, not decoration */}
@@ -368,6 +381,82 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6558]">
+            {homepageCopy.howItWorksBadge}
+          </p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#1a1815] sm:text-5xl">
+            {homepageCopy.howItWorksTitle}
+          </h2>
+
+          <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+            {steps.map((step) => (
+              <div key={step.label}>
+                <p className="text-sm font-semibold tracking-[0.1em] text-[#6b6558]">
+                  {step.label}
+                </p>
+                <h3 className="mt-4 text-2xl font-bold tracking-tight text-[#1a1815]">
+                  {step.title}
+                </h3>
+                <p className="mt-3 leading-[1.55] text-[#6b6558]">
+                  {step.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
+        <div className="premium-container">
+          <div className="rounded-[1.75rem] bg-[#1a1815] p-8 text-white shadow-[var(--shadow-soft)] sm:p-10 lg:p-14">
+            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8fae8f]">
+                  {t("forBusinesses.problemBadge")}
+                </p>
+                <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
+                  {t("forBusinesses.heroTitle")}
+                </h2>
+                <p className="mt-5 max-w-lg leading-[1.55] text-white/70">
+                  {t("forBusinesses.problemText")}
+                </p>
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Link
+                    href="/for-businesses"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3 font-semibold text-[#1a1815] transition hover:bg-[#f2efe6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                  >
+                    {homepageCopy.businessLearnMore}
+                  </Link>
+                  <Link
+                    href="/business/register"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 px-8 py-3 font-semibold text-white transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  >
+                    {t("home.registerBusiness")}
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+                {businessSolutions.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-[1.5rem] bg-white/10 p-6"
+                  >
+                    <h3 className="text-lg font-bold">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-[1.55] text-white/70">
+                      {item.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
+        <div className="premium-container">
           <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6558]">
@@ -430,26 +519,6 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
-        <div className="premium-container">
-          <div className="grid gap-10 md:grid-cols-3 md:gap-8">
-            {steps.map((step) => (
-              <div key={step.label}>
-                <p className="text-sm font-semibold tracking-[0.1em] text-[#6b6558]">
-                  {step.label}
-                </p>
-                <h3 className="mt-4 text-2xl font-bold tracking-tight text-[#1a1815]">
-                  {step.title}
-                </h3>
-                <p className="mt-3 leading-[1.55] text-[#6b6558]">
-                  {step.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container grid gap-12 md:grid-cols-2 md:gap-8">
           {testimonials.map((testimonial) => (
             <figure key={testimonial.name} className="text-center md:text-left">
@@ -483,38 +552,32 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
-        <div className="premium-container grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[1.75rem] bg-[#f2efe6] p-8 shadow-[var(--shadow-soft)] sm:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#5c7a5c]">
-              {t("home.customerCtaBadge")}
-            </p>
-            <h2 className="mt-5 text-4xl font-extrabold leading-tight tracking-[-0.03em] text-[#1a1815] sm:text-5xl">
-              {t("home.customerCtaTitle")}
-            </h2>
-            <p className="mt-5 max-w-lg leading-[1.55] text-[#6b6558]">
-              {homepageCopy.customerReason}
-            </p>
-            <Link href="/offers" className="mt-8 inline-flex premium-button px-8 py-3">
-              {t("common.browseOffers")}
-            </Link>
-          </div>
-
-          <div className="rounded-[1.75rem] bg-[#1a1815] p-8 text-white shadow-[var(--shadow-soft)] sm:p-10">
+        <div className="premium-container">
+          <div className="rounded-[1.75rem] bg-[#1a1815] p-10 text-center text-white shadow-[var(--shadow-soft)] sm:p-14">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8fae8f]">
-              {t("home.businessCtaBadge")}
+              {homepageCopy.finalCtaBadge}
             </p>
-            <h2 className="mt-5 text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
-              {t("home.businessCtaTitle")}
+            <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
+              {homepageCopy.finalCtaTitle}
             </h2>
-            <p className="mt-5 max-w-lg leading-[1.55] text-white/70">
-              {homepageCopy.businessReason}
+            <p className="mx-auto mt-5 max-w-xl leading-[1.55] text-white/70">
+              {homepageCopy.finalCtaText}
             </p>
-            <Link
-              href="/business/register"
-              className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3 font-semibold text-[#1a1815] transition hover:bg-[#f2efe6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-            >
-              {t("home.registerBusiness")}
-            </Link>
+
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/offers"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3.5 font-semibold text-[#1a1815] transition hover:bg-[#f2efe6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+              >
+                {homepageCopy.browseToday}
+              </Link>
+              <Link
+                href="/for-businesses"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 px-8 py-3.5 font-semibold text-white transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              >
+                {homepageCopy.finalCtaSecondary}
+              </Link>
+            </div>
           </div>
         </div>
       </section>
