@@ -222,9 +222,9 @@ export default function Navbar() {
 
           {(showBusinessRegister || !user) && (
             <Link
-              href="/business/register"
-              className={linkClass("/business/register")}
-              aria-current={ariaCurrent("/business/register")}
+              href="/for-businesses"
+              className={linkClass("/for-businesses")}
+              aria-current={ariaCurrent("/for-businesses")}
             >
               {t("nav.forBusiness")}
             </Link>
@@ -449,10 +449,10 @@ export default function Navbar() {
 
                   {(showBusinessRegister || !user) && (
                     <Link
-                      href="/business/register"
+                      href="/for-businesses"
                       onClick={() => setMobileMenu(false)}
-                      className={linkClass("/business/register", "mobile")}
-                      aria-current={ariaCurrent("/business/register")}
+                      className={linkClass("/for-businesses", "mobile")}
+                      aria-current={ariaCurrent("/for-businesses")}
                     >
                       {t("nav.forBusiness")}
                     </Link>

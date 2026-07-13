@@ -36,6 +36,7 @@ export default function Footer() {
     { href: "/offers", label: t("nav.offers") },
     { href: "/discover", label: t("nav.discover") },
     { href: "/businesses", label: t("nav.businesses") },
+    { href: "/for-businesses", label: t("nav.forBusiness") },
     { href: "/faq", label: t("nav.faq") },
   ];
   const companyLinks = [
@@ -70,7 +71,7 @@ export default function Footer() {
           </p>
 
           <Link
-            href="/business/register"
+            href="/for-businesses"
             className="premium-button mt-6 px-6 py-3 text-sm"
           >
             {t("home.joinBusiness")}

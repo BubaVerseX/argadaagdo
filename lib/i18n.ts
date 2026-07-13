@@ -508,6 +508,59 @@ const translations = {
     "businessRegister.checking": "Checking account...",
     "businessRegister.submit": "Submit for Approval",
 
+    "forBusinesses.metaBadge": "For businesses",
+    "forBusinesses.heroTitle": "Your unsold food still has value.",
+    "forBusinesses.heroSubtitle":
+      "List your surplus in minutes, reach new customers looking for a deal, and turn food that would go in the bin into revenue instead.",
+    "forBusinesses.heroCtaRegister": "Register your business",
+    "forBusinesses.heroCtaContact": "Talk to us first",
+    "forBusinesses.problemBadge": "The problem",
+    "forBusinesses.problemTitle": "Every closing time, good food gets thrown out.",
+    "forBusinesses.problemText":
+      "Bakeries bake a little too much. Cafes over-prep. Restaurants end up with plates that never got ordered. At the end of the day it's usually binned, even though customers would happily pay for it at the right price.",
+    "forBusinesses.solutionBadge": "The solution",
+    "forBusinesses.solutionTitle": "List it. Sell it. Keep 90% of it.",
+    "forBusinesses.solutionListTitle": "List in a minute",
+    "forBusinesses.solutionListText":
+      "Set a price, a quantity and a pickup window from your dashboard. No photo studio and no long descriptions required.",
+    "forBusinesses.solutionReachTitle": "Reach new customers",
+    "forBusinesses.solutionReachText":
+      "Surprise bags put your business in front of people actively looking for a deal nearby, many of whom have never walked through your door.",
+    "forBusinesses.solutionRecoverTitle": "Recover real revenue",
+    "forBusinesses.solutionRecoverText":
+      "Instead of writing off unsold food as a pure loss, turn it into paid orders, reserved and paid for before the customer even arrives.",
+    "forBusinesses.howBadge": "How it works",
+    "forBusinesses.howTitle": "From surplus to sold, in four steps",
+    "forBusinesses.howStep1Title": "Register your business",
+    "forBusinesses.howStep1Text":
+      "Tell us who you are and where customers can pick up. Every business is reviewed before going live.",
+    "forBusinesses.howStep2Title": "Publish a surprise bag",
+    "forBusinesses.howStep2Text":
+      "Add a price, a quantity and a pickup window whenever you have surplus, that morning, that afternoon, whenever it happens.",
+    "forBusinesses.howStep3Title": "Get reserved and paid",
+    "forBusinesses.howStep3Text":
+      "Customers pay online the moment they reserve. It lands in your dashboard immediately.",
+    "forBusinesses.howStep4Title": "Hand it over",
+    "forBusinesses.howStep4Text":
+      "The customer shows their pickup code, you confirm it in the dashboard, and you're done.",
+    "forBusinesses.commissionBadge": "Pricing, in plain terms",
+    "forBusinesses.commissionTitle": "10% to ArGadaagdo. 90% stays with you.",
+    "forBusinesses.commissionText":
+      "No listing fees, no monthly subscription, no hidden charges. ArGadaagdo takes a 10% commission only on bags that actually sell. If nothing sells, you owe nothing, and you set your own prices and quantities.",
+    "forBusinesses.commissionYouKeep": "You keep",
+    "forBusinesses.commissionYouKeepValue": "90%",
+    "forBusinesses.commissionPlatformFee": "Platform commission",
+    "forBusinesses.commissionPlatformFeeValue": "10%",
+    "forBusinesses.commissionNoSale": "No sale, no fee",
+    "forBusinesses.commissionNoSaleText":
+      "You only pay a commission once a bag is actually reserved and paid for.",
+    "forBusinesses.ctaTitle": "Ready to stop throwing food away?",
+    "forBusinesses.ctaText":
+      "Join the Tbilisi businesses turning surplus food into sales instead of waste.",
+    "forBusinesses.ctaRegister": "Register your business",
+    "forBusinesses.ctaQuestions": "Have questions first?",
+    "forBusinesses.ctaContact": "Contact us",
+
     "checkout.title": "Reservation Confirmation",
     "checkout.subtitle":
       "Review your order and complete secure online payment before pickup.",
@@ -1227,6 +1280,59 @@ const translations = {
     "businessRegister.submitting": "იგზავნება...",
     "businessRegister.checking": "ანგარიში მოწმდება...",
     "businessRegister.submit": "დასამტკიცებლად გაგზავნა",
+
+    "forBusinesses.metaBadge": "ბიზნესებისთვის",
+    "forBusinesses.heroTitle": "შენს გაუყიდავ საკვებს ჯერ კიდევ აქვს ღირებულება.",
+    "forBusinesses.heroSubtitle":
+      "დაარეგისტრირე ჭარბი საკვები რამდენიმე წუთში, მიაღწიე ახალ მომხმარებლებს და გაუყიდავი საკვები დამატებით შემოსავლად აქციე.",
+    "forBusinesses.heroCtaRegister": "დაარეგისტრირე ბიზნესი",
+    "forBusinesses.heroCtaContact": "ჯერ დაგვიკავშირდი",
+    "forBusinesses.problemBadge": "პრობლემა",
+    "forBusinesses.problemTitle": "ყოველ დახურვის დროს კარგი საკვები იყრება.",
+    "forBusinesses.problemText":
+      "საცხობები ცოტა ბევრს აცხობენ, კაფეები ჭარბად ამზადებენ, რესტორნებში კერძები შეკვეთის გარეშე რჩება. დღის ბოლოს ეს ჩვეულებრივ იყრება, მაშინ როცა მომხმარებლები სიამოვნებით გადაიხდიდნენ სწორ ფასად.",
+    "forBusinesses.solutionBadge": "გამოსავალი",
+    "forBusinesses.solutionTitle": "დაარეგისტრირე, გაყიდე, დაიტოვე 90%.",
+    "forBusinesses.solutionListTitle": "დარეგისტრირდი წუთში",
+    "forBusinesses.solutionListText":
+      "დააყენე ფასი, რაოდენობა და წაღების დრო პანელიდან. არც ფოტოსტუდია გჭირდება და არც გრძელი აღწერა.",
+    "forBusinesses.solutionReachTitle": "მიაღწიე ახალ მომხმარებლებს",
+    "forBusinesses.solutionReachText":
+      "სიურპრიზის ყუთები შენს ბიზნესს უჩვენებს ადამიანებს, რომლებიც ახლომახლო ფასდაკლებას ეძებენ, ბევრი მათგანი აქამდე შენთან არასდროს ყოფილა.",
+    "forBusinesses.solutionRecoverTitle": "დაიბრუნე რეალური შემოსავალი",
+    "forBusinesses.solutionRecoverText":
+      "გაუყიდავი საკვების დანაკარგად ჩამოწერის ნაცვლად, გადააქციე ის გადახდილ შეკვეთად, მომხმარებლის მისვლამდე უკვე დაჯავშნილად და გადახდილად.",
+    "forBusinesses.howBadge": "როგორ მუშაობს",
+    "forBusinesses.howTitle": "ჭარბი საკვებიდან გაყიდვამდე, ოთხ ნაბიჯში",
+    "forBusinesses.howStep1Title": "დაარეგისტრირე ბიზნესი",
+    "forBusinesses.howStep1Text":
+      "მოგვიყევი შენ შესახებ და სად შეძლებენ მომხმარებლები წაღებას. ყველა ბიზნესი მოწმდება გამოქვეყნებამდე.",
+    "forBusinesses.howStep2Title": "გამოაქვეყნე სიურპრიზის ყუთი",
+    "forBusinesses.howStep2Text":
+      "დაამატე ფასი, რაოდენობა და წაღების დრო, როცა ჭარბი საკვები გაქვს, დილით, საღამოს, ნებისმიერ დროს.",
+    "forBusinesses.howStep3Title": "მიიღე ჯავშანი და გადახდა",
+    "forBusinesses.howStep3Text":
+      "მომხმარებლები ონლაინ იხდიან ჯავშნისთანავე. ეს პანელში დაუყოვნებლივ გამოჩნდება.",
+    "forBusinesses.howStep4Title": "გადაეცი შეკვეთა",
+    "forBusinesses.howStep4Text":
+      "მომხმარებელი გიჩვენებს წაღების კოდს, შენ ადასტურებ პანელში და საქმე დასრულებულია.",
+    "forBusinesses.commissionBadge": "ფასდადება, გასაგებად",
+    "forBusinesses.commissionTitle": "10% ArGadaagdo-ს, 90% შენთან რჩება.",
+    "forBusinesses.commissionText":
+      "არანაირი გამოქვეყნების საფასური, ყოველთვიური გადასახადი თუ ფარული ხარჯი. ArGadaagdo იღებს 10%-იან საკომისიოს მხოლოდ გაყიდულ ყუთებზე. თუ არაფერი გაიყიდა, არაფერს იხდი, ხოლო ფასებსა და რაოდენობებს თავად ადგენ.",
+    "forBusinesses.commissionYouKeep": "შენ იტოვებ",
+    "forBusinesses.commissionYouKeepValue": "90%",
+    "forBusinesses.commissionPlatformFee": "პლატფორმის საკომისიო",
+    "forBusinesses.commissionPlatformFeeValue": "10%",
+    "forBusinesses.commissionNoSale": "გაყიდვის გარეშე, გადასახადის გარეშე",
+    "forBusinesses.commissionNoSaleText":
+      "საკომისიოს იხდი მხოლოდ მაშინ, როცა ყუთი რეალურად დაჯავშნილი და გადახდილია.",
+    "forBusinesses.ctaTitle": "მზად ხარ, შეწყვიტო საკვების გადაყრა?",
+    "forBusinesses.ctaText":
+      "შემოუერთდი თბილისის ბიზნესებს, რომლებიც ჭარბ საკვებს გაყიდვად აქცევენ ნარჩენის ნაცვლად.",
+    "forBusinesses.ctaRegister": "დაარეგისტრირე ბიზნესი",
+    "forBusinesses.ctaQuestions": "გაქვს კითხვები?",
+    "forBusinesses.ctaContact": "დაგვიკავშირდი",
 
     "checkout.title": "დაადასტურე საკვების ყუთი",
     "checkout.subtitle":
