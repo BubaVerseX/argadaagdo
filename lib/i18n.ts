@@ -787,6 +787,21 @@ const translations = {
 
     "notFound.title": "Page not found",
     "notFound.text": "This page does not exist or the link is incorrect.",
+
+    "offline.badge": "No connection",
+    "offline.title": "You're offline",
+    "offline.text":
+      "Looks like you've lost your internet connection. Pages you've already visited may still work — otherwise, reconnect and try again.",
+    "offline.retry": "Try again",
+    "offline.home": "Go to homepage",
+
+    "installApp.title": "Install ArGadaagdo",
+    "installApp.text":
+      "Add it to your home screen for quick access and offline browsing.",
+    "installApp.iosText":
+      "Tap the Share icon, then \"Add to Home Screen\" for quick access.",
+    "installApp.install": "Install",
+    "installApp.dismiss": "Not now",
   },
   ka: {
     "brand.tagline": "საკვების გადარჩენის მარკეტი",
@@ -1560,6 +1575,21 @@ const translations = {
 
     "notFound.title": "გვერდი ვერ მოიძებნა",
     "notFound.text": "ეს გვერდი არ არსებობს ან ბმული არასწორია.",
+
+    "offline.badge": "კავშირი არ არის",
+    "offline.title": "თქვენ ხართ ოფლაინ რეჟიმში",
+    "offline.text":
+      "როგორც ჩანს, ინტერნეტ კავშირი დაიკარგა. უკვე ნანახი გვერდები შეიძლება კვლავ იმუშაოს — სხვა შემთხვევაში, დაუკავშირდით ინტერნეტს და სცადეთ ხელახლა.",
+    "offline.retry": "სცადე ხელახლა",
+    "offline.home": "მთავარ გვერდზე გადასვლა",
+
+    "installApp.title": "დააინსტალირე ArGadaagdo",
+    "installApp.text":
+      "დაამატე მთავარ ეკრანზე სწრაფი წვდომისა და ოფლაინ დათვალიერებისთვის.",
+    "installApp.iosText":
+      "დააჭირე Share ხატულას, შემდეგ „დამატება მთავარ ეკრანზე\" სწრაფი წვდომისთვის.",
+    "installApp.install": "დაინსტალირება",
+    "installApp.dismiss": "არა ახლა",
   },
 } satisfies Record<Language, Record<string, string>>;
 
