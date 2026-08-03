@@ -404,13 +404,13 @@ export default function AdminPage() {
       title: "Total Businesses",
       value: businesses.length,
       helper: "All submitted business profiles",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Approved Businesses",
       value: approvedBusinesses.length,
       helper: "Businesses allowed to publish offers",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Pending Businesses",
@@ -422,13 +422,13 @@ export default function AdminPage() {
       title: "Active Offers",
       value: activeOffers.length,
       helper: "Offers currently visible to customers",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Total Orders",
       value: orders.length,
       helper: "All reservations and pickup records",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Total Ratings",
@@ -440,19 +440,19 @@ export default function AdminPage() {
       title: "Customers",
       value: customerProfiles.length,
       helper: "Customer accounts in profiles",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Business Accounts",
       value: businessProfiles.length,
       helper: "Users with business account role",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Admins",
       value: adminProfiles.length,
       helper: "Admin accounts with approval access",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
   ];
   const accountOverview = [
@@ -460,13 +460,13 @@ export default function AdminPage() {
       title: "Customers",
       value: customerProfiles.length,
       helper: "Can browse, reserve, favorite and rate completed pickups",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Businesses",
       value: businessProfiles.length,
       helper: "Can register businesses and manage approved business offers",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Admins",
@@ -555,13 +555,13 @@ export default function AdminPage() {
       title: "Approved businesses",
       value: approvedBusinesses.length,
       helper: "Businesses allowed to publish offers",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Inactive offers",
       value: inactiveOffers.length,
       helper: "Offers hidden by businesses or admins",
-      className: "bg-[#ece7da] text-[#6b6558]",
+      className: "bg-[#f4efe4] text-[#6b6152]",
     },
     {
       title: "Expired offers",
@@ -781,7 +781,7 @@ export default function AdminPage() {
       title: "Paid reservations",
       value: paymentSummary.activePaidCount,
       helper: "Current reserved/completed orders with recorded amounts",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Refunded/cancelled",
@@ -795,19 +795,19 @@ export default function AdminPage() {
       title: "Platform revenue",
       value: formatMoney(paymentSummary.platformRevenue),
       helper: "Estimated 10% marketplace fee",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Business payout",
       value: formatMoney(paymentSummary.businessPayout),
       helper: "Estimated 90% business revenue",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Pending payouts",
       value: formatMoney(paymentSummary.pendingPayoutEstimate),
       helper: "Manual payout estimate from completed pickups",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Failed payments",
@@ -864,7 +864,7 @@ export default function AdminPage() {
       title: "Reservation lookup",
       value: filteredAdminOrders.length,
       helper: "Use search to find reservation/order records by id or status",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Customer lookup",
@@ -872,7 +872,7 @@ export default function AdminPage() {
         (profile) => profile.role === "customer"
       ).length,
       helper: "Customer accounts matching the current admin search",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Business lookup",
@@ -884,7 +884,7 @@ export default function AdminPage() {
       title: "Order lookup",
       value: filteredAdminOrders.length,
       helper: "Orders matching the selected status and search term",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
   ];
   const marketplaceIntelligenceMetrics = [
@@ -896,7 +896,7 @@ export default function AdminPage() {
       helper: mostActiveBusiness
         ? `${mostActiveBusiness.reservations} total reservations`
         : "Reservations will identify the strongest active partner.",
-      className: "bg-[#eef1e8] text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       title: "Least active business",
@@ -912,7 +912,7 @@ export default function AdminPage() {
       title: "Offers created today",
       value: offersCreatedToday.length,
       helper: "New offers published in the current Tbilisi day",
-      className: "bg-white text-[#1a1815]",
+      className: "soft-raised text-[#2e2a22]",
     },
     {
       title: "Offers expiring",
@@ -1068,27 +1068,27 @@ export default function AdminPage() {
         </FilterBar>
 
         <div className="mt-5 grid gap-3 md:grid-cols-4">
-          <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-black text-[#6b6558]">Businesses found</p>
-            <p className="mt-2 text-3xl font-black text-[#1a1815]">
+          <div className="soft-raised rounded-2xl p-4">
+            <p className="text-sm font-black text-[#6b6152]">Businesses found</p>
+            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredPendingBusinesses.length + filteredApprovedBusinesses.length}
             </p>
           </div>
-          <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-black text-[#6b6558]">Offers found</p>
-            <p className="mt-2 text-3xl font-black text-[#1a1815]">
+          <div className="soft-raised rounded-2xl p-4">
+            <p className="text-sm font-black text-[#6b6152]">Offers found</p>
+            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredAdminOffers.length}
             </p>
           </div>
-          <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-black text-[#6b6558]">Orders found</p>
-            <p className="mt-2 text-3xl font-black text-[#1a1815]">
+          <div className="soft-raised rounded-2xl p-4">
+            <p className="text-sm font-black text-[#6b6152]">Orders found</p>
+            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredAdminOrders.length}
             </p>
           </div>
-          <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-soft)]">
-            <p className="text-sm font-black text-[#6b6558]">Accounts found</p>
-            <p className="mt-2 text-3xl font-black text-[#1a1815]">
+          <div className="soft-raised rounded-2xl p-4">
+            <p className="text-sm font-black text-[#6b6152]">Accounts found</p>
+            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredAdminProfiles.length}
             </p>
           </div>
@@ -1096,55 +1096,55 @@ export default function AdminPage() {
 
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
           <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-black text-[#1a1815]">Offer matches</h3>
+            <h3 className="text-lg font-black text-[#2e2a22]">Offer matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminOffers.slice(0, 5).map((offer) => (
-                <div key={offer.id} className="rounded-2xl bg-[#ece7da] p-4">
-                  <p className="font-black text-[#1a1815]">{offer.title}</p>
-                  <p className="mt-1 text-sm font-semibold text-[#6b6558]">
+                <div key={offer.id} className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="font-black text-[#2e2a22]">{offer.title}</p>
+                  <p className="mt-1 text-sm font-semibold text-[#6b6152]">
                     {businessNameById[offer.business_id] || "Business"} ·{" "}
                     {getEffectiveOfferStatus(offer)}
                   </p>
                 </div>
               ))}
               {filteredAdminOffers.length === 0 && (
-                <p className="font-semibold text-[#6b6558]">No offers found.</p>
+                <p className="font-semibold text-[#6b6152]">No offers found.</p>
               )}
             </div>
           </div>
 
           <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-black text-[#1a1815]">Order matches</h3>
+            <h3 className="text-lg font-black text-[#2e2a22]">Order matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminOrders.slice(0, 5).map((order) => (
-                <div key={order.id} className="rounded-2xl bg-[#ece7da] p-4">
-                  <p className="font-black text-[#1a1815]">Order #{order.id}</p>
-                  <p className="mt-1 text-sm font-semibold text-[#6b6558]">
+                <div key={order.id} className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="font-black text-[#2e2a22]">Order #{order.id}</p>
+                  <p className="mt-1 text-sm font-semibold text-[#6b6152]">
                     Offer #{order.offer_id} · {order.status}
                   </p>
                 </div>
               ))}
               {filteredAdminOrders.length === 0 && (
-                <p className="font-semibold text-[#6b6558]">No orders found.</p>
+                <p className="font-semibold text-[#6b6152]">No orders found.</p>
               )}
             </div>
           </div>
 
           <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-black text-[#1a1815]">Account matches</h3>
+            <h3 className="text-lg font-black text-[#2e2a22]">Account matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminProfiles.slice(0, 5).map((profile) => (
-                <div key={profile.id} className="rounded-2xl bg-[#ece7da] p-4">
-                  <p className="break-words font-black text-[#1a1815]">
+                <div key={profile.id} className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="break-words font-black text-[#2e2a22]">
                     {profile.email || "Email unavailable"}
                   </p>
-                  <p className="mt-1 text-sm font-semibold capitalize text-[#6b6558]">
+                  <p className="mt-1 text-sm font-semibold capitalize text-[#6b6152]">
                     {profile.role || "Missing role"}
                   </p>
                 </div>
               ))}
               {filteredAdminProfiles.length === 0 && (
-                <p className="font-semibold text-[#6b6558]">No accounts found.</p>
+                <p className="font-semibold text-[#6b6152]">No accounts found.</p>
               )}
             </div>
           </div>

@@ -1212,7 +1212,7 @@ export default function BusinessDashboardPage() {
         ) / 10
       : 0;
   const averageRatingLabel =
-    totalReviews > 0 ? `${averageRating.toFixed(1)} ⭐` : t("common.noRatings");
+    totalReviews > 0 ? `${averageRating.toFixed(1)} / 5` : t("common.noRatings");
   const selectedBusiness =
     approvedBusinesses.find((business) => String(business.id) === businessId) ||
     approvedBusinesses[0] ||
@@ -1430,7 +1430,7 @@ export default function BusinessDashboardPage() {
     {
       label: t("orders.reserved"),
       value: reservedOrders.length,
-      className: "bg-white text-[#5c7a5c]",
+      className: "soft-raised text-[#a67c52]",
     },
     {
       label: t("orders.collected"),
@@ -1445,7 +1445,7 @@ export default function BusinessDashboardPage() {
     {
       label: t("businessDashboard.noShow"),
       value: noShowOrders.length,
-      className: "bg-[#ece7da] text-[#1a1815]",
+      className: "bg-[#f4efe4] text-[#2e2a22]",
     },
   ];
   const businessAlerts = [
@@ -1456,14 +1456,14 @@ export default function BusinessDashboardPage() {
             text: `${reservedOrders.length} active ${
               reservedOrders.length === 1 ? "reservation needs" : "reservations need"
             } pickup attention.`,
-            className: "bg-white text-[#1a1815]",
+            className: "soft-raised text-[#2e2a22]",
           },
         ]
       : [
           {
             title: "No active reservations",
             text: "New reservations will appear here when customers reserve your offers.",
-            className: "bg-[#ece7da] text-[#1a1815]",
+            className: "bg-[#f4efe4] text-[#2e2a22]",
           },
         ]),
     ...(offersExpiringToday.length > 0
@@ -1484,7 +1484,7 @@ export default function BusinessDashboardPage() {
             text: `${reservationsWithStartedPickupWindow.length} reservation ${
               reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
             } inside the pickup window now.`,
-            className: "bg-white text-[#1a1815]",
+            className: "soft-raised text-[#2e2a22]",
           },
         ]
       : []),
@@ -1502,7 +1502,7 @@ export default function BusinessDashboardPage() {
           {
             title: "No reservations today",
             text: "Nothing needs pickup action today. New reservations will appear here automatically.",
-            className: "bg-[#ece7da] text-[#1a1815]",
+            className: "bg-[#f4efe4] text-[#2e2a22]",
           },
         ]),
     ...(nearlySoldOutOffers.length > 0
@@ -1523,7 +1523,7 @@ export default function BusinessDashboardPage() {
             text: `${inactiveOffers.length} offer ${
               inactiveOffers.length === 1 ? "is" : "are"
             } hidden from public browsing.`,
-            className: "bg-[#ece7da] text-[#1a1815]",
+            className: "bg-[#f4efe4] text-[#2e2a22]",
           },
         ]
       : []),
@@ -1774,89 +1774,92 @@ export default function BusinessDashboardPage() {
           onCreateOffer={(actionTime) => void createOffer(actionTime)}
         />
 
-        <FilterBar
-          className="mt-6 sm:mt-8"
-          title="Offer management search"
-          description="Find offers by title, category or business. Filter history before editing or archiving."
-        >
-          <SearchBar
-            value={offerManagementSearch}
-            onChange={(value) => {
-              setOfferManagementSearch(value);
-              setOfferManagementPage(1);
-            }}
-            placeholder="Search offers..."
-            label="Search offers"
+        <div id="business-offers" className="scroll-mt-24">
+          <FilterBar
+            className="mt-6 sm:mt-8"
+            title="Offer management search"
+            description="Find offers by title, category or business. Filter history before editing or archiving."
+          >
+            <SearchBar
+              value={offerManagementSearch}
+              onChange={(value) => {
+                setOfferManagementSearch(value);
+                setOfferManagementPage(1);
+              }}
+              placeholder="Search offers..."
+              label="Search offers"
+            />
+
+            <select
+              value={offerManagementFilter}
+              onChange={(event) => {
+                setOfferManagementFilter(
+                  event.target.value as DashboardOfferFilter
+                );
+                setOfferManagementPage(1);
+              }}
+              aria-label="Filter offers by status"
+              className="premium-input px-4 py-3 font-semibold"
+            >
+              <option value="all">All offers</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="archive">Archive</option>
+              <option value="sold_out">Sold out</option>
+            </select>
+          </FilterBar>
+
+          <OfferList
+            t={t}
+            language={language}
+            offers={paginatedManagedOffers.items}
+            emptyTitle={
+              offers.length === 0 ? undefined : "No offers match your filters"
+            }
+            emptyText={
+              offers.length === 0
+                ? undefined
+                : "Try a different search or status filter."
+            }
+            ratingSummaries={ratingSummaries}
+            offerAnalyticsById={businessAnalytics.offerAnalyticsById}
+            offerIntelligenceById={offerIntelligenceById}
+            editingOfferId={editingOfferId}
+            updatingOfferId={updatingOfferId}
+            editTitle={editTitle}
+            editCategory={editCategory}
+            editPrice={editPrice}
+            editOldPrice={editOldPrice}
+            editQuantity={editQuantity}
+            editPickupStart={editPickupStart}
+            editPickupEnd={editPickupEnd}
+            onStartEditing={startEditingOffer}
+            onCancelEditing={cancelEditingOffer}
+            onToggleActive={(offer) => void toggleOfferActive(offer)}
+            onDuplicate={(offer) => void duplicateOffer(offer)}
+            onArchiveExpired={(offer) => void archiveExpiredOffer(offer)}
+            onDelete={(offer) => void deleteOffer(offer)}
+            onSaveEdits={(offer) => void saveOfferEdits(offer)}
+            onEditTitleChange={setEditTitle}
+            onEditCategoryChange={setEditCategory}
+            onEditPriceChange={setEditPrice}
+            onEditOldPriceChange={setEditOldPrice}
+            onEditQuantityChange={setEditQuantity}
+            onEditPickupStartChange={setEditPickupStart}
+            onEditPickupEndChange={setEditPickupEnd}
           />
 
-          <select
-            value={offerManagementFilter}
-            onChange={(event) => {
-              setOfferManagementFilter(
-                event.target.value as DashboardOfferFilter
-              );
-              setOfferManagementPage(1);
-            }}
-            aria-label="Filter offers by status"
-            className="premium-input px-4 py-3 font-semibold"
-          >
-            <option value="all">All offers</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="archive">Archive</option>
-            <option value="sold_out">Sold out</option>
-          </select>
-        </FilterBar>
+          <Pagination
+            className="mt-5"
+            page={paginatedManagedOffers.page}
+            totalItems={filteredManagedOffers.length}
+            pageSize={DASHBOARD_OFFER_PAGE_SIZE}
+            label="Offers"
+            onPageChange={setOfferManagementPage}
+          />
+        </div>
 
-        <OfferList
-          t={t}
-          language={language}
-          offers={paginatedManagedOffers.items}
-          emptyTitle={
-            offers.length === 0 ? undefined : "No offers match your filters"
-          }
-          emptyText={
-            offers.length === 0
-              ? undefined
-              : "Try a different search or status filter."
-          }
-          ratingSummaries={ratingSummaries}
-          offerAnalyticsById={businessAnalytics.offerAnalyticsById}
-          offerIntelligenceById={offerIntelligenceById}
-          editingOfferId={editingOfferId}
-          updatingOfferId={updatingOfferId}
-          editTitle={editTitle}
-          editCategory={editCategory}
-          editPrice={editPrice}
-          editOldPrice={editOldPrice}
-          editQuantity={editQuantity}
-          editPickupStart={editPickupStart}
-          editPickupEnd={editPickupEnd}
-          onStartEditing={startEditingOffer}
-          onCancelEditing={cancelEditingOffer}
-          onToggleActive={(offer) => void toggleOfferActive(offer)}
-          onDuplicate={(offer) => void duplicateOffer(offer)}
-          onArchiveExpired={(offer) => void archiveExpiredOffer(offer)}
-          onDelete={(offer) => void deleteOffer(offer)}
-          onSaveEdits={(offer) => void saveOfferEdits(offer)}
-          onEditTitleChange={setEditTitle}
-          onEditCategoryChange={setEditCategory}
-          onEditPriceChange={setEditPrice}
-          onEditOldPriceChange={setEditOldPrice}
-          onEditQuantityChange={setEditQuantity}
-          onEditPickupStartChange={setEditPickupStart}
-          onEditPickupEndChange={setEditPickupEnd}
-        />
-
-        <Pagination
-          className="mt-5"
-          page={paginatedManagedOffers.page}
-          totalItems={filteredManagedOffers.length}
-          pageSize={DASHBOARD_OFFER_PAGE_SIZE}
-          label="Offers"
-          onPageChange={setOfferManagementPage}
-        />
-
+        <div id="business-reservations" className="scroll-mt-24">
         <ReservationList
           t={t}
           language={language}
@@ -1882,6 +1885,7 @@ export default function BusinessDashboardPage() {
           onOpenPickupVerification={openPickupVerification}
           onMarkNoShow={(order) => void markNoShow(order)}
         />
+        </div>
 
         {pickupVerificationOrder && (
           <PickupVerificationModal

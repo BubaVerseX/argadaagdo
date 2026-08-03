@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { OfferCard } from "@/components/OfferCard";
 import OfferImage from "@/components/OfferImage";
+import { ShoppingBagIcon } from "@/components/icons";
 import { getUserErrorMessage } from "@/lib/errors";
 import { useLanguage } from "@/lib/useLanguage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
@@ -232,26 +233,26 @@ export default function Home() {
     : [homepageCopy.heroTitle, ""];
 
   return (
-    <main className="min-h-screen bg-[#d9d5cb] text-[#1a1815]">
+    <main className="app-shell">
       <Navbar />
 
       <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:px-12 lg:pb-28 lg:pt-20">
         <div className="premium-container relative">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="min-w-0 max-w-2xl">
-              <p className="inline-flex rounded-full bg-[#f2efe6] px-4 py-2 text-sm font-semibold text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
+              <p className="soft-raised inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
                 {homepageCopy.launchBadge}
               </p>
 
-              <h1 className="mt-7 text-balance text-[3rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#1a1815] sm:text-[3.5rem] lg:text-[3.75rem]">
+              <h1 className="mt-7 text-balance text-[3rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2e2a22] sm:text-[3.5rem] lg:text-[3.75rem]">
                 {heroTitleBefore}
-                <span className="text-[#5c7a5c]">
+                <span className="text-[#a67c52]">
                   {homepageCopy.heroAccentPhrase}
                 </span>
                 {heroTitleAfter}
               </h1>
 
-              <p className="mt-6 max-w-xl text-pretty text-base leading-[1.55] text-[#6b6558] sm:text-lg">
+              <p className="mt-6 max-w-xl text-pretty text-base leading-[1.55] text-[#6b6152] sm:text-lg">
                 {homepageCopy.heroSubtitle}
               </p>
 
@@ -268,7 +269,7 @@ export default function Home() {
               </div>
 
               <div className="mt-10" aria-label={homepageCopy.categoriesLabel}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6558]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6152]">
                   {homepageCopy.categoriesLabel}
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -276,7 +277,7 @@ export default function Home() {
                     <Link
                       key={category}
                       href="/offers"
-                      className="flex min-h-11 items-center rounded-full bg-[#f2efe6] px-4 py-2 text-sm font-semibold text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                      className="soft-raised flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                     >
                       {category}
                     </Link>
@@ -286,7 +287,7 @@ export default function Home() {
             </div>
 
             <div className="relative mx-auto w-full min-w-0 max-w-lg lg:mx-0">
-              <div className="photo-warm-overlay relative aspect-[4/5] overflow-hidden rounded-[1.75rem] shadow-[var(--shadow-hero)] sm:aspect-[5/6]">
+              <div className="soft-raised photo-warm-overlay blob-mask relative isolate aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
                 <OfferImage
                   src={previewOffer?.image_url}
                   alt={previewOffer?.title || homepageCopy.heroAccentPhrase}
@@ -298,10 +299,10 @@ export default function Home() {
               {/* Floating product card: a genuine miniature offer, not decoration */}
               <Link
                 href={previewOffer ? `/offers/${previewOffer.id}` : "/offers"}
-                className="absolute -bottom-8 -left-4 w-[calc(100%-2rem)] max-w-xs rounded-[1.5rem] bg-[#f2efe6] p-3 shadow-[var(--shadow-hero)] transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c] sm:-left-8"
+                className="soft-raised absolute -bottom-8 -left-4 w-[calc(100%-2rem)] max-w-xs rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] sm:-left-8"
               >
                 <div className="flex items-center gap-3">
-                  <div className="photo-warm-overlay h-16 w-16 shrink-0 overflow-hidden rounded-2xl">
+                  <div className="soft-raised photo-warm-overlay blob-mask-2 h-16 w-16 shrink-0 overflow-hidden">
                     {previewOffer ? (
                       <OfferImage
                         src={previewOffer.image_url}
@@ -309,20 +310,20 @@ export default function Home() {
                         sizes="64px"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#c9b89a] to-[#8a7256] text-2xl">
-                        🥡
+                      <div className="flex h-full w-full items-center justify-center bg-[#f4efe4]">
+                        <ShoppingBagIcon className="h-6 w-6 text-[#8a8072]" strokeWidth={1.6} />
                       </div>
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-[#1a1815]">
+                    <p className="truncate text-sm font-bold text-[#2e2a22]">
                       {previewOffer?.title || t("home.noSurpriseBags")}
                     </p>
-                    <p className="truncate text-xs font-medium text-[#6b6558]">
+                    <p className="truncate text-xs font-medium text-[#6b6152]">
                       {previewOffer?.businesses?.name || homepageCopy.localLabel}
                     </p>
-                    <p className="mt-0.5 text-base font-bold text-[#5c7a5c]">
+                    <p className="mt-0.5 text-base font-bold text-[#a67c52]">
                       {previewOffer ? formatMoney(previewOffer.price) : "₾"}
                     </p>
                   </div>
@@ -339,38 +340,28 @@ export default function Home() {
 
       <section className="px-4 pb-8 pt-16 sm:px-6 sm:pb-10 sm:pt-20 lg:px-12">
         <div className="premium-container">
-          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6558]">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6152]">
             {homepageCopy.statsBadge}
           </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
             {stats.map((item, index) => (
               <div
                 key={item.label}
-                className={`rounded-[1.75rem] p-7 shadow-[var(--shadow-soft)] ${
-                  index === 0
-                    ? "bg-[#1a1815] text-white sm:col-span-2 lg:col-span-2 lg:row-span-2"
-                    : "bg-[#f2efe6] text-[#1a1815]"
+                className={`soft-raised rounded-[1.75rem] p-7 ${
+                  index === 0 ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
                 }`}
               >
                 <p
-                  className={`font-extrabold tracking-tight ${
+                  className={`font-extrabold tracking-[-0.03em] text-[#2e2a22] ${
                     index === 0 ? "text-6xl" : "text-3xl"
                   }`}
                 >
                   {item.value}
                 </p>
-                <p
-                  className={`mt-3 text-sm font-semibold ${
-                    index === 0 ? "text-white" : "text-[#1a1815]"
-                  }`}
-                >
+                <p className="mt-3 text-sm font-semibold text-[#2e2a22]">
                   {item.label}
                 </p>
-                <p
-                  className={`mt-1 max-w-xs text-sm leading-[1.55] ${
-                    index === 0 ? "text-white/70" : "text-[#6b6558]"
-                  }`}
-                >
+                <p className="mt-1 max-w-xs text-sm leading-[1.55] text-[#6b6152]">
                   {item.text}
                 </p>
               </div>
@@ -381,23 +372,23 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6558]">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6152]">
             {homepageCopy.howItWorksBadge}
           </p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#1a1815] sm:text-5xl">
+          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#2e2a22] sm:text-5xl">
             {homepageCopy.howItWorksTitle}
           </h2>
 
-          <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+          <div className="mt-10 grid gap-6 md:grid-cols-3 md:gap-6">
             {steps.map((step) => (
-              <div key={step.label}>
-                <p className="text-sm font-semibold tracking-[0.1em] text-[#6b6558]">
+              <div key={step.label} className="soft-raised rounded-[1.5rem] p-6">
+                <p className="text-sm font-semibold tracking-[0.1em] text-[#a67c52]">
                   {step.label}
                 </p>
-                <h3 className="mt-4 text-2xl font-bold tracking-tight text-[#1a1815]">
+                <h3 className="mt-4 text-2xl font-bold tracking-[-0.02em] text-[#2e2a22]">
                   {step.title}
                 </h3>
-                <p className="mt-3 leading-[1.55] text-[#6b6558]">
+                <p className="mt-3 leading-[1.55] text-[#6b6152]">
                   {step.text}
                 </p>
               </div>
@@ -408,10 +399,10 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <div className="rounded-[1.75rem] bg-[#1a1815] p-8 text-white shadow-[var(--shadow-soft)] sm:p-10 lg:p-14">
+          <div className="rounded-[1.75rem] bg-[#2e2a22] p-8 text-white shadow-[var(--shadow-soft)] sm:p-10 lg:p-14">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8fae8f]">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a880]">
                   {t("forBusinesses.problemBadge")}
                 </p>
                 <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
@@ -424,7 +415,7 @@ export default function Home() {
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link
                     href="/for-businesses"
-                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3 font-semibold text-[#1a1815] transition hover:bg-[#f2efe6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3 font-semibold text-[#2e2a22] transition hover:bg-[#ece4d6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                   >
                     {homepageCopy.businessLearnMore}
                   </Link>
@@ -459,13 +450,13 @@ export default function Home() {
         <div className="premium-container">
           <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6558]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6152]">
                 {t("home.featuredOffers")}
               </p>
-              <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#1a1815] sm:text-5xl">
+              <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#2e2a22] sm:text-5xl">
                 {t("offers.title")}
               </h2>
-              <p className="mt-3 max-w-xl leading-[1.55] text-[#6b6558]">
+              <p className="mt-3 max-w-xl leading-[1.55] text-[#6b6152]">
                 {t("offers.subtitle")}
               </p>
             </div>
@@ -476,7 +467,7 @@ export default function Home() {
           </div>
 
           {errorMessage && (
-            <div className="mb-5 rounded-3xl bg-[#f2efe6] px-5 py-4 text-sm font-medium text-[#6b6558] shadow-[var(--shadow-soft)]">
+            <div className="soft-raised mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-[#6b6152]">
               {errorMessage}
             </div>
           )}
@@ -484,9 +475,9 @@ export default function Home() {
           <div className="grid gap-5 md:grid-cols-3">
             {loading && (
               <>
-                <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f2efe6]" />
-                <div className="hidden h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f2efe6] md:block" />
-                <div className="hidden h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f2efe6] md:block" />
+                <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f4efe4]" />
+                <div className="hidden h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f4efe4] md:block" />
+                <div className="hidden h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f4efe4] md:block" />
               </>
             )}
 
@@ -502,11 +493,14 @@ export default function Home() {
             ))}
 
             {!loading && offers.length === 0 && (
-              <div className="rounded-[1.75rem] bg-[#f2efe6] p-10 text-center shadow-[var(--shadow-soft)] md:col-span-3">
-                <h3 className="text-2xl font-extrabold tracking-tight text-[#1a1815]">
+              <div className="soft-raised rounded-[1.75rem] p-10 text-center md:col-span-3">
+                <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                  <ShoppingBagIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
+                </div>
+                <h3 className="mt-5 text-2xl font-extrabold tracking-[-0.02em] text-[#2e2a22]">
                   {t("home.noSurpriseBags")}
                 </h3>
-                <p className="mx-auto mt-3 max-w-lg leading-[1.55] text-[#6b6558]">
+                <p className="mx-auto mt-3 max-w-lg leading-[1.55] text-[#6b6152]">
                   {t("home.publishLater")}
                 </p>
                 <Link href="/offers" className="mt-6 inline-flex premium-button px-7 py-3">
@@ -519,14 +513,20 @@ export default function Home() {
       </section>
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
-        <div className="premium-container grid gap-12 md:grid-cols-2 md:gap-8">
+        <div className="premium-container grid gap-6 md:grid-cols-2 md:gap-6">
           {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="text-center md:text-left">
-              <blockquote className="text-2xl font-medium leading-[1.4] tracking-[-0.01em] text-[#1a1815] sm:text-3xl">
+            <figure key={testimonial.name} className="soft-raised rounded-[1.75rem] p-8">
+              <blockquote className="text-2xl font-medium leading-[1.4] tracking-[-0.01em] text-[#2e2a22] sm:text-3xl">
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
-              <figcaption className="mt-5 text-sm font-semibold uppercase tracking-[0.12em] text-[#6b6558]">
-                {testimonial.name} · {testimonial.location}
+              <figcaption className="mt-6 flex items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#a67c52] text-base font-bold text-white">
+                  {testimonial.name.slice(0, 1).toUpperCase()}
+                </div>
+                <div className="text-sm font-semibold text-[#6b6152]">
+                  <p className="text-[#2e2a22]">{testimonial.name}</p>
+                  <p>{testimonial.location}</p>
+                </div>
               </figcaption>
             </figure>
           ))}
@@ -539,12 +539,13 @@ export default function Home() {
             {[...marqueeItems, ...marqueeItems].map((item, index) => (
               <span
                 key={`${item}-${index}`}
-                className="mx-4 inline-flex items-center whitespace-nowrap text-lg font-semibold text-[#6b6558]"
+                className="mx-4 inline-flex items-center whitespace-nowrap text-lg font-semibold text-[#6b6152]"
               >
                 {item}
-                <span className="mx-4 text-[#5c7a5c]" aria-hidden="true">
-                  ✦
-                </span>
+                <span
+                  className="mx-4 h-1.5 w-1.5 rounded-full bg-[#a67c52]"
+                  aria-hidden="true"
+                />
               </span>
             ))}
           </div>
@@ -553,8 +554,8 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <div className="rounded-[1.75rem] bg-[#1a1815] p-10 text-center text-white shadow-[var(--shadow-soft)] sm:p-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8fae8f]">
+          <div className="rounded-[1.75rem] bg-[#2e2a22] p-10 text-center text-white shadow-[var(--shadow-soft)] sm:p-14">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a880]">
               {homepageCopy.finalCtaBadge}
             </p>
             <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
@@ -567,7 +568,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/offers"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3.5 font-semibold text-[#1a1815] transition hover:bg-[#f2efe6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3.5 font-semibold text-[#2e2a22] transition hover:bg-[#ece4d6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
               >
                 {homepageCopy.browseToday}
               </Link>

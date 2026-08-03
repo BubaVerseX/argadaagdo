@@ -1,4 +1,5 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
+import { ClockIcon, MapPinIcon } from "@/components/icons";
 import { createMapsSearchUrl } from "@/lib/maps";
 import {
   formatMoney,
@@ -91,82 +92,85 @@ export function OrderCard({
               {getCustomerStatusLabel(displayStatus, language)}
             </span>
 
-            <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#6b6558] shadow-[var(--shadow-soft)]">
+            <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#6b6152]">
               {order.offers?.businesses?.business_type || t("common.food")}
             </span>
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
-              <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#1a1815] shadow-[var(--shadow-soft)]">
+              <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
                 Ready to rate
               </span>
             )}
           </div>
 
-          <h2 className="mt-4 text-2xl font-black sm:text-3xl">
+          <h2 className="mt-4 text-2xl font-black text-[#2e2a22] sm:text-3xl">
             {order.offers?.title || t("common.offerUnavailable")}
           </h2>
 
-          <p className="mt-2 text-lg font-bold text-[#1a1815]">
+          <p className="mt-2 text-lg font-bold text-[#2e2a22]">
             {order.offers?.businesses?.name || t("common.businessUnavailable")}
           </p>
 
-          <div className="mt-4 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
-            <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6558]">
+          <div className="soft-raised mt-4 rounded-3xl p-4">
+            <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6152]">
               Order timeline
             </p>
             <TimelineSteps steps={timelineSteps} ariaLabel="Order timeline" />
           </div>
 
           {pickupReminderMessage && (
-            <div className="mt-4 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)]">
-              <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
+            <div className="soft-raised mt-4 rounded-3xl p-4">
+              <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
                 Pickup reminder
               </p>
-              <p className="mt-2 font-bold leading-7 text-[#6b6558]">
+              <p className="mt-2 font-bold leading-7 text-[#6b6152]">
                 {pickupReminderMessage}
               </p>
             </div>
           )}
 
           <div className="premium-muted-card mt-4 rounded-3xl p-4">
-            <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
+            <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
               {t("orders.pickupReminder")}
             </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+              <div className="rounded-2xl bg-white/60 p-4">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                   {t("orders.pickupDate")}
                 </p>
-                <p className="mt-1 font-black text-[#1a1815]">
+                <p className="mt-1 flex items-center gap-1.5 font-black text-[#2e2a22]">
+                  <ClockIcon className="h-4 w-4 shrink-0 text-[#a67c52]" strokeWidth={1.8} />
                   {pickupDateLabel}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+              <div className="rounded-2xl bg-white/60 p-4">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                   {t("orders.pickupTime")}
                 </p>
-                <p className="mt-1 font-black text-[#1a1815]">
+                <p className="mt-1 flex items-center gap-1.5 font-black text-[#2e2a22]">
+                  <ClockIcon className="h-4 w-4 shrink-0 text-[#a67c52]" strokeWidth={1.8} />
                   {pickupTimeLabel}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+              <div className="rounded-2xl bg-white/60 p-4">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                   {t("orders.businessName")}
                 </p>
-                <p className="mt-1 font-black text-[#1a1815]">
+                <p className="mt-1 font-black text-[#2e2a22]">
                   {order.offers?.businesses?.name ||
                     t("common.businessUnavailable")}
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+              <div className="rounded-2xl bg-white/60 p-4">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                   {t("orders.businessAddress")}
                 </p>
-                <p className="mt-1 font-semibold text-[#6b6558]">
+                <p className="mt-1 flex items-center gap-1.5 font-semibold text-[#6b6152]">
+                  <MapPinIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
                   {businessAddress}
                 </p>
                 {order.offers?.businesses?.address && (
@@ -179,7 +183,7 @@ export function OrderCard({
                       order.offers?.title ||
                       "pickup location"
                     }`}
-                    className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-[#ece7da] px-4 py-2 text-sm font-black text-[#1a1815] transition hover:bg-[#d9d5cb] sm:w-auto"
+                    className="soft-raised mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition sm:w-auto"
                   >
                     {t("common.openMap")}
                   </a>
@@ -187,18 +191,18 @@ export function OrderCard({
               </div>
             </div>
 
-            <p className="mt-3 font-black text-[#6b6558]">
+            <p className="mt-3 font-black text-[#6b6152]">
               {t("common.price")}:{" "}
               {order.offers
                 ? formatMoney(order.offers.price)
                 : t("common.unavailable")}
             </p>
 
-            <div className="mt-4 rounded-2xl bg-white p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+            <div className="mt-4 rounded-2xl bg-white/60 p-4">
+              <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                 Receipt
               </p>
-              <div className="mt-2 grid gap-1 text-sm font-semibold text-[#6b6558]">
+              <div className="mt-2 grid gap-1 text-sm font-semibold text-[#6b6152]">
                 <p>Reservation ID: #{order.id}</p>
                 <p>
                   Amount:{" "}
@@ -215,44 +219,44 @@ export function OrderCard({
         </div>
 
         <div className="premium-muted-card order-1 rounded-3xl p-4 text-center sm:rounded-[2rem] sm:p-5 lg:order-2 lg:min-w-[280px]">
-          <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
+          <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
             {t("orders.pickupCode")}
           </p>
 
           {isConfirmed ? (
             <>
-              <div className="mt-3 rounded-2xl bg-white px-4 py-5 shadow-[var(--shadow-soft)] sm:rounded-3xl sm:px-6 sm:py-6">
-                <p className="text-sm font-black text-[#6b6558]">
+              <div className="soft-raised mt-3 rounded-2xl px-4 py-5 sm:rounded-3xl sm:px-6 sm:py-6">
+                <p className="text-sm font-black text-[#6b6152]">
                   {t("orders.pickupCode")}:
                 </p>
-                <p className="font-mono text-3xl font-black tracking-[0.18em] text-[#5c7a5c] sm:text-4xl">
+                <p className="font-mono text-3xl font-black tracking-[0.18em] text-[#a67c52] sm:text-4xl">
                   {order.pickup_code || t("common.pending")}
                 </p>
               </div>
 
-              <p className="mt-3 text-sm font-bold text-[#6b6558]">
+              <p className="mt-3 text-sm font-bold text-[#6b6152]">
                 {t("orders.showCode")}
               </p>
 
-              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-[var(--shadow-soft)]">
-                <p className="text-sm font-black leading-6 text-[#1a1815]">
+              <div className="soft-raised mt-4 rounded-2xl p-4 text-left">
+                <p className="text-sm font-black leading-6 text-[#2e2a22]">
                   {t("orders.activePickupReminder")}
                 </p>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-white p-4 text-left shadow-[var(--shadow-soft)]">
-                <p className="text-sm font-black text-[#1a1815]">
+              <div className="soft-raised mt-4 rounded-2xl p-4 text-left">
+                <p className="text-sm font-black text-[#2e2a22]">
                   {isCancellationAvailable
                     ? t("orders.cancelAvailable")
                     : t("orders.cancelUnavailable")}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-[#6b6558]">
+                <p className="mt-2 text-sm font-semibold text-[#6b6152]">
                   {t("orders.ratingBeforePickup")}
                 </p>
               </div>
             </>
           ) : (
-            <div className="mt-3 rounded-2xl bg-white px-5 py-5 font-bold text-[#6b6558] shadow-[var(--shadow-soft)]">
+            <div className="soft-raised mt-3 rounded-2xl px-5 py-5 font-bold text-[#6b6152]">
               {inactiveOrderMessage}
             </div>
           )}
@@ -261,7 +265,7 @@ export function OrderCard({
             <button
               onClick={() => onCancelOrder(order)}
               disabled={cancellingOrderId !== null}
-              className="mt-5 min-h-12 w-full rounded-full bg-[#1a1815] px-6 py-3 font-black text-white transition hover:bg-[#2c2822] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-5 min-h-12 w-full rounded-full bg-red-50 px-6 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {cancellingOrderId === order.id
                 ? "Cancelling..."
@@ -270,17 +274,17 @@ export function OrderCard({
           )}
 
           {isCollectedOrderStatus(displayStatus) && (
-            <div className="mt-5 rounded-2xl bg-white p-4 text-left shadow-[var(--shadow-soft)]">
+            <div className="soft-raised mt-5 rounded-2xl p-4 text-left">
               {order.rated_at ? (
-                <p className="text-center font-black text-[#5c7a5c]">
+                <p className="text-center font-black text-[#a67c52]">
                   {t("orders.reviewThanks")}
                 </p>
               ) : (
                 <>
-                  <p className="text-center text-base font-black text-[#1a1815]">
+                  <p className="text-center text-base font-black text-[#2e2a22]">
                     {t("orders.ratePickup")}
                   </p>
-                  <p className="mt-1 text-center text-sm font-semibold text-[#6b6558]">
+                  <p className="mt-1 text-center text-sm font-semibold text-[#6b6152]">
                     {t("orders.ratingAvailable")}
                   </p>
                   <div className="mt-3 grid grid-cols-5 gap-2">
@@ -293,8 +297,8 @@ export function OrderCard({
                         disabled={ratingOrderId !== null}
                     className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           selectedRating === rating
-                            ? "bg-[#1a1815] text-white"
-                            : "bg-[#ece7da] text-[#6b6558] hover:bg-white"
+                            ? "soft-pressed text-[#a67c52]"
+                            : "soft-raised text-[#6b6152]"
                         }`}
                       >
                         {rating}

@@ -172,10 +172,10 @@ export function getOfferStatusLabel(offer: Offer, language: Language = "en") {
 
 export function getOfferStatusClassName(offer: Offer) {
   const status = getEffectiveOfferStatus(offer);
-  if (status === "active") return "bg-[#eef1e8] text-[#5c7a5c]";
+  if (status === "active") return "bg-[#f4efe4] text-[#a67c52]";
   if (status === "sold_out") return "bg-yellow-100 text-yellow-800";
   if (status === "expired") return "bg-red-100 text-red-700";
-  return "bg-[#ece7da] text-[#6b6558]";
+  return "bg-[#f4efe4] text-[#6b6152]";
 }
 
 export function getOfferDateLabel(offer: OfferTiming, language: Language = "en") {

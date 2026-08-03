@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { SmartphoneIcon } from "@/components/icons";
 import { useLanguage } from "@/lib/useLanguage";
 
 const DISMISS_KEY = "argadaagdo-install-dismissed";
@@ -85,10 +86,10 @@ export default function InstallAppPrompt() {
   if (visibility === "hidden") return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-[1.5rem] bg-[#1a1815] p-4 text-white shadow-[var(--shadow-hero)] sm:p-5">
+    <div className="fixed inset-x-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 mx-auto max-w-md rounded-[1.5rem] bg-[#2e2a22] p-4 text-white shadow-[var(--shadow-hero)] sm:bottom-4 sm:p-5">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-lg">
-          📲
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+          <SmartphoneIcon className="h-5 w-5" strokeWidth={1.8} />
         </div>
 
         <div className="min-w-0 flex-1">
@@ -102,7 +103,7 @@ export default function InstallAppPrompt() {
               <button
                 type="button"
                 onClick={install}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-xs font-semibold text-[#1a1815] transition hover:bg-[#f2efe6] focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-xs font-semibold text-[#2e2a22] transition hover:bg-[#ece4d6] focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 {t("installApp.install")}
               </button>

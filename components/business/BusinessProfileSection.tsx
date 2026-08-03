@@ -29,30 +29,30 @@ export function BusinessProfileSection({
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
             Business Profile
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             Manage public details
           </h2>
-          <p className="mt-2 max-w-2xl font-semibold leading-7 text-[#6b6558]">
+          <p className="mt-2 max-w-2xl font-semibold leading-7 text-[#6b6152]">
             Keep your public business information clear so customers know where
             to collect their surprise bag.
           </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
-          <div className="rounded-3xl bg-white p-5 text-center shadow-[var(--shadow-soft)]">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ece7da] text-2xl font-black text-[#5c7a5c]">
+          <div className="soft-raised rounded-3xl p-5 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#a67c52] text-2xl font-black text-white">
               {profileName.trim().slice(0, 2).toUpperCase() || "AG"}
             </div>
-            <p className="mt-3 text-sm font-black text-[#5c7a5c]">
+            <p className="mt-3 text-sm font-black text-[#a67c52]">
               Logo preview
             </p>
           </div>
-          <div className="rounded-3xl bg-[#ece7da] p-5 text-center">
-            <div className="mx-auto h-16 rounded-2xl bg-gradient-to-br from-[#d9d5cb] to-[#ece7da] shadow-inner" />
-            <p className="mt-3 text-sm font-black text-[#6b6558]">
+          <div className="rounded-3xl bg-[#f4efe4] p-5 text-center">
+            <div className="soft-pressed mx-auto h-16 rounded-2xl" />
+            <p className="mt-3 text-sm font-black text-[#6b6152]">
               Cover image preview
             </p>
           </div>
@@ -60,7 +60,7 @@ export function BusinessProfileSection({
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
           <span>
             Business name <RequiredMark />
           </span>
@@ -71,12 +71,12 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder="GMBH1 Bakery"
           />
-          <span className="text-xs font-bold text-[#6b6558]">
+          <span className="text-xs font-bold text-[#6b6152]">
             {profileName.length}/80
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
           <span>
             Business type <RequiredMark />
           </span>
@@ -87,12 +87,12 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder="Bakery"
           />
-          <span className="text-xs font-bold text-[#6b6558]">
+          <span className="text-xs font-bold text-[#6b6152]">
             {profileType.length}/60
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
           <span>
             Address <RequiredMark />
           </span>
@@ -103,12 +103,12 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder="Rustaveli Avenue, Tbilisi"
           />
-          <span className="text-xs font-bold text-[#6b6558]">
+          <span className="text-xs font-bold text-[#6b6152]">
             {profileAddress.length}/160
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
           Phone
           <input
             value={profilePhone}
@@ -119,7 +119,7 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder="+995 555 123 456"
           />
-          <span className="text-xs font-bold text-[#6b6558]">
+          <span className="text-xs font-bold text-[#6b6152]">
             {profilePhone.length}/40
           </span>
         </label>

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
   <title id="title">ArGadaagdo maskable app icon</title>
-  <desc id="description">Near-black maskable icon with centered ArGadaagdo initials in cream, kept within the safe zone.</desc>
-  <rect width="512" height="512" fill="#1a1815"/>
-  <circle cx="256" cy="256" r="150" fill="#f2efe6"/>
-  <text x="256" y="292" fill="#1a1815" font-family="Arial, Helvetica, sans-serif" font-size="156" font-weight="900" text-anchor="middle">AG</text>
+  <desc id="description">Warm amber maskable icon with centered ArGadaagdo initials in cream, kept within the safe zone.</desc>
+  <rect width="512" height="512" fill="#a67c52"/>
+  <circle cx="256" cy="256" r="150" fill="#ece4d6"/>
+  <text x="256" y="292" fill="#2e2a22" font-family="Arial, Helvetica, sans-serif" font-size="156" font-weight="900" text-anchor="middle">AG</text>
 </svg>

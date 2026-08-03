@@ -1,3 +1,4 @@
+import { ClockIcon, XIcon } from "@/components/icons";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import { formatPickupWindow } from "@/lib/offerLifecycle";
 import type { Order } from "@/lib/types";
@@ -26,22 +27,22 @@ export function PickupVerificationModal({
   onSubmit,
 }: PickupVerificationModalProps) {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1a1815]/60 px-4 py-6 sm:py-10">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#2e2a22]/60 px-4 py-6 sm:py-10">
       <div className="mx-auto flex min-h-full max-w-lg items-center">
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="pickup-verification-title"
-          className="w-full rounded-[2rem] bg-white p-5 shadow-2xl sm:p-7"
+          className="w-full rounded-[2rem] bg-[#ece4d6] p-5 shadow-[16px_16px_32px_#d1c6b0,-16px_-16px_32px_#ffffff] sm:p-7"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
+              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
                 Pickup Operations
               </p>
               <h3
                 id="pickup-verification-title"
-                className="mt-2 text-2xl font-black text-[#1a1815]"
+                className="mt-2 text-2xl font-black text-[#2e2a22]"
               >
                 Verify Customer Pickup Code
               </h3>
@@ -52,21 +53,22 @@ export function PickupVerificationModal({
               onClick={onClose}
               disabled={updatingOrderId !== null}
               aria-label="Close pickup verification"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#ece7da] font-black text-[#1a1815] transition hover:bg-[#d9d5cb] disabled:cursor-not-allowed disabled:opacity-60"
+              className="soft-raised flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2e2a22] transition disabled:cursor-not-allowed disabled:opacity-60"
             >
-              ×
+              <XIcon className="h-4 w-4" strokeWidth={1.8} />
             </button>
           </div>
 
-          <div className="mt-5 rounded-3xl bg-[#ece7da] p-4">
-            <p className="text-lg font-black text-[#1a1815]">
+          <div className="mt-5 rounded-3xl bg-[#f4efe4] p-4">
+            <p className="text-lg font-black text-[#2e2a22]">
               {order.offers?.title || t("common.offerUnavailable")}
             </p>
-            <p className="mt-2 font-semibold text-[#6b6558]">
+            <p className="mt-2 font-semibold text-[#6b6152]">
               {t("businessDashboard.customer")}:{" "}
               {order.profiles?.email || t("common.unavailable")}
             </p>
-            <p className="mt-1 font-semibold text-[#6b6558]">
+            <p className="mt-1 flex items-center gap-1.5 font-semibold text-[#6b6152]">
+              <ClockIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
               {t("common.pickup")}:{" "}
               {order.offers
                 ? formatPickupWindow(order.offers, language)
@@ -74,14 +76,14 @@ export function PickupVerificationModal({
             </p>
           </div>
 
-          <p className="mt-5 font-semibold leading-7 text-[#6b6558]">
+          <p className="mt-5 font-semibold leading-7 text-[#6b6152]">
             Ask the customer to show the pickup code from their Orders page.
             Enter it here before handing over the order.
           </p>
 
           <label
             htmlFor="pickup-verification-code"
-            className="mt-5 block text-sm font-black uppercase tracking-wide text-[#6b6558]"
+            className="mt-5 block text-sm font-black uppercase tracking-wide text-[#6b6152]"
           >
             Pickup Code
           </label>

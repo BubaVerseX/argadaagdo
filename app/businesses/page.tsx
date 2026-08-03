@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
+import { MapPinIcon } from "@/components/icons";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
   getRatingLabel,
@@ -178,13 +179,13 @@ export default function BusinessesPage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-10">
-            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] md:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] md:text-sm">
               Local businesses
             </p>
-            <h1 className="mt-3 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
+            <h1 className="mt-3 text-3xl font-black leading-tight text-[#2e2a22] sm:text-4xl md:text-5xl">
               Discover verified Tbilisi businesses
             </h1>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[#6b6558] md:text-lg">
+            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[#6b6152] md:text-lg">
               Search bakeries, cafes, restaurants and shops that are approved
               to publish surprise bags on ArGadaagdo.
             </p>
@@ -258,7 +259,7 @@ export default function BusinessesPage() {
           </FilterBar>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-black text-[#6b6558]">
+            <p className="font-black text-[#6b6152]">
               {filteredBusinesses.length}{" "}
               {filteredBusinesses.length === 1 ? "business" : "businesses"}
             </p>
@@ -280,11 +281,11 @@ export default function BusinessesPage() {
           )}
 
           {!loading && filteredBusinesses.length === 0 && (
-            <div className="mt-6 rounded-3xl bg-white p-8 text-center shadow-[var(--shadow-soft)]">
-              <h2 className="text-2xl font-black text-[#1a1815]">
+            <div className="soft-raised mt-6 rounded-3xl p-8 text-center">
+              <h2 className="text-2xl font-black text-[#2e2a22]">
                 No businesses found
               </h2>
-              <p className="mx-auto mt-2 max-w-lg font-semibold leading-7 text-[#6b6558]">
+              <p className="mx-auto mt-2 max-w-lg font-semibold leading-7 text-[#6b6152]">
                 Try clearing filters or browsing offers directly. New verified
                 businesses will appear here as the pilot grows.
               </p>
@@ -307,22 +308,22 @@ export default function BusinessesPage() {
                 <Link
                   key={business.id}
                   href={`/businesses/${business.id}`}
-                  className="premium-card rounded-3xl p-5 transition hover:-translate-y-1 hover:shadow-xl sm:p-6"
+                  className="premium-card rounded-3xl p-5 transition hover:-translate-y-1 sm:p-6"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#eef1e8] text-2xl font-black text-[#5c7a5c]">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#a67c52] text-2xl font-black text-white">
                       {getBusinessInitials(business.name)}
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="break-words text-2xl font-black">
+                        <h2 className="break-words text-2xl font-black text-[#2e2a22]">
                           {business.name}
                         </h2>
-                        <span className="rounded-full bg-[#eef1e8] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+                        <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
                           Verified
                         </span>
                       </div>
-                      <p className="mt-2 font-semibold text-[#6b6558]">
+                      <p className="mt-2 font-semibold text-[#6b6152]">
                         {business.business_type || "Food business"}
                       </p>
                     </div>
@@ -331,25 +332,26 @@ export default function BusinessesPage() {
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
                     <div className="rounded-2xl bg-yellow-50 p-4">
                       <p className="text-xs font-black text-yellow-800">Rating</p>
-                      <p className="mt-1 text-sm font-black text-[#1a1815]">
+                      <p className="mt-1 text-sm font-black text-[#2e2a22]">
                         {getRatingLabel(rating)}
                       </p>
                     </div>
-                    <div className="rounded-2xl bg-[#eef1e8] p-4">
-                      <p className="text-xs font-black text-[#5c7a5c]">Offers</p>
-                      <p className="mt-1 text-2xl font-black text-[#1a1815]">
+                    <div className="rounded-2xl bg-[#f4efe4] p-4">
+                      <p className="text-xs font-black text-[#a67c52]">Offers</p>
+                      <p className="mt-1 text-2xl font-black text-[#2e2a22]">
                         {activeOfferCount}
                       </p>
                     </div>
-                    <div className="rounded-2xl bg-[#ece7da] p-4">
-                      <p className="text-xs font-black text-[#6b6558]">Sort ID</p>
-                      <p className="mt-1 text-2xl font-black text-[#1a1815]">
+                    <div className="rounded-2xl bg-[#f4efe4] p-4">
+                      <p className="text-xs font-black text-[#6b6152]">Sort ID</p>
+                      <p className="mt-1 text-2xl font-black text-[#2e2a22]">
                         #{business.id}
                       </p>
                     </div>
                   </div>
 
-                  <p className="mt-4 font-semibold leading-7 text-[#6b6558]">
+                  <p className="mt-4 flex items-center gap-1.5 font-semibold leading-7 text-[#6b6152]">
+                    <MapPinIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
                     {business.address || "Address unavailable"}
                   </p>
 

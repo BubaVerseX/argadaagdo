@@ -51,32 +51,32 @@ function DiscoverOfferCard({
   return (
     <Link
       href={`/offers/${offer.id}`}
-      className="overflow-hidden rounded-[1.5rem] bg-white shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-hero)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+      className="soft-raised block rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
     >
-      <div className="photo-warm-overlay relative h-44 bg-[#ece7da]">
+      <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-44 overflow-hidden bg-[#f4efe4]">
         <OfferImage
           src={offer.image_url}
           alt={offer.title}
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={priority}
         />
-        <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-xs font-semibold text-[#1a1815] shadow-sm">
+        <span className="soft-raised pointer-events-none absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold text-[#2e2a22]">
           {offer.category || "Other"}
         </span>
       </div>
-      <div className="p-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#6b6558]">
+      <div className="pt-4">
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#6b6152]">
           {offer.businesses?.name || "Local business"}
         </p>
-        <h3 className="mt-2 text-xl font-bold tracking-tight text-[#1a1815]">{offer.title}</h3>
+        <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-[#2e2a22]">{offer.title}</h3>
         <div className="mt-3 flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#ece7da] px-3 py-1.5 text-sm font-bold text-[#5c7a5c]">
+          <span className="rounded-full bg-[#f4efe4] px-3 py-1.5 text-sm font-bold text-[#a67c52]">
             {formatMoney(offer.price)}
           </span>
-          <span className="rounded-full bg-[#ece7da] px-3 py-1.5 text-sm font-semibold text-[#6b6558]">
+          <span className="rounded-full bg-[#f4efe4] px-3 py-1.5 text-sm font-semibold text-[#6b6152]">
             {formatPickupWindow(offer, language)}
           </span>
-          <span className="rounded-full bg-[#ece7da] px-3 py-1.5 text-sm font-semibold text-[#6b6558]">
+          <span className="rounded-full bg-[#f4efe4] px-3 py-1.5 text-sm font-semibold text-[#6b6152]">
             {getRatingLabel(rating, language)}
           </span>
         </div>
@@ -180,13 +180,13 @@ export default function DiscoverClient() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-7xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
               Discover
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-6xl">
               Find your next surprise bag.
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
               Browse popular offers, newest drops, best-rated businesses and
               pickup windows ending soon.
             </p>
@@ -232,13 +232,13 @@ export default function DiscoverClient() {
                 language={language}
               />
 
-              <section className="rounded-[1.75rem] bg-[#f2efe6] p-5 shadow-[var(--shadow-soft)] sm:p-8">
+              <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+                    <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
                       Best Rated Businesses
                     </p>
-                    <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                    <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
                       Trusted local places
                     </h2>
                   </div>
@@ -252,11 +252,11 @@ export default function DiscoverClient() {
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                   {discoverSections.bestRatedBusinesses.length === 0 && (
-                    <div className="rounded-3xl bg-[#ece7da] p-6 md:col-span-2 xl:col-span-4">
-                      <p className="text-lg font-black text-[#1a1815]">
+                    <div className="rounded-3xl bg-[#f4efe4] p-6 md:col-span-2 xl:col-span-4">
+                      <p className="text-lg font-black text-[#2e2a22]">
                         No rated businesses yet.
                       </p>
-                      <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+                      <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
                         Businesses will appear here once customers start rating
                         completed pickups.
                       </p>
@@ -267,18 +267,18 @@ export default function DiscoverClient() {
                     <Link
                       key={business.id}
                       href={`/businesses/${business.id}`}
-                      className="rounded-3xl bg-[#ece7da] p-5 transition hover:-translate-y-1 hover:shadow-[var(--shadow-hero)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                      className="soft-raised rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                     >
-                      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
+                      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
                         {business.business_type || "Food business"}
                       </p>
-                      <h3 className="mt-2 text-xl font-black text-[#1a1815]">
+                      <h3 className="mt-2 text-xl font-black text-[#2e2a22]">
                         {business.name}
                       </h3>
-                      <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
+                      <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
                         {business.address || "Tbilisi"}
                       </p>
-                      <p className="mt-3 rounded-full bg-white px-3 py-1.5 text-sm font-black text-yellow-800">
+                      <p className="soft-pressed mt-3 rounded-full px-3 py-1.5 text-sm font-black text-yellow-800">
                         {getRatingLabel(ratingSummaries[business.id], language)}
                       </p>
                     </Link>
@@ -286,14 +286,14 @@ export default function DiscoverClient() {
                 </div>
               </section>
 
-              <section className="rounded-[1.75rem] bg-[#f2efe6] p-5 shadow-[var(--shadow-soft)] sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+              <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
+                <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
                   Location
                 </p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+                <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
                   Find pickup addresses easily
                 </h2>
-                <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6558]">
+                <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
                   Every offer shows the business address and a map link so you
                   can plan pickup before reserving.
                 </p>
@@ -324,13 +324,13 @@ function DiscoverOfferSection({
   prioritizeFirst?: boolean;
 }) {
   return (
-    <section className="rounded-[1.75rem] bg-[#f2efe6] p-5 shadow-[var(--shadow-soft)] sm:p-8">
+    <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
             {title}
           </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">{text}</h2>
+          <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">{text}</h2>
         </div>
         <Link
           href="/offers"
@@ -342,11 +342,11 @@ function DiscoverOfferSection({
 
       <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {offers.length === 0 && (
-          <div className="rounded-3xl bg-[#ece7da] p-6 md:col-span-2 xl:col-span-4">
-            <p className="text-lg font-black text-[#1a1815]">
+          <div className="rounded-3xl bg-[#f4efe4] p-6 md:col-span-2 xl:col-span-4">
+            <p className="text-lg font-black text-[#2e2a22]">
               No offers in this section yet.
             </p>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
               New surprise bags will appear here as businesses publish offers.
             </p>
           </div>

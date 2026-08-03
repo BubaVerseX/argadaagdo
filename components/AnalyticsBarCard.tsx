@@ -5,10 +5,10 @@ const toneStyles: Record<
   { card: string; label: string; bar: string; track: string }
 > = {
   green: {
-    card: "bg-white text-[#1a1815]",
-    label: "text-[#5c7a5c]",
-    bar: "bg-[#5c7a5c]",
-    track: "bg-[#eef1e8]",
+    card: "soft-raised text-[#2e2a22]",
+    label: "text-[#a67c52]",
+    bar: "bg-[#a67c52]",
+    track: "bg-[#f4efe4]",
   },
   yellow: {
     card: "bg-yellow-50 text-yellow-950",
@@ -23,9 +23,9 @@ const toneStyles: Record<
     track: "bg-red-100",
   },
   neutral: {
-    card: "bg-[#ece7da] text-[#1a1815]",
-    label: "text-[#6b6558]",
-    bar: "bg-[#8a8272]",
+    card: "bg-[#f4efe4] text-[#2e2a22]",
+    label: "text-[#6b6152]",
+    bar: "bg-[#8a8072]",
     track: "bg-white",
   },
 };
@@ -50,7 +50,7 @@ export default function AnalyticsBarCard({
 
   return (
     <div
-      className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] sm:rounded-3xl sm:p-5 ${styles.card}`}
+      className={`rounded-2xl p-4 sm:rounded-3xl sm:p-5 ${styles.card}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
