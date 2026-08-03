@@ -53,6 +53,10 @@ export const metadata: Metadata = {
     // (hides Safari chrome) — without it, "Add to Home Screen" can silently
     // fall back to opening inside Safari instead of full-screen.
     "apple-mobile-web-app-capable": "yes",
+
+    // Talent Protocol verification
+    "talentapp:project_verification":
+      "cb3b653b92cfc9e35bf68e3b8430bc1606628d56462d120b76e4e5f33d6fbddf50ed31c35c852219c7dbb6e3f9509866519a33bc798635634e00a62dd4601b38",
   },
   openGraph: {
     title: "ArGadaagdo | Rescue Good Food in Tbilisi",
