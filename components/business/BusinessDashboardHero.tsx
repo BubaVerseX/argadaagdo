@@ -21,38 +21,38 @@ export function BusinessDashboardHero({
         Business control center
       </p>
 
-      <h1 className="mt-4 text-3xl font-black text-[#1a1815] sm:text-4xl md:text-5xl">
+      <h1 className="mt-4 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-5xl">
         {t("businessDashboard.welcome")}, {businessName}
       </h1>
 
-      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6558] sm:mt-4 sm:text-lg">
+      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6152] sm:mt-4 sm:text-lg">
         {t("businessDashboard.welcomeText")}
       </p>
 
       <div className="mt-6 grid gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-4">
         <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-[#5c7a5c]">
+          <p className="text-sm font-black text-[#a67c52]">
             {t("businessDashboard.myOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-black text-[#1a1815] sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-black text-[#2e2a22] sm:text-4xl">
             {totalOffers}
           </h2>
         </div>
 
         <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-[#5c7a5c]">
+          <p className="text-sm font-black text-[#a67c52]">
             {t("businessProfile.activeOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-black text-[#1a1815] sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-black text-[#2e2a22] sm:text-4xl">
             {activeOffers}
           </h2>
         </div>
 
         <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-[#5c7a5c]">
+          <p className="text-sm font-black text-[#a67c52]">
             {t("orders.reserved")}
           </p>
-          <h2 className="mt-1 text-3xl font-black text-[#1a1815] sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-black text-[#2e2a22] sm:text-4xl">
             {reservedOrders}
           </h2>
         </div>

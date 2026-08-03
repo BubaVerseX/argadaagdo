@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #d9d5cb;
-  --foreground: #1a1815;
-  --surface: #f2efe6;
-  --surface-muted: #ece7da;
-  --text-secondary: #6b6558;
-  --text-tertiary: #8a8272;
-  --brand: #5c7a5c;
-  --brand-strong: #4a654a;
-  --brand-soft: rgba(92, 122, 92, 0.12);
-  --dark: #1a1815;
-  --dark-strong: #2c2822;
-  --border-soft: rgba(0, 0, 0, 0.06);
-  --shadow-soft: 0 3px 16px rgba(37, 34, 32, 0.06);
-  --shadow-hero: 0 30px 80px rgba(37, 34, 32, 0.16);
+  --background: #ece4d6;
+  --foreground: #2e2a22;
+  --surface: #ece4d6;
+  --surface-alt: #f4efe4;
+  --surface-muted: #f4efe4;
+  --text-secondary: #6b6152;
+  --text-tertiary: #8a8072;
+  --accent: #a67c52;
+  --accent-soft: rgba(166, 124, 82, 0.14);
+  --dark: #2e2a22;
+  --dark-strong: #1f1c16;
+  --shadow-dark: #d1c6b0;
+  --shadow-light: #ffffff;
+  --shadow-soft: 0 3px 16px rgba(90, 70, 45, 0.1);
+  --shadow-hero: 0 30px 80px rgba(90, 70, 45, 0.22);
 }
 
 @theme inline {
@@ -70,7 +71,7 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #5c7a5c;
+  outline: 2px solid #a67c52;
   outline-offset: 2px;
 }
 
@@ -79,13 +80,13 @@ textarea:focus-visible {
 }
 
 .premium-button:active {
-  background: var(--dark-strong);
-  transform: scale(0.97);
+  box-shadow: inset 4px 4px 9px #d1c6b0, inset -4px -4px 9px #ffffff;
+  transform: scale(0.98);
 }
 
 .premium-button-secondary:active {
-  background: rgba(0, 0, 0, 0.08);
-  transform: scale(0.97);
+  background: rgba(46, 42, 34, 0.06);
+  transform: scale(0.98);
 }
 
 input,
@@ -95,13 +96,22 @@ textarea {
 }
 
 ::selection {
-  background: rgba(92, 122, 92, 0.22);
+  background: rgba(166, 124, 82, 0.22);
 }
 
 .app-shell {
   min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
+  /* Clears the fixed floating bottom tab bar (mobile only — the tab bar is
+     lg:hidden, so no reservation is needed at the lg breakpoint). */
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .app-shell {
+    padding-bottom: 0;
+  }
 }
 
 .premium-container {
@@ -109,26 +119,49 @@ textarea {
   margin-inline: auto;
 }
 
+/* Core neumorphic shadow system — the signature visual language of this
+   design. Warm brown-tinted shadow tones only, never plain gray. */
+.soft-raised {
+  background: var(--background);
+  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+}
+
+.soft-pressed {
+  background: var(--background);
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+    inset -5px -5px 10px var(--shadow-light);
+}
+
+/* Organic "blob" photo mask — vary the percentages per instance (see
+   .blob-mask-2 / .blob-mask-3) for organic variety, always paired with
+   .soft-raised and overflow:hidden on the same element. */
+.blob-mask {
+  border-radius: 62% 38% 55% 45% / 45% 55% 45% 55%;
+}
+
+.blob-mask-2 {
+  border-radius: 42% 58% 65% 35% / 55% 45% 55% 45%;
+}
+
+.blob-mask-3 {
+  border-radius: 55% 45% 40% 60% / 40% 40% 60% 60%;
+}
+
 .premium-surface {
-  border: 1px solid var(--border-soft);
   border-radius: 2rem;
-  background: rgba(242, 239, 230, 0.82);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: var(--surface);
+  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
 }
 
 .premium-card {
-  border: 1px solid var(--border-soft);
   border-radius: 1.75rem;
   background: var(--surface);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
 }
 
 .premium-muted-card {
-  border: 1px solid var(--border-soft);
   border-radius: 1.5rem;
-  background: var(--surface-muted);
+  background: var(--surface-alt);
 }
 
 .premium-button {
@@ -137,21 +170,20 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--dark);
-  color: white;
+  background: var(--background);
+  color: var(--foreground);
   font-weight: 700;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
 }
 
 .premium-button:hover {
-  background: var(--dark-strong);
   transform: translateY(-1px);
 }
 
 .premium-button:disabled,
 .premium-button[aria-disabled="true"] {
-  background: #b9b4a6;
-  color: #ece7da;
+  background: var(--background);
+  color: var(--text-tertiary);
   box-shadow: none;
   transform: none;
   cursor: not-allowed;
@@ -163,21 +195,18 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  border: 1px solid rgba(0, 0, 0, 0.14);
   background: transparent;
-  color: var(--foreground);
+  color: var(--text-secondary);
   font-weight: 700;
 }
 
 .premium-button-secondary:hover {
-  background: rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
+  background: rgba(46, 42, 34, 0.04);
 }
 
 .premium-button-secondary:disabled,
 .premium-button-secondary[aria-disabled="true"] {
-  border-color: rgba(0, 0, 0, 0.08);
-  color: #b9b4a6;
+  color: var(--text-tertiary);
   cursor: not-allowed;
 }
 
@@ -188,17 +217,17 @@ textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--surface-muted);
+  background: var(--background);
   color: var(--foreground);
   font-weight: 700;
+  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
 }
 
 .premium-badge {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  border: 1px solid var(--border-soft);
-  background: var(--surface);
+  background: var(--surface-alt);
   color: var(--text-secondary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -210,26 +239,28 @@ textarea {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  background: #ffffff;
-  color: var(--brand);
+  background: var(--background);
+  color: var(--accent);
   font-size: 0.75rem;
   font-weight: 700;
-  box-shadow: var(--shadow-soft);
+  box-shadow: 5px 5px 12px var(--shadow-dark), -5px -5px 12px var(--shadow-light);
 }
 
 .premium-input {
   min-height: 3rem;
   border-radius: 1rem;
-  border: 1px solid var(--border-soft);
-  background: var(--surface);
+  border: none;
+  background: var(--background);
   color: var(--foreground);
   font-weight: 500;
   outline: none;
+  box-shadow: inset 5px 5px 10px var(--shadow-dark),
+    inset -5px -5px 10px var(--shadow-light);
 }
 
 .premium-input:focus {
-  border-color: rgba(92, 122, 92, 0.55);
-  box-shadow: 0 0 0 4px rgba(92, 122, 92, 0.12);
+  box-shadow: inset 4px 4px 8px var(--shadow-dark),
+    inset -4px -4px 8px var(--shadow-light), 0 0 0 3px var(--accent-soft);
 }
 
 .subtle-lift:hover {
@@ -249,9 +280,8 @@ textarea {
   inset: 0;
   background: linear-gradient(
     160deg,
-    rgba(90, 62, 40, 0.38),
-    rgba(140, 100, 60, 0.12) 55%,
-    rgba(40, 30, 20, 0.3)
+    rgba(120, 90, 50, 0.28),
+    rgba(60, 45, 25, 0.08)
   );
   mix-blend-mode: multiply;
   pointer-events: none;

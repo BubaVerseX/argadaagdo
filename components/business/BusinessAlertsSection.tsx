@@ -13,7 +13,7 @@ export function BusinessAlertsSection({ alerts }: BusinessAlertsSectionProps) {
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
             Business alerts
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -21,7 +21,7 @@ export function BusinessAlertsSection({ alerts }: BusinessAlertsSectionProps) {
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-[#6b6558] sm:text-right">
+        <p className="max-w-xl text-sm font-semibold text-[#6b6152] sm:text-right">
           Quick signals for reservations, pickups, sold-out risk and expired
           offers.
         </p>
@@ -31,7 +31,7 @@ export function BusinessAlertsSection({ alerts }: BusinessAlertsSectionProps) {
         {alerts.map((alert) => (
           <div
             key={alert.title}
-            className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] ${alert.className}`}
+            className={`rounded-2xl p-4 ${alert.className}`}
           >
             <p className="font-black">{alert.title}</p>
             <p className="mt-2 text-sm font-semibold leading-6">

@@ -1,4 +1,5 @@
 import OfferImage from "@/components/OfferImage";
+import { PlusIcon, StarIcon } from "@/components/icons";
 import { formatAnalyticsMoney, type OfferAnalytics } from "@/lib/analytics";
 import type { OfferIntelligence } from "@/lib/marketplaceIntelligence";
 import {
@@ -91,23 +92,23 @@ export function OfferList({
     OfferIntelligence["badges"][number]["tone"],
     string
   > = {
-    green: "bg-[#eef1e8] text-[#5c7a5c]",
+    green: "bg-[#f4efe4] text-[#a67c52]",
     yellow: "bg-yellow-100 text-yellow-900",
     red: "bg-red-100 text-red-800",
-    gray: "bg-[#ece7da] text-[#6b6558]",
+    gray: "bg-[#f4efe4] text-[#6b6152]",
   };
   const recommendationToneStyles: Record<
     OfferIntelligence["recommendations"][number]["tone"],
     string
   > = {
-    green: "bg-white text-[#1a1815]",
+    green: "soft-raised text-[#2e2a22]",
     yellow: "bg-yellow-50 text-yellow-950",
     red: "bg-red-50 text-red-800",
   };
 
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
         Offer History
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -116,14 +117,14 @@ export function OfferList({
 
       <div className="mt-6 grid gap-4">
         {offers.length === 0 && (
-          <div className="rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-soft)] sm:p-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ece7da] text-2xl">
-              +
+          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
+            <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+              <PlusIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.8} />
             </div>
-            <h3 className="mt-4 text-2xl font-black text-[#1a1815]">
+            <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
               {emptyTitle || t("businessDashboard.noOffers")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
               {emptyText || t("businessDashboard.noOffersHint")}
             </p>
             {!emptyTitle && (
@@ -147,17 +148,17 @@ export function OfferList({
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
-            <div key={offer.id} className="grid gap-5 rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+            <div key={offer.id} className="soft-raised grid gap-5 rounded-3xl p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-24 sm:rounded-2xl">
+                  <div className="soft-raised blob-mask-2 relative isolate h-20 w-20 shrink-0 overflow-hidden sm:h-24 sm:w-24">
                     <OfferImage src={offer.image_url} alt={offer.title} sizes="96px" />
                   </div>
 
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-xl font-black">{offer.title}</h3>
-                      <span className="rounded-full bg-[#ece7da] px-3 py-1 text-xs font-black text-[#5c7a5c]">
+                      <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black text-[#a67c52]">
                         {normalizeOfferCategory(offer.category)}
                       </span>
                       <span
@@ -167,16 +168,17 @@ export function OfferList({
                       </span>
                     </div>
 
-                    <p className="font-medium text-[#6b6558]">
+                    <p className="font-medium text-[#6b6152]">
                       {formatMoney(offer.price)} · Quantity: {offer.quantity}
                     </p>
-                    <p className="text-[#6b6558]">
+                    <p className="text-[#6b6152]">
                       {t("common.pickup")}: {formatPickupWindow(offer, language)}
                     </p>
-                    <p className="text-sm font-bold text-yellow-700">
-                      ⭐ {getRatingLabel(rating, language)}
+                    <p className="flex items-center gap-1.5 text-sm font-bold text-yellow-700">
+                      <StarIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
+                      {getRatingLabel(rating, language)}
                     </p>
-                    <p className="mt-1 text-xs font-bold text-[#6b6558]">
+                    <p className="mt-1 text-xs font-bold text-[#6b6152]">
                       {t("businessDashboard.created")}:{" "}
                       {formatDisplayDateTime(offer.created_at, language)}
                     </p>
@@ -212,10 +214,10 @@ export function OfferList({
                     onClick={() => onToggleActive(offer)}
                     disabled={updatingOfferId !== null}
                     aria-label={`Toggle ${offer.title} active status`}
-                    className={`min-h-12 rounded-full px-5 py-3 font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                    className={`min-h-12 rounded-full px-5 py-3 font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                       offer.active
-                        ? "bg-[#5c7a5c] hover:bg-[#4a654a]"
-                        : "bg-[#8a8272] hover:bg-[#6b6558]"
+                        ? "bg-[#f4efe4] text-[#a67c52] hover:bg-[#ece4d6]"
+                        : "bg-[#f4efe4] text-[#6b6152] hover:bg-[#ece4d6]"
                     }`}
                   >
                     {updatingOfferId === offer.id
@@ -241,7 +243,7 @@ export function OfferList({
                     <button
                       onClick={() => onArchiveExpired(offer)}
                       disabled={updatingOfferId !== null}
-                      className="min-h-12 rounded-full bg-yellow-500 px-5 py-3 font-black text-yellow-950 transition hover:bg-yellow-400 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="min-h-12 rounded-full bg-yellow-50 px-5 py-3 font-black text-yellow-800 transition hover:bg-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {updatingOfferId === offer.id ? "Archiving..." : "Archive"}
                     </button>
@@ -250,7 +252,7 @@ export function OfferList({
                   <button
                     onClick={() => onDelete(offer)}
                     disabled={updatingOfferId !== null}
-                    className="min-h-12 rounded-full bg-[#1a1815] px-5 py-3 font-black text-white transition hover:bg-[#2c2822] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="min-h-12 rounded-full bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
                   </button>
@@ -258,7 +260,7 @@ export function OfferList({
               </div>
 
               {analytics && (
-                <div className="grid gap-3 rounded-2xl bg-[#ece7da] p-4 sm:grid-cols-2 xl:grid-cols-6">
+                <div className="grid gap-3 rounded-2xl bg-[#f4efe4] p-4 sm:grid-cols-2 xl:grid-cols-6">
                   {[
                     {
                       label: "Reservations",
@@ -285,11 +287,11 @@ export function OfferList({
                       value: `${analytics.pickupSuccessRate}%`,
                     },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-2xl bg-white p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+                    <div key={item.label} className="rounded-2xl bg-white/60 p-4">
+                      <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                         {item.label}
                       </p>
-                      <p className="mt-1 text-xl font-black text-[#1a1815]">
+                      <p className="mt-1 text-xl font-black text-[#2e2a22]">
                         {item.value}
                       </p>
                     </div>
@@ -298,7 +300,7 @@ export function OfferList({
               )}
 
               {intelligence && (
-                <div className="grid gap-3 rounded-2xl bg-[#ece7da] p-4 lg:grid-cols-[0.9fr_1.1fr]">
+                <div className="grid gap-3 rounded-2xl bg-[#f4efe4] p-4 lg:grid-cols-[0.9fr_1.1fr]">
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     {[
                       {
@@ -318,11 +320,11 @@ export function OfferList({
                         value: intelligence.reservationSpeed,
                       },
                     ].map((item) => (
-                      <div key={item.label} className="rounded-2xl bg-white p-4">
-                        <p className="text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+                      <div key={item.label} className="rounded-2xl bg-white/60 p-4">
+                        <p className="text-xs font-black uppercase tracking-wide text-[#a67c52]">
                           {item.label}
                         </p>
-                        <p className="mt-1 text-sm font-black text-[#1a1815]">
+                        <p className="mt-1 text-sm font-black text-[#2e2a22]">
                           {item.value}
                         </p>
                       </div>
@@ -346,7 +348,7 @@ export function OfferList({
               )}
 
               {isEditing && (
-                <div className="rounded-2xl bg-[#ece7da] p-4">
+                <div className="rounded-2xl bg-[#f4efe4] p-4">
                   <div className="grid gap-3 md:grid-cols-2">
                     <input
                       value={editTitle}

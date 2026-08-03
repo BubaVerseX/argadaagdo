@@ -89,7 +89,7 @@ export default function SettingsPage() {
       <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
-          <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-white" />
+          <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-[#f4efe4]" />
         </section>
       </main>
     );
@@ -139,10 +139,10 @@ export default function SettingsPage() {
             <p className="premium-badge px-4 py-2">
               Settings
             </p>
-            <h1 className="mt-4 text-3xl font-black text-[#1a1815] sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-5xl">
               Account management
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg">
               Manage language, profile, notifications and account security from
               one simple place.
             </p>
@@ -162,14 +162,14 @@ export default function SettingsPage() {
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
+                    <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
                       {card.title}
                     </p>
-                    <h2 className="mt-2 text-xl font-black text-[#1a1815]">
+                    <h2 className="mt-2 text-xl font-black text-[#2e2a22]">
                       {card.text}
                     </h2>
                   </div>
-                  <span className="w-fit rounded-full bg-[#eef1e8] px-3 py-1 text-xs font-black text-[#5c7a5c]">
+                  <span className="w-fit rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black text-[#a67c52]">
                     {card.status}
                   </span>
                 </div>
@@ -186,24 +186,24 @@ export default function SettingsPage() {
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
             <div className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
                 Language
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
                 Choose your language
               </h2>
-              <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+              <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
                 The language switcher updates this device immediately. Saving a
                 preferred language to your account is available on the profile
                 page.
               </p>
-              <div className="mt-5 inline-flex rounded-2xl bg-[#ece7da] p-3">
+              <div className="mt-5 inline-flex rounded-2xl bg-[#f4efe4] p-3">
                 <LanguageSwitcher />
               </div>
             </div>
 
             <div className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
                 Account security
               </p>
               <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -211,36 +211,36 @@ export default function SettingsPage() {
               </h2>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl bg-[#eef1e8] p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+                <div className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-[#a67c52]">
                     Email status
                   </p>
-                  <p className="mt-1 font-black text-[#1a1815]">
+                  <p className="mt-1 font-black text-[#2e2a22]">
                     {verified ? "Verified email" : "Email not verified"}
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-[#ece7da] p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+                <div className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                     Account role
                   </p>
-                  <p className="mt-1 font-black text-[#1a1815]">{roleLabel}</p>
+                  <p className="mt-1 font-black text-[#2e2a22]">{roleLabel}</p>
                 </div>
 
-                <div className="rounded-2xl bg-[#ece7da] p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+                <div className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                     Created
                   </p>
-                  <p className="mt-1 font-black text-[#1a1815]">
+                  <p className="mt-1 font-black text-[#2e2a22]">
                     {formatAccountDate(user?.created_at)}
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-[#ece7da] p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+                <div className="rounded-2xl bg-[#f4efe4] p-4">
+                  <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                     Last sign-in
                   </p>
-                  <p className="mt-1 font-black text-[#1a1815]">
+                  <p className="mt-1 font-black text-[#2e2a22]">
                     {formatAccountDate(user?.last_sign_in_at)}
                   </p>
                 </div>
@@ -250,15 +250,15 @@ export default function SettingsPage() {
 
           <div
             id="notifications"
-            className="mt-6 rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)] sm:mt-8 sm:p-8"
+            className="soft-raised mt-6 rounded-3xl p-5 sm:mt-8 sm:p-8"
           >
-            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
               Notifications
             </p>
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
               Email notifications
             </h2>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
               ArGadaagdo sends important account, reservation, pickup and
               rating emails through the configured transactional email provider.
             </p>
@@ -267,22 +267,22 @@ export default function SettingsPage() {
               {emailPlaceholders.map((placeholder) => (
                 <div
                   key={placeholder.event}
-                  className="rounded-2xl bg-[#eef1e8] p-4"
+                  className="rounded-2xl bg-[#f4efe4] p-4"
                 >
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="font-black text-[#1a1815]">
+                      <p className="font-black text-[#2e2a22]">
                         {placeholder.title}
                       </p>
-                      <p className="mt-1 text-sm font-semibold text-[#6b6558]">
+                      <p className="mt-1 text-sm font-semibold text-[#6b6152]">
                         {placeholder.trigger}
                       </p>
                     </div>
-                    <span className="w-fit rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+                    <span className="soft-raised w-fit rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
                       {placeholder.status} · {placeholder.recipient}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm font-semibold leading-6 text-[#6b6558]">
+                  <p className="mt-3 text-sm font-semibold leading-6 text-[#6b6152]">
                     {placeholder.note}
                   </p>
                 </div>
@@ -292,11 +292,11 @@ export default function SettingsPage() {
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <div className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
                 Privacy
               </p>
               <h2 className="mt-2 text-2xl font-black">Data controls</h2>
-              <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+              <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
                 For data export or account deletion requests, contact support.
                 We review these requests carefully because reservations,
                 ratings and business records may need to remain in marketplace
@@ -312,7 +312,7 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-red-50 p-5 shadow-[var(--shadow-soft)] sm:p-8">
+            <div className="rounded-3xl bg-red-50 p-5 sm:p-8">
               <p className="text-xs font-black uppercase tracking-widest text-red-700 sm:text-sm">
                 Danger Zone
               </p>
@@ -335,7 +335,7 @@ export default function SettingsPage() {
 
           <div className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
             <h2 className="text-2xl font-black">Password management</h2>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
               Forgot your password? Request a reset link from the sign-in page.
             </p>
             <Link

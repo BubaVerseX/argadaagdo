@@ -13,15 +13,15 @@ export default function NotFound() {
 
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-8 sm:px-6">
         <div className="premium-card w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eef1e8] text-2xl font-black text-[#1a1815] sm:h-20 sm:w-20">
+          <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-black text-[#a67c52] sm:h-20 sm:w-20">
             404
           </div>
 
-          <h1 className="mt-5 text-3xl font-black sm:mt-6 sm:text-5xl">
+          <h1 className="mt-5 text-3xl font-black text-[#2e2a22] sm:mt-6 sm:text-5xl">
             {t("notFound.title")}
           </h1>
 
-          <p className="mt-4 font-semibold text-[#6b6558]">
+          <p className="mt-4 font-semibold text-[#6b6152]">
             {t("notFound.text")}
           </p>
 

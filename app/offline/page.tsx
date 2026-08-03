@@ -1,27 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { WifiOffIcon } from "@/components/icons";
 import { useLanguage } from "@/lib/useLanguage";
 
 export default function OfflinePage() {
   const { t } = useLanguage();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#d9d5cb] px-4 text-[#1a1815]">
-      <div className="w-full max-w-md rounded-[1.75rem] bg-[#f2efe6] p-8 text-center shadow-[var(--shadow-soft)] sm:p-10">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white text-3xl shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-          📡
+    <main className="flex min-h-screen items-center justify-center bg-[#ece4d6] px-4 text-[#2e2a22]">
+      <div className="soft-raised w-full max-w-md rounded-[1.75rem] p-8 text-center sm:p-10">
+        <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+          <WifiOffIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6558]">
+        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6152]">
           {t("offline.badge")}
         </p>
 
-        <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-[#1a1815]">
+        <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-[#2e2a22]">
           {t("offline.title")}
         </h1>
 
-        <p className="mt-4 leading-[1.55] text-[#6b6558]">
+        <p className="mt-4 leading-[1.55] text-[#6b6152]">
           {t("offline.text")}
         </p>
 

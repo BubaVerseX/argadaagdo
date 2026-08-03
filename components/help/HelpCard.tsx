@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CheckIcon } from "@/components/icons";
 
 type HelpCardProps = {
   title: string;
   text: string;
-  icon?: string;
+  icon?: ReactNode;
   href?: string;
   actionLabel?: string;
   children?: ReactNode;
@@ -13,20 +14,20 @@ type HelpCardProps = {
 export function HelpCard({
   title,
   text,
-  icon = "✓",
+  icon = <CheckIcon className="h-5 w-5" strokeWidth={1.8} />,
   href,
   actionLabel,
   children,
 }: HelpCardProps) {
   return (
-    <article className="rounded-[1.75rem] bg-white p-5 shadow-[var(--shadow-soft)]">
+    <article className="soft-raised rounded-[1.75rem] p-5">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#ece7da] text-lg font-bold text-[#5c7a5c]">
+        <span className="soft-pressed flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-[#a67c52]">
           {icon}
         </span>
         <div>
-          <h3 className="text-lg font-bold text-[#1a1815]">{title}</h3>
-          <p className="mt-2 leading-[1.55] text-[#6b6558]">{text}</p>
+          <h3 className="text-lg font-bold text-[#2e2a22]">{title}</h3>
+          <p className="mt-2 leading-[1.55] text-[#6b6152]">{text}</p>
         </div>
       </div>
       {children && <div className="mt-4">{children}</div>}

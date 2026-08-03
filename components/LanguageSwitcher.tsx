@@ -12,7 +12,7 @@ export default function LanguageSwitcher() {
   return (
     <div
       aria-label={t("language.switcherLabel")}
-      className="inline-flex rounded-full border border-black/[0.06] bg-white p-1 shadow-[0_3px_16px_rgba(37,34,32,0.06)]"
+      className="soft-pressed inline-flex rounded-full p-1"
       role="group"
     >
       {supportedLanguages.map((option) => {
@@ -25,10 +25,10 @@ export default function LanguageSwitcher() {
             onClick={() => setLanguage(option)}
             aria-pressed={active}
             aria-label={languageNames[option]}
-            className={`flex min-h-11 items-center rounded-full px-3 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5c7a5c] ${
+            className={`flex min-h-11 items-center rounded-full px-3 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a67c52] ${
               active
-                ? "bg-[#5c7a5c] text-white"
-                : "text-[#6b6558] hover:bg-[#5c7a5c]/10 hover:text-[#1a1815]"
+                ? "soft-raised text-[#a67c52]"
+                : "text-[#6b6152] hover:text-[#2e2a22]"
             }`}
           >
             {languageNames[option]}

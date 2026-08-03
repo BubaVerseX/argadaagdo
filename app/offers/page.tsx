@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { Pagination } from "@/components/Pagination";
+import { SearchBar } from "@/components/SearchBar";
+import { ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
 import {
   getConfirmedUser,
   getProfileById,
@@ -402,34 +404,34 @@ export default function OffersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#d9d5cb] text-[#1a1815]">
+    <main className="app-shell">
       <Navbar />
 
       <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="relative mx-auto max-w-7xl">
-          <div className="rounded-[1.75rem] bg-[#f2efe6] p-5 shadow-[var(--shadow-soft)] sm:p-6 md:rounded-[2rem] md:p-10">
+          <div className="soft-raised rounded-[1.75rem] p-5 sm:p-6 md:rounded-[2rem] md:p-10">
             <p className="premium-badge px-4 py-2">
               {t("offers.badge")}
             </p>
 
-            <h1 className="mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#1a1815] sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#2e2a22] sm:text-4xl md:text-6xl">
               {t("offers.title")}
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base leading-[1.55] text-[#6b6558] md:text-lg">
+            <p className="mt-3 max-w-2xl text-base leading-[1.55] text-[#6b6152] md:text-lg">
               {t("offers.subtitle")}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 md:flex-row">
-              <input
+              <SearchBar
                 value={search}
-                onChange={(event) => {
-                  setSearch(event.target.value);
+                onChange={(value) => {
+                  setSearch(value);
                   setPage(1);
                 }}
                 placeholder={t("offers.search")}
-                aria-label={t("offers.search")}
-                className="premium-input w-full px-4 py-3 md:max-w-xl"
+                label={t("offers.search")}
+                className="w-full md:max-w-xl"
               />
 
               <button
@@ -504,7 +506,7 @@ export default function OffersPage() {
                 <option value="rating-desc">Highest rated businesses</option>
               </select>
 
-              <label className="flex min-h-12 items-center justify-center gap-3 rounded-2xl bg-white px-5 py-3 font-semibold text-[#1a1815] shadow-[var(--shadow-soft)] md:justify-start">
+              <label className="soft-pressed flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-[#2e2a22] md:justify-start">
                 <input
                   type="checkbox"
                   checked={availableOnly}
@@ -512,14 +514,14 @@ export default function OffersPage() {
                     setAvailableOnly(event.target.checked);
                     setPage(1);
                   }}
-                  className="h-5 w-5 accent-[#5c7a5c]"
+                  className="h-5 w-5 accent-[#a67c52]"
                 />
                 {t("offers.availableOnly")}
               </label>
             </div>
 
-            <div className="mt-4 rounded-3xl bg-white p-5 text-sm leading-6 text-[#6b6558] shadow-[var(--shadow-soft)]">
-              <span className="font-semibold text-[#1a1815]">
+            <div className="soft-pressed mt-4 rounded-3xl p-5 text-sm leading-6 text-[#6b6152]">
+              <span className="font-semibold text-[#2e2a22]">
                 {t("offers.surpriseBagTitle")}
               </span>{" "}
               {t("offers.surpriseBagText")}
@@ -533,10 +535,10 @@ export default function OffersPage() {
           )}
 
           <div className="mt-8 sm:mt-10">
-            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl">
+            <h2 className="text-2xl font-extrabold tracking-[-0.02em] text-[#2e2a22] sm:text-3xl md:text-4xl">
               {t("offers.heading")}
             </h2>
-            <p className="mt-2 text-sm font-semibold text-[#6b6558]">
+            <p className="mt-2 text-sm font-semibold text-[#6b6152]">
               {formatAvailableOfferCount(filteredOffers.length, language)}
             </p>
           </div>
@@ -546,52 +548,52 @@ export default function OffersPage() {
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="h-[430px] animate-pulse rounded-[1.75rem] bg-[#f2efe6]"
+                  className="h-[430px] animate-pulse rounded-[1.75rem] bg-[#f4efe4]"
                 />
               ))}
             </div>
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="mt-8 overflow-hidden rounded-[1.75rem] bg-[#f2efe6] shadow-[var(--shadow-soft)]">
-              <div className="px-5 py-10 text-center sm:px-8 sm:py-12">
-                <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-[#5c7a5c]" />
-                <h3 className="mt-5 text-2xl font-extrabold text-[#1a1815] sm:text-3xl">
-                  {offers.length === 0
-                    ? t("offers.noOffers")
-                    : t("offers.noMatching")}
-                </h3>
+            <div className="soft-raised mt-8 rounded-[1.75rem] px-5 py-10 text-center sm:px-8 sm:py-12">
+              <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                <MapPinIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
+              </div>
+              <h3 className="mt-5 text-2xl font-extrabold text-[#2e2a22] sm:text-3xl">
+                {offers.length === 0
+                  ? t("offers.noOffers")
+                  : t("offers.noMatching")}
+              </h3>
 
-                <p className="mx-auto mt-3 max-w-xl text-base leading-[1.55] text-[#6b6558] sm:text-lg">
-                  {offers.length === 0
-                    ? t("offers.noOffersHint")
-                    : t("offers.noMatchingHint")}
+              <p className="mx-auto mt-3 max-w-xl text-base leading-[1.55] text-[#6b6152] sm:text-lg">
+                {offers.length === 0
+                  ? t("offers.noOffersHint")
+                  : t("offers.noMatchingHint")}
+              </p>
+
+              {offers.length === 0 && (
+                <p className="mx-auto mt-3 max-w-xl text-sm font-semibold leading-6 text-[#a67c52] sm:text-base">
+                  {t("offers.checkBackSoon")}
                 </p>
+              )}
 
-                {offers.length === 0 && (
-                  <p className="mx-auto mt-3 max-w-xl text-sm font-semibold leading-6 text-[#5c7a5c] sm:text-base">
-                    {t("offers.checkBackSoon")}
-                  </p>
+              <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                {filtersAreActive && (
+                  <button
+                    type="button"
+                    onClick={resetFilters}
+                    className="premium-button px-7 py-3"
+                  >
+                    {t("offers.clearFilters")}
+                  </button>
                 )}
 
-                <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-                  {filtersAreActive && (
-                    <button
-                      type="button"
-                      onClick={resetFilters}
-                      className="premium-button px-7 py-3"
-                    >
-                      {t("offers.clearFilters")}
-                    </button>
-                  )}
-
-                  <Link
-                    href="/"
-                    className="premium-button-secondary px-7 py-3"
-                  >
-                    {t("offers.backHome")}
-                  </Link>
-                </div>
+                <Link
+                  href="/"
+                  className="premium-button-secondary px-7 py-3"
+                >
+                  {t("offers.backHome")}
+                </Link>
               </div>
             </div>
           )}
@@ -604,10 +606,10 @@ export default function OffersPage() {
                 <section key={section.key}>
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <h3 className="text-xl font-bold tracking-tight sm:text-2xl">
+                      <h3 className="text-xl font-bold tracking-[-0.02em] text-[#2e2a22] sm:text-2xl">
                         {section.title}
                       </h3>
-                      <p className="mt-1 text-sm font-medium text-[#6b6558]">
+                      <p className="mt-1 text-sm font-medium text-[#6b6152]">
                         {formatAvailableOfferCount(section.offers.length, language)}
                       </p>
                     </div>
@@ -637,44 +639,49 @@ export default function OffersPage() {
                       return (
                         <div
                           key={offer.id}
-                          className="group overflow-hidden rounded-[1.75rem] bg-[#f2efe6] shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-hero)]"
+                          className="soft-raised group flex flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1"
                         >
-                          <div className="photo-warm-overlay relative h-52 overflow-hidden sm:h-56 md:h-60">
-                            <OfferImage
-                              src={offer.image_url}
-                              alt={offer.title}
-                              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                              priority={sectionIndex === 0 && offerIndex === 0}
-                              className="transition duration-500 group-hover:scale-105"
-                            />
+                          <div className="relative">
+                            <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
+                              <OfferImage
+                                src={offer.image_url}
+                                alt={offer.title}
+                                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                                priority={sectionIndex === 0 && offerIndex === 0}
+                                className="transition duration-500 group-hover:scale-105"
+                              />
+                            </div>
 
                             {discount && (
-                              <div className="premium-discount-badge pointer-events-none absolute left-4 top-4 px-3 py-1.5">
+                              <div className="premium-discount-badge pointer-events-none absolute left-2 top-2 px-3 py-1.5">
                                 -{discount}%
                               </div>
                             )}
 
-                            <div className="pointer-events-none absolute right-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-[#1a1815] shadow-sm">
+                            <div className="soft-raised pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#2e2a22]">
                               {getOfferCategory(offer)}
                             </div>
                           </div>
 
-                          <div className="p-4 sm:p-5 md:p-6">
+                          <div className="flex flex-1 flex-col pt-5">
                             <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0">
-                                <h4 className="text-xl font-bold leading-tight tracking-tight text-[#1a1815]">
+                                <h4 className="text-xl font-bold leading-tight tracking-[-0.02em] text-[#2e2a22]">
                                   {offer.title}
                                 </h4>
-                                <p className="mt-1.5 truncate text-sm font-medium text-[#6b6558]">
-                                  {offer.businesses?.name} · {businessAddress}
-                                </p>
+                                <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-[#6b6152]">
+                                  <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+                                  <span className="truncate">
+                                    {offer.businesses?.name} · {businessAddress}
+                                  </span>
+                                </div>
                               </div>
 
-                              <div className="shrink-0 rounded-2xl bg-white px-3 py-2 text-center shadow-sm">
-                                <p className="text-xl font-bold text-[#1a1815]">
+                              <div className="soft-pressed shrink-0 rounded-2xl px-3 py-2 text-center">
+                                <p className="text-xl font-bold text-[#2e2a22]">
                                   {offer.quantity}
                                 </p>
-                                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-[#8a8272]">
+                                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-[#8a8072]">
                                   {t("offers.boxesLeft")}
                                 </p>
                               </div>
@@ -682,23 +689,26 @@ export default function OffersPage() {
 
                             <div className="mt-4 flex items-end justify-between gap-4">
                               <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold tracking-tight text-[#5c7a5c]">
+                                <span className="text-2xl font-bold tracking-[-0.02em] text-[#a67c52]">
                                   {formatMoney(offer.price)}
                                 </span>
                                 {offer.old_price && (
-                                  <span className="text-sm font-medium text-[#8a8272] line-through">
+                                  <span className="text-sm font-medium text-[#8a8072] line-through">
                                     {formatMoney(offer.old_price)}
                                   </span>
                                 )}
                               </div>
-                              <p className="text-right text-xs font-semibold leading-5 text-[#8a8272]">
-                                {getOfferDateLabel(offer, language)}
-                                <br />
-                                {formatPickupWindow(offer, language)}
+                              <p className="flex items-center gap-1.5 text-right text-xs font-semibold leading-5 text-[#8a8072]">
+                                <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
+                                <span>
+                                  {getOfferDateLabel(offer, language)}
+                                  <br />
+                                  {formatPickupWindow(offer, language)}
+                                </span>
                               </p>
                             </div>
 
-                            <p className="mt-4 truncate text-xs font-semibold text-[#8a8272]">
+                            <p className="mt-4 truncate text-xs font-semibold text-[#8a8072]">
                               {getRatingLabel(rating, language)}
                             </p>
 
@@ -707,7 +717,7 @@ export default function OffersPage() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#1a1815] shadow-sm transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                              className="soft-raised mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                             >
                               {t("common.openMap")}
                             </a>
@@ -722,8 +732,11 @@ export default function OffersPage() {
                                     : `Add ${offer.title} to favorites`
                                 }
                                 aria-pressed={isFavorite}
-                                className="premium-button-secondary min-h-12 w-full px-6 py-3"
+                                className={`premium-button-secondary flex min-h-12 w-full items-center justify-center gap-2 px-6 py-3 ${
+                                  isFavorite ? "text-[#a67c52]" : ""
+                                }`}
                               >
+                                <HeartIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled={isFavorite} />
                                 {updatingFavoriteId === offer.id
                                   ? t("offers.updatingFavorite")
                                   : isFavorite

@@ -7,6 +7,7 @@ import { FAQAccordion } from "@/components/help/FAQAccordion";
 import { HelpCard } from "@/components/help/HelpCard";
 import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
+import { ArrowLeftIcon, ClockIcon, MapPinIcon, StoreIcon } from "@/components/icons";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { normalizeOfferCategory } from "@/lib/offerCategories";
@@ -195,15 +196,16 @@ export default function OfferDetailPage() {
         <div className="mx-auto max-w-6xl">
           <Link
             href="/offers"
-            className="premium-button-secondary px-5 py-2.5"
+            className="premium-button-secondary flex w-fit items-center gap-2 px-5 py-2.5"
           >
-            ← {t("offerDetail.back")}
+            <ArrowLeftIcon className="h-4 w-4" strokeWidth={1.8} />
+            {t("offerDetail.back")}
           </Link>
 
           {loading && (
             <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="h-80 animate-pulse rounded-[1.75rem] bg-white" />
-              <div className="h-80 animate-pulse rounded-[1.75rem] bg-white" />
+              <div className="h-80 animate-pulse rounded-[1.75rem] bg-[#f4efe4]" />
+              <div className="h-80 animate-pulse rounded-[1.75rem] bg-[#f4efe4]" />
             </div>
           )}
 
@@ -216,8 +218,8 @@ export default function OfferDetailPage() {
           {!loading && offer && (
             <>
               <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                <div className="premium-card overflow-hidden rounded-[1.75rem]">
-                  <div className="relative h-72 bg-[#ece7da] sm:h-96">
+                <div className="soft-raised rounded-[1.75rem] p-4">
+                  <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96">
                     <OfferImage
                       src={offer.image_url}
                       alt={offer.title}
@@ -229,14 +231,14 @@ export default function OfferDetailPage() {
 
                 <div className="premium-card rounded-[1.75rem] p-5 sm:p-8">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
+                    <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
                       {t("offerDetail.title")}
                     </p>
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+                    <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
                       {offerCategory}
                     </span>
                     {verifiedBusiness && (
-                      <span className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+                      <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
                         {t("businessProfile.verified")}
                       </span>
                     )}
@@ -248,20 +250,20 @@ export default function OfferDetailPage() {
 
                   <Link
                     href={`/businesses/${offer.business_id}`}
-                    className="mt-3 inline-flex min-h-11 items-center font-bold text-[#1a1815] transition hover:text-[#5c7a5c]"
+                    className="mt-3 inline-flex min-h-11 items-center font-bold text-[#2e2a22] transition hover:text-[#a67c52]"
                   >
                     {offer.businesses?.name || t("common.business")}
                   </Link>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                      <p className="text-sm font-black text-[#6b6558]">
+                    <div className="soft-raised rounded-3xl p-5">
+                      <p className="text-sm font-black text-[#6b6152]">
                         {t("common.price")}
                       </p>
-                      <p className="mt-2 text-4xl font-black text-[#5c7a5c]">
+                      <p className="mt-2 text-4xl font-black text-[#a67c52]">
                         {formatMoney(offer.price)}
                       </p>
-                      <p className="mt-2 text-sm font-bold text-[#6b6558]">
+                      <p className="mt-2 text-sm font-bold text-[#6b6152]">
                         {t("checkout.regularPrice")}:{" "}
                         {originalPrice > 0 ? (
                           <span className="line-through">
@@ -271,7 +273,7 @@ export default function OfferDetailPage() {
                           t("offerDetail.notListed")
                         )}
                       </p>
-                      <p className="mt-1 text-sm font-black text-[#5c7a5c]">
+                      <p className="mt-1 text-sm font-black text-[#a67c52]">
                         {t("offerDetail.savings")}:{" "}
                         {savingsAmount > 0
                           ? formatMoney(savingsAmount)
@@ -280,57 +282,57 @@ export default function OfferDetailPage() {
                     </div>
 
                     <div className="premium-muted-card rounded-3xl p-5">
-                      <p className="text-sm font-black text-[#6b6558]">
+                      <p className="text-sm font-black text-[#6b6152]">
                         {t("offerDetail.pickupDate")}
                       </p>
-                      <p className="mt-2 text-2xl font-black text-[#1a1815]">
+                      <p className="mt-2 text-2xl font-black text-[#2e2a22]">
                         {getOfferDateLabel(offer, language)}
                       </p>
-                      <p className="mt-1 text-sm font-bold text-[#6b6558]">
+                      <p className="mt-1 text-sm font-bold text-[#6b6152]">
                         {formatPickupTimeRange(offer, language)}
                       </p>
                     </div>
 
-                    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                      <p className="text-sm font-black text-[#6b6558]">
+                    <div className="soft-raised rounded-3xl p-5">
+                      <p className="text-sm font-black text-[#6b6152]">
                         {t("offerDetail.reviewSummary")}
                       </p>
-                      <p className="mt-2 text-2xl font-black text-[#1a1815]">
+                      <p className="mt-2 text-2xl font-black text-[#2e2a22]">
                         {averageRating ? `${averageRating}/5` : t("common.noReviews")}
                       </p>
-                      <p className="mt-1 text-sm font-bold text-[#6b6558]">
+                      <p className="mt-1 text-sm font-bold text-[#6b6152]">
                         {reviewCount > 0
                           ? `${reviewCount} ${t("common.reviews")}`
                           : t("common.noReviews")}
                       </p>
                     </div>
 
-                    <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-                      <p className="text-sm font-black text-[#6b6558]">
+                    <div className="soft-raised rounded-3xl p-5">
+                      <p className="text-sm font-black text-[#6b6152]">
                         {t("common.quantity")}
                       </p>
-                      <p className="mt-2 text-3xl font-black text-[#5c7a5c]">
+                      <p className="mt-2 text-3xl font-black text-[#a67c52]">
                         {offer.quantity}
                       </p>
-                      <p className="mt-1 text-sm font-bold text-[#6b6558]">
+                      <p className="mt-1 text-sm font-bold text-[#6b6152]">
                         {t("offers.boxesLeft")}
                       </p>
                     </div>
                   </div>
 
                   {urgencyMessage && (
-                    <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                      <p className="font-black text-[#1a1815]">
+                    <div className="soft-raised mt-4 rounded-3xl p-4">
+                      <p className="font-black text-[#2e2a22]">
                         {urgencyMessage}
                       </p>
-                      <p className="mt-1 text-sm font-bold text-[#6b6558]">
+                      <p className="mt-1 text-sm font-bold text-[#6b6152]">
                         {t("offerDetail.urgencyHint")}
                       </p>
                     </div>
                   )}
 
-                  <div className="mt-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-black/5">
-                    <p className="font-black text-[#1a1815]">
+                  <div className="soft-raised mt-4 rounded-3xl p-4">
+                    <p className="font-black text-[#2e2a22]">
                       {t("offerDetail.afterReservationTitle")}
                     </p>
                     <div className="mt-3 grid gap-2 sm:grid-cols-3">
@@ -341,19 +343,19 @@ export default function OfferDetailPage() {
                       ].map((step) => (
                         <p
                           key={step}
-                          className="rounded-2xl bg-white px-4 py-3 text-sm font-black text-[#1a1815]"
+                          className="rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-black text-[#2e2a22]"
                         >
                           {step}
                         </p>
                       ))}
                     </div>
-                    <p className="mt-3 text-sm font-bold leading-6 text-[#6b6558]">
+                    <p className="mt-3 text-sm font-bold leading-6 text-[#6b6152]">
                       {t("offerDetail.cancellationReminderText")}
                     </p>
                   </div>
 
-                  <div className="mt-4 rounded-3xl border border-black/[0.06] bg-white p-4">
-                    <p className="text-sm font-black uppercase tracking-widest text-[#5c7a5c]">
+                  <div className="mt-4 rounded-3xl bg-[#f4efe4] p-4">
+                    <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
                       {t("home.trustBadge")}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -404,7 +406,7 @@ export default function OfferDetailPage() {
                     <h2 className="text-2xl font-black">
                       {t("offerDetail.about")}
                     </h2>
-                    <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
+                    <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
                       {offer.description ||
                         "A surprise rescue box prepared by the business from available food."}
                     </p>
@@ -412,7 +414,7 @@ export default function OfferDetailPage() {
                     <h3 className="mt-6 text-xl font-black">
                       {t("offerDetail.allergens")}
                     </h3>
-                    <p className="mt-2 font-semibold text-[#6b6558]">
+                    <p className="mt-2 font-semibold text-[#6b6152]">
                       {offer.allergens || t("offerDetail.allergensAsk")}
                     </p>
                   </div>
@@ -428,7 +430,6 @@ export default function OfferDetailPage() {
                         ? "ეს არის ფასდაკლებული საკვების ყუთი, რომელიც ბიზნესმა კარგი დარჩენილი საკვებიდან მოამზადა. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს."
                         : "It is a discounted food bag prepared from good surplus food. The exact contents can vary, but the price, business and pickup window are clear before you reserve."
                     }
-                    icon="A"
                   />
 
                   <div className="premium-card rounded-[1.75rem] p-5 sm:p-8">
@@ -437,7 +438,7 @@ export default function OfferDetailPage() {
                         ? "კითხვები დაჯავშნამდე"
                         : "Questions before you reserve"}
                     </h2>
-                    <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
+                    <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
                       {language === "ka"
                         ? "მოკლე პასუხები ყველაზე მნიშვნელოვან საკითხებზე."
                         : "Short answers to the most important customer questions."}
@@ -449,32 +450,33 @@ export default function OfferDetailPage() {
                 </div>
 
                 <div className="grid gap-6">
-                  <div className="rounded-[1.75rem] bg-white p-5 shadow-sm sm:p-8">
+                  <div className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
                     <h2 className="text-2xl font-black">
                       {t("offerDetail.pickupInfoTitle")}
                     </h2>
                     <div className="mt-5 grid gap-3">
                       <div className="premium-muted-card rounded-3xl p-4">
-                        <p className="font-black text-[#1a1815]">
+                        <p className="flex items-center gap-2 font-black text-[#2e2a22]">
+                          <ClockIcon className="h-4 w-4 shrink-0 text-[#a67c52]" strokeWidth={1.8} />
                           {t("offerDetail.pickupVisit")}
                         </p>
-                        <p className="mt-1 font-semibold text-[#6b6558]">
+                        <p className="mt-1 font-semibold text-[#6b6152]">
                           {formatPickupWindow(offer, language)}
                         </p>
                       </div>
                       <div className="premium-muted-card rounded-3xl p-4">
-                        <p className="font-black text-[#1a1815]">
+                        <p className="font-black text-[#2e2a22]">
                           {t("offerDetail.pickupCode")}
                         </p>
-                        <p className="mt-1 font-semibold text-[#6b6558]">
+                        <p className="mt-1 font-semibold text-[#6b6152]">
                           {t("offerDetail.pickupCodeHint")}
                         </p>
                       </div>
                       <div className="premium-muted-card rounded-3xl p-4">
-                        <p className="font-black text-[#1a1815]">
+                        <p className="font-black text-[#2e2a22]">
                           {t("offerDetail.pickupCollect")}
                         </p>
-                        <p className="mt-1 font-semibold text-[#6b6558]">
+                        <p className="mt-1 font-semibold text-[#6b6152]">
                           {t("offerDetail.pickupCollectHint")}
                         </p>
                       </div>
@@ -487,20 +489,22 @@ export default function OfferDetailPage() {
                         {t("offerDetail.businessProfile")}
                       </h2>
                       {verifiedBusiness && (
-                        <span className="rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wide text-[#1a1815]">
+                        <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#2e2a22]">
                           {t("businessProfile.verified")}
                         </span>
                       )}
                     </div>
-                    <p className="mt-3 font-bold text-[#1a1815]">
+                    <p className="mt-3 flex items-center gap-2 font-bold text-[#2e2a22]">
+                      <StoreIcon className="h-4 w-4 shrink-0 text-[#a67c52]" strokeWidth={1.8} />
                       {offer.businesses?.business_type || t("common.food")}
                     </p>
-                    <p className="mt-2 font-semibold text-[#6b6558]">
+                    <p className="mt-2 flex items-center gap-2 font-semibold text-[#6b6152]">
+                      <MapPinIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
                       {offer.businesses?.address ||
                         t("common.addressUnavailable")}
                     </p>
                     {verifiedBusiness && (
-                      <p className="mt-4 rounded-3xl bg-white p-4 font-semibold leading-7 text-[#6b6558]">
+                      <p className="mt-4 rounded-3xl bg-[#f4efe4] p-4 font-semibold leading-7 text-[#6b6152]">
                         {t("businessProfile.trustMessage")}
                       </p>
                     )}
@@ -521,29 +525,29 @@ export default function OfferDetailPage() {
 
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (
-                    <div className="rounded-3xl bg-white p-6">
-                      <p className="text-lg font-black text-[#1a1815]">
+                    <div className="rounded-3xl bg-[#f4efe4] p-6">
+                      <p className="text-lg font-black text-[#2e2a22]">
                         {t("common.noReviews")}
                       </p>
-                      <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+                      <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
                         {t("offerDetail.noReviewsHint")}
                       </p>
                     </div>
                   )}
 
                   {reviews.map((review) => (
-                    <div key={review.id} className="rounded-3xl bg-white p-5">
+                    <div key={review.id} className="rounded-3xl bg-[#f4efe4] p-5">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-black text-[#1a1815]">
+                        <p className="font-black text-[#2e2a22]">
                           {review.rating}/5
                         </p>
                         {formatReviewDate(review.created_at, language) && (
-                          <p className="text-sm font-bold text-[#6b6558]">
+                          <p className="text-sm font-bold text-[#6b6152]">
                             {formatReviewDate(review.created_at, language)}
                           </p>
                         )}
                       </div>
-                      <p className="mt-2 font-semibold text-[#6b6558]">
+                      <p className="mt-2 font-semibold text-[#6b6152]">
                         {review.review?.trim() || t("common.noWrittenReview")}
                       </p>
                     </div>

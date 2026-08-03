@@ -49,24 +49,24 @@ export default function Footer() {
 
   return (
     <footer className="mt-20 px-4 pb-8 sm:px-6 md:px-12">
-      <div className="mx-auto grid max-w-7xl gap-8 rounded-[1.75rem] bg-[#f2efe6] px-6 py-8 shadow-[0_3px_16px_rgba(37,34,32,0.06)] sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
+      <div className="soft-raised mx-auto grid max-w-7xl gap-8 rounded-[1.75rem] px-6 py-8 sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
         <div>
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1a1815] text-lg font-bold text-white">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#a67c52] text-lg font-bold text-white">
               A
             </div>
 
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-[#1a1815] sm:text-2xl">
+              <h2 className="text-xl font-extrabold tracking-[-0.02em] text-[#2e2a22] sm:text-2xl">
                 ArGadaagdo
               </h2>
-              <p className="font-medium text-[#6b6558]">
+              <p className="font-medium text-[#6b6152]">
                 {t("brand.tagline")}
               </p>
             </div>
           </div>
 
-          <p className="mt-5 max-w-md text-sm font-medium leading-6 text-[#6b6558]">
+          <p className="mt-5 max-w-md text-sm font-medium leading-6 text-[#6b6152]">
             {t("footer.reduceWasteGeorgia")}
           </p>
 
@@ -86,7 +86,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={social.name}
                 title={social.name}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#6b6558] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="soft-raised flex h-11 w-11 items-center justify-center rounded-full text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
               >
                 {social.icon}
               </a>
@@ -95,16 +95,16 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8a8072]">
             {t("footer.platform")}
           </h3>
 
-          <div className="mt-2 grid text-sm font-semibold text-[#6b6558]">
+          <div className="mt-2 grid text-sm font-semibold text-[#6b6152]">
             {platformLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex min-h-11 items-center rounded-lg transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="flex min-h-11 items-center rounded-lg transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
               >
                 {link.label}
               </Link>
@@ -113,16 +113,16 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8a8072]">
             {t("nav.support")}
           </h3>
 
-          <div className="mt-2 grid text-sm font-semibold text-[#6b6558]">
+          <div className="mt-2 grid text-sm font-semibold text-[#6b6152]">
             {companyLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex min-h-11 items-center rounded-lg transition hover:text-[#5c7a5c] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+                className="flex min-h-11 items-center rounded-lg transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
               >
                 {link.label}
               </Link>
@@ -131,7 +131,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-2 py-5 text-sm font-medium text-[#8a8272] sm:px-4 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-2 py-5 text-sm font-medium text-[#8a8072] sm:px-4 md:flex-row md:items-center md:justify-between">
         <p>© ArGadaagdo {currentYear}</p>
         <p>{t("footer.reduceWasteGeorgia")}</p>
       </div>

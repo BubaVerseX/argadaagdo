@@ -24,13 +24,13 @@ export function Pagination({
 
   return (
     <div
-      className={`flex flex-col gap-3 rounded-[1.5rem] bg-[#f2efe6] p-4 shadow-[var(--shadow-soft)] sm:flex-row sm:items-center sm:justify-between ${className}`}
+      className={`soft-raised flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
-      <p className="text-sm font-medium text-[#6b6558]">
+      <p className="text-sm font-medium text-[#6b6152]">
         {label}: {start}-{end} of {totalItems}
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={() => onPageChange(safePage - 1)}
@@ -39,7 +39,7 @@ export function Pagination({
         >
           Previous
         </button>
-        <span className="flex min-h-11 items-center rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#1a1815]">
+        <span className="soft-pressed flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22]">
           {safePage} / {totalPages}
         </span>
         <button

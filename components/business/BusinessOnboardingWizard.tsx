@@ -159,28 +159,28 @@ export function BusinessOnboardingWizard({
   const currentStep = steps[step - 1];
 
   return (
-    <div className="rounded-3xl bg-[#ece7da] p-5 sm:rounded-[2rem] sm:p-6">
+    <div className="rounded-3xl bg-[#f4efe4] p-5 sm:rounded-[2rem] sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c]">
+          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
             Step {step} of {steps.length}
           </p>
-          <h2 className="mt-2 text-2xl font-black text-[#1a1815]">
+          <h2 className="mt-2 text-2xl font-black text-[#2e2a22]">
             {currentStep.title}
           </h2>
-          <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6558]">
+          <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
             {currentStep.helper}
           </p>
         </div>
 
-        <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#5c7a5c] shadow-[var(--shadow-soft)]">
+        <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
           {progress}% complete
         </span>
       </div>
 
       <div className="mt-5 h-2 overflow-hidden rounded-full bg-white">
         <div
-          className="h-full rounded-full bg-[#5c7a5c] transition-all"
+          className="h-full rounded-full bg-[#a67c52] transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -193,8 +193,8 @@ export function BusinessOnboardingWizard({
             onClick={() => goToStep(index + 1)}
             className={`min-h-11 rounded-2xl px-3 py-2 text-left text-xs font-black transition ${
               step === index + 1
-                ? "bg-[#1a1815] text-white"
-                : "bg-white text-[#6b6558] hover:bg-white/70"
+                ? "soft-pressed text-[#a67c52]"
+                : "soft-raised text-[#6b6152]"
             }`}
           >
             {index + 1}. {wizardStep.title}
@@ -202,10 +202,10 @@ export function BusinessOnboardingWizard({
         ))}
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-4 shadow-[var(--shadow-soft)] sm:p-5">
+      <div className="soft-raised mt-6 rounded-3xl p-4 sm:p-5">
         {step === 1 && (
           <div className="grid gap-4">
-            <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+            <label className="grid gap-2 text-sm font-black text-[#6b6152]">
               Business name *
               <input
                 value={name}
@@ -216,7 +216,7 @@ export function BusinessOnboardingWizard({
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+            <label className="grid gap-2 text-sm font-black text-[#6b6152]">
               Business type *
               <select
                 value={businessType}
@@ -235,7 +235,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 2 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
             Pickup address *
             <input
               value={address}
@@ -244,14 +244,14 @@ export function BusinessOnboardingWizard({
               maxLength={160}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6558]">
+            <span className="font-semibold leading-6 text-[#6b6152]">
               Customers will use this address to collect reserved surprise bags.
             </span>
           </label>
         )}
 
         {step === 3 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
             Phone number *
             <input
               value={phone}
@@ -262,7 +262,7 @@ export function BusinessOnboardingWizard({
               maxLength={40}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6558]">
+            <span className="font-semibold leading-6 text-[#6b6152]">
               Admins may use this number if they need to verify business
               details during approval.
             </span>
@@ -270,7 +270,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 4 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
             Short description
             <textarea
               value={description}
@@ -280,7 +280,7 @@ export function BusinessOnboardingWizard({
               rows={5}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6558]">
+            <span className="font-semibold leading-6 text-[#6b6152]">
               This is saved as onboarding progress for now. You can use the
               dashboard profile tools after approval.
             </span>
@@ -288,7 +288,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 5 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6558]">
+          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
             Image plan
             <textarea
               value={imagePlan}
@@ -298,7 +298,7 @@ export function BusinessOnboardingWizard({
               rows={5}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6558]">
+            <span className="font-semibold leading-6 text-[#6b6152]">
               Logo and offer images are managed after approval. This step helps
               prepare the business profile before launch.
             </span>
@@ -315,11 +315,11 @@ export function BusinessOnboardingWizard({
               ["Description draft", description || "Not added yet"],
               ["Images", imagePlan || "Not added yet"],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-[#ece7da] p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+              <div key={label} className="rounded-2xl bg-[#f4efe4] p-4">
+                <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                   {label}
                 </p>
-                <p className="mt-1 break-words font-semibold text-[#1a1815]">
+                <p className="mt-1 break-words font-semibold text-[#2e2a22]">
                   {value}
                 </p>
               </div>
@@ -328,11 +328,11 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 7 && (
-          <div className="rounded-2xl bg-[#ece7da] p-5">
-            <h3 className="text-xl font-black text-[#1a1815]">
+          <div className="rounded-2xl bg-[#f4efe4] p-5">
+            <h3 className="text-xl font-black text-[#2e2a22]">
               Ready for review
             </h3>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
               Submit your business for admin approval. After approval, your
               dashboard will let you create offers and manage reservations.
             </p>
@@ -341,7 +341,7 @@ export function BusinessOnboardingWizard({
       </div>
 
       {draftMessage && (
-        <p className="mt-4 rounded-2xl bg-white px-4 py-3 text-sm font-black text-[#5c7a5c] shadow-[var(--shadow-soft)]">
+        <p className="soft-raised mt-4 rounded-2xl px-4 py-3 text-sm font-black text-[#a67c52]">
           {draftMessage}
         </p>
       )}
@@ -360,7 +360,7 @@ export function BusinessOnboardingWizard({
             type="button"
             onClick={() => goToStep(step - 1)}
             disabled={step === 1}
-            className="min-h-12 rounded-full bg-white px-6 py-3 font-black text-[#6b6558] shadow-[var(--shadow-soft)] transition hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="soft-raised min-h-12 rounded-full px-6 py-3 font-black text-[#6b6152] transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             Back
           </button>

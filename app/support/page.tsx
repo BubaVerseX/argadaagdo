@@ -4,6 +4,7 @@ import { FAQAccordion } from "@/components/help/FAQAccordion";
 import { HelpCard } from "@/components/help/HelpCard";
 import { InfoBanner } from "@/components/help/InfoBanner";
 import { TrustBadge } from "@/components/help/TrustBadge";
+import { MapPinIcon, ReceiptIcon, StoreIcon } from "@/components/icons";
 import Link from "next/link";
 
 const supportEmail = "support@argadaagdo.ge";
@@ -57,13 +58,13 @@ export default function SupportPage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
               Support Center
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               Help for reservations, pickups and businesses.
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6558] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
               Clear answers for customers and businesses using ArGadaagdo during
               the Tbilisi pilot.
             </p>
@@ -76,21 +77,21 @@ export default function SupportPage() {
 
           <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-3">
             <HelpCard
-              icon="🥡"
+              icon={<ReceiptIcon className="h-5 w-5" strokeWidth={1.8} />}
               title="Reservation help"
               text="Find your pickup code, understand cancellation windows, and know what happens after you reserve."
               href="/orders"
               actionLabel="View Orders"
             />
             <HelpCard
-              icon="📍"
+              icon={<MapPinIcon className="h-5 w-5" strokeWidth={1.8} />}
               title="Pickup help"
               text="Arrive during the pickup window, show your pickup code, and collect directly from the business."
               href="/faq"
               actionLabel="Read FAQ"
             />
             <HelpCard
-              icon="🏪"
+              icon={<StoreIcon className="h-5 w-5" strokeWidth={1.8} />}
               title="Business help"
               text="Learn how approval, offer creation, pickup verification and customer ratings work."
               href="/business/register"
@@ -99,24 +100,24 @@ export default function SupportPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-            <section className="rounded-[2rem] bg-white p-5 shadow-[var(--shadow-soft)] sm:p-8">
+            <section className="rounded-[2rem] soft-raised p-5 sm:p-8">
               <h2 className="text-2xl font-black sm:text-3xl">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-[#6b6558]">
+              <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
                 Start here if you are unsure how surprise bags, reservations,
                 pickups, cancellations or ratings work.
               </p>
 
               <div className="mt-6 grid gap-6">
                 <div>
-                  <h3 className="mb-3 text-lg font-black text-[#5c7a5c]">
+                  <h3 className="mb-3 text-lg font-black text-[#a67c52]">
                     Customers
                   </h3>
                   <FAQAccordion items={customerQuestions} />
                 </div>
                 <div>
-                  <h3 className="mb-3 text-lg font-black text-[#5c7a5c]">
+                  <h3 className="mb-3 text-lg font-black text-[#a67c52]">
                     Businesses
                   </h3>
                   <FAQAccordion items={businessQuestions} />

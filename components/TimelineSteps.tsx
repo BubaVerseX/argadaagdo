@@ -17,9 +17,9 @@ export function TimelineSteps({
   ariaLabel,
 }: TimelineStepsProps) {
   const stepStyles: Record<TimelineStepState, string> = {
-    done: "bg-[#5c7a5c] text-white",
+    done: "soft-pressed text-[#a67c52]",
     current: "bg-yellow-100 text-yellow-950",
-    pending: "bg-white text-[#6b6558]",
+    pending: "bg-white/60 text-[#6b6152]",
     stopped: "bg-red-100 text-red-700",
   };
 
@@ -28,7 +28,7 @@ export function TimelineSteps({
       {steps.map((step, index) => (
         <li
           key={`${step.label}-${index}`}
-          className={`rounded-2xl px-3 py-3 text-center text-xs font-black shadow-[var(--shadow-soft)] sm:text-sm ${stepStyles[step.state]}`}
+          className={`rounded-2xl px-3 py-3 text-center text-xs font-black sm:text-sm ${stepStyles[step.state]}`}
         >
           {step.label}
         </li>

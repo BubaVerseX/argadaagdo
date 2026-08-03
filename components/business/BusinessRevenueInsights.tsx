@@ -139,19 +139,19 @@ export function BusinessRevenueInsights({
     <section className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
             Revenue and insights
           </p>
           <h2 className="mt-2 text-2xl font-black sm:text-3xl">
             Business performance snapshot
           </h2>
-          <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6558]">
+          <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
             Estimated revenue uses existing order payment fields. Final business
             payouts are still reviewed manually during the pilot.
           </p>
         </div>
 
-        <div className="rounded-3xl bg-white p-4 text-sm font-semibold leading-6 text-[#1a1815] shadow-[var(--shadow-soft)] lg:max-w-sm">
+        <div className="soft-raised rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
           <p className="font-black">Pilot commission model</p>
           <p className="mt-1">
             Current estimate: 10% platform commission and 90% business
@@ -165,17 +165,17 @@ export function BusinessRevenueInsights({
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="rounded-3xl bg-[#ece7da] p-5">
-          <h3 className="text-xl font-black text-[#1a1815]">
+        <div className="rounded-3xl bg-[#f4efe4] p-5">
+          <h3 className="text-xl font-black text-[#2e2a22]">
             Performance signals
           </h3>
           <div className="mt-4 grid gap-3">
             {performanceItems.map((item) => (
-              <div key={item.label} className="rounded-2xl bg-white p-4">
-                <p className="text-sm font-black text-[#5c7a5c]">
+              <div key={item.label} className="rounded-2xl bg-white/70 p-4">
+                <p className="text-sm font-black text-[#a67c52]">
                   {item.label}
                 </p>
-                <p className="mt-1 font-black text-[#1a1815]">{item.value}</p>
+                <p className="mt-1 font-black text-[#2e2a22]">{item.value}</p>
               </div>
             ))}
           </div>
@@ -201,34 +201,34 @@ export function BusinessRevenueInsights({
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-[#ece7da] p-5">
-        <h3 className="text-xl font-black text-[#1a1815]">
+      <div className="mt-6 rounded-3xl bg-[#f4efe4] p-5">
+        <h3 className="text-xl font-black text-[#2e2a22]">
           Marketing insights
         </h3>
-        <p className="mt-2 max-w-3xl font-semibold leading-7 text-[#6b6558]">
+        <p className="mt-2 max-w-3xl font-semibold leading-7 text-[#6b6152]">
           These signals prepare the dashboard for growth campaigns. View and
           conversion tracking still need dedicated events before they become
           exact.
         </p>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {marketingItems.map((item) => (
-            <div key={item.label} className="rounded-2xl bg-white p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-[#5c7a5c]">
+            <div key={item.label} className="rounded-2xl bg-white/70 p-4">
+              <p className="text-xs font-black uppercase tracking-wide text-[#a67c52]">
                 {item.label}
               </p>
-              <p className="mt-2 font-black text-[#1a1815]">{item.value}</p>
+              <p className="mt-2 font-black text-[#2e2a22]">{item.value}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)]">
+      <div className="soft-raised mt-6 rounded-3xl p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-xl font-black text-[#1a1815]">
+            <h3 className="text-xl font-black text-[#2e2a22]">
               CSV exports
             </h3>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
               Download lightweight CSV files for reservations, completed
               pickups and offer statistics.
             </p>

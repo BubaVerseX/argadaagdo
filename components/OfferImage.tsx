@@ -1,5 +1,6 @@
 "use client";
 
+import { ShoppingBagIcon } from "@/components/icons";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -41,10 +42,10 @@ export default function OfferImage({
   if (!src || failedSrc === src || !isAllowedOfferImage(src)) {
     return (
       <div
-        className="flex h-full w-full items-center justify-center bg-gradient-to-br from-green-100 to-yellow-100 text-5xl sm:text-7xl"
+        className="flex h-full w-full items-center justify-center bg-[#f4efe4]"
         aria-label={`${alt} image unavailable`}
       >
-        🥡
+        <ShoppingBagIcon className="h-10 w-10 text-[#8a8072] sm:h-14 sm:w-14" strokeWidth={1.6} />
       </div>
     );
   }

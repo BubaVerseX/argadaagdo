@@ -7,18 +7,40 @@ import {
   isEmailConfirmed,
   logoutUser,
 } from "@/lib/auth";
-import { languageNames, supportedLanguages } from "@/lib/i18n";
 import { useLanguage } from "@/lib/useLanguage";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
+import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  HeartIcon,
+  HomeIcon,
+  type IconProps,
+  LogOutIcon,
+  MoreHorizontalIcon,
+  ReceiptIcon,
+  SearchIcon,
+  ShieldIcon,
+  StoreIcon,
+  TagIcon,
+  LayoutGridIcon,
+  MapPinIcon,
+  UserIcon,
+  XIcon,
+} from "@/components/icons";
 
 type NavbarBusiness = {
   owner_id: string;
   approved: boolean | string | null;
 };
+
+type TabItem =
+  | { kind: "link"; href: string; label: string; Icon: ComponentType<IconProps> }
+  | { kind: "action"; id: string; label: string; Icon: ComponentType<IconProps>; onClick: () => void };
 
 function isApprovedValue(value: boolean | string | null) {
   return value === true || String(value) === "true";
@@ -27,15 +49,15 @@ function isApprovedValue(value: boolean | string | null) {
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState("");
   const [showBusinessDashboard, setShowBusinessDashboard] = useState(false);
   const [showBusinessRegister, setShowBusinessRegister] = useState(false);
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const [profileMenu, setProfileMenu] = useState(false);
+  const [accountMenu, setAccountMenu] = useState(false);
   const [moreExpanded, setMoreExpanded] = useState(false);
+  const [notifMenu, setNotifMenu] = useState(false);
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
@@ -99,448 +121,444 @@ export default function Navbar() {
     setShowBusinessDashboard(false);
     setShowBusinessRegister(false);
     setAuthReady(true);
-    setMobileMenu(false);
-    setProfileMenu(false);
+    setAccountMenu(false);
     router.replace("/");
     router.refresh();
   }
 
-  const isActivePath = (href: string) =>
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
-
-  const linkClass = (href: string, surface: "desktop" | "mobile" = "desktop") => {
-    const active = isActivePath(href);
-    const base =
-      surface === "mobile"
-        ? "flex min-h-12 w-full items-center rounded-2xl px-4 py-3 text-base font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-        : "inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]";
-
-    if (active) {
-      return `${base} bg-white text-[#1a1815] shadow-[0_3px_16px_rgba(37,34,32,0.08)]`;
-    }
-
-    return `${base} ${
-      surface === "mobile"
-        ? "bg-[#ece7da] text-[#6b6558] hover:bg-white hover:text-[#1a1815]"
-        : "text-[#6b6558] hover:bg-white/60 hover:text-[#1a1815]"
-    }`;
+  const isActivePath = (href: string) => {
+    const cleanHref = href.split("#")[0];
+    return (
+      pathname === cleanHref ||
+      (cleanHref !== "/" && pathname.startsWith(`${cleanHref}/`))
+    );
   };
 
   const ariaCurrent = (href: string) =>
     isActivePath(href) ? ("page" as const) : undefined;
 
   const showCustomerNavigation = role === "customer";
-  const nextLanguage =
-    supportedLanguages.find((option) => option !== language) ?? language;
+  const isAdmin = role === "admin";
+
+  function closeAllMenus() {
+    setAccountMenu(false);
+    setNotifMenu(false);
+  }
+
+  // Bottom tab bar (mobile) + desktop pill nav both read from this same
+  // per-role tab list, so the two surfaces can never drift out of sync.
+  const tabs: TabItem[] = (() => {
+    const home: TabItem = { kind: "link", href: "/", label: t("nav.home"), Icon: HomeIcon };
+    const browse: TabItem = {
+      kind: "link",
+      href: "/offers",
+      label: t("nav.browse"),
+      Icon: SearchIcon,
+    };
+    const more: TabItem = {
+      kind: "action",
+      id: "more",
+      label: t("nav.more"),
+      Icon: MoreHorizontalIcon,
+      onClick: () => {
+        setAccountMenu(true);
+        setMoreExpanded(true);
+      },
+    };
+    const profile: TabItem = {
+      kind: "link",
+      href: "/profile",
+      label: t("nav.profile"),
+      Icon: UserIcon,
+    };
+
+    if (showBusinessDashboard) {
+      return [
+        home,
+        { kind: "link", href: "/business/dashboard", label: t("nav.dashboardTab"), Icon: LayoutGridIcon },
+        { kind: "link", href: "/business/dashboard#business-offers", label: t("nav.offers"), Icon: TagIcon },
+        { kind: "link", href: "/business/dashboard#business-reservations", label: t("nav.orders"), Icon: ReceiptIcon },
+        profile,
+      ];
+    }
+
+    if (isAdmin) {
+      return [
+        home,
+        browse,
+        { kind: "link", href: "/businesses", label: t("nav.businesses"), Icon: StoreIcon },
+        { kind: "link", href: "/admin", label: t("nav.admin"), Icon: ShieldIcon },
+        profile,
+      ];
+    }
+
+    if (showCustomerNavigation) {
+      return [
+        home,
+        browse,
+        { kind: "link", href: "/favorites", label: t("nav.favorites"), Icon: HeartIcon },
+        { kind: "link", href: "/orders", label: t("nav.orders"), Icon: ReceiptIcon },
+        profile,
+      ];
+    }
+
+    if (user) {
+      // Signed in but role not yet confirmed/loaded (or business without an
+      // owned business yet) — keep it functional with what we know.
+      return [
+        home,
+        browse,
+        { kind: "link", href: "/discover", label: t("nav.discover"), Icon: MapPinIcon },
+        more,
+        profile,
+      ];
+    }
+
+    return [
+      home,
+      browse,
+      { kind: "link", href: "/discover", label: t("nav.discover"), Icon: MapPinIcon },
+      more,
+      { kind: "link", href: "/login", label: t("nav.signIn"), Icon: UserIcon },
+    ];
+  })();
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-black/[0.06] bg-[#f2efe6]/75 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-5 md:px-10">
+    <nav className="sticky top-0 z-50 bg-[#ece4d6] px-4 py-3 sm:px-5 md:px-10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
           href="/"
-          onClick={() => {
-            setMobileMenu(false);
-            setProfileMenu(false);
-          }}
-          className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
+          onClick={closeAllMenus}
+          className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
           aria-label={t("nav.home")}
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1a1815] text-base font-bold text-white shadow-sm sm:h-10 sm:w-10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#a67c52] text-base font-bold text-white sm:h-10 sm:w-10">
             A
           </div>
 
           <div>
-            <p className="text-lg font-bold leading-none tracking-tight text-[#1a1815] sm:text-xl">
+            <p className="text-lg font-extrabold leading-none tracking-[-0.02em] text-[#2e2a22] sm:text-xl">
               ArGadaagdo
             </p>
-            <p className="hidden text-xs font-medium text-[#6b6558] md:block">
+            <p className="hidden text-xs font-medium text-[#6b6152] md:block">
               {t("brand.tagline")}
             </p>
           </div>
         </Link>
 
-        <div className="hidden items-center gap-1 lg:flex">
-          <Link
-            href="/offers"
-            className={linkClass("/offers")}
-            aria-current={ariaCurrent("/offers")}
-          >
-            {t("common.browseOffers")}
-          </Link>
-
-          <Link
-            href="/businesses"
-            className={linkClass("/businesses")}
-            aria-current={ariaCurrent("/businesses")}
-          >
-            {t("nav.businesses")}
-          </Link>
-
-          <Link
-            href="/discover"
-            className={linkClass("/discover")}
-            aria-current={ariaCurrent("/discover")}
-          >
-            {t("nav.discover")}
-          </Link>
-
-          {showCustomerNavigation && (
-            <Link
-              href="/favorites"
-              className={linkClass("/favorites")}
-              aria-current={ariaCurrent("/favorites")}
-            >
-              {t("nav.favorites")}
-            </Link>
-          )}
-
-          {showCustomerNavigation && (
-            <Link
-              href="/orders"
-              className={linkClass("/orders")}
-              aria-current={ariaCurrent("/orders")}
-            >
-              {t("nav.orders")}
-            </Link>
-          )}
-
-          <Link
-            href="/faq"
-            className={linkClass("/faq")}
-            aria-current={ariaCurrent("/faq")}
-          >
-            {t("nav.faq")}
-          </Link>
-
-          {showBusinessDashboard && (
-            <Link
-              href="/business/dashboard"
-              className={linkClass("/business/dashboard")}
-              aria-current={ariaCurrent("/business/dashboard")}
-            >
-              {t("nav.dashboard")}
-            </Link>
-          )}
+        {/* Desktop horizontal nav — soft-raised pill row, mobile relies on
+            the fixed bottom tab bar instead. */}
+        <div className="soft-raised hidden items-center gap-1 rounded-full p-1.5 lg:flex">
+          {tabs
+            .filter((tabItem): tabItem is Extract<TabItem, { kind: "link" }> => tabItem.kind === "link")
+            .map((tabItem) => {
+              const active = isActivePath(tabItem.href);
+              return (
+                <Link
+                  key={tabItem.href}
+                  href={tabItem.href}
+                  aria-current={ariaCurrent(tabItem.href)}
+                  className={`inline-flex min-h-9 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+                    active
+                      ? "soft-pressed text-[#a67c52]"
+                      : "text-[#6b6152] hover:text-[#2e2a22]"
+                  }`}
+                >
+                  <tabItem.Icon className="h-4 w-4" strokeWidth={1.8} />
+                  {tabItem.label}
+                </Link>
+              );
+            })}
 
           {(showBusinessRegister || !user) && (
             <Link
               href="/for-businesses"
-              className={linkClass("/for-businesses")}
               aria-current={ariaCurrent("/for-businesses")}
+              className={`inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+                isActivePath("/for-businesses")
+                  ? "soft-pressed text-[#a67c52]"
+                  : "text-[#6b6152] hover:text-[#2e2a22]"
+              }`}
             >
               {t("nav.forBusiness")}
             </Link>
           )}
-
-          {role === "admin" && (
-            <Link
-              href="/admin"
-              className={linkClass("/admin")}
-              aria-current={ariaCurrent("/admin")}
-            >
-              {t("nav.admin")}
-            </Link>
-          )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="hidden lg:block">
             <LanguageSwitcher />
           </div>
 
-          {!authReady ? (
-            <div className="hidden h-11 w-24 rounded-full bg-white/60 lg:block" />
-          ) : user ? (
-            <div className="relative hidden lg:block">
-              <button
-                onClick={() => setProfileMenu((current) => !current)}
-                className="flex min-h-11 items-center gap-3 rounded-full bg-[#1a1815] py-1.5 pl-2 pr-4 font-semibold text-white shadow-[0_3px_16px_rgba(37,34,32,0.14)] transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                aria-haspopup="menu"
-                aria-expanded={profileMenu}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setNotifMenu((current) => !current);
+                setAccountMenu(false);
+              }}
+              className="soft-raised flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+              aria-haspopup="menu"
+              aria-expanded={notifMenu}
+              aria-label={t("nav.notifications")}
+            >
+              <BellIcon className="h-5 w-5" strokeWidth={1.8} />
+            </button>
+
+            {notifMenu && (
+              <div
+                role="menu"
+                className="soft-raised absolute right-0 mt-3 w-64 rounded-3xl p-4"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-bold text-[#1a1815]">
-                  {(user.email || "A").slice(0, 1).toUpperCase()}
-                </span>
-                <span>{t("nav.profile")}</span>
+                <p className="text-sm font-semibold text-[#8a8072]">
+                  {t("nav.noNotifications")}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {!authReady ? (
+            <div className="soft-raised h-11 w-11 rounded-full" />
+          ) : (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountMenu((current) => !current);
+                  setNotifMenu(false);
+                }}
+                className={`flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+                  accountMenu ? "soft-pressed text-[#a67c52]" : "soft-raised"
+                }`}
+                aria-haspopup="menu"
+                aria-expanded={accountMenu}
+                aria-label={accountMenu ? t("nav.closeAccount") : t("nav.openAccount")}
+                aria-controls="account-menu"
+              >
+                {accountMenu ? (
+                  <XIcon className="h-5 w-5" strokeWidth={1.8} />
+                ) : (
+                  <UserIcon className="h-5 w-5" strokeWidth={1.8} />
+                )}
               </button>
 
-              {profileMenu && (
+              {accountMenu && (
                 <div
-                  className="absolute right-0 mt-3 w-64 rounded-3xl bg-white p-2 shadow-[0_24px_70px_rgba(37,34,32,0.18)]"
+                  id="account-menu"
                   role="menu"
+                  className="soft-raised absolute right-0 mt-3 max-h-[calc(100dvh-6rem)] w-72 overflow-y-auto overscroll-contain rounded-3xl p-3"
                 >
-                  <div className="px-4 py-3">
-                    <p className="truncate text-sm font-semibold text-[#1a1815]">
-                      {user.email}
-                    </p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8272]">
-                      {role || t("nav.customerSection")}
-                    </p>
+                  {user ? (
+                    <div className="px-3 py-2">
+                      <p className="truncate text-sm font-semibold text-[#2e2a22]">
+                        {user.email}
+                      </p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8072]">
+                        {role || t("nav.customerSection")}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="px-3 py-2">
+                      <Link
+                        href="/login"
+                        onClick={() => setAccountMenu(false)}
+                        className="premium-button w-full"
+                        role="menuitem"
+                      >
+                        {t("nav.signIn")}
+                      </Link>
+                    </div>
+                  )}
+
+                  <div className="my-3 px-3 lg:hidden">
+                    <LanguageSwitcher />
                   </div>
 
-                  <Link
-                    href="/profile"
-                    onClick={() => setProfileMenu(false)}
-                    className="block rounded-2xl px-4 py-3 text-sm font-semibold text-[#6b6558] transition hover:bg-[#ece7da] hover:text-[#1a1815] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                    role="menuitem"
-                  >
-                    {t("nav.profile")}
-                  </Link>
-                  <Link
-                    href="/settings"
-                    onClick={() => setProfileMenu(false)}
-                    className="block rounded-2xl px-4 py-3 text-sm font-semibold text-[#6b6558] transition hover:bg-[#ece7da] hover:text-[#1a1815] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                    role="menuitem"
-                  >
-                    {t("nav.settings")}
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="mt-1 min-h-11 w-full rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#6b6558] transition hover:bg-[#1a1815] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                    role="menuitem"
-                  >
-                    {t("nav.logout")}
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="hidden rounded-full bg-[#1a1815] px-5 py-2.5 font-semibold text-white shadow-[0_3px_16px_rgba(37,34,32,0.14)] transition hover:bg-[#2c2822] lg:block"
-            >
-              {t("nav.signIn")}
-            </Link>
-          )}
+                  {user && (
+                    <div className="grid gap-1 px-1">
+                      <Link
+                        href="/profile"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.profile")}
+                      </Link>
+                      <Link
+                        href="/settings"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.settings")}
+                      </Link>
+                      {showBusinessDashboard && (
+                        <Link
+                          href="/business/dashboard"
+                          onClick={() => setAccountMenu(false)}
+                          className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22] lg:hidden"
+                          role="menuitem"
+                        >
+                          {t("nav.dashboard")}
+                        </Link>
+                      )}
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setAccountMenu(false)}
+                          className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22] lg:hidden"
+                          role="menuitem"
+                        >
+                          {t("nav.admin")}
+                        </Link>
+                      )}
+                    </div>
+                  )}
 
-          <button
-            onClick={() => setLanguage(nextLanguage)}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-black/[0.06] bg-white text-lg shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c] lg:hidden"
-            aria-label={t("language.switcherLabel")}
-          >
-            <span aria-hidden="true">
-              {Array.from(languageNames[language]).slice(0, 2).join("")}
-            </span>
-          </button>
-
-          <button
-            onClick={() => {
-              setMobileMenu(!mobileMenu);
-              setProfileMenu(false);
-            }}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-black/[0.06] bg-white px-3 py-2 text-lg font-semibold text-[#1a1815] shadow-[0_3px_16px_rgba(37,34,32,0.06)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c] lg:hidden"
-            aria-label={mobileMenu ? t("nav.closeMenu") : t("nav.openMenu")}
-            aria-expanded={mobileMenu}
-            aria-controls="mobile-navigation"
-          >
-            {mobileMenu ? "✕" : "☰"}
-          </button>
-        </div>
-      </div>
-
-      {mobileMenu && (
-        <div
-          id="mobile-navigation"
-          className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-black/[0.06] bg-[#f2efe6] px-4 py-4 sm:px-5 sm:py-5 lg:hidden"
-        >
-          <div className="grid gap-4">
-            {/* Primary: the handful of things a customer actually needs
-                day-to-day. Kept deliberately short. */}
-            <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-              <div className="grid gap-2">
-                <Link
-                  href="/offers"
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass("/offers", "mobile")}
-                  aria-current={ariaCurrent("/offers")}
-                >
-                  {t("common.browseOffers")}
-                </Link>
-
-                {showCustomerNavigation && (
-                  <Link
-                    href="/favorites"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/favorites", "mobile")}
-                    aria-current={ariaCurrent("/favorites")}
-                  >
-                    {t("nav.favorites")}
-                  </Link>
-                )}
-
-                {showCustomerNavigation && (
-                  <Link
-                    href="/orders"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/orders", "mobile")}
-                    aria-current={ariaCurrent("/orders")}
-                  >
-                    {t("nav.orders")}
-                  </Link>
-                )}
-
-                <Link
-                  href={user ? "/profile" : "/login"}
-                  onClick={() => setMobileMenu(false)}
-                  className={linkClass(user ? "/profile" : "/login", "mobile")}
-                  aria-current={ariaCurrent(user ? "/profile" : "/login")}
-                >
-                  {user ? t("nav.profile") : t("nav.signIn")}
-                </Link>
-
-                {showBusinessDashboard ? (
-                  <Link
-                    href="/business/dashboard"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/business/dashboard", "mobile")}
-                    aria-current={ariaCurrent("/business/dashboard")}
-                  >
-                    {t("nav.dashboard")}
-                  </Link>
-                ) : (
-                  (showBusinessRegister || !user) && (
+                  {(showBusinessRegister || !user) && (
                     <Link
                       href="/for-businesses"
-                      onClick={() => setMobileMenu(false)}
-                      className={linkClass("/for-businesses", "mobile")}
-                      aria-current={ariaCurrent("/for-businesses")}
+                      onClick={() => setAccountMenu(false)}
+                      className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22] lg:hidden"
+                      role="menuitem"
                     >
                       {t("nav.forBusiness")}
                     </Link>
-                  )
-                )}
-              </div>
-            </div>
-
-            {/* More: everything else, one destination each, collapsed by
-                default so it doesn't compete with the primary actions. */}
-            <div className="rounded-3xl bg-white p-3 shadow-[0_3px_16px_rgba(37,34,32,0.06)]">
-              <button
-                type="button"
-                onClick={() => setMoreExpanded((current) => !current)}
-                className="flex min-h-12 w-full items-center justify-between rounded-2xl px-4 py-3 text-base font-semibold text-[#6b6558] transition hover:bg-[#ece7da] hover:text-[#1a1815] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-                aria-expanded={moreExpanded}
-                aria-controls="mobile-more-links"
-              >
-                <span>{t("nav.more")}</span>
-                <span
-                  className={`transition-transform ${moreExpanded ? "rotate-180" : ""}`}
-                  aria-hidden="true"
-                >
-                  ⌄
-                </span>
-              </button>
-
-              {moreExpanded && (
-                <div id="mobile-more-links" className="mt-2 grid gap-2">
-                  <Link
-                    href="/discover"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/discover", "mobile")}
-                    aria-current={ariaCurrent("/discover")}
-                  >
-                    {t("nav.discover")}
-                  </Link>
-
-                  <Link
-                    href="/businesses"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/businesses", "mobile")}
-                    aria-current={ariaCurrent("/businesses")}
-                  >
-                    {t("nav.businesses")}
-                  </Link>
-
-                  <Link
-                    href="/faq"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/faq", "mobile")}
-                    aria-current={ariaCurrent("/faq")}
-                  >
-                    {t("nav.faq")}
-                  </Link>
-
-                  <Link
-                    href="/about"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/about", "mobile")}
-                    aria-current={ariaCurrent("/about")}
-                  >
-                    {t("nav.about")}
-                  </Link>
-
-                  <Link
-                    href="/contact"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/contact", "mobile")}
-                    aria-current={ariaCurrent("/contact")}
-                  >
-                    {t("nav.contact")}
-                  </Link>
-
-                  <Link
-                    href="/support"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/support", "mobile")}
-                    aria-current={ariaCurrent("/support")}
-                  >
-                    {t("nav.support")}
-                  </Link>
-
-                  <Link
-                    href="/privacy"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/privacy", "mobile")}
-                    aria-current={ariaCurrent("/privacy")}
-                  >
-                    {t("nav.privacy")}
-                  </Link>
-
-                  <Link
-                    href="/terms"
-                    onClick={() => setMobileMenu(false)}
-                    className={linkClass("/terms", "mobile")}
-                    aria-current={ariaCurrent("/terms")}
-                  >
-                    {t("nav.terms")}
-                  </Link>
-
-                  {user && (
-                    <Link
-                      href="/settings"
-                      onClick={() => setMobileMenu(false)}
-                      className={linkClass("/settings", "mobile")}
-                      aria-current={ariaCurrent("/settings")}
-                    >
-                      {t("nav.settings")}
-                    </Link>
                   )}
 
-                  {role === "admin" && (
-                    <Link
-                      href="/admin"
-                      onClick={() => setMobileMenu(false)}
-                      className={linkClass("/admin", "mobile")}
-                      aria-current={ariaCurrent("/admin")}
+                  <button
+                    type="button"
+                    onClick={() => setMoreExpanded((current) => !current)}
+                    className="mt-2 flex min-h-11 w-full items-center justify-between rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                    aria-expanded={moreExpanded}
+                    aria-controls="account-more-links"
+                  >
+                    <span>{t("nav.more")}</span>
+                    <ChevronDownIcon
+                      className={`h-4 w-4 transition-transform ${moreExpanded ? "rotate-180" : ""}`}
+                      strokeWidth={1.8}
+                    />
+                  </button>
+
+                  {moreExpanded && (
+                    <div id="account-more-links" className="grid gap-1 px-1 pt-1">
+                      <Link
+                        href="/discover"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.discover")}
+                      </Link>
+                      <Link
+                        href="/businesses"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.businesses")}
+                      </Link>
+                      <Link
+                        href="/faq"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.faq")}
+                      </Link>
+                      <Link
+                        href="/about"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.about")}
+                      </Link>
+                      <Link
+                        href="/contact"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.contact")}
+                      </Link>
+                      <Link
+                        href="/support"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.support")}
+                      </Link>
+                      <Link
+                        href="/privacy"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.privacy")}
+                      </Link>
+                      <Link
+                        href="/terms"
+                        onClick={() => setAccountMenu(false)}
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        role="menuitem"
+                      >
+                        {t("nav.terms")}
+                      </Link>
+                    </div>
+                  )}
+
+                  {authReady && user && (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="premium-button mt-3 flex w-full items-center justify-center gap-2"
                     >
-                      {t("nav.admin")}
-                    </Link>
+                      <LogOutIcon className="h-4 w-4" strokeWidth={1.8} />
+                      {t("nav.logout")}
+                    </button>
                   )}
                 </div>
               )}
             </div>
-
-            {authReady && user && (
-              <button
-                onClick={handleLogout}
-                className="min-h-12 w-full rounded-full bg-[#1a1815] px-5 py-3 font-semibold text-white transition hover:bg-[#2c2822] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5c7a5c]"
-              >
-                {t("nav.logout")}
-              </button>
-            )}
-          </div>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Fixed floating bottom tab bar — primary mobile navigation. */}
+      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:hidden">
+        <div className="soft-raised flex w-full max-w-md items-stretch justify-between gap-1 rounded-[28px] p-2">
+          {tabs.map((tabItem) => {
+            const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;
+            const active = tabItem.kind === "link" && isActivePath(tabItem.href);
+            const commonClass = `flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-1.5 text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+              active ? "soft-pressed text-[#a67c52]" : "text-[#8a8072]"
+            }`;
+
+            if (tabItem.kind === "action") {
+              return (
+                <button key={key} type="button" onClick={tabItem.onClick} className={commonClass}>
+                  <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
+                  <span>{tabItem.label}</span>
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={key}
+                href={tabItem.href}
+                aria-current={ariaCurrent(tabItem.href)}
+                className={commonClass}
+              >
+                <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
+                <span>{tabItem.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </nav>
   );
 }

@@ -1,3 +1,5 @@
+import { AlertTriangleIcon, CheckIcon } from "@/components/icons";
+
 type HealthCheck = {
   label: string;
   helper: string;
@@ -29,26 +31,26 @@ export function BusinessHealthScore({
       <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
               Business health
             </p>
-            <h2 className="mt-2 text-2xl font-black text-[#1a1815] sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
               {score}% ready
             </h2>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
               A simple operations score for profile quality, active offers and
               pickup history.
             </p>
           </div>
 
-          <span className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#5c7a5c] shadow-[var(--shadow-soft)]">
+          <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
             {completedChecks}/{checks.length} complete
           </span>
         </div>
 
-        <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#ece7da]">
+        <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#f4efe4]">
           <div
-            className="h-full rounded-full bg-[#5c7a5c] transition-all"
+            className="h-full rounded-full bg-[#a67c52] transition-all"
             style={{ width: `${score}%` }}
           />
         </div>
@@ -59,20 +61,24 @@ export function BusinessHealthScore({
               key={check.label}
               className={`rounded-2xl p-4 ${
                 check.complete
-                  ? "bg-white text-[#1a1815]"
-                  : "bg-[#ece7da] text-[#6b6558]"
+                  ? "soft-raised text-[#2e2a22]"
+                  : "bg-[#f4efe4] text-[#6b6152]"
               }`}
             >
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-black ${
+                  className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
                     check.complete
-                      ? "bg-[#5c7a5c] text-white"
-                      : "bg-white text-[#6b6558]"
+                      ? "bg-[#a67c52] text-white"
+                      : "soft-pressed text-[#6b6152]"
                   }`}
                 >
-                  {check.complete ? "✓" : "!"}
+                  {check.complete ? (
+                    <CheckIcon className="h-3.5 w-3.5" strokeWidth={2.2} />
+                  ) : (
+                    <AlertTriangleIcon className="h-3.5 w-3.5" strokeWidth={2} />
+                  )}
                 </span>
                 <div>
                   <p className="font-black">{check.label}</p>
@@ -87,13 +93,13 @@ export function BusinessHealthScore({
       </div>
 
       <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+        <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
           Operations checklist
         </p>
-        <h2 className="mt-2 text-2xl font-black text-[#1a1815] sm:text-3xl">
+        <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
           First business milestones
         </h2>
-        <p className="mt-2 font-semibold leading-7 text-[#6b6558]">
+        <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
           Keep the pilot simple: publish one strong offer, verify pickups and
           build trust through ratings.
         </p>
@@ -104,8 +110,8 @@ export function BusinessHealthScore({
               <div
                 className={`rounded-2xl p-4 transition ${
                   item.complete
-                    ? "bg-white text-[#1a1815]"
-                    : "bg-[#ece7da] text-[#6b6558] hover:bg-white"
+                    ? "soft-raised text-[#2e2a22]"
+                    : "bg-[#f4efe4] text-[#6b6152] hover:bg-white/60"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -113,11 +119,15 @@ export function BusinessHealthScore({
                     aria-hidden="true"
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
                       item.complete
-                        ? "bg-[#5c7a5c] text-white"
-                        : "bg-white text-[#6b6558]"
+                        ? "bg-[#a67c52] text-white"
+                        : "soft-pressed text-[#6b6152]"
                     }`}
                   >
-                    {item.complete ? "✓" : index + 1}
+                    {item.complete ? (
+                      <CheckIcon className="h-4 w-4" strokeWidth={2.2} />
+                    ) : (
+                      index + 1
+                    )}
                   </span>
                   <div>
                     <p className="font-black">{item.label}</p>

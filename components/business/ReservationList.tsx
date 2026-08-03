@@ -1,5 +1,6 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
 import { Pagination } from "@/components/Pagination";
+import { ClockIcon, ReceiptIcon } from "@/components/icons";
 import { getBusinessTimelineSteps, type ReservationFilter } from "@/lib/business/dashboard";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
@@ -65,7 +66,7 @@ export function ReservationList({
       id="reservations"
       className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
-      <p className="text-xs font-black uppercase tracking-widest text-[#5c7a5c] sm:text-sm">
+      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
         Pickup Operations
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
@@ -73,7 +74,7 @@ export function ReservationList({
       </h2>
 
       <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-        <p className="text-sm font-black uppercase tracking-widest text-[#6b6558]">
+        <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
           {t("businessOnboarding.reservationGuidanceTitle")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -85,7 +86,7 @@ export function ReservationList({
           ].map((step) => (
             <span
               key={step}
-              className="rounded-full bg-white px-4 py-2 text-sm font-black leading-6 text-[#1a1815] shadow-[var(--shadow-soft)]"
+              className="soft-raised rounded-full px-4 py-2 text-sm font-black leading-6 text-[#2e2a22]"
             >
               {step}
             </span>
@@ -94,13 +95,13 @@ export function ReservationList({
       </div>
 
       {orders.length > 0 && (
-        <div className="mt-6 rounded-3xl bg-[#ece7da] p-5 sm:p-6">
+        <div className="mt-6 rounded-3xl bg-[#f4efe4] p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-[#6b6558]">
+              <p className="text-xs font-black uppercase tracking-widest text-[#6b6152]">
                 {t("businessDashboard.reservationSummary")}
               </p>
-              <h3 className="mt-2 text-2xl font-black text-[#1a1815]">
+              <h3 className="mt-2 text-2xl font-black text-[#2e2a22]">
                 {t("businessDashboard.totalReservationsMetric")}: {orders.length}
               </h3>
             </div>
@@ -110,7 +111,7 @@ export function ReservationList({
             {reservationSummary.map((item) => (
               <div
                 key={item.label}
-                className={`rounded-2xl p-4 shadow-[var(--shadow-soft)] ${item.className}`}
+                className={`rounded-2xl p-4 ${item.className}`}
               >
                 <p className="text-sm font-black">{item.label}</p>
                 <p className="mt-2 text-3xl font-black">{item.value}</p>
@@ -150,8 +151,8 @@ export function ReservationList({
               }
               className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
                 isActive
-                  ? "bg-[#1a1815] text-white"
-                  : "bg-white text-[#6b6558] shadow-[var(--shadow-soft)] hover:text-[#5c7a5c]"
+                  ? "soft-pressed text-[#a67c52]"
+                  : "soft-raised text-[#6b6152] hover:text-[#a67c52]"
               }`}
             >
               {filter.label}
@@ -162,11 +163,11 @@ export function ReservationList({
 
       <div className="mt-6 grid gap-4">
         {filteredOrders.length === 0 && (
-          <div className="rounded-3xl bg-white p-6 text-center shadow-[var(--shadow-soft)] sm:p-8">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ece7da] text-2xl font-black text-[#1a1815]">
-              R
+          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
+            <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+              <ReceiptIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.6} />
             </div>
-            <h3 className="mt-4 text-2xl font-black text-[#1a1815]">
+            <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
               {orders.length === 0
                 ? t("businessDashboard.noReservations")
                 : normalizedReservationSearch
@@ -175,7 +176,7 @@ export function ReservationList({
                 ? "No active reservations"
                 : t("businessDashboard.noFilteredReservations")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6558]">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
               {orders.length === 0
                 ? t("businessDashboard.noReservationsHint")
                 : normalizedReservationSearch
@@ -193,32 +194,32 @@ export function ReservationList({
           return (
             <div
               key={order.id}
-              className="flex flex-col gap-5 rounded-3xl bg-white p-5 shadow-[var(--shadow-soft)] lg:flex-row lg:items-center lg:justify-between"
+              className="soft-raised flex flex-col gap-5 rounded-3xl p-5 lg:flex-row lg:items-center lg:justify-between"
             >
               <div>
                 <h3 className="text-xl font-black sm:text-2xl">
                   {order.offers?.title || t("common.offerUnavailable")}
                 </h3>
 
-                <p className="mt-2 font-semibold text-[#6b6558]">
+                <p className="mt-2 font-semibold text-[#6b6152]">
                   {t("businessDashboard.customer")}:{" "}
                   {order.profiles?.email || t("common.unavailable")}
                 </p>
 
-                <p className="mt-1 font-semibold text-[#6b6558]">
+                <p className="mt-1 font-semibold text-[#6b6152]">
                   {t("businessDashboard.created")}:{" "}
                   {formatDisplayDateTime(order.created_at, language)}
                 </p>
 
-                <p className="mt-1 font-black text-[#5c7a5c]">
+                <p className="mt-1 font-black text-[#a67c52]">
                   {order.offers
                     ? formatMoney(order.offers.price)
                     : t("common.unavailable")}
                 </p>
 
-                <div className="mt-3 grid gap-2 rounded-2xl bg-[#ece7da] p-4 text-sm font-semibold text-[#6b6558] sm:grid-cols-2">
+                <div className="mt-3 grid gap-2 rounded-2xl bg-[#f4efe4] p-4 text-sm font-semibold text-[#6b6152] sm:grid-cols-2">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                       Business receipt
                     </p>
                     <p className="mt-1">Reservation ID: #{order.id}</p>
@@ -232,7 +233,7 @@ export function ReservationList({
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6558]">
+                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
                       Payout estimate
                     </p>
                     <p>
@@ -250,14 +251,15 @@ export function ReservationList({
                   </div>
                 </div>
 
-                <p className="mt-1 font-semibold text-[#6b6558]">
+                <p className="mt-1 flex items-center gap-1.5 font-semibold text-[#6b6152]">
+                  <ClockIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
                   {t("common.pickup")}:{" "}
                   {order.offers
                     ? formatPickupWindow(order.offers, language)
                     : t("orders.pickupUnavailable")}
                 </p>
 
-                <p className="mt-1 text-sm font-bold text-[#6b6558]">
+                <p className="mt-1 text-sm font-bold text-[#6b6152]">
                   {t("businessDashboard.reliability")}:{" "}
                   {order.profiles?.reliability_score ??
                     t("common.unavailable")}{" "}
@@ -274,7 +276,7 @@ export function ReservationList({
                   </span>
 
                   {isConfirmedOrderStatus(order.status) && (
-                    <span className="rounded-full bg-[#ece7da] px-4 py-2 text-sm font-black text-[#6b6558]">
+                    <span className="rounded-full bg-[#f4efe4] px-4 py-2 text-sm font-black text-[#6b6152]">
                       Pickup code:{" "}
                       {order.pickup_code
                         ? `••••${String(order.pickup_code).slice(-2)}`
@@ -284,14 +286,14 @@ export function ReservationList({
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
-                  <p className="mt-3 rounded-2xl bg-[#ece7da] px-4 py-3 text-sm font-bold leading-6 text-[#6b6558]">
+                  <p className="mt-3 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold leading-6 text-[#6b6152]">
                     Ask the customer for the full code, then use Verify &
                     Complete Pickup.
                   </p>
                 )}
 
-                <div className="mt-4 rounded-3xl bg-[#ece7da] p-4">
-                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6558]">
+                <div className="mt-4 rounded-3xl bg-[#f4efe4] p-4">
+                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6152]">
                     Reservation timeline
                   </p>
                   <TimelineSteps
@@ -308,7 +310,7 @@ export function ReservationList({
                     <button
                       onClick={() => onMarkNoShow(order)}
                       disabled={updatingOrderId !== null}
-                      className="min-h-12 w-full rounded-full bg-red-600 px-5 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="min-h-12 w-full rounded-full bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                     >
                       {updatingOrderId === order.id
                         ? "Updating..."
