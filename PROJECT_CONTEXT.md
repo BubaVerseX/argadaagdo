@@ -306,16 +306,54 @@ Headline findings for a future session to know without re-checking:
   the real logo. Regenerate via `npx capacitor-assets generate
   --iconBackgroundColor '#5c7a5c' --splashBackgroundColor '#ece4d6'` if the
   logo ever changes; source files are in `assets/`.
-- **Production currently has zero live offers.** This blocked getting real
-  "browse offers" / "offer detail" App Store screenshots — the ones
-  captured (`store-assets/screenshots/`) show an empty result list for
-  those. Re-run `node scripts/capture-store-screenshots.mjs` once a pilot
-  business has an active listing.
-- `/checkout/[id]` and `/business/register` both hard-redirect signed-out
-  visitors to `/login` — neither can be screenshotted without a real
-  logged-in session, which this session didn't create (would mean touching
-  auth / creating test-account state, both out of scope for a
-  no-clarification pass).
 - Permissions audit came back clean: Android requests only `INTERNET`, iOS
   has no usage-description keys, no camera/location/push code exists
   anywhere in the app. Nothing to justify to App Review.
+
+## ⚠️ TEMPORARY TEST DATA in the production database (added 2026-09-24)
+
+**The production Supabase project currently contains fake seed data,
+created at the user's explicit request so real browsing/checkout
+screenshots could be captured for the app store listing (see
+`docs/app-store-submission.md`, "Test data" under section 5). This is
+temporary and should be deleted before real pilot businesses onboard, so
+it never gets confused with real data.**
+
+Before this, every `public` table (`profiles`, `businesses`, `offers`,
+`orders`, `favorites`, `payments`, `business_ratings`) had **zero rows** —
+this was a completely empty production database. The rows below are the
+only data of any kind in it right now:
+
+- **Test customer**: `auth.users`/`public.profiles` id
+  `fc1494b5-3606-4db9-bd06-3c0f22937d58`, email
+  `test.customer.storeshots@example.com`. Password deliberately **not**
+  recorded in this repo (shared with the user directly instead — a
+  plaintext password in git history is bad practice even for a scoped test
+  account); reset via Supabase Dashboard → Authentication → Users if it's
+  needed again and lost. Created via the real signup API (not a raw SQL
+  insert), so it's a normal, fully-functional account — just not a real
+  person. Came back pre-confirmed on signup: **this
+  project has email confirmation disabled at the Supabase Auth level**,
+  independent of this test-data note — worth knowing generally, since it
+  means any real signup today is instantly usable with no confirmation
+  email step.
+- **Test businesses** (`public.businesses`, both fictional, `approved =
+  true`): id `2` "Old Town Bakery", id `3` "Vake Corner Cafe".
+- **Test offers** (`public.offers`, both `active`): id `4` "Surprise Pastry
+  Box" (business `2`), id `5` "Surprise Lunch Bag" (business `3`), pickup
+  date `2026-09-25` — will show as expired after that date unless re-seeded.
+
+No payment/BOG code was exercised to create or use any of this — the test
+account only ever views checkout's pre-payment summary screen.
+
+**To remove it** (do this before real businesses start onboarding):
+
+```sql
+delete from public.offers where id in (4, 5);
+delete from public.businesses where id in (2, 3);
+delete from public.profiles where id = 'fc1494b5-3606-4db9-bd06-3c0f22937d58';
+```
+
+Then delete the auth user via Supabase Dashboard → Authentication → Users
+→ search `test.customer.storeshots@example.com` → Delete user (cleaner
+than raw SQL against `auth.users`).

@@ -16,14 +16,15 @@
 //             comfortably inside the 320-3840px /
 //             <=2:1 ratio rule)                  -> 1080 x 1920
 //
-// Screens captured: home, offers (browse), an offer detail (only if a live
-// offer exists to link to — see below), and sign-in. Both /checkout/[id]
-// and /business/register hard-redirect signed-out visitors straight to
-// /login, so neither renders anything screenshot-worthy without a real
-// session — see docs/app-store-listing.md for the full explanation. The
-// /login redirect target happens to double as a decent dual-sided
-// ("For customers" / "For businesses") value-prop screen, so it's kept as
-// the 4th shot rather than dropped.
+// Screens captured: home, offers (browse), an offer detail, and checkout —
+// all signed OUT except checkout, which requires a session
+// (/checkout/[id] hard-redirects signed-out visitors to /login). Uses a
+// dedicated TEST customer account + two TEST demo offers seeded for this
+// purpose — see docs/app-store-submission.md "Test data" section and
+// PROJECT_CONTEXT.md for exactly what was created and how to remove it.
+// Login is done by actually driving the real /login form (not by
+// injecting a session token), so this also doubles as a smoke test of the
+// sign-in flow itself.
 
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
@@ -31,6 +32,32 @@ import path from "node:path";
 
 const BASE_URL = "https://argadaagdo-silk.vercel.app";
 const OUT_DIR = path.join(process.cwd(), "store-assets", "screenshots");
+
+// TEST-ONLY customer account, seeded specifically for capturing these
+// screenshots (see docs/app-store-submission.md). Not a real customer, no
+// real payment method attached, never used past checkout's pre-payment
+// summary screen. The password is deliberately NOT hardcoded here (no
+// plaintext secrets in git) — set it in your shell before running:
+//   ARGADAAGDO_TEST_PASSWORD='...' node scripts/capture-store-screenshots.mjs
+const TEST_EMAIL =
+  process.env.ARGADAAGDO_TEST_EMAIL || "test.customer.storeshots@example.com";
+const TEST_PASSWORD = process.env.ARGADAAGDO_TEST_PASSWORD;
+
+if (!TEST_PASSWORD) {
+  console.error(
+    "Set ARGADAAGDO_TEST_PASSWORD in your environment before running this " +
+      "script (needed to sign in for the checkout screenshot). See " +
+      "docs/app-store-submission.md, 'Test data' section, for the account.",
+  );
+  process.exit(1);
+}
+
+// Known id of the seeded TEST offer ("Surprise Pastry Box" / Old Town
+// Bakery, both fictional — see docs/app-store-submission.md). Navigating
+// directly by id is more robust than scraping a link off the offers page:
+// its cards render via a <button onClick={() => router.push(...)}>, not a
+// real <a href>, so there's no anchor to scrape in the first place.
+const TEST_OFFER_ID = process.env.ARGADAAGDO_TEST_OFFER_ID || "4";
 
 const PROFILES = [
   {
@@ -66,11 +93,27 @@ const PROFILES = [
 ];
 
 async function waitForOffersToLoad(page) {
-  // The offers grid is fetched client-side after mount — wait for a real
-  // offer card link rather than a fixed timeout.
+  // The offers grid is fetched client-side after mount — wait for the
+  // "View details" button on a real offer card (cards navigate via
+  // router.push() on a <button>, not a real <a href>, so there's no link
+  // to wait on) rather than a fixed timeout.
   await page
-    .waitForSelector('a[href^="/offers/"]', { timeout: 15000 })
+    .getByRole("button", { name: "View details" })
+    .first()
+    .waitFor({ timeout: 15000 })
     .catch(() => null);
+}
+
+async function signIn(page) {
+  await page.goto(BASE_URL + "/login", { waitUntil: "networkidle" });
+  await page.getByLabel("Email address").fill(TEST_EMAIL);
+  await page.getByLabel("Password").fill(TEST_PASSWORD);
+  await page.getByRole("button", { name: "Sign In", exact: true }).last().click();
+  // Signing in redirects away from /login on success.
+  await page.waitForURL((url) => !url.pathname.startsWith("/login"), {
+    timeout: 15000,
+  });
+  await page.waitForLoadState("networkidle");
 }
 
 async function run() {
@@ -105,40 +148,37 @@ async function run() {
     await page.screenshot({ path: path.join(outDir, "01-home.png") });
     console.log("  01-home.png");
 
-    // 2) Offers (browse)
+    // 2) Offers (browse) — signed out, the typical first-time-visitor view.
+    // The actual offer cards render well below the hero/filters, off the
+    // first viewport, so scroll one into view rather than screenshotting
+    // the top of the page.
     await page.goto(BASE_URL + "/offers", { waitUntil: "networkidle" });
     await waitForOffersToLoad(page);
+    await page
+      .getByRole("button", { name: "View details" })
+      .first()
+      .scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, -400));
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(outDir, "02-offers.png") });
     console.log("  02-offers.png");
 
-    // Grab a real offer id to open its detail page.
-    const offerHref = await page
-      .locator('a[href^="/offers/"]')
-      .first()
-      .getAttribute("href")
-      .catch(() => null);
-
     // 3) Offer detail
-    if (offerHref) {
-      await page.goto(BASE_URL + offerHref, { waitUntil: "networkidle" });
-      await page.waitForTimeout(500);
-      await page.screenshot({
-        path: path.join(outDir, "03-offer-detail.png"),
-      });
-      console.log("  03-offer-detail.png");
-    } else {
-      console.log(
-        "  [skip] 03-offer-detail.png — no live offers found to link to right now",
-      );
-    }
-
-    // 4) Sign-in (both /checkout/[id] and /business/register redirect here
-    //    for signed-out visitors — see script header).
-    await page.goto(BASE_URL + "/login", { waitUntil: "networkidle" });
+    await page.goto(BASE_URL + "/offers/" + TEST_OFFER_ID, {
+      waitUntil: "networkidle",
+    });
     await page.waitForTimeout(500);
-    await page.screenshot({ path: path.join(outDir, "04-sign-in.png") });
-    console.log("  04-sign-in.png");
+    await page.screenshot({ path: path.join(outDir, "03-offer-detail.png") });
+    console.log("  03-offer-detail.png");
+
+    // 4) Checkout — requires a signed-in, email-confirmed session.
+    await signIn(page);
+    await page.goto(BASE_URL + "/checkout/" + TEST_OFFER_ID, {
+      waitUntil: "networkidle",
+    });
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(outDir, "04-checkout.png") });
+    console.log("  04-checkout.png");
 
     await context.close();
   }

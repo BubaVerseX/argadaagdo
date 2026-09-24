@@ -142,7 +142,37 @@ Recommend: get a native speaker to review/trim these to the store limits
 before submitting a Georgian listing. Not required for v1 — English-only is
 fine to launch with, especially since App Review itself is in English.
 
-## 5. Screenshots — generated, with one real gap found
+## 5. Screenshots — full set captured, using seeded test data
+
+**Update 2026-09-24 (same day, follow-up pass):** the gaps noted below (no
+live offers, checkout unreachable) are now closed. Seeded one TEST customer
+account and two TEST demo listings directly in the production Supabase
+project specifically so the real offer-browsing, offer-detail, and checkout
+screens could be photographed. **This is temporary, clearly-fake data, not
+real users or businesses** — full detail, exact IDs, credentials, and a
+cleanup snippet are in the **"Test data — temporary, for store screenshots
+only"** section below and in `PROJECT_CONTEXT.md`. Delete it before (or
+soon after) real pilot businesses start onboarding, using the cleanup SQL
+provided.
+
+All 4 screens are now captured across all 3 device profiles:
+
+| # | Screen | Status |
+|---|---|---|
+| 01 | Home | ✅ |
+| 02 | Offers (browse) | ✅ — real card, signed out |
+| 03 | Offer detail | ✅ — real offer, signed out |
+| 04 | Checkout | ✅ — real signed-in session, pre-payment summary screen only |
+
+One minor, pre-existing, unrelated observation surfaced while looking at
+`02-offers.png` at the 428px-wide iOS viewport: the offer card's top-right
+meta row ("Tomorrow" label + "N BOXES LEFT" chip) appears to run slightly
+past the card's right edge at that exact width. Didn't investigate or fix
+this — it's a general layout question, not something introduced by or
+in scope for this session, but worth a look next time someone's doing UI/QA
+work.
+
+### Screenshots section (original, pre-test-data findings — kept for history)
 
 `scripts/capture-store-screenshots.mjs` (Playwright, installed as a dev
 dependency) captures the live production site at exact store-required
@@ -187,6 +217,67 @@ Output: `store-assets/screenshots/{ios-6.5in-1284x2778,ios-6.9in-1290x2796,andro
    the literal checkout UI photographed, give me a test customer account's
    credentials and I'll recapture it — the script already suppresses the
    "Install ArGadaagdo" PWA prompt that would otherwise cover the content.
+
+### Test data — temporary, for store screenshots only
+
+**Added 2026-09-24, same-day follow-up, at the user's explicit request**
+("create a test customer account and a couple of realistic-looking demo
+offers... to capture proper checkout and browsing screenshots... note it
+clearly in PROJECT_CONTEXT.md"). This is the only data of any kind
+currently in the production database — every `public` table was completely
+empty (0 rows) before this. **No real user, business, or offer data exists
+yet; nothing real was touched or put at risk.**
+
+No payment/BOG code was exercised to do this — the test account only ever
+reaches checkout's pre-payment summary screen, never clicks pay. Created
+via Supabase's real signup API (so the `on_auth_user_created` trigger fired
+normally and built the `profiles` row exactly as it would for a real
+signup) and direct SQL inserts for the business/offer rows (via the
+Supabase MCP tools, which run with elevated privileges that bypass RLS —
+appropriate here as this is seed data, not something going through the
+app's normal customer-facing write paths).
+
+**Test customer** (`auth.users` / `public.profiles`):
+- id: `fc1494b5-3606-4db9-bd06-3c0f22937d58`
+- email: `test.customer.storeshots@example.com`
+- password: **not stored in this repo** — it was shared with the user
+  directly in the session that created it, not committed here (a plaintext
+  password in git history, even for a scoped test account, is bad
+  practice). If it's needed again and lost, reset it via Supabase Dashboard
+  → Authentication → Users → find this email → send/set a new password.
+- Email came back pre-confirmed on signup — this project has email
+  confirmation disabled at the Supabase Auth level (worth knowing
+  independent of this task: any real signup today is instantly usable
+  without clicking a confirmation link).
+
+**Test businesses** (`public.businesses`, both `approved = true`,
+`owner_id = null` — no dashboard access needed for screenshots, so no
+second fake account was created):
+- id `2`, "Old Town Bakery" (Bakery, 12 Sioni Street, Tbilisi)
+- id `3`, "Vake Corner Cafe" (Cafe, 45 Chavchavadze Ave, Tbilisi)
+
+Both are fictional placeholder names — not real Tbilisi businesses, chosen
+specifically to avoid implying any real establishment's involvement.
+
+**Test offers** (`public.offers`, both `active = true`, `status = 'active'`,
+`pickup_date = '2026-09-25'` — adjust or re-run the seed if this data
+outlives that date and the offers expire):
+- id `4`, "Surprise Pastry Box" — ₾9.90 (was ₾24.90), business `2`
+- id `5`, "Surprise Lunch Bag" — ₾7.50 (was ₾18.00), business `3`
+
+**To remove all of it later** (recommended before real pilot businesses
+onboard, so it's never confused with real data):
+
+```sql
+delete from public.offers where id in (4, 5);
+delete from public.businesses where id in (2, 3);
+delete from public.profiles where id = 'fc1494b5-3606-4db9-bd06-3c0f22937d58';
+```
+
+Then delete the auth user itself via the Supabase Dashboard
+(Authentication → Users → search `test.customer.storeshots@example.com` →
+Delete user) rather than raw SQL against `auth.users` — the dashboard
+action is the officially supported way to remove an auth user cleanly.
 
 ## 6. Privacy & permissions audit
 
@@ -282,12 +373,17 @@ This is a reference for later, not something to execute now.
 
 Roughly **half a day to a day of hands-on work per platform**, not
 counting store review wait times — most of what's normally the slow part
-(icons, splash, listing copy, permissions review, scaffolding verification)
-is already done in this branch. What's left is genuinely account-gated:
-signing certs/keys, the TestFlight/Internal Testing round-trip, and the
-actual submit action, plus ideally re-capturing the offers/detail/checkout
-screenshots once real listings and a test login exist. The one thing that'd
-meaningfully shrink or reshuffle this estimate is if `argadaagdo.ge` goes
-live before submission — that forces a `capacitor.config.ts` change and a
-full rebuild before either store upload, so if the domain purchase is close,
-it's worth sequencing that before, not after, first submission.
+(icons, splash, listing copy, permissions review, scaffolding verification,
+and now a complete real screenshot set with actual browsing/detail/checkout
+screens) is already done in this branch. What's left is genuinely
+account-gated: signing certs/keys, the TestFlight/Internal Testing
+round-trip, and the actual submit action. Worth doing before final
+submission: swap the seeded TEST offers (see "Test data" above) for real
+pilot-business listings and re-run the screenshot script against those, so
+the store listing shows real Tbilisi businesses rather than placeholder
+ones — and delete the test data at that point per the cleanup snippet. The
+one thing that'd meaningfully shrink or reshuffle this estimate is if
+`argadaagdo.ge` goes live before submission — that forces a
+`capacitor.config.ts` change and a full rebuild before either store upload,
+so if the domain purchase is close, it's worth sequencing that before, not
+after, first submission.
