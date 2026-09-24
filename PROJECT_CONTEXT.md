@@ -519,19 +519,9 @@ explicitly excluded per the user's framing):
   only visible via `lib/logger.ts`'s structured console output (captured by
   Vercel's own log drain) and `/api/health`. If something breaks in
   production, nobody gets alerted — you'd have to notice or go looking.
-- **The old mock reservation RPC is still live and callable in
-  production**: confirmed via Supabase's security advisor
-  (`mcp__claude_ai_Supabase__get_advisors`, read-only) that
-  `mock_pay_and_reserve_offer` and the even older `reserve_offer` are still
-  `EXECUTE`-granted to the `authenticated` role via
-  `/rest/v1/rpc/mock_pay_and_reserve_offer`. The frontend doesn't call
-  either anymore, but **nothing stops a technical user from calling that
-  REST endpoint directly and reserving a real offer for free**, bypassing
-  payment entirely. This predates this session (noted as "still live" back
-  on 2026-07-08 too) but is worth stating plainly: it's a real, currently
-  exploitable gap, not just a historical curiosity. Not fixed this
-  session — revoking/dropping it is a DB change, out of scope without
-  asking first.
+- ~~**The old mock reservation RPC is still live and callable in
+  production**~~ — **fixed in a follow-up same-day session, see
+  "2026-09-24 security fix" below.**
 - **Supabase Auth: leaked-password protection is disabled** (HaveIBeenPwned
   check) — a one-toggle, non-breaking improvement Supabase's own advisor
   flagged. Not changed this session (Auth config, per the standing rule).
@@ -580,3 +570,98 @@ rushing a fix without the user's explicit steer felt like the wrong call
 for a pause-the-project session. Read the actual chat transcript for this
 session's final summary to the user rather than re-deriving it from this
 file alone.
+
+## 2026-09-24 security fix — closed off legacy free-reservation RPCs
+
+Same-day follow-up to the wrap-up session above, explicitly flagged by the
+user as priority (not routine cleanup) after reading the audit finding
+about `mock_pay_and_reserve_offer` above.
+
+**Audited three legacy RPCs, not just the one originally flagged**, since
+the user asked to check for "any other leftover/legacy RPCs from earlier
+payment iterations that might have the same problem":
+
+- `reserve_offer(bigint)` — the original pre-payment reservation path
+  (from `20260526110120_secure_marketplace_rls_and_rpcs.sql`). Inserts a
+  real `orders` row, `status='reserved'`, `payment_method='cash'`, **with
+  no payment check whatsoever**.
+- `mock_pay_and_reserve_offer(bigint)` — the mock-payment path (created/
+  replaced across three migrations, most recently
+  `20260616120000_expire_stale_reserved_orders.sql`). Same free-reservation
+  problem, plus it inserts a fake `payments` row (`status='paid'`,
+  `provider='mock'`) that could be mistaken for a real payment in
+  admin/analytics.
+- `cancel_order(bigint)` — the original pre-payment cancellation path,
+  superseded by `cancel_paid_order`. Not a free-reservation bug, but it's
+  missing the 2-hour cancellation-deadline check and the
+  `quantity_restored_at` idempotency guard that `cancel_paid_order` has —
+  a real (lower-severity) bypass of the cancellation-window business rule.
+
+**Verified before touching anything** that nothing legitimate depends on
+any of the three: grepped all app code for `.rpc(` calls (none call these
+three — confirmed exactly which RPCs the app *does* call:
+`attach_provider_payment_reference`, `cancel_paid_order`, `complete_pickup`,
+`create_provider_payment_order`, `expire_pending_provider_payments`,
+`finalize_provider_payment`, `get_business_rating_summary`,
+`get_customer_refund_payment`, `get_public_business_reviews`,
+`mark_order_no_show`, `process_expired_marketplace`, `rate_business`,
+`record_provider_payment_failure`); checked live (not just migration
+files, given this project's history of DB objects existing outside tracked
+migrations) whether any *other* function's source, any trigger, or any
+view references them — none do (`public` schema has zero views; all 9
+non-internal triggers are storage/realtime/auth-signup infrastructure,
+unrelated).
+
+**Fix applied**: revoked `EXECUTE` on all three from `authenticated` —
+deliberately **revoke, not drop** (Supabase's own security advisor lists
+revoke as the standard remediation for this finding class; it's instantly
+reversible with one `GRANT` if ever needed, whereas drop would need the
+full function body reconstructed from migration history to undo, for no
+extra security benefit since nothing depends on them). Applied via a
+tracked migration (`revoke_legacy_reservation_rpcs`, applied through
+`apply_migration`, not raw `execute_sql`, specifically so this shows up in
+`list_migrations` like every other schema change — this project has
+already had drift once between the live DB and tracked migration history,
+no reason to add to it). One correction to the original framing: `anon` was
+never granted `EXECUTE` on any of these — the real exposure was any
+**signed-up customer account**, trivial to create since email confirmation
+is disabled.
+
+**Verified both before and after** using a fresh throwaway account (real
+signup via `/auth/v1/signup`, immediately usable since email confirmation
+is off) to get a genuine `authenticated` JWT — deliberately called each RPC
+with a nonexistent offer/order id (`999999`) rather than a real seeded
+offer, so the demonstration never actually created a reservation or
+touched the real test data:
+- **Before**: all three returned `400 P0001` with their own business-logic
+  message (`"Offer sold out"`, `"Offer is not available"`, `"Reservation
+  cannot be cancelled"`) — proving they were reachable and executing.
+- **After**: all three returned `403 42501 permission denied for function
+  <name>` — confirmed with a *second*, brand-new throwaway account (not the
+  same JWT), proving the fix applies to any current or future account, not
+  just a cached session.
+- Also re-checked live grants on every RPC the app actually calls
+  (`create_provider_payment_order`, `cancel_paid_order`, `complete_pickup`,
+  `rate_business`, `mark_order_no_show`, `get_business_rating_summary`,
+  `get_public_business_reviews`, `process_expired_marketplace`,
+  `attach_provider_payment_reference`, `record_provider_payment_failure`,
+  `get_customer_refund_payment`) — all unchanged, still correctly granted.
+  `finalize_provider_payment` and `expire_pending_provider_payments` remain
+  service-role-only, as designed.
+
+**Left over from this fix, for whoever picks this up next**: two throwaway
+audit accounts now exist in `auth.users`
+(`security-audit-throwaway-<timestamp>@example.com`, both password
+`AuditThrowaway123!`, both plain `customer` role, **zero** orders/payments
+— the nonexistent-offer-id trick above means neither ever created any real
+data). Harmless to leave, but delete them via Supabase Dashboard →
+Authentication → Users if you'd rather not have them around — the user
+explicitly asked this session to prefer the Dashboard's own tools over raw
+SQL against `auth.users` for anything auth-related, so that preference
+applies here too; not deleted via SQL in this session for that reason.
+
+**Not done in this fix** (unchanged from the wrap-up session's audit):
+resetting `test.customer.storeshots@example.com`'s password — the user
+asked for the Dashboard's own "Reset Password" flow instead of the
+`pgcrypto`-against-`auth.users` approach that was offered, so that's a
+manual step on the user's side, not something this session did.
