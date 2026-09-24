@@ -283,3 +283,39 @@ without touching Vercel directly. See git log on that branch / the PR it
 opened for exactly what changed — this section intentionally doesn't
 duplicate that detail so it doesn't rot; check the branch's commit history
 for specifics.
+
+## 2026-09-24 native app store readiness session
+
+Branch `feature/native-app-store-readiness`. Goal: get as close to
+"ready to build and submit" for iOS/Android as possible *without* a paid
+Apple Developer or Google Play Console account (user doesn't have either
+yet). Payments/TBC out of scope, untouched. Full detail, exact store
+listing copy drafts, and the day-one submission checklist are in
+`docs/app-store-submission.md` — this note is intentionally short so it
+doesn't rot; read that doc rather than re-deriving any of this.
+
+Headline findings for a future session to know without re-checking:
+- Capacitor scaffolding (from an even earlier session) was already correct
+  — `com.argadaagdo.app` v1.0, `server.url` pointing at
+  `argadaagdo-silk.vercel.app`. `argadaagdo.ge` is **still not registered**
+  on the Vercel account as of this session (re-verify before assuming
+  otherwise — same "don't trust a stale note" lesson as the payment section
+  above).
+- iOS/Android icons and splash screens were still Capacitor's **default
+  unbranded placeholder** (blue "X") until this session — now replaced with
+  the real logo. Regenerate via `npx capacitor-assets generate
+  --iconBackgroundColor '#5c7a5c' --splashBackgroundColor '#ece4d6'` if the
+  logo ever changes; source files are in `assets/`.
+- **Production currently has zero live offers.** This blocked getting real
+  "browse offers" / "offer detail" App Store screenshots — the ones
+  captured (`store-assets/screenshots/`) show an empty result list for
+  those. Re-run `node scripts/capture-store-screenshots.mjs` once a pilot
+  business has an active listing.
+- `/checkout/[id]` and `/business/register` both hard-redirect signed-out
+  visitors to `/login` — neither can be screenshotted without a real
+  logged-in session, which this session didn't create (would mean touching
+  auth / creating test-account state, both out of scope for a
+  no-clarification pass).
+- Permissions audit came back clean: Android requests only `INTERNET`, iOS
+  has no usage-description keys, no camera/location/push code exists
+  anywhere in the app. Nothing to justify to App Review.
