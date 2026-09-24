@@ -164,6 +164,22 @@ All 4 screens are now captured across all 3 device profiles:
 | 03 | Offer detail | ✅ — real offer, signed out |
 | 04 | Checkout | ✅ — real signed-in session, pre-payment summary screen only |
 
+**Fixed 2026-09-24 (wrap-up session).** The observation below turned out to
+undersell the bug: it wasn't 428px-specific or minor — it was a CSS Grid
+sizing issue (`app/offers/page.tsx`'s offers grid had no base `grid-cols-1`,
+so its column sized to content instead of viewport) that overflowed at
+*every* mobile width, worse at 375/390 than at 428. Fixed by adding
+`grid-cols-1`; verified at 375/390/428 in both languages, plus a stress
+test with artificially long content. See `PROJECT_CONTEXT.md`'s
+"2026-09-24 wrap-up session" note for the full root-cause writeup. The
+screenshots in this doc/`store-assets/` predate the fix and would need
+recapturing (`node scripts/capture-store-screenshots.mjs`) to show the
+corrected layout — not done automatically here since that also re-touches
+the seeded test data flow.
+
+<details>
+<summary>Original finding (kept for history)</summary>
+
 One minor, pre-existing, unrelated observation surfaced while looking at
 `02-offers.png` at the 428px-wide iOS viewport: the offer card's top-right
 meta row ("Tomorrow" label + "N BOXES LEFT" chip) appears to run slightly
@@ -171,6 +187,8 @@ past the card's right edge at that exact width. Didn't investigate or fix
 this — it's a general layout question, not something introduced by or
 in scope for this session, but worth a look next time someone's doing UI/QA
 work.
+
+</details>
 
 ### Screenshots section (original, pre-test-data findings — kept for history)
 

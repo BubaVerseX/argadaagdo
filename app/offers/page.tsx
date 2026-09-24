@@ -615,7 +615,7 @@ export default function OffersPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="mt-4 grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {section.offers.map((offer, offerIndex) => {
                       const businessAddress =
                         offer.businesses?.address || "Tbilisi";
