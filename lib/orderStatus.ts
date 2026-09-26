@@ -23,6 +23,15 @@ export function isCancelledOrderStatus(status: OrderStatus) {
   );
 }
 
+// Narrower than isCancelledOrderStatus: excludes "no_show", which has its
+// own dedicated stat bucket wherever cancelled and no-show counts are shown
+// side by side. Use this when "cancelled" and "no-show" must stay mutually
+// exclusive; use isCancelledOrderStatus for the broader "order did not
+// result in a pickup" grouping (styling, inactive-order filters, etc.).
+export function isStrictlyCancelledOrderStatus(status: OrderStatus) {
+  return status === "cancelled" || status === "refunded";
+}
+
 export function isExpiredOrderStatus(status: OrderStatus) {
   return status === "expired";
 }

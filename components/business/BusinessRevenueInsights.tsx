@@ -44,7 +44,7 @@ export function BusinessRevenueInsights({
     {
       title: "Cancelled Orders",
       value: analytics.cancelledOrders,
-      helper: "Cancelled, refunded or no-show records",
+      helper: "Cancelled or refunded records",
       tone: analytics.cancelledOrders > 0 ? "yellow" : "white",
     },
     {
