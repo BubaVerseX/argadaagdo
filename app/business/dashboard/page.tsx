@@ -51,9 +51,9 @@ import {
   notifyProfileUpdated,
 } from "@/lib/notifications";
 import {
-  isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isStrictlyCancelledOrderStatus,
 } from "@/lib/orderStatus";
 import {
   DEFAULT_OFFER_CATEGORY,
@@ -1238,7 +1238,7 @@ export default function BusinessDashboardPage() {
     isConfirmedOrderStatus(order.status)
   );
   const cancelledOrders = orders.filter((order) =>
-    isCancelledOrderStatus(order.status)
+    isStrictlyCancelledOrderStatus(order.status)
   );
   const noShowOrders = orders.filter((order) => order.status === "no_show");
   const todayDateKey = getTbilisiDateKey();
@@ -1567,7 +1567,7 @@ export default function BusinessDashboardPage() {
       (reservationFilter === "collected" &&
         isCollectedOrderStatus(order.status)) ||
       (reservationFilter === "cancelled" &&
-        isCancelledOrderStatus(order.status)) ||
+        isStrictlyCancelledOrderStatus(order.status)) ||
       (reservationFilter === "no_show" && order.status === "no_show");
     const customerEmail = order.profiles?.email?.toLowerCase() || "";
     const matchesSearch =

@@ -7,6 +7,7 @@ import {
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isStrictlyCancelledOrderStatus,
 } from "@/lib/orderStatus";
 import { platformFeeRate } from "@/lib/paymentArchitecture";
 import type { Offer, Order, Rating } from "@/lib/types";
@@ -362,7 +363,7 @@ export function calculateBusinessAnalytics({
     isCollectedOrderStatus(order.status)
   );
   const cancelledOrders = orders.filter((order) =>
-    isCancelledOrderStatus(order.status)
+    isStrictlyCancelledOrderStatus(order.status)
   );
   const noShowOrders = orders.filter((order) => order.status === "no_show");
   const boxesSold = revenueOrders.length;

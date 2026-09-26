@@ -7,7 +7,12 @@ import { FAQAccordion } from "@/components/help/FAQAccordion";
 import { HelpCard } from "@/components/help/HelpCard";
 import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
-import { ArrowLeftIcon, ClockIcon, MapPinIcon, StoreIcon } from "@/components/icons";
+import { ArrowLeftIcon, ClockIcon, HeartIcon, MapPinIcon, StoreIcon } from "@/components/icons";
+import {
+  getConfirmedUser,
+  getProfileById,
+  VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
+} from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { normalizeOfferCategory } from "@/lib/offerCategories";
@@ -28,7 +33,7 @@ import { supabase } from "@/lib/supabase";
 import type { Business, Offer, PublicBusinessReview } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type OfferDetail = Offer & {
@@ -58,6 +63,7 @@ function getUrgencyMessage(quantity: number, language: string) {
 
 export default function OfferDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const { language, t } = useLanguage();
   const [offer, setOffer] = useState<OfferDetail | null>(null);
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -67,6 +73,13 @@ export default function OfferDetailPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const notFoundMessage = t("offerDetail.notFound");
+  const [canUseFavorites, setCanUseFavorites] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteUpdating, setFavoriteUpdating] = useState(false);
+  const [favoriteMessage, setFavoriteMessage] = useState("");
+  const [favoriteMessageTone, setFavoriteMessageTone] = useState<
+    "success" | "error" | "warning"
+  >("success");
 
   useEffect(() => {
     let active = true;
@@ -118,6 +131,116 @@ export default function OfferDetailPage() {
       active = false;
     };
   }, [params.id, notFoundMessage]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function initialiseFavoriteState() {
+      const offerId = Number(params.id);
+      if (!Number.isFinite(offerId)) return;
+
+      const authResult = await getConfirmedUser();
+      if (!active) return;
+
+      if (authResult.status !== "confirmed") {
+        setCanUseFavorites(false);
+        setIsFavorite(false);
+        return;
+      }
+
+      const userId = authResult.user.id;
+      const profile = await getProfileById(userId, 3);
+      const isCustomer = profile?.role === "customer";
+
+      if (!active) return;
+
+      setCanUseFavorites(isCustomer);
+
+      if (!isCustomer) {
+        setIsFavorite(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("offer_id", offerId)
+        .maybeSingle();
+
+      if (!active) return;
+      if (!error) setIsFavorite(Boolean(data));
+    }
+
+    void initialiseFavoriteState();
+
+    return () => {
+      active = false;
+    };
+  }, [params.id]);
+
+  async function toggleFavorite() {
+    if (!offer) return;
+
+    setFavoriteMessage("");
+
+    const authResult = await getConfirmedUser();
+
+    if (authResult.status === "signed_out") {
+      router.push("/login");
+      return;
+    }
+
+    if (authResult.status === "unverified") {
+      setFavoriteMessageTone("warning");
+      setFavoriteMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
+      return;
+    }
+
+    const userId = authResult.user.id;
+
+    if (!canUseFavorites) {
+      setFavoriteMessageTone("warning");
+      setFavoriteMessage("Favorites are available for customer accounts.");
+      return;
+    }
+
+    setFavoriteUpdating(true);
+
+    if (isFavorite) {
+      setIsFavorite(false);
+
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", userId)
+        .eq("offer_id", offer.id);
+
+      if (error) {
+        setIsFavorite(true);
+        setFavoriteMessageTone("error");
+        setFavoriteMessage("Favorite could not be removed. Please try again.");
+      }
+
+      setFavoriteUpdating(false);
+      return;
+    }
+
+    setIsFavorite(true);
+
+    const { error } = await supabase.from("favorites").insert({
+      user_id: userId,
+      offer_id: offer.id,
+    });
+
+    if (error) {
+      setIsFavorite(false);
+      setFavoriteMessageTone("error");
+      setFavoriteMessage("Favorite could not be saved. Please try again.");
+    }
+
+    setFavoriteUpdating(false);
+  }
 
   const rating = offer ? ratingSummaries[offer.business_id] : undefined;
   const offerCategory = offer ? normalizeOfferCategory(offer.category) : "";
@@ -219,13 +342,32 @@ export default function OfferDetailPage() {
             <>
               <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
                 <div className="soft-raised rounded-[1.75rem] p-4">
-                  <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96">
-                    <OfferImage
-                      src={offer.image_url}
-                      alt={offer.title}
-                      sizes="(max-width: 1024px) 100vw, 55vw"
-                      priority
-                    />
+                  <div className="relative">
+                    <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96">
+                      <OfferImage
+                        src={offer.image_url}
+                        alt={offer.title}
+                        sizes="(max-width: 1024px) 100vw, 55vw"
+                        priority
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => void toggleFavorite()}
+                      disabled={favoriteUpdating}
+                      aria-label={
+                        isFavorite
+                          ? `${t("offers.removeFavorite")} - ${offer.title}`
+                          : `${t("offers.addFavorite")} - ${offer.title}`
+                      }
+                      aria-pressed={isFavorite}
+                      className={`soft-raised absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] disabled:cursor-not-allowed disabled:opacity-60 ${
+                        isFavorite ? "text-[#a67c52]" : "text-[#6b6152]"
+                      }`}
+                    >
+                      <HeartIcon className="h-[18px] w-[18px]" strokeWidth={1.8} filled={isFavorite} />
+                    </button>
                   </div>
                 </div>
 
@@ -370,6 +512,12 @@ export default function OfferDetailPage() {
                       <SupportLink label="Need help before reserving?" />
                     </div>
                   </div>
+
+                  {favoriteMessage && (
+                    <div className="mt-4">
+                      <Notice tone={favoriteMessageTone}>{favoriteMessage}</Notice>
+                    </div>
+                  )}
 
                   <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                     {reservable ? (
