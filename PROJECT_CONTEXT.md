@@ -4,6 +4,135 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 📍 Project status as of 2026-09-27 — read this before anything else
+
+**This is the closing entry for the "native app store readiness" push.** If
+you're picking this project up after a gap of weeks or months, this section
+is written so you don't have to reconstruct anything from git log or the
+(very long) session-by-session history further down this file. Everything
+below this section is historical detail kept for archaeology — this part is
+the current truth.
+
+**The project is correctly paused. There is nothing broken, nothing
+half-merged, and nothing waiting on a decision except the three items listed
+under "Only remaining blockers" below.**
+
+### Fully built and verified live in production (`https://argadaagdo-silk.vercel.app`)
+- **Core marketplace loop**: browse offers, offer detail, checkout (correctly
+  stops *before* payment with a clean generic error, since BOG isn't
+  configured — this is expected, not broken, see blockers below), orders,
+  profile/settings, business dashboard (offer creation, reservation
+  management, analytics), admin dashboard (approvals, marketplace-wide
+  analytics), business ratings/reviews. All manually QA'd across customer,
+  business, and admin roles, in English and Georgian, at mobile widths.
+- **Favorites**: heart-toggle works on both the offers grid *and* the offer
+  detail page (the detail page was the actual gap; the grid already had it —
+  a 2026-09-25 QA note claiming the grid was missing it too was stale/wrong,
+  confirmed by reading git history and testing live). Auth-gated: logged-out
+  taps redirect to sign-in. Verified end-to-end against production data this
+  session (DB row created/removed, reflected on `/favorites`, EN + KA, both
+  surfaces) — see PR #14, merged as commit `7d27515`.
+- **Business dashboard stats no longer double-count no-shows**: a single
+  no-show order used to land in both the "Cancelled" and "No-show" buckets
+  (found 2026-09-25). Root cause was a shared `isCancelledOrderStatus()`
+  helper that treats `no_show` as a subset of "cancelled" — used correctly
+  in most places, but wrong wherever a "Cancelled" count and a separate
+  "No-show" count were displayed side by side. Fixed in **two** places (not
+  just the one originally reported): the Reservation Summary card + its
+  filter tabs, and the separate Revenue & Insights KPI grid
+  (`lib/analytics.ts` → `BusinessRevenueInsights.tsx`), which had the
+  identical bug. Admin dashboard was already correct, no change needed.
+  Verified live in production this session with a fresh
+  reserved/cancelled/no-show order set — correct 1/0/1/1 buckets summing to
+  the true total of 3, in both widgets. Same PR #14.
+- **Security**: the three legacy free-reservation RPCs
+  (`reserve_offer`, `mock_pay_and_reserve_offer`, `cancel_order`) had
+  `EXECUTE` revoked from `authenticated` back on 2026-09-24. Re-confirmed
+  live in production this session with a fresh throwaway account's genuine
+  JWT — all three still return `403 42501 permission denied`.
+- **RLS**: all 7 public tables have `rls_enabled: true`, no advisor findings
+  outside intentional design (verified multiple times across sessions).
+- **Native app store scaffolding**: Capacitor config correct
+  (`com.argadaagdo.app`, `server.url` → production), real branded
+  icons/splash screens (no more default blue "X"), permissions audit clean
+  (Android: `INTERNET` only; iOS: no usage-description keys; no
+  camera/location/push code anywhere in the app — nothing to justify to App
+  Review).
+- **Mobile responsive**: the offers-grid CSS Grid overflow bug (every card
+  overflowing at every mobile width, not just the originally-reported 428px)
+  is fixed and verified at 375/390/428, EN/KA.
+- **Deploy pipeline**: confirmed working end-to-end this session — PR merge
+  → Vercel's GitHub integration auto-deploys → `argadaagdo-silk.vercel.app`
+  and its sibling aliases re-point to the new deployment, all within about a
+  minute, verified by matching the deployment's `githubCommitSha` to the
+  actual merge commit (not just "it looks new").
+- **No console errors** found on the homepage, offers page, or any
+  authenticated page checked (business dashboard, `/favorites`) across this
+  and prior sessions.
+
+### Intentionally deferred (not bugs — deliberate scope decisions, with reasons)
+- **Multi-business dashboard mixing** (found 2026-09-25): if one owner
+  account has 2+ approved businesses, the dashboard header can show one
+  business's name while the stats/offers list below still show another
+  business's data. Not fixed — only affects an owner running multiple
+  locations, which doesn't exist among real users yet.
+- **Admin dashboard Georgian translation gap**: nav and hero translate, but
+  almost all analytics content (section headings, stat labels/descriptions,
+  loading state) stays in English regardless of language toggle. Cosmetic,
+  large, not fixed — customer- and business-facing pages translate
+  correctly, this is admin-only.
+- **No automated test suite anywhere** — verification has always meant
+  manual QA plus `npm run lint` / `npm run build`. A deliberate MVP-stage
+  trade-off, not an oversight anyone forgot to address.
+- **No error tracking or product analytics** (no Sentry/PostHog/GA/etc.) —
+  if something breaks in production, nobody gets paged; you'd have to notice
+  or go looking at `/api/health` / Vercel's log drain.
+- **Supabase Auth leaked-password protection (HaveIBeenPwned check) is
+  disabled** — a one-toggle Supabase advisor recommendation, not enabled
+  because it's an Auth-config change and every session's standing rule
+  requires asking first before touching Auth config.
+- **Small, low-priority known issues, none blocking**: a Georgian nav-bar
+  sliver overflow on `/privacy` at exactly 375px (~5px, self-correcting into
+  the pill's own margin); a handful of English-only strings on the public
+  `/login` page in Georgian ("Forgot password?" etc.); in-page anchor nav
+  on the business dashboard updates the URL but doesn't scroll to section;
+  the "kg of food saved" metric is a flat 0.6kg/box estimate, not measured
+  per offer.
+
+### Only remaining blockers
+These are the three things — and the *only* three things — standing between
+this project and a real launch. Nothing else needs a decision, a credential,
+or a purchase to move forward:
+
+1. **Domain purchase** — `argadaagdo.ge` is still not registered on the
+   Vercel account. The app runs fine on `argadaagdo-silk.vercel.app` in the
+   meantime. `docs/domain-day-checklist.md` has the full day-of runbook
+   (DNS, `NEXT_PUBLIC_SITE_URL`, Supabase Auth URL config, Resend domain
+   verification, Capacitor `server.url` — all traced through the codebase
+   already, nothing left to investigate, just to execute once the domain is
+   bought).
+2. **Bank payment integration (BOG vs. TBC — unresolved naming question,
+   flagged repeatedly, never actually resolved)**: the code
+   (`lib/payments/bog.ts`, the full provider abstraction, the DB-side RPCs)
+   is built and the migration is applied — but every `BOG_*` environment
+   variable is still completely unset in Vercel Production, so checkout
+   cannot complete a real payment today. Separately, the user's own framing
+   across multiple sessions has referred to "TBC bank," but everything
+   actually built targets **Bank of Georgia (BOG)** — a different bank. This
+   was never resolved because payments have been explicitly out-of-scope
+   for every session that touched this project. Whoever picks this up next
+   should resolve BOG-vs-TBC *first*, before chasing credentials for either.
+   Also still open once that's resolved: whether the hardcoded fallback RSA
+   callback-signature public key in `bog.ts` is real or a placeholder,
+   whether `RESEND_API_KEY`/`CRON_SECRET` (present in Vercel but never
+   independently triggered/verified) actually work, and getting a real
+   sandbox/production BOG transaction to complete end-to-end at least once.
+3. **Developer account purchases** — no paid Apple Developer or Google Play
+   Console account exists yet, so the native app wrapper has never been
+   built or tested as an actual installed app; everything checked against
+   it is inferred from the Capacitor config (thin `server.url` wrapper, no
+   native-only surface) rather than a first-hand check of a running build.
+
 ## ⚠️ Standing rule — read before touching anything
 
 **Never touch RLS policies, auth (Supabase Auth config, session handling,
@@ -665,3 +794,263 @@ resetting `test.customer.storeshots@example.com`'s password — the user
 asked for the Dashboard's own "Reset Password" flow instead of the
 `pgcrypto`-against-`auth.users` approach that was offered, so that's a
 manual step on the user's side, not something this session did.
+
+## 2026-09-25 full authenticated QA pass (customer, business, admin)
+
+Branch `feature/native-app-store-readiness`, same branch as the sessions
+above. Goal per the user: a genuine, exhaustive pre-launch test pass across
+all three roles (customer, business, admin), now that authenticated routes
+could finally be reached. Payments/TBC still explicitly out of scope.
+
+**Drift correction, found before any testing started**: this file's
+"TEMPORARY TEST DATA" section (above) implied the only pre-2026-09-24 state
+was an empty database. That was wrong — a live query of `public.profiles`
+and `public.businesses` at the start of this session found **~13 additional
+accounts and 1 additional business** left over from the 2026-07-08 QA
+session, none of which that session's own write-up (further above)
+mentioned creating. Specifically: a `qa-test-business-20260708@example.com`
+account owning an already-`approved` business ("QA Test Bakery", id 1, with
+one real historical `no_show` order on it from `qa-test-customer-20260708@
+example.com`), plus ~9 more disposable `qa-test-customer-*` accounts from
+what look like mobile-nav/error-check QA scripts, plus the founder's own
+real accounts (`abesadze.bidzina@gmail.com` = admin,
+`argadaagdosupport@gmail.com` / `alinavanempel@googlemail.com` = business,
+`bublika99@gmail.com` and others = customer) that were never documented
+here at all. Lesson restated for whoever reads this next: query the DB
+directly rather than trusting this file's data-state claims at face value —
+this is the second time undocumented drift has been found here.
+
+**Test credentials used this session** (passwords shared with the user
+directly, not recorded here, consistent with this file's existing practice):
+- **Customer**: `test.customer.storeshots@example.com` — see "password
+  lockout" note below.
+- **Business**: `qa-test-business-20260708@example.com` (the pre-existing
+  account found above, reused rather than creating a new one; password was
+  reset this session). Owns "QA Test Bakery" (business id 1, approved).
+- **Admin**: `qa-test-admin-20260924@example.com` — created fresh this
+  session via the real customer signup flow, then promoted with a single
+  `update public.profiles set role = 'admin' ...` (a data write, not an
+  RLS/auth-config change; the real admin account,
+  `abesadze.bidzina@gmail.com`, was deliberately left untouched since it
+  reads as the founder's personal account). **This account was deleted
+  again during this session's own cleanup** (see below) — recreate it the
+  same way (signup + one SQL role update) if a future session needs admin
+  access.
+
+**Customer-account password lockout, resolved (not a wrong-password issue)**:
+`test.customer.storeshots@example.com` failed login with "Email or password
+is incorrect" several times early in this session, matching the exact
+failure the 2026-09-24 wrap-up session hit twice with this same account. The
+user authorized resetting it directly via SQL
+(`extensions.crypt(...)` against `auth.users.encrypted_password`) rather
+than the Dashboard's Reset Password flow this time. The new password
+**still failed** immediately after the reset — but a direct SQL check
+(`encrypted_password = crypt('<pw>', encrypted_password)`) proved the hash
+matched the exact password being typed, ruling out a bad reset. After
+pausing further attempts (to avoid deepening whatever was blocking it) and
+doing ~15 minutes of business/admin-side testing instead, a retry with the
+identical credentials succeeded. **Working theory**: Supabase Auth applies
+a temporary account-level lockout/cooldown after repeated failed password
+attempts (this account had accumulated several across two sessions), and
+returns the same generic "invalid credentials" error during the cooldown to
+avoid leaking lockout state — rather than a 429/rate-limit-specific error.
+Not confirmed against Supabase's docs, but it's the only explanation
+consistent with a cryptographically-verified-correct password being
+rejected and then accepted ~15 minutes later with zero other changes.
+**If a future session hits the same "correct password still rejected"
+symptom, wait rather than keep resetting the password.**
+
+### Task 1 — Customer journey (`test.customer.storeshots@example.com`)
+Sign in, browse offers, offer detail, checkout, orders, profile, settings,
+sign out — all walked through end to end.
+- **Sign in / browse / offer detail / orders / profile / settings / sign
+  out**: all worked correctly. Profile display-name edit saved and
+  persisted. Settings hub page correctly links out to profile/notifications/
+  privacy/account sections.
+- **Checkout correctly stops before payment**, exactly as it should: filled
+  the reservation summary, required the "I understand pickup and
+  cancellation rules" checkbox before enabling "Pay and reserve", then on
+  submit showed a clean, generic "Reservation could not be completed.
+  Please try again." (not a leaked internal error) since BOG credentials
+  aren't configured. Verified at the DB level, not just in the UI: the
+  attempt did create an `orders` row (`status='cancelled'`,
+  `quantity_restored_at` set within under a second) — meaning the
+  hold-then-roll-back-on-payment-failure path is real and correctly wired,
+  not just that nothing visibly happened. Offer quantity was unaffected
+  (stayed at 2 before and after).
+- **Bug — no way to favorite an offer**: despite a full "Favorites" feature
+  existing (`/favorites` page, nav link, `favorite_count`/`Saved`/
+  `Available`/`Unavailable` stats, a `favorites` table), **no heart/save/
+  favorite control exists anywhere in the customer-facing UI** — not on the
+  offer detail page, not on offer cards in `/offers`, not on `/discover`.
+  Checked via the accessibility tree (`read_page`/`find`), not just
+  visually, on all three surfaces. The `/favorites` page itself works and
+  correctly shows "Saved: 0", so the read side of the feature is intact —
+  only the "add to favorites" entry point is missing. This is a genuine
+  functional gap, not a rendering bug tied to test data.
+
+### Task 2 — Business journey (`qa-test-business-20260708@example.com`)
+- **Dashboard, profile edit, offer creation, reservation history**: all
+  worked. Business-profile edit (the RLS fix from the earlier session) is
+  confirmed still working — edited the phone number, got "Business profile
+  updated," reloaded, change persisted. Created a real new offer ("QA Test
+  Surprise Bag", ₾6.50, qty 2, pickup 25 Sep 18:00–19:30) through the full
+  form; it published immediately and was correctly visible to the customer
+  account on `/offers` and `/discover`. (This offer and the one throwaway
+  reservation created while testing checkout were deleted in this session's
+  cleanup — see below.)
+- **Bug — reservation-summary double-counts no-shows**: the dashboard's
+  "Reservation Summary" card for "QA Test Bakery" showed "Total
+  Reservations: 1" but a breakdown of "Reserved: 0, Collected: 0,
+  Cancelled: 1, No-show: 1" — summing to 2 against a total of 1. Verified
+  against the DB directly: there is exactly **one** order, with
+  `status = 'no_show'`. The UI is counting that single no-show order into
+  *both* the "Cancelled" and "No-show" buckets. Real, reproducible,
+  independent of any test data created this session (this order predates
+  this session, from 2026-07-08).
+- **Bug — multi-business dashboard mixes business identity and stats**:
+  registering a second business under the *same* owner account (done to
+  test Task 3's admin-approval flow — see below) exposed a real bug once
+  approved: the dashboard's welcome header switched to showing the
+  newly-approved business's name ("Welcome back, QA Approval Test Cafe")
+  while the stat cards directly below it ("My offers: 4", "Active offers:
+  1") and the "My offers" list underneath both still showed data belonging
+  to the *other* business ("QA Test Bakery"'s offers, including the
+  "QA Test Surprise Bag" created in Task 2). The "Create offer" form's own
+  Business dropdown correctly lists and distinguishes both businesses, so
+  the app clearly intends to support one owner with multiple businesses —
+  the header/stats section just doesn't correctly scope to whichever
+  business context is actually selected. A real business owner running two
+  locations would see this exact confusion.
+- **Minor**: clicking the in-page "Offers" / "Orders" nav shortcuts (hash
+  anchors like `#business-offers`, `#business-reservations`) updates the
+  URL but does not scroll the page to that section — had to use
+  element-search + scroll-to instead. Cosmetic, not a functional bug.
+- **Minor**: the file-upload control for offer images reads "Datei
+  auswählen / Keine ausgewählt" (German) regardless of the site's EN/KA
+  toggle — this is the browser's native file-input label taking its
+  language from the OS/browser locale, not an app translation bug, but
+  worth knowing so it isn't mistaken for one.
+
+### Task 3 — Admin journey (`qa-test-admin-20260924@example.com`)
+- **Business approval**: registered a brand-new business ("QA Approval Test
+  Cafe") through the real `/business/register` wizard while signed in as
+  the business test account (attaches to whichever account is currently
+  signed in — no separate signup step), confirmed it appeared in the admin
+  "Pending businesses" queue with full submitted details, clicked
+  "Approve," got "Business approved," and confirmed on reload that
+  "Pending Businesses" dropped from 1 to 0 and "Approved Businesses" rose
+  from 3 to 4. Full loop verified, not just the click.
+- **Minor / polish**: the approval card's review-reason panel includes the
+  visible copy "Current database stores approval as approved or pending.
+  Notes help the operator decide what to tell the business manually." —
+  reads like an internal implementation note that leaked into user-facing
+  admin UI rather than being deleted before shipping. Not a functional bug,
+  but worth a copy pass.
+- **Dashboard stats**: reviewed the full admin analytics dashboard
+  (businesses/offers/orders/customers/revenue/activity sections) against
+  the DB directly — every number checked out correctly against the live
+  data (`Total Businesses: 4`, `Admins: 2`, `Customers`/`Business Accounts`
+  counts, etc.), no fabricated numbers found.
+- **Bug — most of the admin dashboard is not translated to Georgian**:
+  switching to ქართული translates the page's hero title/subtitle and the
+  bottom nav labels, but essentially everything else — every analytics
+  section heading ("MARKETPLACE OVERVIEW", "Pilot operations snapshot"),
+  every stat card label and its description ("Total Businesses", "All
+  submitted business profiles", "Approved Businesses", "Financial and
+  operational insight," etc.), and the "Loading admin dashboard..." loading
+  state — stays in English. This is a real, large i18n gap specific to the
+  admin dashboard (the customer- and business-facing pages checked this
+  session translate correctly; only admin's analytics content doesn't).
+
+### Task 4 — Cross-cutting checks
+- **Legacy RPC revoke still holds**: checked live grants directly (not just
+  trusting the earlier fix) — `reserve_offer`, `mock_pay_and_reserve_offer`,
+  and `cancel_order` all still show `has_function_privilege(...) = false`
+  for both `authenticated` and `anon`. The 2026-09-24 security fix is
+  intact.
+- **No console errors** observed across any authenticated page visited
+  this session (customer, business, admin), checked via the browser's
+  console log, not just visual inspection.
+- **Mobile widths + Georgian on authenticated pages**: the Claude-in-Chrome
+  browser tool's window-resize did not reliably shrink an *existing* tab's
+  actual rendering viewport in this environment (the OS window resized but
+  `window.innerWidth` stayed at the desktop value) — resizing before
+  opening a *fresh* tab worked correctly, so mobile testing this session
+  used that workaround rather than true 375/390/428 spot-checks on every
+  authenticated page. What *was* checked at an accurate ~390px-equivalent
+  mobile viewport, in both languages: `/login`, the business dashboard, and
+  the admin dashboard — no new overflow bugs found on any of them, in
+  either language (the previously-documented Georgian nav-bar sliver on
+  `/privacy` is a guest-page issue and wasn't re-checked here). This is
+  narrower coverage than a full 375/390/428 × EN/KA × every-authenticated-
+  page matrix — treat authenticated-route mobile layout as "spot-checked,
+  not exhaustively verified" rather than fully cleared.
+- **Minor i18n gap on the public `/login` page**: in Georgian, "Need help
+  signing in?", "Forgot password?", "Need to verify your email?", and
+  "Resend verification email" all stay in English while the surrounding
+  copy translates correctly. Noticed incidentally while testing mobile
+  layout; not one of the previously-known/fixed issues.
+- **Native app wrapper**: not independently tested (no paid Apple/Google
+  developer account exists to produce an actual build, per the
+  native-app-store-readiness session above). The wrapper is a thin
+  Capacitor `server.url` pointing at this exact production URL with no
+  native chrome, camera/location/push code, or other native-only surface
+  (confirmed by the permissions audit in the native-app session) — so
+  everything checked against the live URL this session is what the wrapper
+  would show. This is an inference from the Capacitor config, not a
+  first-hand check of a running native build.
+
+### Cleanup performed this session
+Per the user's explicit go-ahead, both this session's own throwaway data
+*and* the undocumented 2026-07-08 leftovers (see drift note above) were
+cleaned up:
+- **Deleted**: 9 disposable `qa-test-customer-*` accounts from the
+  2026-07-08 session (`-mobilenav-*` ×4, `-mobilesweep-*` ×2,
+  `-errcheck*` ×2, `-navcheck-*` ×1) and the 2
+  `security-audit-throwaway-*` accounts from the RPC-revoke fix — all
+  confirmed to have zero orders/favorites/payments before deletion. Deleted
+  via SQL (`public.profiles` → `auth.identities` → `auth.users`, in that
+  order), not the Dashboard, per the same one-off exception the user
+  granted for the password reset above.
+- **Deleted**: this session's own throwaway admin test account
+  (`qa-test-admin-20260924@example.com`), the throwaway business created to
+  test admin approval ("QA Approval Test Cafe", business id 4, 0 offers),
+  the throwaway offer created to test the business dashboard ("QA Test
+  Surprise Bag", offer id 6), and the one order it produced while testing
+  checkout failure (`order id 2`, already `cancelled` with quantity
+  restored).
+- **Kept, deliberately**: `qa-test-customer-20260708@example.com` — looked
+  like another disposable throwaway but actually owns the one real
+  historical `no_show` order that "QA Test Bakery"'s reservation-history
+  features (and the double-counting bug above) depend on; deleting it would
+  have silently erased that test fixture. `qa-test-business-20260708@
+  example.com` (now the designated reusable business test account, password
+  reset this session — treat it like `test.customer.storeshots@
+  example.com`: a standing fixture, not a one-off) and its "QA Test Bakery"
+  business/offers. `test.customer.storeshots@example.com` itself. All of
+  the founder's own real accounts found during the drift check above were
+  left completely untouched.
+- **Not touched**: `abesadze.bidzina@gmail.com` (real admin account),
+  `argadaagdosupport@gmail.com` / `alinavanempel@googlemail.com` (real
+  business accounts), and other real personal customer accounts — none of
+  these were part of this session's test-data scope.
+- **Pre-existing, unrelated to this session**: `auth.users` has 2 more rows
+  than `public.profiles` after cleanup (13 vs. 11) — this gap existed
+  before any of this session's changes (deletions removed equal counts from
+  both tables) and wasn't investigated further; flagging in case a future
+  session wants to know why 2 auth users have no profile row.
+
+### Bottom line for "would you hesitate to call this app-store-ready?"
+Two real functional bugs (missing favorite-button UI, reservation-summary
+double-counting) and one real data-modeling bug (multi-business dashboard
+mixing) were found and are **unfixed** — none were touched this session per
+the "QA/audit pass, not a fix pass" framing, consistent with how prior
+sessions in this file have handled findings. The admin-dashboard i18n gap is
+cosmetic but large. None of these are payment- or security-related, and
+none block a first submission for a single-business pilot (the
+multi-business bug only manifests for an owner with more than one
+business, which doesn't exist among real users yet). See the chat
+transcript's final message to the user for the direct, prioritized answer
+to their app-store-readiness question — this file intentionally doesn't
+duplicate that judgment call.
