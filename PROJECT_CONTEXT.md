@@ -4,6 +4,65 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🔁 Resume-work note — start here if you're picking this up cold after a break
+
+Written 2026-09-27, right before the founder shut their laptop down for an
+indeterminate stretch (weeks to months) to handle real-world business
+registration and banking. Everything as of this note is merged to `main`,
+deployed to production, and verified live — see the full status section
+immediately below for the detailed proof. Nothing is stuck mid-work.
+
+**What's blocking further progress — exactly three things, none of them code:**
+1. **Domain purchase** (`argadaagdo.ge` not yet registered)
+2. **TBC/BOG bank payment integration** (naming question unresolved — see
+   below — plus real banking credentials, which the founder is obtaining
+   through the real-world process this break is for)
+3. **Apple Developer / Google Play Console account purchases** (needed to
+   build and test the native app wrapper for real)
+
+**The very first useful action once each unblocks:**
+- **Once the domain is bought**: don't start writing code. Start at
+  `docs/domain-day-checklist.md` — it's a complete, already-researched
+  runbook (DNS, `NEXT_PUBLIC_SITE_URL`, Supabase Auth URL config, Resend
+  domain verification, Capacitor `server.url`) traced through this exact
+  codebase already. Just execute it top to bottom.
+- **Once TBC vs. BOG is decided and real banking API credentials exist**:
+  first re-read the "Bank payment integration" section below in full — do
+  not assume "the code looks done so it must work," that assumption has
+  been wrong before in this project. The concrete first step is populating
+  the `BOG_*` environment variables in Vercel Production (see
+  `.env.example` for the full list) — `lib/payments/bog.ts` and the DB-side
+  RPCs are already built and the migration is already applied, so once real
+  credentials exist the path to a working checkout is short. If the
+  provider turns out to genuinely be TBC and not BOG, `lib/payments/`
+  needs a second provider implementation added to the existing
+  `PaymentProvider` abstraction in `lib/payments/provider.ts` — don't bolt
+  TBC logic onto `bog.ts` directly.
+- **Once a paid Apple/Google developer account exists**: the Capacitor
+  scaffolding, icons, and splash screens are already done (see the
+  "native app store readiness" history further down) — the next step is
+  simply doing a real native build and running the permissions/behavior
+  audit against an actual installed app instead of inferring it from
+  config, then following `docs/app-store-submission.md`'s submission
+  checklist.
+
+**Two small, low-priority loose ends found during the 2026-09-27
+pre-shutdown check, safe to ignore indefinitely but worth knowing about:**
+- Two old branches exist on GitHub that were pushed but never merged and
+  never had a PR opened: `qa-a11y-audit-pass` (2026-07-08) and
+  `docs/wrap-up-session-notes` (2026-07-13). Checked both line by line —
+  nothing is at risk: the RLS migration in `qa-a11y-audit-pass` was already
+  independently re-tracked via the merged `20260710120000_track_business_owner_update_policy.sql`;
+  its color-contrast fix is moot (superseded by the August redesign, which
+  removed every class it touched); its `PROJECT_CONTEXT.md` edits are long
+  superseded. The one genuinely still-missing piece: **the order
+  review textarea in `components/orders/OrderCard.tsx` has no
+  `aria-label` and relies on placeholder text alone as its accessible
+  name** (confirmed still true against current `main` on 2026-09-27) — a
+  real one-line a11y fix, just never reapplied after the branch it was on
+  never merged. Low priority, safe to leave for whenever someone's doing
+  UI/a11y polish next.
+
 ## 📍 Project status as of 2026-09-27 — read this before anything else
 
 **This is the closing entry for the "native app store readiness" push.** If
