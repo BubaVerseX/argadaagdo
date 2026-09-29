@@ -312,6 +312,7 @@ export function OrderCard({
                       onReviewChange(order.id, event.target.value)
                     }
                     maxLength={500}
+                    aria-label={t("orders.reviewLabel")}
                     placeholder={t("orders.reviewPlaceholder")}
                     className="premium-input mt-3 min-h-24 w-full p-3 text-sm font-semibold"
                   />

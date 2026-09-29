@@ -94,9 +94,9 @@ export default function BusinessDashboardPage() {
 
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [approvedBusinesses, setApprovedBusinesses] = useState<Business[]>([]);
-  const [offers, setOffers] = useState<Offer[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [reviews, setReviews] = useState<Rating[]>([]);
+  const [allOffers, setOffers] = useState<Offer[]>([]);
+  const [allOrders, setOrders] = useState<Order[]>([]);
+  const [allReviews, setReviews] = useState<Rating[]>([]);
   const [ownedBusinessIds, setOwnedBusinessIds] = useState<number[]>([]);
   const [ownedOfferIds, setOwnedOfferIds] = useState<number[]>([]);
 
@@ -1015,7 +1015,7 @@ export default function BusinessDashboardPage() {
   }
 
   async function completeOrder(orderId: number, pickupCodeValue: string) {
-    const completedOrder = orders.find((order) => order.id === orderId);
+    const completedOrder = allOrders.find((order) => order.id === orderId);
 
     if (completedOrder && isOrderPastPickupEnd(completedOrder.offers)) {
       await markNoShow(completedOrder);
@@ -1189,6 +1189,22 @@ export default function BusinessDashboardPage() {
     };
   }, [businessFilter, offerFilter, scheduleRefresh]);
 
+  const selectedBusiness =
+    approvedBusinesses.find((business) => String(business.id) === businessId) ||
+    approvedBusinesses[0] ||
+    businesses[0];
+  // The header, stats, offers, reservations and reviews must all describe the
+  // same business, so everything below is scoped to selectedBusiness.
+  const selectedBusinessId = selectedBusiness?.id;
+  const offers = allOffers.filter(
+    (offer) => offer.business_id === selectedBusinessId
+  );
+  const orders = allOrders.filter((order) =>
+    offers.some((offer) => offer.id === order.offer_id)
+  );
+  const reviews = allReviews.filter(
+    (review) => review.business_id === selectedBusinessId
+  );
   const activeOffers = offers.filter(
     (offer) => getEffectiveOfferStatus(offer) === "active"
   );
@@ -1213,10 +1229,6 @@ export default function BusinessDashboardPage() {
       : 0;
   const averageRatingLabel =
     totalReviews > 0 ? `${averageRating.toFixed(1)} / 5` : t("common.noRatings");
-  const selectedBusiness =
-    approvedBusinesses.find((business) => String(business.id) === businessId) ||
-    approvedBusinesses[0] ||
-    businesses[0];
   const dashboardBusinessName =
     selectedBusiness?.name || t("businessDashboard.businessOwner");
   const businessNameById = approvedBusinesses.reduce<Record<number, string>>(
