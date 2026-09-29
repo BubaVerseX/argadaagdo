@@ -321,6 +321,7 @@ const translations = {
     "orders.cancelReservation": "Cancel Reservation",
     "orders.ratePickup": "Rate this pickup",
     "orders.reviewPlaceholder": "Optional review for the business",
+    "orders.reviewLabel": "Write your review",
     "orders.submitReview": "Submit review",
 
     "favorites.badge": "Saved offers",
@@ -1116,6 +1117,7 @@ const translations = {
     "orders.cancelReservation": "ჯავშნის გაუქმება",
     "orders.ratePickup": "შეაფასე წაღება",
     "orders.reviewPlaceholder": "სურვილისამებრ შეფასების ტექსტი ბიზნესისთვის",
+    "orders.reviewLabel": "დაწერე შენი შეფასება",
     "orders.submitReview": "შეფასების გაგზავნა",
 
     "favorites.badge": "შენახული შეთავაზებები",
