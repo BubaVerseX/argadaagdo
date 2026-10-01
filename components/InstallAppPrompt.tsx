@@ -53,8 +53,19 @@ function subscribe(onStoreChange: () => void) {
   };
 }
 
+function wasDismissed() {
+  try {
+    return window.localStorage.getItem(DISMISS_KEY) === "true";
+  } catch {
+    return dismissedThisSession;
+  }
+}
+
+// Used when localStorage is unavailable (it throws instead of returning).
+let dismissedThisSession = false;
+
 function getSnapshot(): Visibility {
-  if (isStandalone() || window.localStorage.getItem(DISMISS_KEY) === "true") {
+  if (isStandalone() || wasDismissed()) {
     return "hidden";
   }
   if (capturedPrompt) return "native-prompt";
@@ -67,7 +78,14 @@ function getServerSnapshot(): Visibility {
 }
 
 function dismiss() {
-  window.localStorage.setItem(DISMISS_KEY, "true");
+  dismissedThisSession = true;
+
+  try {
+    window.localStorage.setItem(DISMISS_KEY, "true");
+  } catch {
+    // Storage blocked — the in-memory flag hides it for this session.
+  }
+
   capturedPrompt = null;
   window.dispatchEvent(new Event(PROMPT_CHANGE_EVENT));
 }

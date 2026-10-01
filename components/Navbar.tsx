@@ -127,7 +127,12 @@ export default function Navbar() {
   }
 
   const isActivePath = (href: string) => {
-    const cleanHref = href.split("#")[0];
+    // In-page section links ("/business/dashboard#business-offers") share the
+    // page's path; only the plain page link is the current page, otherwise
+    // three tabs are highlighted and announced as current at once.
+    if (href.includes("#")) return false;
+
+    const cleanHref = href;
     return (
       pathname === cleanHref ||
       (cleanHref !== "/" && pathname.startsWith(`${cleanHref}/`))
@@ -224,7 +229,7 @@ export default function Navbar() {
   })();
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#ece4d6] px-4 py-3 sm:px-5 md:px-10">
+    <nav className="sticky top-[env(safe-area-inset-top)] z-50 bg-[#ece4d6] px-4 py-3 sm:px-5 md:px-10">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
           href="/"

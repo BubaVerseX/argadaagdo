@@ -132,7 +132,9 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-2 py-5 text-sm font-medium text-[#8a8072] sm:px-4 md:flex-row md:items-center md:justify-between">
-        <p>© ArGadaagdo {currentYear}</p>
+        {/* Pages are prerendered at build time, so the year can differ from
+            the visitor's clock (e.g. a December build viewed in January). */}
+        <p suppressHydrationWarning>© ArGadaagdo {currentYear}</p>
         <p>{t("footer.reduceWasteGeorgia")}</p>
       </div>
     </footer>

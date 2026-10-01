@@ -43,13 +43,28 @@ body {
   body {
     overscroll-behavior-y: none;
   }
+}
 
-  body {
-    /* The status bar area is otherwise unpadded, so content (e.g. the
-       sticky navbar) would start flush at the very top, right under the
-       clock/battery icons. */
-    padding-top: env(safe-area-inset-top);
-  }
+/* Status bar / notch inset. This must NOT be limited to
+   (display-mode: standalone): the iOS/Android app shells (Capacitor
+   WebViews) report display-mode "browser" while drawing the page under the
+   status bar (viewport-fit=cover), which put the navbar under the clock and
+   Dynamic Island. Where there is no inset (normal browser tabs, PWAs with an
+   opaque status bar) env() is 0 and nothing changes. */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Opaque strip behind the status bar so scrolled content doesn't show
+   through it; the sticky navbar sticks just below it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: env(safe-area-inset-top);
+  background: var(--background);
+  z-index: 60;
+  pointer-events: none;
 }
 
 html {
