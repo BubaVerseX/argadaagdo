@@ -23,7 +23,7 @@ import { validateTextField } from "@/lib/validation";
 import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type EditableMetadata = {
   display_name?: string | null;
@@ -93,6 +93,14 @@ export default function ProfilePage() {
     "success" | "error" | "warning"
   >("success");
 
+  // Read the current language through a ref so switching language in the
+  // navbar doesn't re-run loadProfile and wipe unsaved form edits.
+  const languageRef = useRef(language);
+
+  useEffect(() => {
+    languageRef.current = language;
+  }, [language]);
+
   const loadProfile = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
 
@@ -126,7 +134,7 @@ export default function ProfilePage() {
     setDisplayName(getMetadataText(metadata, "display_name"));
     setPhone(getMetadataText(metadata, "phone"));
     setPreferredLanguage(
-      isSupportedLanguage(savedLanguage) ? savedLanguage : language
+      isSupportedLanguage(savedLanguage) ? savedLanguage : languageRef.current
     );
 
     const [ordersResult, favoritesResult, ratingsResult] = await Promise.all([
@@ -170,7 +178,7 @@ export default function ProfilePage() {
       favoriteOffers: favoritesResult.error ? 0 : favoriteRows.length,
     });
     setLoading(false);
-  }, [language, router]);
+  }, [router]);
 
   useEffect(() => {
     const initialLoad = window.setTimeout(() => void loadProfile(), 0);

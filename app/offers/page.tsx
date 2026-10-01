@@ -17,6 +17,8 @@ import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   compareMarketplaceOffers,
   formatMoney,
+  getDiscountPercent,
+  getOriginalPrice,
   formatPickupWindow,
   getOfferDateLabel,
   getOfferGroup,
@@ -27,7 +29,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { paginateItems } from "@/lib/pagination";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
@@ -93,6 +95,7 @@ export default function OffersPage() {
   const [ratingSummaries, setRatingSummaries] = useState<
     Record<number, RatingSummary>
   >({});
+  const favoriteRequestsInFlight = useRef(new Set<number>());
   const [updatingFavoriteId, setUpdatingFavoriteId] = useState<number | null>(
     null
   );
@@ -148,12 +151,26 @@ export default function OffersPage() {
   }
 
   async function toggleFavorite(offer: Offer) {
+    // Synchronous guard: a double tap would otherwise send two inserts while
+    // the auth check below is still pending.
+    if (favoriteRequestsInFlight.current.has(offer.id)) return;
+
+    favoriteRequestsInFlight.current.add(offer.id);
+
+    try {
+      await updateFavorite(offer);
+    } finally {
+      favoriteRequestsInFlight.current.delete(offer.id);
+    }
+  }
+
+  async function updateFavorite(offer: Offer) {
     setMessage("");
 
     const authResult = await getConfirmedUser();
 
     if (authResult.status === "signed_out") {
-      router.push("/login");
+      router.push("/login?redirect=/offers");
       return;
     }
 
@@ -203,7 +220,8 @@ export default function OffersPage() {
       offer_id: offer.id,
     });
 
-    if (error) {
+    // 23505 = already saved (e.g. from another tab) — that's the goal state.
+    if (error && error.code !== "23505") {
       setMessageTone("error");
       setMessage("Favorite could not be saved. Please try again.");
       await loadFavorites(userId);
@@ -216,7 +234,7 @@ export default function OffersPage() {
     const initialLoad = window.setTimeout(() => void loadOffers(), 0);
 
     const channel = supabase
-      .channel("offers-live-updates")
+      .channel(uniqueChannelName("offers-live-updates"))
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "offers" },
@@ -283,7 +301,7 @@ export default function OffersPage() {
     if (!currentUserId || !canUseFavorites) return;
 
     const channel = supabase
-      .channel(`favorites-live-updates-${currentUserId}`)
+      .channel(uniqueChannelName(`favorites-live-updates-${currentUserId}`))
       .on(
         "postgres_changes",
         {
@@ -623,15 +641,8 @@ export default function OffersPage() {
                         offer.businesses?.address,
                         offer.businesses?.name
                       );
-                      const discount =
-                        offer.old_price &&
-                        Number(offer.old_price) > Number(offer.price)
-                          ? Math.round(
-                              ((Number(offer.old_price) - Number(offer.price)) /
-                                Number(offer.old_price)) *
-                                100
-                            )
-                          : null;
+                      const discount = getDiscountPercent(offer);
+                      const originalPrice = getOriginalPrice(offer);
                       const rating = ratingSummaries[offer.business_id];
                       const reservable = isOfferReservable(offer);
                       const isFavorite = favoriteOfferIds.includes(offer.id);
@@ -652,7 +663,7 @@ export default function OffersPage() {
                               />
                             </div>
 
-                            {discount && (
+                            {discount !== null && (
                               <div className="premium-discount-badge pointer-events-none absolute left-2 top-2 px-3 py-1.5">
                                 -{discount}%
                               </div>
@@ -692,9 +703,9 @@ export default function OffersPage() {
                                 <span className="text-2xl font-bold tracking-[-0.02em] text-[#a67c52]">
                                   {formatMoney(offer.price)}
                                 </span>
-                                {offer.old_price && (
+                                {originalPrice !== null && (
                                   <span className="text-sm font-medium text-[#8a8072] line-through">
-                                    {formatMoney(offer.old_price)}
+                                    {formatMoney(originalPrice)}
                                   </span>
                                 )}
                               </div>

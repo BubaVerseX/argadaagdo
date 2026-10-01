@@ -34,7 +34,7 @@ import type { Business, Offer, PublicBusinessReview } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type OfferDetail = Offer & {
   businesses?: Business | null;
@@ -76,6 +76,7 @@ export default function OfferDetailPage() {
   const [canUseFavorites, setCanUseFavorites] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteUpdating, setFavoriteUpdating] = useState(false);
+  const favoriteRequestInFlight = useRef(false);
   const [favoriteMessage, setFavoriteMessage] = useState("");
   const [favoriteMessageTone, setFavoriteMessageTone] = useState<
     "success" | "error" | "warning"
@@ -180,6 +181,19 @@ export default function OfferDetailPage() {
   }, [params.id]);
 
   async function toggleFavorite() {
+    // Synchronous guard against double taps while the auth check is pending.
+    if (favoriteRequestInFlight.current) return;
+
+    favoriteRequestInFlight.current = true;
+
+    try {
+      await updateFavorite();
+    } finally {
+      favoriteRequestInFlight.current = false;
+    }
+  }
+
+  async function updateFavorite() {
     if (!offer) return;
 
     setFavoriteMessage("");
@@ -187,7 +201,7 @@ export default function OfferDetailPage() {
     const authResult = await getConfirmedUser();
 
     if (authResult.status === "signed_out") {
-      router.push("/login");
+      router.push(`/login?redirect=${encodeURIComponent(`/offers/${offer.id}`)}`);
       return;
     }
 
@@ -233,7 +247,8 @@ export default function OfferDetailPage() {
       offer_id: offer.id,
     });
 
-    if (error) {
+    // 23505 = already saved (e.g. from another tab) — that's the goal state.
+    if (error && error.code !== "23505") {
       setIsFavorite(false);
       setFavoriteMessageTone("error");
       setFavoriteMessage("Favorite could not be saved. Please try again.");
@@ -407,7 +422,7 @@ export default function OfferDetailPage() {
                       </p>
                       <p className="mt-2 text-sm font-bold text-[#6b6152]">
                         {t("checkout.regularPrice")}:{" "}
-                        {originalPrice > 0 ? (
+                        {originalPrice > currentPrice ? (
                           <span className="line-through">
                             {formatMoney(offer.old_price)}
                           </span>

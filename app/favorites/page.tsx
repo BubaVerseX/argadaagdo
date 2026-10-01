@@ -16,6 +16,7 @@ import type { TranslationKey } from "@/lib/i18n";
 import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   formatMoney,
+  getOriginalPrice,
   formatPickupTimeRange,
   getEffectiveOfferStatus,
   getOfferDateLabel,
@@ -422,9 +423,9 @@ export default function FavoritesPage() {
                               {formatMoney(offer.price)}
                             </span>
 
-                            {offer.old_price && (
+                            {getOriginalPrice(offer) !== null && (
                               <span className="pb-1 font-medium text-[#6b6152] line-through">
-                                {formatMoney(offer.old_price)}
+                                {formatMoney(getOriginalPrice(offer))}
                               </span>
                             )}
                           </div>

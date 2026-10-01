@@ -133,7 +133,7 @@ export function getPickupReminderMessage(order: Order, language: Language) {
   if (minutesUntilPickup <= 60) {
     return language === "ka"
       ? `წაღება იწყება ${minutesUntilPickup} წუთში. არ დაგავიწყდეს კოდი.`
-      : `Pickup starts in ${minutesUntilPickup} minutes. Do not forget your pickup code.`;
+      : `Pickup starts in ${minutesUntilPickup} minute${minutesUntilPickup === 1 ? "" : "s"}. Do not forget your pickup code.`;
   }
 
   const hoursUntilPickup = Math.ceil(minutesUntilPickup / 60);

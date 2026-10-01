@@ -84,6 +84,43 @@ export function formatMoney(value: number | string | null | undefined) {
   return `₾ ${safeValue.toFixed(2)}`;
 }
 
+type OfferPricing = {
+  price: number | string | null | undefined;
+  old_price?: number | string | null;
+};
+
+// The "regular" price is only meaningful when it is higher than the sale
+// price; businesses can enter any value, so never show a crossed-out price
+// that is equal to or lower than what the customer pays.
+export function getOriginalPrice(offer: OfferPricing) {
+  const price = Number(offer.price);
+  const originalPrice = Number(offer.old_price);
+
+  if (
+    offer.old_price === null ||
+    offer.old_price === undefined ||
+    !Number.isFinite(price) ||
+    !Number.isFinite(originalPrice) ||
+    originalPrice <= 0 ||
+    originalPrice <= price
+  ) {
+    return null;
+  }
+
+  return originalPrice;
+}
+
+export function getDiscountPercent(offer: OfferPricing) {
+  const originalPrice = getOriginalPrice(offer);
+  if (originalPrice === null) return null;
+
+  const percent = Math.round(
+    ((originalPrice - Number(offer.price)) / originalPrice) * 100
+  );
+
+  return percent > 0 ? percent : null;
+}
+
 export function formatDisplayDateTime(
   value: string | null | undefined,
   language: Language = "en"

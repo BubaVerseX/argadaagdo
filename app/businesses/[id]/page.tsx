@@ -12,6 +12,7 @@ import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { normalizeOfferCategory } from "@/lib/offerCategories";
 import {
   formatMoney,
+  getDiscountPercent,
   formatPickupWindow,
   formatReviewDate,
   isOfferReservable,
@@ -346,15 +347,7 @@ export default function BusinessProfilePage() {
                   )}
 
                   {offers.map((offer) => {
-                    const discount =
-                      offer.old_price &&
-                      Number(offer.old_price) > Number(offer.price)
-                        ? Math.round(
-                            ((Number(offer.old_price) - Number(offer.price)) /
-                              Number(offer.old_price)) *
-                              100
-                          )
-                        : null;
+                    const discount = getDiscountPercent(offer);
 
                     return (
                       <Link
@@ -371,7 +364,7 @@ export default function BusinessProfilePage() {
                           <span className="soft-raised absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-black text-[#a67c52]">
                             {normalizeOfferCategory(offer.category)}
                           </span>
-                          {discount && (
+                          {discount !== null && (
                             <span className="premium-discount-badge absolute right-2 top-2 px-3 py-1">
                               Save {discount}%
                             </span>

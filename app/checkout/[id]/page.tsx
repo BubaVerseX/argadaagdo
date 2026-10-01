@@ -13,6 +13,7 @@ import { getUserErrorMessage } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
   formatMoney,
+  getOriginalPrice,
   formatPickupTimeRange,
   formatPickupWindow,
   getOfferDateLabel,
@@ -23,7 +24,7 @@ import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type CheckoutOffer = Offer & {
   businesses?: {
@@ -85,28 +86,6 @@ async function fetchCheckoutOffer(
 }
 
 function getReservationErrorMessage(message?: string) {
-  const normalizedMessage = (message || "").toLowerCase();
-
-  if (normalizedMessage.includes("at most 3 active reservations")) {
-    return "You already have 3 active reservations. Complete or cancel one before reserving another.";
-  }
-
-  if (normalizedMessage.includes("not logged in")) {
-    return "Please sign in first.";
-  }
-
-  if (normalizedMessage.includes("offer sold out")) {
-    return "Offer is sold out.";
-  }
-
-  if (normalizedMessage.includes("offer is not available")) {
-    return "This offer is no longer available for checkout. It may be expired, sold out, or inactive.";
-  }
-
-  if (normalizedMessage.includes("restricted customer")) {
-    return "Only customer accounts in good standing can reserve offers.";
-  }
-
   return getUserErrorMessage(
     message,
     "Reservation could not be completed. Please try again."
@@ -133,6 +112,9 @@ export default function CheckoutPage() {
   const [offer, setOffer] = useState<CheckoutOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  // Set synchronously so a double tap can't start two checkouts (and two
+  // inventory holds) while the auth check below is still awaiting.
+  const payingRef = useRef(false);
   const [rulesAccepted, setRulesAccepted] = useState(false);
   const [checkoutBlocked, setCheckoutBlocked] = useState(true);
   const [message, setMessage] = useState("");
@@ -216,12 +198,27 @@ export default function CheckoutPage() {
 
     if (result.status === "success") {
       setOffer(result.offer);
+      return;
     }
+
+    // The offer sold out or expired while the user was on this page — don't
+    // keep showing it as payable.
+    setOffer(null);
   }
 
   async function confirmPilotReservation() {
-    if (paying) return;
+    if (payingRef.current) return;
 
+    payingRef.current = true;
+
+    try {
+      await startCheckout();
+    } finally {
+      payingRef.current = false;
+    }
+  }
+
+  async function startCheckout() {
     setMessage("");
 
     if (!offer) return;
@@ -268,17 +265,26 @@ export default function CheckoutPage() {
       return;
     }
 
-    const response = await fetch("/api/payments/checkout", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        offerId: offer.id,
-        provider: "bog",
-      }),
-    });
+    let response: Response;
+
+    try {
+      response = await fetch("/api/payments/checkout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          offerId: offer.id,
+          provider: "bog",
+        }),
+      });
+    } catch {
+      setMessageTone("error");
+      setMessage("Network problem. Please check your connection and try again.");
+      setPaying(false);
+      return;
+    }
 
     const paymentSession = await response.json().catch(() => null);
 
@@ -484,13 +490,13 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {offer.old_price && (
+                  {getOriginalPrice(offer) !== null && (
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-[#6b6152]">
                         {t("checkout.regularPrice")}
                       </span>
                       <span className="font-black text-[#8a8072] line-through">
-                        {formatMoney(offer.old_price)}
+                        {formatMoney(getOriginalPrice(offer))}
                       </span>
                     </div>
                   )}

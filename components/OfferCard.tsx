@@ -2,7 +2,12 @@ import Link from "next/link";
 import OfferImage from "@/components/OfferImage";
 import { ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
 import type { Language } from "@/lib/i18n";
-import { formatMoney, formatPickupWindow } from "@/lib/offerLifecycle";
+import {
+  formatMoney,
+  formatPickupWindow,
+  getDiscountPercent,
+  getOriginalPrice,
+} from "@/lib/offerLifecycle";
 import type { Offer } from "@/lib/types";
 
 export type OfferCardCornerAction = {
@@ -22,15 +27,6 @@ type OfferCardProps = {
   priority?: boolean;
 };
 
-function getDiscountPercent(offer: Offer) {
-  const price = Number(offer.price || 0);
-  const oldPrice = Number(offer.old_price || 0);
-
-  if (oldPrice <= price || oldPrice <= 0) return null;
-
-  return Math.round(((oldPrice - price) / oldPrice) * 100);
-}
-
 export function OfferCard({
   offer,
   language,
@@ -41,6 +37,7 @@ export function OfferCard({
   priority = false,
 }: OfferCardProps) {
   const discountPercent = getDiscountPercent(offer);
+  const originalPrice = getOriginalPrice(offer);
   const detailsHref = `/offers/${offer.id}`;
 
   return (
@@ -110,9 +107,9 @@ export function OfferCard({
             <p className="text-2xl font-bold tracking-[-0.02em] text-[#a67c52]">
               {formatMoney(offer.price)}
             </p>
-            {offer.old_price && (
+            {originalPrice !== null && (
               <p className="text-sm font-medium text-[#8a8072] line-through">
-                {formatMoney(offer.old_price)}
+                {formatMoney(originalPrice)}
               </p>
             )}
           </div>
