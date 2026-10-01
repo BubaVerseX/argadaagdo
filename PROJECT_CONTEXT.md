@@ -410,8 +410,9 @@ configuration, not local scratch state.
   mark a payment paid directly; all functions are `security definer` with
   `search_path = ''` and explicit grants/revokes. This is good design on
   paper — it just isn't live yet.
-- `app/api/cron/payment-maintenance/route.ts` — Vercel cron (every 30 min
-  per `vercel.json`) calls `expire_pending_provider_payments(20)`; this will
+- `app/api/cron/payment-maintenance/route.ts` — Vercel cron (once a day at
+  03:00 UTC per `vercel.json`; it was every 30 min before the Hobby-plan
+  change) calls `expire_pending_provider_payments(40)`; this will
   currently fail the same way (function not found) until the migration is
   applied.
 - `lib/monitoring.ts` / `/api/health` — checks presence of `BOG_CLIENT_ID`,
@@ -839,8 +840,9 @@ touched the real test data:
 
 **Left over from this fix, for whoever picks this up next**: two throwaway
 audit accounts now exist in `auth.users`
-(`security-audit-throwaway-<timestamp>@example.com`, both password
-`AuditThrowaway123!`, both plain `customer` role, **zero** orders/payments
+(`security-audit-throwaway-<timestamp>@example.com`, password not recorded
+here — this repository is public, so these accounts should be deleted or
+have their passwords rotated; both plain `customer` role, **zero** orders/payments
 — the nonexistent-offer-id trick above means neither ever created any real
 data). Harmless to leave, but delete them via Supabase Dashboard →
 Authentication → Users if you'd rather not have them around — the user
