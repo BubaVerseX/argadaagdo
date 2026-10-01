@@ -37,6 +37,7 @@ type OfferListProps = {
   editPrice: string;
   editOldPrice: string;
   editQuantity: string;
+  editPickupDate: string;
   editPickupStart: string;
   editPickupEnd: string;
   onStartEditing: (offer: Offer) => void;
@@ -51,6 +52,7 @@ type OfferListProps = {
   onEditPriceChange: (value: string) => void;
   onEditOldPriceChange: (value: string) => void;
   onEditQuantityChange: (value: string) => void;
+  onEditPickupDateChange: (value: string) => void;
   onEditPickupStartChange: (value: string) => void;
   onEditPickupEndChange: (value: string) => void;
 };
@@ -71,6 +73,7 @@ export function OfferList({
   editPrice,
   editOldPrice,
   editQuantity,
+  editPickupDate,
   editPickupStart,
   editPickupEnd,
   onStartEditing,
@@ -85,6 +88,7 @@ export function OfferList({
   onEditPriceChange,
   onEditOldPriceChange,
   onEditQuantityChange,
+  onEditPickupDateChange,
   onEditPickupStartChange,
   onEditPickupEndChange,
 }: OfferListProps) {
@@ -415,6 +419,16 @@ export function OfferList({
                       className="premium-input p-4 font-semibold"
                       aria-label="Quantity"
                       placeholder="3"
+                    />
+
+                    <input
+                      value={editPickupDate}
+                      onChange={(event) =>
+                        onEditPickupDateChange(event.target.value)
+                      }
+                      type="date"
+                      className="premium-input p-4 font-semibold"
+                      aria-label="Pickup date"
                     />
 
                     <input

@@ -53,6 +53,7 @@ import {
 import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isFailedCheckoutOrder,
   isStrictlyCancelledOrderStatus,
 } from "@/lib/orderStatus";
 import {
@@ -119,6 +120,8 @@ export default function BusinessDashboardPage() {
   const [pickupStart, setPickupStart] = useState("");
   const [pickupEnd, setPickupEnd] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageInputKey, setImageInputKey] = useState(0);
+  const messageRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -145,6 +148,7 @@ export default function BusinessDashboardPage() {
   const [editOldPrice, setEditOldPrice] = useState("");
   const [editQuantity, setEditQuantity] = useState("");
   const editingOriginalQuantity = useRef<number | null>(null);
+  const [editPickupDate, setEditPickupDate] = useState("");
   const [editPickupStart, setEditPickupStart] = useState("");
   const [editPickupEnd, setEditPickupEnd] = useState("");
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -153,6 +157,13 @@ export default function BusinessDashboardPage() {
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastProfileSaveAt = useRef(0);
   const lastOfferPublishAt = useRef(0);
+
+  // The message box sits near the top of a long page; bring errors and
+  // warnings into view so a failed action doesn't look like nothing happened.
+  useEffect(() => {
+    if (!message || messageTone === "success") return;
+    messageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [message, messageTone]);
 
   const loadDashboard = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -303,16 +314,39 @@ export default function BusinessDashboardPage() {
     setOwnedOfferIds(offerIds);
 
     if (offerIds.length > 0) {
-      const { data: myOrders, error: orderError } = await supabase
-        .from("orders")
-        .select(`
+      const orderSelect = `
           *,
           offers(title, price, pickup_date, pickup_start, pickup_end),
           profiles(email, reliability_score, reliability_status)
-        `)
-        .in("offer_id", offerIds)
-        .order("id", { ascending: false })
-        .limit(500);
+        `;
+      // Active reservations are always loaded in full — they're what staff
+      // must verify at pickup — so a busy business's history can never push
+      // another business's open reservations out of the capped history list.
+      const [historyResult, activeResult] = await Promise.all([
+        supabase
+          .from("orders")
+          .select(orderSelect)
+          .in("offer_id", offerIds)
+          .order("id", { ascending: false })
+          .limit(1000),
+        supabase
+          .from("orders")
+          .select(orderSelect)
+          .in("offer_id", offerIds)
+          .in("status", ["pending_payment", "reserved", "confirmed"])
+          .order("id", { ascending: false }),
+      ]);
+      const orderError = historyResult.error || activeResult.error;
+      const ordersById = new Map<number, Order>();
+
+      for (const order of [
+        ...((activeResult.data || []) as Order[]),
+        ...((historyResult.data || []) as Order[]),
+      ]) {
+        ordersById.set(order.id, order);
+      }
+
+      const myOrders = [...ordersById.values()].sort((a, b) => b.id - a.id);
 
       if (orderError) {
         logAppError("Business dashboard failed to load reservations", orderError, {
@@ -486,7 +520,7 @@ export default function BusinessDashboardPage() {
     notifyProfileUpdated({ businessName: updatedBusiness.name || "Business" });
   }
 
-  async function uploadImage(): Promise<string | null> {
+  async function uploadImage(businessId: number): Promise<string | null> {
     if (!imageFile) return "";
 
     const validationError = getImageValidationError(imageFile);
@@ -497,7 +531,9 @@ export default function BusinessDashboardPage() {
       return null;
     }
 
-    const fileName = createImageFileName(imageFile);
+    // One folder per business keeps each business's images together (easier
+    // cleanup and per-business storage rules later).
+    const fileName = `business-${businessId}/${createImageFileName(imageFile)}`;
 
     const { error } = await supabase.storage
       .from("offer-images")
@@ -648,7 +684,7 @@ export default function BusinessDashboardPage() {
     setMessageTone("success");
     setMessage("Publishing offer...");
 
-    const imageUrl = await uploadImage();
+    const imageUrl = await uploadImage(selectedBusinessId);
 
     if (imageUrl === null) {
       setPublishing(false);
@@ -696,6 +732,9 @@ export default function BusinessDashboardPage() {
     setPickupStart("");
     setPickupEnd("");
     setImageFile(null);
+    // The browser kept showing the previous file name while imageFile was
+    // already empty, so the next offer silently had no image.
+    setImageInputKey((currentKey) => currentKey + 1);
 
     setPublishing(false);
     setMessageTone("success");
@@ -716,6 +755,7 @@ export default function BusinessDashboardPage() {
     setEditOldPrice(offer.old_price ? String(offer.old_price) : "");
     setEditQuantity(String(offer.quantity ?? 0));
     editingOriginalQuantity.current = Number(offer.quantity ?? 0);
+    setEditPickupDate(offer.pickup_date || getTbilisiDateKey());
     setEditPickupStart(offer.pickup_start || "");
     setEditPickupEnd(offer.pickup_end || "");
   }
@@ -727,6 +767,7 @@ export default function BusinessDashboardPage() {
     setEditPrice("");
     setEditOldPrice("");
     setEditQuantity("");
+    setEditPickupDate("");
     setEditPickupStart("");
     setEditPickupEnd("");
   }
@@ -797,7 +838,31 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (!editPickupDate) {
+      setMessage("Pickup date is required.");
+      return;
+    }
+
+    const pickupDateChanged = editPickupDate !== (offer.pickup_date || "");
+
+    // Only validate "not in the past" when the window itself changes, so a
+    // title fix on today's running offer is still possible.
+    if (
+      (pickupDateChanged ||
+        editPickupStart !== (offer.pickup_start || "") ||
+        editPickupEnd !== (offer.pickup_end || "")) &&
+      isOrderPastPickupEnd({
+        pickup_date: editPickupDate,
+        pickup_start: editPickupStart,
+        pickup_end: editPickupEnd,
+      })
+    ) {
+      setMessage("This pickup window has already ended. Choose a later date or time.");
+      return;
+    }
+
     const pickupTimesChanged =
+      pickupDateChanged ||
       editPickupStart !== (offer.pickup_start || "") ||
       editPickupEnd !== (offer.pickup_end || "");
     const hasActiveReservations = allOrders.some(
@@ -848,6 +913,7 @@ export default function BusinessDashboardPage() {
         category: selectedCategory,
         price: priceValue,
         old_price: oldPriceValue,
+        pickup_date: editPickupDate,
         pickup_start: editPickupStart,
         pickup_end: editPickupEnd,
         ...stockFields,
@@ -1090,7 +1156,9 @@ export default function BusinessDashboardPage() {
     if (!data) {
       setUpdatingOfferId(null);
       setMessageTone("warning");
-      setMessage("Offer could not be deleted.");
+      setMessage(
+        "This offer could not be deleted. Offers that already have reservations can't be deleted — set it inactive instead."
+      );
       await loadDashboard();
       return;
     }
@@ -1211,6 +1279,14 @@ export default function BusinessDashboardPage() {
     setPickupVerificationError("");
     const completed = await completeOrder(pickupVerificationOrder.id, enteredCode);
 
+    if (!completed) {
+      // The page-level message sits behind this dialog, so repeat it here.
+      setPickupVerificationError(
+        "Pickup could not be completed. Check the code, or close this window to see the details."
+      );
+      return;
+    }
+
     if (completed) {
       setPickupVerificationOrder(null);
       setPickupVerificationCode("");
@@ -1310,8 +1386,12 @@ export default function BusinessDashboardPage() {
   const offers = allOffers.filter(
     (offer) => offer.business_id === selectedBusinessId
   );
-  const orders = allOrders.filter((order) =>
-    offers.some((offer) => offer.id === order.offer_id)
+  // Failed/abandoned checkouts (cancelled before payment, never given a
+  // pickup code) aren't reservations — don't list or count them.
+  const orders = allOrders.filter(
+    (order) =>
+      offers.some((offer) => offer.id === order.offer_id) &&
+      !isFailedCheckoutOrder(order)
   );
   const reviews = allReviews.filter(
     (review) => review.business_id === selectedBusinessId
@@ -1800,7 +1880,7 @@ export default function BusinessDashboardPage() {
         />
 
         {message && (
-          <div className="mt-5 sm:mt-6">
+          <div ref={messageRef} className="mt-5 scroll-mt-24 sm:mt-6">
             <Notice tone={messageTone}>{message}</Notice>
           </div>
         )}
@@ -1894,6 +1974,7 @@ export default function BusinessDashboardPage() {
           onPickupStartChange={setPickupStart}
           onPickupEndChange={setPickupEnd}
           onImageFileChange={handleImageFileChange}
+          imageInputKey={imageInputKey}
           onCreateOffer={(actionTime) => void createOffer(actionTime)}
         />
 
@@ -1954,6 +2035,7 @@ export default function BusinessDashboardPage() {
             editPrice={editPrice}
             editOldPrice={editOldPrice}
             editQuantity={editQuantity}
+            editPickupDate={editPickupDate}
             editPickupStart={editPickupStart}
             editPickupEnd={editPickupEnd}
             onStartEditing={startEditingOffer}
@@ -1968,6 +2050,7 @@ export default function BusinessDashboardPage() {
             onEditPriceChange={setEditPrice}
             onEditOldPriceChange={setEditOldPrice}
             onEditQuantityChange={setEditQuantity}
+            onEditPickupDateChange={setEditPickupDate}
             onEditPickupStartChange={setEditPickupStart}
             onEditPickupEndChange={setEditPickupEnd}
           />

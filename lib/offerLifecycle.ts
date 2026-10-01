@@ -133,9 +133,11 @@ export function formatDisplayDateTime(
     return language === "ka" ? "თარიღი მიუწვდომელია" : "Date unavailable";
   }
 
+  // Always show marketplace times in Tbilisi time, not the device's zone.
   return new Intl.DateTimeFormat(language === "ka" ? "ka-GE" : "en-GB", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: TBILISI_TIME_ZONE,
   }).format(date);
 }
 
@@ -152,6 +154,7 @@ export function formatReviewDate(
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: TBILISI_TIME_ZONE,
   }).format(date);
 }
 
@@ -183,11 +186,13 @@ export function getOfferStartKey(
 }
 
 export function getEffectiveOfferStatus(offer: Offer): OfferLifecycleStatus {
-  if (offer.status === "inactive") return "inactive";
   if (offer.status === "expired") return "expired";
+  // A past pickup window wins over "inactive": a paused offer whose date has
+  // passed can't be reactivated, and belongs in the archive.
   if (offer.pickup_date && getOfferEndKey(offer) < getTbilisiDateTimeKey()) {
     return "expired";
   }
+  if (offer.status === "inactive") return "inactive";
   if (offer.status === "sold_out" || Number(offer.quantity || 0) <= 0) {
     return "sold_out";
   }

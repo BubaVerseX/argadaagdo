@@ -628,6 +628,7 @@ export function PendingBusinesses({
   t,
   language,
   businesses,
+  waitingCount,
   updatingBusinessId,
   onApprove,
   onRequestChanges,
@@ -636,6 +637,8 @@ export function PendingBusinesses({
   t: (key: TranslationKey) => string;
   language: Language;
   businesses: AdminBusiness[];
+  /** Total pending businesses (the list itself is one page). */
+  waitingCount?: number;
   updatingBusinessId: number | null;
   onApprove: (id: number) => void;
   onRequestChanges: (id: number, reason: string) => void;
@@ -684,7 +687,7 @@ export function PendingBusinesses({
         </div>
 
         <span className="w-full rounded-full bg-yellow-100 px-4 py-2 text-center text-sm font-black text-yellow-800 sm:w-auto">
-          {businesses.length} waiting
+          {waitingCount ?? businesses.length} waiting
         </span>
       </div>
 

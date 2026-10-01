@@ -40,6 +40,7 @@ import { notifyBusinessApproved } from "@/lib/notifications";
 import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isFailedCheckoutOrder,
 } from "@/lib/orderStatus";
 import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
@@ -71,7 +72,34 @@ type AdminProfileFilter = "all" | "customer" | "business" | "admin";
 type ApprovalQueueFilter = "newest" | "oldest" | "needs_review" | "approved";
 
 const ADMIN_LIST_PAGE_SIZE = 8;
-const ADMIN_QUERY_LIMIT = 1000;
+// PostgREST returns at most 1000 rows per request, so read in pages; the old
+// single .limit(1000) silently truncated every marketplace total.
+const ADMIN_PAGE_SIZE = 1000;
+const ADMIN_MAX_ROWS = 20000;
+
+async function fetchAllRows<T>(
+  table: string,
+  columns: string,
+  orderColumn = "id"
+): Promise<{ data: T[]; error: { message: string } | null }> {
+  const rows: T[] = [];
+
+  for (let from = 0; from < ADMIN_MAX_ROWS; from += ADMIN_PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .order(orderColumn, { ascending: false })
+      .range(from, from + ADMIN_PAGE_SIZE - 1);
+
+    if (error) return { data: rows, error };
+
+    rows.push(...((data || []) as T[]));
+
+    if (!data || data.length < ADMIN_PAGE_SIZE) break;
+  }
+
+  return { data: rows, error: null };
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -131,14 +159,12 @@ export default function AdminPage() {
       ratingsResult,
     ] =
       await Promise.all([
-        supabase
-          .from("businesses")
-          .select("*")
-          .order("id", { ascending: false })
-          .limit(ADMIN_QUERY_LIMIT),
-        supabase.from("offers").select("*").limit(ADMIN_QUERY_LIMIT),
-        supabase.from("orders").select("*").limit(ADMIN_QUERY_LIMIT),
-        supabase.from("profiles").select(`
+        fetchAllRows<AdminBusiness>("businesses", "*"),
+        fetchAllRows<Offer>("offers", "*"),
+        fetchAllRows<Order>("orders", "*"),
+        fetchAllRows<Profile>(
+          "profiles",
+          `
           id,
           email,
           role,
@@ -147,11 +173,12 @@ export default function AdminPage() {
           no_show_count,
           completed_pickup_count,
           cancelled_order_count
-        `).limit(ADMIN_QUERY_LIMIT),
-        supabase
-          .from("business_ratings")
-          .select("rating", { count: "exact" })
-          .limit(ADMIN_QUERY_LIMIT),
+        `
+        ),
+        fetchAllRows<{ rating: number | string | null }>(
+          "business_ratings",
+          "id, rating"
+        ),
       ]);
 
     if (
@@ -184,7 +211,7 @@ export default function AdminPage() {
     setOffers((offerResult.data || []) as Offer[]);
     setOrders((orderResult.data || []) as Order[]);
     setProfiles((profilesResult.data || []) as Profile[]);
-    setTotalRatings(ratingsResult.count || 0);
+    setTotalRatings(ratingsResult.data.length);
     setRatingScores(
       (ratingsResult.data || []) as Array<{ rating: number | string | null }>
     );
@@ -844,7 +871,9 @@ export default function AdminPage() {
     },
     {
       title: "Failed payments",
-      value: 0,
+      // Checkouts cancelled before a pickup code was issued: bank failure,
+      // abandoned bank page, or an expired hold.
+      value: orders.filter(isFailedCheckoutOrder).length,
       helper: "Provider failures to review during payment operations",
       className: "bg-red-50 text-red-800",
     },
@@ -1187,6 +1216,7 @@ export default function AdminPage() {
           t={t}
           language={language}
           businesses={paginatedPendingBusinesses.items}
+          waitingCount={approvalVisiblePendingBusinesses.length}
           updatingBusinessId={updatingBusinessId}
           onApprove={(id) => void approveBusiness(id)}
           onRequestChanges={requestBusinessChanges}

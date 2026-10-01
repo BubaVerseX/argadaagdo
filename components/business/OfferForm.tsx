@@ -43,6 +43,8 @@ type OfferFormProps = {
   onPickupStartChange: (value: string) => void;
   onPickupEndChange: (value: string) => void;
   onImageFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  /** Changes after each publish so the file input is cleared. */
+  imageInputKey?: number;
   onCreateOffer: (actionTime: number) => void;
 };
 
@@ -75,6 +77,7 @@ export function OfferForm({
   onPickupStartChange,
   onPickupEndChange,
   onImageFileChange,
+  imageInputKey = 0,
   onCreateOffer,
 }: OfferFormProps) {
   return (
@@ -255,6 +258,7 @@ export function OfferForm({
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152] md:col-span-2">
               Offer image
               <input
+                key={imageInputKey}
                 type="file"
                 accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
                 onChange={onImageFileChange}

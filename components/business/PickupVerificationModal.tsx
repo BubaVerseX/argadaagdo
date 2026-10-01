@@ -1,4 +1,5 @@
 import { ClockIcon, XIcon } from "@/components/icons";
+import { useEffect, useRef } from "react";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import { formatPickupWindow } from "@/lib/offerLifecycle";
 import type { Order } from "@/lib/types";
@@ -26,6 +27,35 @@ export function PickupVerificationModal({
   onClose,
   onSubmit,
 }: PickupVerificationModalProps) {
+  const codeInputRef = useRef<HTMLInputElement>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Dialog basics: focus the code field, close on Escape, stop the page
+  // behind from scrolling, and give focus back to where it was on close.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    codeInputRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onCloseRef.current();
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus?.();
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#2e2a22]/60 px-4 py-6 sm:py-10">
       <div className="mx-auto flex min-h-full max-w-lg items-center">
@@ -88,6 +118,7 @@ export function PickupVerificationModal({
             Pickup Code
           </label>
           <input
+            ref={codeInputRef}
             id="pickup-verification-code"
             value={code}
             onChange={(event) => onCodeChange(event.target.value)}
@@ -105,7 +136,10 @@ export function PickupVerificationModal({
           />
 
           {error && (
-            <p className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700">
+            <p
+              role="alert"
+              className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700"
+            >
               {error}
             </p>
           )}

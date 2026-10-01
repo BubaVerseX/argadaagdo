@@ -8,6 +8,7 @@ import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
   isStrictlyCancelledOrderStatus,
+  isUnpaidCheckoutOrder,
 } from "@/lib/orderStatus";
 import { platformFeeRate } from "@/lib/paymentArchitecture";
 import type { Offer, Order, Rating } from "@/lib/types";
@@ -319,8 +320,10 @@ function getMarketingInsights(offers: Offer[], orders: Order[], reviews: Rating[
 
 export function calculateOfferAnalytics(
   offers: Offer[],
-  orders: Order[]
+  allOrders: Order[]
 ): Record<number, OfferAnalytics> {
+  const orders = allOrders.filter((order) => !isUnpaidCheckoutOrder(order));
+
   return offers.reduce<Record<number, OfferAnalytics>>((analyticsMap, offer) => {
     const offerOrders = orders.filter((order) => order.offer_id === offer.id);
     const completedOrders = offerOrders.filter((order) =>
@@ -350,13 +353,15 @@ export function calculateOfferAnalytics(
 
 export function calculateBusinessAnalytics({
   offers,
-  orders,
+  orders: allOrders,
   reviews,
 }: {
   offers: Offer[];
   orders: Order[];
   reviews: Rating[];
 }): BusinessAnalyticsSummary {
+  // Unpaid or abandoned checkouts are not reservations.
+  const orders = allOrders.filter((order) => !isUnpaidCheckoutOrder(order));
   const todayKey = getTbilisiDateKey();
   const revenueOrders = orders.filter(isRevenueOrder);
   const completedPickups = orders.filter((order) =>
@@ -379,12 +384,17 @@ export function calculateBusinessAnalytics({
         ).toFixed(1)
       : "No ratings yet";
   const offerAnalyticsById = calculateOfferAnalytics(offers, orders);
-  const offerPopularityMap = new Map(
-    offers.map((offer) => [
+  // Sum by title: repeated daily offers share a title, and a plain Map of
+  // title -> count kept only the last one.
+  const offerPopularityMap = new Map<string, number>();
+
+  offers.forEach((offer) => {
+    offerPopularityMap.set(
       offer.title,
-      offerAnalyticsById[offer.id]?.reservations || 0,
-    ])
-  );
+      (offerPopularityMap.get(offer.title) || 0) +
+        (offerAnalyticsById[offer.id]?.reservations || 0)
+    );
+  });
 
   return {
     todayReservations: orders.filter(
@@ -436,6 +446,8 @@ export function calculateMarketplaceAnalytics({
   orders: Order[];
   ratings: Array<{ rating: number | string | null }>;
 }): MarketplaceAnalyticsSummary {
+  orders = orders.filter((order) => !isUnpaidCheckoutOrder(order));
+
   const completedPickups = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
   );
