@@ -4,6 +4,38 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-10-01 full audit + fix session — read this first
+
+A full audit (web app, iOS/Android wrappers, live Supabase read-only,
+Vercel) found ~90 issues. Code fixes are on branch
+`claude/keen-knuth-niinm2` (not merged at the time of writing — production
+deploys from `main`, so nothing is live until it is merged). Key facts the
+older notes below don't know:
+
+- **Checkout is broken in production**: on 2026-09-30 a migration was
+  applied directly to the live DB (`switch_payments_to_tbc_and_add_payout_accounts`,
+  now copied into `supabase/migrations/`) that makes
+  `create_provider_payment_order` accept only `'tbc'`, while all app code
+  sends `'bog'`. Decide BOG vs TBC before any other payment work.
+- **Repo ≠ production**: production runs older versions of several RPCs;
+  repo migrations 06-03…06-17 were only partly applied live, and two live
+  migrations were never committed (both now committed verbatim). Compare
+  `pg_proc.prosrc` with the repo before trusting either.
+- **Pending DB migration, NOT applied**:
+  `supabase/migrations/20261001120000_audit_fixes.sql` — tested on a local
+  replica; fixes no-show date check, reactivated paused offers, stale
+  payment holds (released after 40 min instead of only by the daily cron),
+  duplicate holds, text pickup-time validation, safe offer delete, owner
+  transfer lock, pending-owner edits, business visibility of customer
+  profiles. Apply only with the founder's OK (standing rule below).
+- Infra: Supabase project is in Sydney and Vercel functions in Washington
+  DC (~1 s DB queries, health-check timeouts) — move both near Georgia.
+  Vercel Hobby = daily crons only (see `vercel.json`).
+- Native: `@capacitor/app` + `@capacitor/browser` added and synced; run
+  `npm ci && npx cap sync` before any native build. In-app account
+  deletion is still missing (Apple/Google requirement).
+- The repo is public: never commit passwords or keys here.
+
 ## 🔁 Resume-work note — start here if you're picking this up cold after a break
 
 Written 2026-09-27, right before the founder shut their laptop down for an

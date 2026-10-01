@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/site";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { FAQAccordion } from "@/components/help/FAQAccordion";
@@ -6,6 +8,13 @@ import { InfoBanner } from "@/components/help/InfoBanner";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { MapPinIcon, ReceiptIcon, StoreIcon } from "@/components/icons";
 import Link from "next/link";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Help & Support",
+  description:
+    "Help with reservations, pickup codes, cancellations, refunds and business accounts on ArGadaagdo.",
+  path: "/support",
+});
 
 const supportEmail = "support@argadaagdo.ge";
 
