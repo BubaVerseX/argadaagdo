@@ -74,7 +74,7 @@ export default function NotificationCenter() {
   return (
     <div
       aria-live="polite"
-      className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-[70] grid w-[calc(100%-2rem)] max-w-sm gap-3 sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:w-full"
+      className="fixed right-4 bottom-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-[70] grid w-[calc(100%-2rem)] max-w-sm gap-3 sm:right-6 sm:bottom-[calc(1.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] sm:w-full"
     >
       {notifications.map((notification) => (
         <AppNotification

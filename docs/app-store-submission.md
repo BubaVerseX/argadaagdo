@@ -328,6 +328,16 @@ to write a permissions-justification note for in App Review.
 
 This is a reference for later, not something to execute now.
 
+### Before either store: in-app account deletion
+
+Both Apple (guideline 5.1.1(v)) and Google Play require apps that allow
+sign-up to let users start account deletion inside the app (Google also
+wants a web URL for it). Today Settings only links to the contact page —
+this is a likely rejection reason and must be built first. It needs a
+product/legal decision: deleting an auth user cascades to its orders and
+payment records (and, for a business owner, to the business and all its
+customers' orders), so deletion should anonymise rather than hard-delete.
+
 ### Apple ($99/yr Apple Developer Program)
 
 1. Enroll at developer.apple.com (can take up to 48h for identity
@@ -344,8 +354,13 @@ This is a reference for later, not something to execute now.
    `com.argadaagdo.app`, name/SKU), fill in the metadata from section 4
    above, upload `store-assets/app-store-icon-1024.png` and the
    `ios-6.5in-1284x2778/` (required) + `ios-6.9in-1290x2796/` (recommended)
-   screenshots — **re-capture these first** if offers are live by then (see
-   section 5).
+   screenshots — **re-capture these first**: the committed set shows the
+   old offers-grid overflow bug and test offers that expired on
+   2026-09-25 (see section 5). The app is iPhone-only
+   (`TARGETED_DEVICE_FAMILY = 1`), so no iPad screenshots are needed.
+   Under App Review Information, give the reviewer a working demo
+   customer account (create a fresh one; don't commit its password) and
+   make sure at least one live offer exists during review.
 5. Set the privacy policy URL to `https://argadaagdo-silk.vercel.app/privacy`
    (or the real domain, if live by then — update `capacitor.config.ts`'s
    `server.url` **first** and rebuild if so).
@@ -381,7 +396,10 @@ This is a reference for later, not something to execute now.
    `android-1080x1920/` screenshots (min 2, re-capture first if offers are
    live by then).
 6. Create an Internal Testing release, upload the AAB, add test accounts,
-   verify install + core flows on a real device.
+   verify install + core flows on a real device. **New personal developer
+   accounts must also run a closed test with at least 12 opted-in testers
+   for 14 consecutive days before Production access is granted** — start
+   this early, it's the longest step.
 7. Promote to Production (or a staged rollout, e.g. 20% → 100%) once
    satisfied.
 8. Play Console review is typically faster than Apple's, but budget a

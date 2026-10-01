@@ -254,7 +254,8 @@ back successful reservations, cancellations, approvals, or pickups.
   `TRANSACTIONAL_EMAIL_REPLY_TO`, and `CRON_SECRET` in Vercel.
 - Set `HEALTH_CHECK_SECRET` in Vercel for detailed authenticated health checks.
 - The Vercel crons in `vercel.json` call `/api/cron/pickup-reminders` once per
-  day (12:00 UTC) and `/api/cron/payment-maintenance` once per day (03:00
+  day (06:00 UTC = 10:00 Tbilisi, reminding every reservation for that day
+  whose window hasn't ended) and `/api/cron/payment-maintenance` once per day (03:00
   UTC) — the Vercel Hobby plan only allows daily crons. Because pending
   payment holds are only released by payment-maintenance, an abandoned
   checkout keeps its box reserved until that daily run; schedule it more

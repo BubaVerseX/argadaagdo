@@ -229,7 +229,7 @@ export default function Navbar() {
   })();
 
   return (
-    <nav className="sticky top-[env(safe-area-inset-top)] z-50 bg-[#ece4d6] px-4 py-3 sm:px-5 md:px-10">
+    <nav className="sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-[#ece4d6] px-4 py-3 sm:px-5 md:px-10">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
           href="/"
@@ -532,7 +532,7 @@ export default function Navbar() {
       </div>
 
       {/* Fixed floating bottom tab bar — primary mobile navigation. */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] lg:hidden">
         <div className="soft-raised flex w-full max-w-md items-stretch justify-between gap-1 rounded-[28px] p-2">
           {tabs.map((tabItem) => {
             const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;
