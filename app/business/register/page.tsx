@@ -2,7 +2,10 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { BusinessOnboardingWizard } from "@/components/business/BusinessOnboardingWizard";
+import {
+  BusinessOnboardingWizard,
+  clearBusinessRegistrationDraft,
+} from "@/components/business/BusinessOnboardingWizard";
 import {
   getConfirmedUser,
   getProfileById,
@@ -170,6 +173,25 @@ export default function BusinessRegisterPage() {
       return;
     }
 
+    // Don't create a second application while one is already waiting.
+    const { data: existingBusinesses } = await supabase
+      .from("businesses")
+      .select("id, approved")
+      .eq("owner_id", userId);
+
+    if (
+      (existingBusinesses || []).some(
+        (business: { approved: boolean | null }) => !business.approved
+      )
+    ) {
+      setSubmitting(false);
+      setMessageTone("warning");
+      setMessage(
+        "You already have a business application waiting for admin approval."
+      );
+      return;
+    }
+
     const { error } = await supabase.from("businesses").insert({
       owner_id: userId,
       name: nameResult.value,
@@ -189,6 +211,7 @@ export default function BusinessRegisterPage() {
       return;
     }
 
+    clearBusinessRegistrationDraft();
     setName("");
     setBusinessType("Cafe");
     setAddress("");

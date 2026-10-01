@@ -69,7 +69,7 @@ import {
 import { logAppError } from "@/lib/errors";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { paginateItems } from "@/lib/pagination";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { isWithinCooldown, validateTextField } from "@/lib/validation";
@@ -144,6 +144,7 @@ export default function BusinessDashboardPage() {
   const [editPrice, setEditPrice] = useState("");
   const [editOldPrice, setEditOldPrice] = useState("");
   const [editQuantity, setEditQuantity] = useState("");
+  const editingOriginalQuantity = useRef<number | null>(null);
   const [editPickupStart, setEditPickupStart] = useState("");
   const [editPickupEnd, setEditPickupEnd] = useState("");
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -384,6 +385,17 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    // Right after switching business the form still holds the previous
+    // business's details until the reload finishes — saving then would copy
+    // them onto the newly selected business.
+    if (profileBusinessId !== currentBusiness.id) {
+      setMessageTone("warning");
+      setMessage(
+        "The selected business is still loading. Please wait a moment and try again."
+      );
+      return;
+    }
+
     const nameResult = validateTextField({
       label: "Business name",
       value: profileName,
@@ -586,6 +598,13 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (oldPriceValue !== null && oldPriceValue <= priceValue) {
+      setMessage(
+        "Original price must be higher than the discounted price, or leave it empty."
+      );
+      return;
+    }
+
     if (!Number.isInteger(quantityValue) || quantityValue <= 0) {
       setMessage("Quantity must be a whole number greater than 0.");
       return;
@@ -603,6 +622,24 @@ export default function BusinessDashboardPage() {
 
     if (pickupStart >= pickupEnd) {
       setMessage("Pickup end time must be after pickup start time.");
+      return;
+    }
+
+    // The default date is computed when the page loads, so a tab left open
+    // overnight would otherwise publish an already-expired offer.
+    if (pickupDate < getTbilisiDateKey()) {
+      setMessage("Pickup date cannot be in the past.");
+      return;
+    }
+
+    if (
+      isOrderPastPickupEnd({
+        pickup_date: pickupDate,
+        pickup_start: pickupStart,
+        pickup_end: pickupEnd,
+      })
+    ) {
+      setMessage("This pickup window has already ended. Choose a later time.");
       return;
     }
 
@@ -678,6 +715,7 @@ export default function BusinessDashboardPage() {
     setEditPrice(String(offer.price ?? ""));
     setEditOldPrice(offer.old_price ? String(offer.old_price) : "");
     setEditQuantity(String(offer.quantity ?? 0));
+    editingOriginalQuantity.current = Number(offer.quantity ?? 0);
     setEditPickupStart(offer.pickup_start || "");
     setEditPickupEnd(offer.pickup_end || "");
   }
@@ -732,6 +770,13 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (oldPriceValue !== null && oldPriceValue <= priceValue) {
+      setMessage(
+        "Original price must be higher than the discounted price, or leave it empty."
+      );
+      return;
+    }
+
     if (!Number.isInteger(quantityValue) || quantityValue < 0) {
       setMessage("Quantity must be 0 or greater.");
       return;
@@ -752,29 +797,69 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const nextActive = quantityValue > 0 ? offer.active : false;
-    const nextStatus =
-      quantityValue <= 0 ? "sold_out" : nextActive ? "active" : "inactive";
+    const pickupTimesChanged =
+      editPickupStart !== (offer.pickup_start || "") ||
+      editPickupEnd !== (offer.pickup_end || "");
+    const hasActiveReservations = allOrders.some(
+      (order) =>
+        order.offer_id === offer.id &&
+        ["pending_payment", "reserved", "confirmed"].includes(
+          String(order.status)
+        )
+    );
+
+    if (
+      pickupTimesChanged &&
+      hasActiveReservations &&
+      !window.confirm(
+        "This offer already has reservations. Customers were told the original pickup time and are not notified automatically. Change the pickup time anyway?"
+      )
+    ) {
+      return;
+    }
+
+    // Customers can reserve while this form is open, so only write the stock
+    // when the business actually changed it — and only if it still matches
+    // the value they started editing from. Otherwise a title fix would reset
+    // the stock and oversell.
+    const quantityChanged = quantityValue !== editingOriginalQuantity.current;
+    const stockFields = quantityChanged
+      ? (() => {
+          const nextActive = quantityValue > 0 ? offer.active : false;
+          return {
+            quantity: quantityValue,
+            active: nextActive,
+            status:
+              quantityValue <= 0
+                ? "sold_out"
+                : nextActive
+                  ? "active"
+                  : "inactive",
+          };
+        })()
+      : {};
 
     setUpdatingOfferId(offer.id);
 
-    const { data, error } = await supabase
+    let updateQuery = supabase
       .from("offers")
       .update({
         title: titleResult.value,
         category: selectedCategory,
         price: priceValue,
         old_price: oldPriceValue,
-        quantity: quantityValue,
         pickup_start: editPickupStart,
         pickup_end: editPickupEnd,
-        active: nextActive,
-        status: nextStatus,
+        ...stockFields,
       })
       .eq("id", offer.id)
-      .in("business_id", ownedBusinessIds)
-      .select("*")
-      .maybeSingle();
+      .in("business_id", ownedBusinessIds);
+
+    if (quantityChanged && editingOriginalQuantity.current !== null) {
+      updateQuery = updateQuery.eq("quantity", editingOriginalQuantity.current);
+    }
+
+    const { data, error } = await updateQuery.select("*").maybeSingle();
 
     if (error) {
       logAppError("Offer edit failed", error, {
@@ -790,7 +875,12 @@ export default function BusinessDashboardPage() {
     if (!data) {
       setUpdatingOfferId(null);
       setMessageTone("warning");
-      setMessage("Offer could not be updated.");
+      setMessage(
+        quantityChanged
+          ? "New reservations came in while you were editing, so the quantity was not changed. Check the current quantity and try again."
+          : "Offer could not be updated."
+      );
+      await loadDashboard();
       return;
     }
 
@@ -1017,10 +1107,9 @@ export default function BusinessDashboardPage() {
   async function completeOrder(orderId: number, pickupCodeValue: string) {
     const completedOrder = allOrders.find((order) => order.id === orderId);
 
-    if (completedOrder && isOrderPastPickupEnd(completedOrder.offers)) {
-      await markNoShow(completedOrder);
-      return false;
-    }
+    // Note: a customer who arrives a little late with the correct code must
+    // still be completable — never turn a "Verify" click into a no-show.
+    // Whether a late completion is allowed is decided by complete_pickup.
 
     if (!pickupCodeValue.trim()) {
       setMessageTone("error");
@@ -1042,6 +1131,26 @@ export default function BusinessDashboardPage() {
       setUpdatingOrderId(null);
       setMessageTone("error");
       setMessage("Pickup could not be completed. Please check the pickup code and try again.");
+      return false;
+    }
+
+    // Some versions of complete_pickup record a late pickup as a no-show
+    // instead of raising, so confirm the outcome before reporting success or
+    // emailing the customer.
+    const { data: updatedOrder } = await supabase
+      .from("orders")
+      .select("status")
+      .eq("id", orderId)
+      .maybeSingle();
+    const resultingStatus = (updatedOrder as { status?: string } | null)?.status;
+
+    if (resultingStatus && !["completed", "collected"].includes(resultingStatus)) {
+      setUpdatingOrderId(null);
+      setMessageTone("warning");
+      setMessage(
+        "The pickup window had already ended, so this order could not be completed."
+      );
+      await loadDashboard();
       return false;
     }
 
@@ -1083,6 +1192,8 @@ export default function BusinessDashboardPage() {
 
   async function submitPickupVerification() {
     if (!pickupVerificationOrder) return;
+    // Holding Enter in the code field would otherwise submit repeatedly.
+    if (updatingOrderId !== null) return;
 
     const enteredCode = pickupVerificationCode.trim();
     const expectedCode = String(pickupVerificationOrder.pickup_code || "").trim();
@@ -1146,7 +1257,7 @@ export default function BusinessDashboardPage() {
     if (!businessFilter) return;
 
     let channel = supabase
-      .channel(`business-dashboard-offers-${businessFilter}`)
+      .channel(uniqueChannelName(`business-dashboard-offers-${businessFilter}`))
       .on(
         "postgres_changes",
         {

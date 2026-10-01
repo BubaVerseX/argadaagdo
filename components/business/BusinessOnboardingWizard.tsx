@@ -61,6 +61,14 @@ const steps = [
   },
 ];
 
+export function clearBusinessRegistrationDraft() {
+  try {
+    window.localStorage.removeItem(BUSINESS_REGISTRATION_DRAFT_KEY);
+  } catch {
+    // Storage can be unavailable (private mode, blocked site data).
+  }
+}
+
 function readSavedDraft() {
   if (typeof window === "undefined") return null;
 
@@ -89,35 +97,39 @@ export function BusinessOnboardingWizard({
   onPhoneChange,
   onSubmit,
 }: BusinessOnboardingWizardProps) {
-  const [initialDraft] = useState<Draft | null>(() => readSavedDraft());
-  const [step, setStep] = useState(() =>
-    initialDraft?.step && initialDraft.step >= 1 && initialDraft.step <= steps.length
-      ? initialDraft.step
-      : 1
-  );
-  const [description, setDescription] = useState(
-    () => initialDraft?.description || ""
-  );
-  const [imagePlan, setImagePlan] = useState(
-    () => initialDraft?.imagePlan || ""
-  );
+  const [step, setStep] = useState(1);
+  const [description, setDescription] = useState("");
+  const [imagePlan, setImagePlan] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
 
+  // Restore the saved draft after mount: reading localStorage during render
+  // made the client's first render differ from the prerendered HTML.
   useEffect(() => {
-    if (!initialDraft) return;
-    if (initialDraft.name) onNameChange(initialDraft.name);
-    if (initialDraft.businessType) {
-      onBusinessTypeChange(initialDraft.businessType);
-    }
-    if (initialDraft.address) onAddressChange(initialDraft.address);
-    if (initialDraft.phone) onPhoneChange(initialDraft.phone);
-  }, [
-    initialDraft,
-    onAddressChange,
-    onBusinessTypeChange,
-    onNameChange,
-    onPhoneChange,
-  ]);
+    const restoreTimer = window.setTimeout(() => {
+      const savedDraft = readSavedDraft();
+      if (!savedDraft) return;
+
+      if (
+        savedDraft.step &&
+        savedDraft.step >= 1 &&
+        savedDraft.step <= steps.length
+      ) {
+        setStep(savedDraft.step);
+      }
+      if (savedDraft.description) setDescription(savedDraft.description);
+      if (savedDraft.imagePlan) setImagePlan(savedDraft.imagePlan);
+      if (savedDraft.name) onNameChange(savedDraft.name);
+      if (savedDraft.businessType) {
+        onBusinessTypeChange(savedDraft.businessType);
+      }
+      if (savedDraft.address) onAddressChange(savedDraft.address);
+      if (savedDraft.phone) onPhoneChange(savedDraft.phone);
+    }, 0);
+
+    return () => window.clearTimeout(restoreTimer);
+    // Restore once on mount only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const progress = useMemo(
     () => Math.round((step / steps.length) * 100),
@@ -135,10 +147,14 @@ export function BusinessOnboardingWizard({
       step,
     };
 
-    window.localStorage.setItem(
-      BUSINESS_REGISTRATION_DRAFT_KEY,
-      JSON.stringify(draft)
-    );
+    try {
+      window.localStorage.setItem(
+        BUSINESS_REGISTRATION_DRAFT_KEY,
+        JSON.stringify(draft)
+      );
+    } catch {
+      return;
+    }
 
     if (showMessage) {
       setDraftMessage("Progress saved on this device.");

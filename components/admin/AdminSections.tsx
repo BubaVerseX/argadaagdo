@@ -649,7 +649,13 @@ export function PendingBusinesses({
 
     const formData = new FormData(event.currentTarget);
     const reason = String(formData.get("reason") || "").trim();
-    const action = String(formData.get("approval_action") || "");
+    // FormData(form) never includes the clicked submit button, so read the
+    // action from the event's submitter instead.
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as
+      | HTMLButtonElement
+      | null;
+    const action =
+      submitter?.name === "approval_action" ? submitter.value : "";
 
     if (action === "request_changes") {
       onRequestChanges(businessId, reason);

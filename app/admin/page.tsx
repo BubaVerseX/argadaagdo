@@ -43,7 +43,7 @@ import {
 } from "@/lib/orderStatus";
 import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Offer, Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
@@ -202,12 +202,24 @@ export default function AdminPage() {
   }, [checkAdminAndLoadData]);
 
   async function approveBusiness(id: number) {
+    if (updatingBusinessId !== null) return;
+
     setUpdatingBusinessId(id);
     const approvedBusiness = businesses.find((business) => business.id === id);
-    const { error } = await supabase
+    const { data: updatedRows, error } = await supabase
       .from("businesses")
       .update({ approved: true })
-      .eq("id", id);
+      .eq("id", id)
+      .select("id");
+
+    // RLS turns a disallowed update into "0 rows, no error" — don't report
+    // success or email the owner in that case.
+    if (!error && (!updatedRows || updatedRows.length === 0)) {
+      setUpdatingBusinessId(null);
+      setMessageTone("error");
+      setMessage("Business could not be approved. Please refresh and try again.");
+      return;
+    }
 
     if (error) {
       logAppError("Business approval failed", error, {
@@ -234,6 +246,27 @@ export default function AdminPage() {
   }
 
   async function moveToPending(id: number) {
+    if (updatingBusinessId !== null) return;
+
+    const business = businesses.find((item) => item.id === id);
+    const businessOfferIds = new Set(
+      offers.filter((offer) => offer.business_id === id).map((offer) => offer.id)
+    );
+    const activeOrderCount = orders.filter(
+      (order) =>
+        businessOfferIds.has(Number(order.offer_id)) &&
+        ["pending_payment", "reserved", "confirmed"].includes(String(order.status))
+    ).length;
+    const confirmed = window.confirm(
+      `Move ${business?.name || "this business"} back to pending?\n\n` +
+        "Its offers will be hidden from customers and the owner will lose access to the dashboard." +
+        (activeOrderCount > 0
+          ? `\n\nWarning: it has ${activeOrderCount} active reservation(s). The owner will not be able to verify these pickups, and they will become no-shows when the pickup window ends.`
+          : "")
+    );
+
+    if (!confirmed) return;
+
     setUpdatingBusinessId(id);
     const { error } = await supabase
       .from("businesses")
@@ -293,7 +326,7 @@ export default function AdminPage() {
     if (!realtimeReady) return;
 
     const channel = supabase
-      .channel("admin-dashboard-live-updates")
+      .channel(uniqueChannelName("admin-dashboard-live-updates"))
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "businesses" },
