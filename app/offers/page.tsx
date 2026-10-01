@@ -13,7 +13,11 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import {
+  getOfferCategoryLabel,
+  normalizeOfferCategory,
+  OFFER_CATEGORIES,
+} from "@/lib/offerCategories";
 import {
   compareMarketplaceOffers,
   formatMoney,
@@ -117,8 +121,10 @@ export default function OffersPage() {
     );
   }, []);
 
-  const loadOffers = useCallback(async () => {
-    await processExpiredMarketplace();
+  const loadOffers = useCallback(async (runMaintenance = true) => {
+    // The maintenance RPC is a database write; run it on page load, not on
+    // every live update (that made every open browser run it at once).
+    if (runMaintenance) await processExpiredMarketplace();
 
     const { data, error } = await supabase
       .from("offers")
@@ -143,7 +149,11 @@ export default function OffersPage() {
 
   const scheduleRefresh = useCallback(() => {
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
-    refreshTimer.current = setTimeout(() => void loadOffers(), 150);
+    // Small random delay spreads the reloads of many open browsers.
+    refreshTimer.current = setTimeout(
+      () => void loadOffers(false),
+      300 + Math.random() * 1200
+    );
   }, [loadOffers]);
 
   function openOfferDetails(offer: Offer) {
@@ -229,6 +239,24 @@ export default function OffersPage() {
 
     setUpdatingFavoriteId(null);
   }
+
+  useEffect(() => {
+    // Homepage category chips link to /offers?category=Bakery etc.
+    const initialCategory = window.setTimeout(() => {
+      const requestedCategory = new URLSearchParams(window.location.search).get(
+        "category"
+      );
+
+      if (
+        requestedCategory &&
+        (OFFER_CATEGORIES as readonly string[]).includes(requestedCategory)
+      ) {
+        setSelectedCategory(requestedCategory);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(initialCategory);
+  }, []);
 
   useEffect(() => {
     const initialLoad = window.setTimeout(() => void loadOffers(), 0);
@@ -389,15 +417,27 @@ export default function OffersPage() {
     [paginatedOffers.items]
   );
 
-  const offerSections = [
-    { key: "today" as const, title: t("common.today"), offers: groupedOffers.today },
-    {
-      key: "tomorrow" as const,
-      title: t("common.tomorrow"),
-      offers: groupedOffers.tomorrow,
-    },
-    { key: "upcoming" as const, title: t("common.upcoming"), offers: groupedOffers.upcoming },
-  ];
+  // Day sections only make sense for the default order; with an explicit
+  // sort (price, discount, ...) splitting into Today/Tomorrow put e.g. the
+  // cheapest "tomorrow" bag after pricier "today" ones.
+  const offerSections =
+    offerSort === "recommended"
+      ? [
+          { key: "today" as const, title: t("common.today"), offers: groupedOffers.today },
+          {
+            key: "tomorrow" as const,
+            title: t("common.tomorrow"),
+            offers: groupedOffers.tomorrow,
+          },
+          { key: "upcoming" as const, title: t("common.upcoming"), offers: groupedOffers.upcoming },
+        ]
+      : [
+          {
+            key: "today" as const,
+            title: t("offers.heading"),
+            offers: paginatedOffers.items,
+          },
+        ];
 
   const categoryOptions = useMemo(() => {
     return Array.from(new Set(offers.map(getOfferCategory))).sort();
@@ -473,7 +513,7 @@ export default function OffersPage() {
                 <option value="all">{t("offers.allCategories")}</option>
                 {categoryOptions.map((category) => (
                   <option key={category} value={category}>
-                    {category}
+                    {getOfferCategoryLabel(category, language)}
                   </option>
                 ))}
               </select>
@@ -670,7 +710,7 @@ export default function OffersPage() {
                             )}
 
                             <div className="soft-raised pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#2e2a22]">
-                              {getOfferCategory(offer)}
+                              {getOfferCategoryLabel(offer.category, language)}
                             </div>
                           </div>
 

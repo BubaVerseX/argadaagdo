@@ -22,6 +22,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
+import { useMinuteTick } from "@/lib/useMinuteTick";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -109,6 +110,7 @@ export default function CheckoutPage() {
     [offerId]
   );
 
+  useMinuteTick();
   const [offer, setOffer] = useState<CheckoutOffer | null>(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);

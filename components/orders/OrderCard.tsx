@@ -193,7 +193,10 @@ export function OrderCard({
 
             <p className="mt-3 font-black text-[#6b6152]">
               {t("common.price")}:{" "}
-              {order.offers
+              {/* What the customer paid; the offer's price may have changed since. */}
+              {order.amount
+                ? formatMoney(order.amount)
+                : order.offers
                 ? formatMoney(order.offers.price)
                 : t("common.unavailable")}
             </p>
@@ -293,6 +296,7 @@ export function OrderCard({
                         key={rating}
                         type="button"
                         aria-label={`Rate this pickup ${rating} out of 5`}
+                        aria-pressed={selectedRating === rating}
                         onClick={() => onRatingChange(order.id, rating)}
                         disabled={ratingOrderId !== null}
                     className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${

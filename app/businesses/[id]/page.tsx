@@ -9,7 +9,7 @@ import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { ArrowLeftIcon, ClockIcon, StarIcon } from "@/components/icons";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   getDiscountPercent,
@@ -362,7 +362,7 @@ export default function BusinessProfilePage() {
                             sizes="(max-width: 768px) 100vw, 33vw"
                           />
                           <span className="soft-raised absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-black text-[#a67c52]">
-                            {normalizeOfferCategory(offer.category)}
+                            {getOfferCategoryLabel(offer.category, language)}
                           </span>
                           {discount !== null && (
                             <span className="premium-discount-badge absolute right-2 top-2 px-3 py-1">

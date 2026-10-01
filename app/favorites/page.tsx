@@ -13,7 +13,7 @@ import {
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import type { TranslationKey } from "@/lib/i18n";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   getOriginalPrice,
@@ -347,7 +347,7 @@ export default function FavoritesPage() {
 
                   {offer && (
                     <div className="soft-raised absolute right-2 top-2 rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
-                      {normalizeOfferCategory(offer.category)}
+                      {getOfferCategoryLabel(offer.category, language)}
                     </div>
                   )}
                 </div>

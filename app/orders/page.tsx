@@ -29,6 +29,7 @@ import {
 import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
+import { useMinuteTick } from "@/lib/useMinuteTick";
 import { validateTextField } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -80,6 +81,7 @@ function getInitialPaymentReturnMessage():
 export default function OrdersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
+  useMinuteTick();
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [message, setMessage] = useState("");

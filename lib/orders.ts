@@ -5,6 +5,7 @@ import {
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isFailedCheckoutOrder,
   isPendingPaymentOrderStatus,
 } from "@/lib/orderStatus";
 import type { Order, OrderStatus } from "@/lib/types";
@@ -169,6 +170,15 @@ export function getCustomerTimelineSteps(
     return labels.map((label, index) => ({
       label,
       state: index === 0 ? "current" : "pending",
+    }));
+  }
+
+  // Cancelled before payment went through (abandoned, failed or expired
+  // checkout): it never got past the payment step.
+  if (isStopped && isFailedCheckoutOrder(order)) {
+    return labels.map((label, index) => ({
+      label,
+      state: index === 0 ? "stopped" : "pending",
     }));
   }
 

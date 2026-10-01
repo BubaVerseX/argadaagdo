@@ -55,8 +55,11 @@ export function isExpiredOrderStatus(status: OrderStatus) {
 }
 
 export function getEffectiveOrderStatus(order: Order): OrderStatus {
+  // A reservation — or a payment that never completed — whose pickup window
+  // is over can no longer be collected.
   if (
-    isConfirmedOrderStatus(order.status) &&
+    (isConfirmedOrderStatus(order.status) ||
+      isPendingPaymentOrderStatus(order.status)) &&
     isOrderPastPickupEnd(
       order.offers,
       getTbilisiDateKeyFromValue(order.created_at)

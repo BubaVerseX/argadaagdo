@@ -23,3 +23,21 @@ export function normalizeOfferCategory(
     ? (trimmedValue as OfferCategory)
     : FALLBACK_OFFER_CATEGORY;
 }
+
+const georgianCategoryLabels: Record<OfferCategory, string> = {
+  Bakery: "საცხობი",
+  Cafe: "კაფე",
+  Restaurant: "რესტორანი",
+  Grocery: "სასურსათო",
+  Mixed: "შერეული",
+  Other: "სხვა",
+};
+
+// Category values are stored in English; this is only for display.
+export function getOfferCategoryLabel(
+  value: string | null | undefined,
+  language: "en" | "ka"
+) {
+  const category = normalizeOfferCategory(value);
+  return language === "ka" ? georgianCategoryLabels[category] : category;
+}

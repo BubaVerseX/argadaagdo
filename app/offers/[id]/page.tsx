@@ -15,7 +15,7 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -258,7 +258,7 @@ export default function OfferDetailPage() {
   }
 
   const rating = offer ? ratingSummaries[offer.business_id] : undefined;
-  const offerCategory = offer ? normalizeOfferCategory(offer.category) : "";
+  const offerCategory = offer ? getOfferCategoryLabel(offer.category, language) : "";
   const mapsUrl = offer
     ? createMapsSearchUrl(offer.businesses?.address, offer.businesses?.name)
     : "";

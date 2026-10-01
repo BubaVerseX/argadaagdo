@@ -16,6 +16,12 @@ export function TimelineSteps({
   columnsClassName = "sm:grid-cols-4",
   ariaLabel,
 }: TimelineStepsProps) {
+  const stateLabels: Record<TimelineStepState, string> = {
+    done: "done",
+    current: "current step",
+    pending: "not yet",
+    stopped: "stopped",
+  };
   const stepStyles: Record<TimelineStepState, string> = {
     done: "soft-pressed text-[#a67c52]",
     current: "bg-yellow-100 text-yellow-950",
@@ -28,9 +34,12 @@ export function TimelineSteps({
       {steps.map((step, index) => (
         <li
           key={`${step.label}-${index}`}
+          aria-current={step.state === "current" ? "step" : undefined}
           className={`rounded-2xl px-3 py-3 text-center text-xs font-black sm:text-sm ${stepStyles[step.state]}`}
         >
           {step.label}
+          {/* The state is otherwise shown by color only. */}
+          <span className="sr-only">{` (${stateLabels[step.state]})`}</span>
         </li>
       ))}
     </ol>

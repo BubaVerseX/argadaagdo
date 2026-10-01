@@ -16,7 +16,7 @@ import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore, type KeyboardEvent } from "react";
 
 type PasswordHelpMode = "none" | "forgot" | "reset";
 type PasswordHelpOverride = PasswordHelpMode | "hidden";
@@ -231,6 +231,15 @@ export default function LoginPage() {
     if (signupUserIsVerified) {
       setAuthMode("login");
     }
+  }
+
+  // The page isn't a <form> (it hosts several flows), so Enter in the email
+  // or password field didn't submit.
+  function submitOnEnter(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Enter" || submitting) return;
+
+    event.preventDefault();
+    void (authMode === "login" ? signIn() : createAccount());
   }
 
   async function signIn() {
@@ -538,7 +547,9 @@ export default function LoginPage() {
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={submitOnEnter}
                 type="email"
+                autoComplete="email"
                 aria-label="Email address"
                 placeholder={t("login.email")}
                 className="premium-input px-4 py-3"
@@ -547,7 +558,11 @@ export default function LoginPage() {
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={submitOnEnter}
                 type="password"
+                autoComplete={
+                  authMode === "login" ? "current-password" : "new-password"
+                }
                 aria-label="Password"
                 placeholder={t("login.password")}
                 className="premium-input px-4 py-3"
