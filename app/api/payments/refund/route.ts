@@ -118,10 +118,19 @@ export async function POST(request: Request) {
       );
     }
 
-    await sendReservationCancellationEmail(
-      createServiceRoleSupabaseClient(),
-      orderId
-    );
+    // The cancellation is already committed — an email problem must not be
+    // reported to the customer as a failed cancellation.
+    try {
+      await sendReservationCancellationEmail(
+        createServiceRoleSupabaseClient(),
+        orderId
+      );
+    } catch (emailError) {
+      logger.error("Reservation cancellation email failed", {
+        orderId,
+        error: emailError,
+      });
+    }
 
     return NextResponse.json({ cancelled: true });
   } catch (error) {

@@ -1,4 +1,4 @@
-import { createVerify } from "crypto";
+import { createVerify, timingSafeEqual } from "crypto";
 import { absoluteSiteUrl } from "@/lib/site";
 import type {
   CreatePaymentSessionInput,
@@ -100,15 +100,20 @@ function normalizeBogStatus(status: string): ProviderPaymentStatus {
 
   if (normalizedStatus === "authorized") return "authorized";
   if (["cancelled", "canceled"].includes(normalizedStatus)) return "cancelled";
-  if (normalizedStatus === "created" || normalizedStatus === "processing") {
-    return "pending";
-  }
   if (normalizedStatus === "expired") return "expired";
   if (normalizedStatus === "refunded" || normalizedStatus === "refund_requested") {
     return "refunded";
   }
+  if (["rejected", "declined", "failed", "error"].includes(normalizedStatus)) {
+    return "failed";
+  }
 
-  return "failed";
+  // "created", "processing", "auth_requested", "blocked", "partial_completed",
+  // an unparseable receipt, or any status we don't know yet: treat as still
+  // pending. Mapping these to "failed" would cancel the order and release the
+  // stock while the bank may still capture (or already have captured) the
+  // money. Pending holds are released by expire_pending_provider_payments.
+  return "pending";
 }
 
 function findCheckoutUrl(responseBody: unknown) {
@@ -146,7 +151,7 @@ function findDetailsStatus(responseBody: unknown) {
     readPath(responseBody, ["payment_status"]),
   ];
 
-  return candidates.map(getString).find(Boolean) || "failed";
+  return candidates.map(getString).find(Boolean) || "";
 }
 
 function findDetailsExternalOrderId(responseBody: unknown) {
@@ -374,8 +379,26 @@ export function isBogCallbackSecretValid(secret: string | null) {
   const expectedSecret = process.env.BOG_CALLBACK_SECRET;
 
   if (!expectedSecret) return !isProductionPaymentRuntime();
+  if (!secret) return false;
 
-  return Boolean(secret && secret === expectedSecret);
+  const providedBuffer = Buffer.from(secret);
+  const expectedBuffer = Buffer.from(expectedSecret);
+
+  return (
+    providedBuffer.length === expectedBuffer.length &&
+    timingSafeEqual(providedBuffer, expectedBuffer)
+  );
+}
+
+function getBogCallbackPublicKey() {
+  const configuredKey = process.env.BOG_CALLBACK_PUBLIC_KEY;
+
+  // Env UIs often store the PEM with literal "\n" sequences (as shown in
+  // .env.example); Node's verifier rejects that, which would fail every
+  // callback signature check in production.
+  return configuredKey
+    ? configuredKey.replace(/\\n/g, "\n")
+    : defaultBogCallbackPublicKey;
 }
 
 export function verifyBogCallbackSignature(
@@ -388,8 +411,7 @@ export function verifyBogCallbackSignature(
 
   if (!callbackSignature) return !requireSignature;
 
-  const publicKey =
-    process.env.BOG_CALLBACK_PUBLIC_KEY || defaultBogCallbackPublicKey;
+  const publicKey = getBogCallbackPublicKey();
 
   try {
     const verifier = createVerify("RSA-SHA256");

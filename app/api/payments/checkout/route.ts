@@ -156,10 +156,21 @@ export async function POST(request: Request) {
     logger.error("Payment checkout session failed", { error });
 
     if (pendingPayment && userClient) {
-      await userClient.rpc("record_provider_payment_failure", {
-        p_payment_id: pendingPayment.payment_id,
-        p_reason: "provider_session_failed",
-      });
+      const { error: rollbackError } = await userClient.rpc(
+        "record_provider_payment_failure",
+        {
+          p_payment_id: pendingPayment.payment_id,
+          p_reason: "provider_session_failed",
+        }
+      );
+
+      if (rollbackError) {
+        // The inventory hold stays in place until the expiry job runs.
+        logger.error("Checkout rollback failed; hold left pending", {
+          paymentId: pendingPayment.payment_id,
+          error: rollbackError.message,
+        });
+      }
     }
 
     return NextResponse.json(

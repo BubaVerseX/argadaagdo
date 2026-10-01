@@ -71,7 +71,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const payload = rawBody ? JSON.parse(rawBody) : {};
+    let payload: unknown = {};
+
+    try {
+      payload = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      return NextResponse.json({ error: "Invalid callback body" }, { status: 400 });
+    }
+
     const providerReference = extractProviderReference(payload);
 
     if (!providerReference) {
@@ -84,6 +91,18 @@ export async function POST(request: NextRequest) {
     const verifiedPayment = await verifyBogPayment(providerReference);
 
     const supabase = createServiceRoleSupabaseClient();
+    // Remember whether this payment was already confirmed, so a repeated
+    // callback (or one that races the browser return) doesn't send the
+    // confirmation email again.
+    const { data: existingPayment } = await supabase
+      .from("payments")
+      .select("status")
+      .eq("provider", "bog")
+      .eq("provider_reference", verifiedPayment.providerReference)
+      .maybeSingle();
+    const wasAlreadyPaid =
+      (existingPayment as { status?: string } | null)?.status === "paid";
+
     const { data, error } = await supabase.rpc("finalize_provider_payment", {
       p_provider: "bog",
       p_provider_reference: verifiedPayment.providerReference,
@@ -103,8 +122,28 @@ export async function POST(request: NextRequest) {
 
     const orderId = getFinalizedOrderId(data);
 
-    if (orderId) {
-      await sendReservationConfirmationEmail(supabase, orderId);
+    if (orderId && !wasAlreadyPaid) {
+      await sendReservationConfirmationEmail(supabase, orderId).catch(
+        (emailError) => {
+          logger.error("Reservation confirmation email failed", {
+            orderId,
+            error: emailError,
+          });
+        }
+      );
+    }
+
+    if (
+      !orderId &&
+      (verifiedPayment.status === "paid" ||
+        verifiedPayment.status === "authorized")
+    ) {
+      // Money was captured but the order is no longer waiting for payment
+      // (e.g. the hold expired first). Needs a refund or manual re-reserve.
+      logger.error("Paid provider payment has no active reservation", {
+        providerReference: verifiedPayment.providerReference,
+        finalizeResult: data,
+      });
     }
 
     return NextResponse.json({ received: true, result: data });

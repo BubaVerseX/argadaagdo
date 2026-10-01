@@ -26,7 +26,7 @@ import {
   getCancellationErrorMessage,
   getLoginRedirectUrl,
 } from "@/lib/orders";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { validateTextField } from "@/lib/validation";
@@ -62,7 +62,15 @@ function getInitialPaymentReturnMessage():
   if (paymentStatus === "failed") {
     return {
       tone: "error",
-      message: "Payment was not completed. The offer quantity was released.",
+      message: "Payment was not completed, so this reservation was not confirmed.",
+    };
+  }
+
+  if (paymentStatus === "review") {
+    return {
+      tone: "warning",
+      message:
+        "We received your payment, but the reservation could not be confirmed automatically. Please contact support so we can confirm it or refund you.",
     };
   }
 
@@ -72,13 +80,10 @@ function getInitialPaymentReturnMessage():
 export default function OrdersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
-  const initialPaymentMessage = getInitialPaymentReturnMessage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [message, setMessage] = useState(initialPaymentMessage?.message || "");
-  const [messageTone, setMessageTone] = useState<MessageTone>(
-    initialPaymentMessage?.tone || "success"
-  );
+  const [message, setMessage] = useState("");
+  const [messageTone, setMessageTone] = useState<MessageTone>("success");
   const [loading, setLoading] = useState(true);
   const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(
     null
@@ -215,14 +220,23 @@ export default function OrdersPage() {
       return;
     }
 
-    const response = await fetch("/api/payments/refund", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ orderId: order.id }),
-    });
+    let response: Response;
+
+    try {
+      response = await fetch("/api/payments/refund", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderId: order.id }),
+      });
+    } catch {
+      setMessageTone("error");
+      setMessage("Network problem. Please check your connection and try again.");
+      setCancellingOrderId(null);
+      return;
+    }
 
     const result = await response.json().catch(() => null);
 
@@ -272,6 +286,21 @@ export default function OrdersPage() {
         return;
       }
 
+      // Read the payment return status after hydration (reading it during
+      // render caused a server/client mismatch), then drop it from the URL
+      // so a later refresh doesn't repeat a stale "Payment confirmed".
+      const paymentReturnMessage = getInitialPaymentReturnMessage();
+
+      if (paymentReturnMessage) {
+        setMessageTone(paymentReturnMessage.tone);
+        setMessage(paymentReturnMessage.message);
+        window.history.replaceState(
+          window.history.state,
+          "",
+          window.location.pathname
+        );
+      }
+
       const userId = authResult.user.id;
       const currentProfile = await getProfileById(userId, 3);
       if (active) setProfile(currentProfile);
@@ -281,7 +310,7 @@ export default function OrdersPage() {
       if (!active) return;
 
       channel = supabase
-        .channel(`orders-live-updates-${userId}`)
+        .channel(uniqueChannelName(`orders-live-updates-${userId}`))
         .on(
           "postgres_changes",
           {
