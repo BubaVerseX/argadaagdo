@@ -56,6 +56,7 @@ export function OrderCard({
     order.offers?.businesses?.address,
     order.offers?.businesses?.name
   );
+  const isGeorgian = language === "ka";
   const displayStatus = getEffectiveOrderStatus(order);
   const statusClass = getOrderStatusClassName(displayStatus);
   const isConfirmed = isConfirmedOrderStatus(displayStatus);
@@ -70,7 +71,9 @@ export function OrderCard({
   const inactiveOrderMessage = isCollectedOrderStatus(displayStatus)
     ? t("orders.collectedMessage")
     : isPendingPaymentOrderStatus(displayStatus)
-    ? "Payment is being confirmed. Your pickup code will appear after confirmation."
+    ? isGeorgian
+      ? "გადახდა მოწმდება. წაღების კოდი დადასტურების შემდეგ გამოჩნდება."
+      : "Payment is being confirmed. Your pickup code will appear after confirmation."
     : displayStatus === "no_show"
     ? t("orders.noShowMessage")
     : displayStatus === "expired"
@@ -98,7 +101,7 @@ export function OrderCard({
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
               <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
-                Ready to rate
+                {isGeorgian ? "შესაფასებლად მზადაა" : "Ready to rate"}
               </span>
             )}
           </div>
@@ -113,15 +116,18 @@ export function OrderCard({
 
           <div className="soft-raised mt-4 rounded-3xl p-4">
             <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6152]">
-              Order timeline
+              {isGeorgian ? "შეკვეთის ეტაპები" : "Order timeline"}
             </p>
-            <TimelineSteps steps={timelineSteps} ariaLabel="Order timeline" />
+            <TimelineSteps
+              steps={timelineSteps}
+              ariaLabel={isGeorgian ? "შეკვეთის ეტაპები" : "Order timeline"}
+            />
           </div>
 
           {pickupReminderMessage && (
             <div className="soft-raised mt-4 rounded-3xl p-4">
               <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
-                Pickup reminder
+                {t("orders.pickupReminder")}
               </p>
               <p className="mt-2 font-bold leading-7 text-[#6b6152]">
                 {pickupReminderMessage}
@@ -181,7 +187,7 @@ export function OrderCard({
                     aria-label={`${t("common.openMap")} ${
                       order.offers?.businesses?.name ||
                       order.offers?.title ||
-                      "pickup location"
+                      (isGeorgian ? "წაღების ადგილი" : "pickup location")
                     }`}
                     className="soft-raised mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition sm:w-auto"
                   >
@@ -203,19 +209,25 @@ export function OrderCard({
 
             <div className="mt-4 rounded-2xl bg-white/60 p-4">
               <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
-                Receipt
+                {isGeorgian ? "ქვითარი" : "Receipt"}
               </p>
               <div className="mt-2 grid gap-1 text-sm font-semibold text-[#6b6152]">
-                <p>Reservation ID: #{order.id}</p>
                 <p>
-                  Amount:{" "}
+                  {isGeorgian ? "ჯავშნის ID" : "Reservation ID"}: #{order.id}
+                </p>
+                <p>
+                  {isGeorgian ? "თანხა" : "Amount"}:{" "}
                   {order.amount
                     ? formatMoney(order.amount)
                     : order.offers
                     ? formatMoney(order.offers.price)
                     : t("common.unavailable")}
                 </p>
-                <p>Payment reference: managed securely by ArGadaagdo</p>
+                <p>
+                  {isGeorgian
+                    ? "გადახდის რეფერენსი: უსაფრთხოდ ინახება ArGadaagdo-ს მიერ"
+                    : "Payment reference: managed securely by ArGadaagdo"}
+                </p>
               </div>
             </div>
           </div>
@@ -271,7 +283,9 @@ export function OrderCard({
               className="mt-5 min-h-12 w-full rounded-full bg-red-50 px-6 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {cancellingOrderId === order.id
-                ? "Cancelling..."
+                ? isGeorgian
+                  ? "უქმდება..."
+                  : "Cancelling..."
                 : t("orders.cancelReservation")}
             </button>
           )}
@@ -295,7 +309,11 @@ export function OrderCard({
                       <button
                         key={rating}
                         type="button"
-                        aria-label={`Rate this pickup ${rating} out of 5`}
+                        aria-label={
+                          isGeorgian
+                            ? `წაღების შეფასება: ${rating} 5-დან`
+                            : `Rate this pickup ${rating} out of 5`
+                        }
                         aria-pressed={selectedRating === rating}
                         onClick={() => onRatingChange(order.id, rating)}
                         disabled={ratingOrderId !== null}
@@ -328,7 +346,9 @@ export function OrderCard({
                     className="premium-button mt-3 min-h-11 w-full py-2.5 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {ratingOrderId === order.id
-                      ? "Saving review..."
+                      ? isGeorgian
+                        ? "შეფასება ინახება..."
+                        : "Saving review..."
                       : t("orders.submitReview")}
                   </button>
                 </>

@@ -5,6 +5,7 @@ import type { OfferIntelligence } from "@/lib/marketplaceIntelligence";
 import {
   DEFAULT_OFFER_CATEGORY,
   OFFER_CATEGORIES,
+  getOfferCategoryLabel,
   normalizeOfferCategory,
   type OfferCategory,
 } from "@/lib/offerCategories";
@@ -92,6 +93,7 @@ export function OfferList({
   onEditPickupStartChange,
   onEditPickupEndChange,
 }: OfferListProps) {
+  const isGeorgian = language === "ka";
   const badgeToneStyles: Record<
     OfferIntelligence["badges"][number]["tone"],
     string
@@ -113,7 +115,7 @@ export function OfferList({
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-        Offer History
+        {isGeorgian ? "შეთავაზებების ისტორია" : "Offer History"}
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
         {t("businessDashboard.myOffers")}
@@ -163,7 +165,9 @@ export function OfferList({
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-xl font-black">{offer.title}</h3>
                       <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black text-[#a67c52]">
-                        {normalizeOfferCategory(offer.category)}
+                        {isGeorgian
+                          ? getOfferCategoryLabel(offer.category, language)
+                          : normalizeOfferCategory(offer.category)}
                       </span>
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
@@ -173,7 +177,8 @@ export function OfferList({
                     </div>
 
                     <p className="font-medium text-[#6b6152]">
-                      {formatMoney(offer.price)} · Quantity: {offer.quantity}
+                      {formatMoney(offer.price)} · {t("common.quantity")}:{" "}
+                      {offer.quantity}
                     </p>
                     <p className="text-[#6b6152]">
                       {t("common.pickup")}: {formatPickupWindow(offer, language)}
@@ -211,13 +216,21 @@ export function OfferList({
                     }
                     className="premium-button-secondary px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {isEditing ? "Cancel" : "Edit"}
+                    {isEditing
+                      ? t("common.cancel")
+                      : isGeorgian
+                      ? "რედაქტირება"
+                      : "Edit"}
                   </button>
 
                   <button
                     onClick={() => onToggleActive(offer)}
                     disabled={updatingOfferId !== null}
-                    aria-label={`Toggle ${offer.title} active status`}
+                    aria-label={
+                      isGeorgian
+                        ? `აქტიური სტატუსის გადართვა: ${offer.title}`
+                        : `Toggle ${offer.title} active status`
+                    }
                     className={`min-h-12 rounded-full px-5 py-3 font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                       offer.active
                         ? "bg-[#f4efe4] text-[#a67c52] hover:bg-[#ece4d6]"
@@ -225,9 +238,15 @@ export function OfferList({
                     }`}
                   >
                     {updatingOfferId === offer.id
-                      ? "Updating..."
+                      ? isGeorgian
+                        ? "ახლდება..."
+                        : "Updating..."
                       : offer.active
-                      ? "Deactivate"
+                      ? isGeorgian
+                        ? "დეაქტივაცია"
+                        : "Deactivate"
+                      : isGeorgian
+                      ? "ხელახლა გააქტიურება"
                       : "Reactivate"}
                   </button>
 
@@ -237,9 +256,15 @@ export function OfferList({
                     className="premium-button-secondary px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {updatingOfferId === offer.id
-                      ? "Working..."
+                      ? isGeorgian
+                        ? "მიმდინარეობს..."
+                        : "Working..."
                       : effectiveStatus === "expired"
-                      ? "Create Similar Offer"
+                      ? isGeorgian
+                        ? "მსგავსი შეთავაზების შექმნა"
+                        : "Create Similar Offer"
+                      : isGeorgian
+                      ? "ასლის შექმნა"
                       : "Duplicate Offer"}
                   </button>
 
@@ -249,7 +274,13 @@ export function OfferList({
                       disabled={updatingOfferId !== null}
                       className="min-h-12 rounded-full bg-yellow-50 px-5 py-3 font-black text-yellow-800 transition hover:bg-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {updatingOfferId === offer.id ? "Archiving..." : "Archive"}
+                      {updatingOfferId === offer.id
+                        ? isGeorgian
+                          ? "არქივდება..."
+                          : "Archiving..."
+                        : isGeorgian
+                        ? "დაარქივება"
+                        : "Archive"}
                     </button>
                   )}
 
@@ -258,7 +289,13 @@ export function OfferList({
                     disabled={updatingOfferId !== null}
                     className="min-h-12 rounded-full bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {updatingOfferId === offer.id ? "Deleting..." : "Delete"}
+                    {updatingOfferId === offer.id
+                      ? isGeorgian
+                        ? "იშლება..."
+                        : "Deleting..."
+                      : isGeorgian
+                      ? "წაშლა"
+                      : "Delete"}
                   </button>
                 </div>
               </div>
@@ -267,27 +304,31 @@ export function OfferList({
                 <div className="grid gap-3 rounded-2xl bg-[#f4efe4] p-4 sm:grid-cols-2 xl:grid-cols-6">
                   {[
                     {
-                      label: "Reservations",
+                      label: isGeorgian ? "ჯავშნები" : "Reservations",
                       value: analytics.reservations,
                     },
                     {
-                      label: "Remaining",
+                      label: isGeorgian ? "დარჩენილი" : "Remaining",
                       value: analytics.remainingQuantity,
                     },
                     {
-                      label: "Completion rate",
+                      label: isGeorgian
+                        ? "დასრულების მაჩვენებელი"
+                        : "Completion rate",
                       value: `${analytics.completionRate}%`,
                     },
                     {
-                      label: "Cancellation rate",
+                      label: isGeorgian
+                        ? "გაუქმების მაჩვენებელი"
+                        : "Cancellation rate",
                       value: `${analytics.cancellationRate}%`,
                     },
                     {
-                      label: "Est. revenue",
+                      label: isGeorgian ? "სავარ. შემოსავალი" : "Est. revenue",
                       value: formatAnalyticsMoney(analytics.estimatedRevenue),
                     },
                     {
-                      label: "Pickup success",
+                      label: isGeorgian ? "წარმატებული წაღება" : "Pickup success",
                       value: `${analytics.pickupSuccessRate}%`,
                     },
                   ].map((item) => (
@@ -308,19 +349,21 @@ export function OfferList({
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     {[
                       {
-                        label: "Pickup timing",
+                        label: isGeorgian ? "წაღების დრო" : "Pickup timing",
                         value: intelligence.timeUntilPickup,
                       },
                       {
-                        label: "Reserved",
+                        label: isGeorgian ? "დაჯავშნილი" : "Reserved",
                         value: `${intelligence.reservationPercentage}%`,
                       },
                       {
-                        label: "Sell-out chance",
+                        label: isGeorgian
+                          ? "გაყიდვის ალბათობა"
+                          : "Sell-out chance",
                         value: `${intelligence.sellOutProbability}%`,
                       },
                       {
-                        label: "Speed",
+                        label: isGeorgian ? "სიჩქარე" : "Speed",
                         value: intelligence.reservationSpeed,
                       },
                     ].map((item) => (
@@ -359,8 +402,10 @@ export function OfferList({
                       onChange={(event) => onEditTitleChange(event.target.value)}
                       maxLength={120}
                       className="premium-input p-4 font-semibold"
-                      aria-label="Offer title"
-                      placeholder="Bakery Surprise Bag"
+                      aria-label={
+                        isGeorgian ? "შეთავაზების სათაური" : "Offer title"
+                      }
+                      placeholder={t("businessOnboarding.recommendedTitleValue")}
                     />
 
                     <select
@@ -371,12 +416,16 @@ export function OfferList({
                         )
                       }
                       required
-                      aria-label="Offer category"
+                      aria-label={
+                        isGeorgian ? "შეთავაზების კატეგორია" : "Offer category"
+                      }
                       className="premium-input p-4 font-semibold"
                     >
                       {OFFER_CATEGORIES.map((offerCategory) => (
                         <option key={offerCategory} value={offerCategory}>
-                          {offerCategory}
+                          {isGeorgian
+                            ? getOfferCategoryLabel(offerCategory, language)
+                            : offerCategory}
                         </option>
                       ))}
                     </select>
@@ -389,7 +438,7 @@ export function OfferList({
                       step="0.01"
                       inputMode="decimal"
                       className="premium-input p-4 font-semibold"
-                      aria-label="Offer price"
+                      aria-label={isGeorgian ? "შეთავაზების ფასი" : "Offer price"}
                       placeholder="5.00"
                     />
 
@@ -403,7 +452,7 @@ export function OfferList({
                       step="0.01"
                       inputMode="decimal"
                       className="premium-input p-4 font-semibold"
-                      aria-label="Original price"
+                      aria-label={isGeorgian ? "საწყისი ფასი" : "Original price"}
                       placeholder="10.00"
                     />
 
@@ -417,7 +466,7 @@ export function OfferList({
                       step="1"
                       inputMode="numeric"
                       className="premium-input p-4 font-semibold"
-                      aria-label="Quantity"
+                      aria-label={t("common.quantity")}
                       placeholder="3"
                     />
 
@@ -428,7 +477,7 @@ export function OfferList({
                       }
                       type="date"
                       className="premium-input p-4 font-semibold"
-                      aria-label="Pickup date"
+                      aria-label={t("offerDetail.pickupDate")}
                     />
 
                     <input
@@ -438,7 +487,7 @@ export function OfferList({
                       }
                       type="time"
                       className="premium-input p-4 font-semibold"
-                      aria-label="Pickup start"
+                      aria-label={isGeorgian ? "წაღების დაწყება" : "Pickup start"}
                     />
 
                     <input
@@ -448,7 +497,7 @@ export function OfferList({
                       }
                       type="time"
                       className="premium-input p-4 font-semibold"
-                      aria-label="Pickup end"
+                      aria-label={isGeorgian ? "წაღების დასრულება" : "Pickup end"}
                     />
                   </div>
 
@@ -457,7 +506,13 @@ export function OfferList({
                     disabled={updatingOfferId !== null}
                     className="premium-button mt-4 w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
-                    {updatingOfferId === offer.id ? "Saving..." : "Save changes"}
+                    {updatingOfferId === offer.id
+                      ? isGeorgian
+                        ? "ინახება..."
+                        : "Saving..."
+                      : isGeorgian
+                      ? "ცვლილებების შენახვა"
+                      : "Save changes"}
                   </button>
                 </div>
               )}

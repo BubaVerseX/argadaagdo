@@ -5,8 +5,10 @@ import AppNotification, {
 } from "@/components/AppNotification";
 import {
   ARGADAAGDO_NOTIFICATION_EVENT,
+  getLocalizedNotificationContent,
   type AppNotification as AppNotificationEvent,
 } from "@/lib/notifications";
+import { useLanguage } from "@/lib/useLanguage";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type ToastNotification = AppNotificationEvent & {
@@ -21,6 +23,7 @@ function getToneForEvent(event: AppNotificationEvent["event"]): NotificationTone
 }
 
 export default function NotificationCenter() {
+  const { language } = useLanguage();
   const [notifications, setNotifications] = useState<ToastNotification[]>([]);
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
@@ -76,16 +79,20 @@ export default function NotificationCenter() {
       aria-live="polite"
       className="fixed right-4 bottom-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-[70] grid w-[calc(100%-2rem)] max-w-sm gap-3 sm:right-6 sm:bottom-[calc(1.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] sm:w-full"
     >
-      {notifications.map((notification) => (
-        <AppNotification
-          key={notification.id}
-          tone={notification.tone}
-          title={notification.title}
-          onDismiss={() => removeNotification(notification.id)}
-        >
-          {notification.message}
-        </AppNotification>
-      ))}
+      {notifications.map((notification) => {
+        const content = getLocalizedNotificationContent(notification, language);
+
+        return (
+          <AppNotification
+            key={notification.id}
+            tone={notification.tone}
+            title={content.title}
+            onDismiss={() => removeNotification(notification.id)}
+          >
+            {content.message}
+          </AppNotification>
+        );
+      })}
     </div>
   );
 }

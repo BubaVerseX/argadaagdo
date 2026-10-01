@@ -1,9 +1,19 @@
 import StatCard from "@/components/StatCard";
-import type { TranslationKey } from "@/lib/i18n";
+import type { Language, TranslationKey } from "@/lib/i18n";
 import type { Profile } from "@/lib/types";
+
+// Display labels for profiles.reliability_status values. The raw value is
+// shown in English (unchanged) and for any unknown value.
+const georgianReliabilityLabels = new Map<string, string>([
+  ["excellent", "შესანიშნავი"],
+  ["good", "კარგი"],
+  ["warning", "გაფრთხილება"],
+  ["restricted", "შეზღუდული"],
+]);
 
 type OrdersHeaderProps = {
   t: (key: TranslationKey) => string;
+  language?: Language;
   confirmedCount: number;
   collectedCount: number;
   cancelledCount: number;
@@ -14,6 +24,7 @@ type OrdersHeaderProps = {
 
 export function OrdersHeader({
   t,
+  language = "en",
   confirmedCount,
   collectedCount,
   cancelledCount,
@@ -21,6 +32,11 @@ export function OrdersHeader({
   reliabilityStatus,
   reliabilityTone,
 }: OrdersHeaderProps) {
+  const reliabilityStatusLabel =
+    language === "ka"
+      ? georgianReliabilityLabels.get(reliabilityStatus) ?? reliabilityStatus
+      : reliabilityStatus;
+
   return (
     <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-6 md:p-10">
       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
@@ -46,7 +62,7 @@ export function OrdersHeader({
         />
         <StatCard
           title={t("orders.status")}
-          value={reliabilityStatus}
+          value={reliabilityStatusLabel}
           tone={reliabilityTone}
         />
       </div>

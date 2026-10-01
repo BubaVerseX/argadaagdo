@@ -1,4 +1,7 @@
+"use client";
+
 import { AlertTriangleIcon, CheckIcon } from "@/components/icons";
+import { useLanguage } from "@/lib/useLanguage";
 
 type HealthCheck = {
   label: string;
@@ -22,6 +25,8 @@ export function BusinessHealthScore({
   checks,
   checklist,
 }: BusinessHealthScoreProps) {
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
   const completedChecks = checks.filter((check) => check.complete).length;
   const score =
     checks.length > 0 ? Math.round((completedChecks / checks.length) * 100) : 0;
@@ -32,19 +37,21 @@ export function BusinessHealthScore({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-              Business health
+              {isGeorgian ? "ბიზნესის მდგომარეობა" : "Business health"}
             </p>
             <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
-              {score}% ready
+              {score}% {isGeorgian ? "მზადაა" : "ready"}
             </h2>
             <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
-              A simple operations score for profile quality, active offers and
-              pickup history.
+              {isGeorgian
+                ? "მარტივი ოპერაციული ქულა პროფილის ხარისხის, აქტიური შეთავაზებებისა და წაღების ისტორიის მიხედვით."
+                : "A simple operations score for profile quality, active offers and pickup history."}
             </p>
           </div>
 
           <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
-            {completedChecks}/{checks.length} complete
+            {completedChecks}/{checks.length}{" "}
+            {isGeorgian ? "შესრულებულია" : "complete"}
           </span>
         </div>
 
@@ -94,14 +101,17 @@ export function BusinessHealthScore({
 
       <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
         <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-          Operations checklist
+          {isGeorgian ? "ოპერაციების სია" : "Operations checklist"}
         </p>
         <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
-          First business milestones
+          {isGeorgian
+            ? "ბიზნესის პირველი ეტაპები"
+            : "First business milestones"}
         </h2>
         <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
-          Keep the pilot simple: publish one strong offer, verify pickups and
-          build trust through ratings.
+          {isGeorgian
+            ? "პილოტი მარტივად წარმართე: გამოაქვეყნე ერთი ძლიერი შეთავაზება, შეამოწმე წაღებები და შეფასებებით მოიპოვე ნდობა."
+            : "Keep the pilot simple: publish one strong offer, verify pickups and build trust through ratings."}
         </p>
 
         <div className="mt-5 grid gap-3">

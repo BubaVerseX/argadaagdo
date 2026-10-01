@@ -1,3 +1,7 @@
+"use client";
+
+import { useLanguage } from "@/lib/useLanguage";
+
 export type TimelineStepState = "done" | "current" | "pending" | "stopped";
 
 export type TimelineStep = {
@@ -16,12 +20,21 @@ export function TimelineSteps({
   columnsClassName = "sm:grid-cols-4",
   ariaLabel,
 }: TimelineStepsProps) {
-  const stateLabels: Record<TimelineStepState, string> = {
-    done: "done",
-    current: "current step",
-    pending: "not yet",
-    stopped: "stopped",
-  };
+  const { language } = useLanguage();
+  const stateLabels: Record<TimelineStepState, string> =
+    language === "ka"
+      ? {
+          done: "დასრულებული",
+          current: "მიმდინარე ეტაპი",
+          pending: "ჯერ არა",
+          stopped: "შეჩერებული",
+        }
+      : {
+          done: "done",
+          current: "current step",
+          pending: "not yet",
+          stopped: "stopped",
+        };
   const stepStyles: Record<TimelineStepState, string> = {
     done: "soft-pressed text-[#a67c52]",
     current: "bg-yellow-100 text-yellow-950",

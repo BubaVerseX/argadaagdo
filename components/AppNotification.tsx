@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import {
   AlertTriangleIcon,
@@ -8,6 +10,7 @@ import {
   type IconProps,
 } from "@/components/icons";
 import type { ComponentType } from "react";
+import { useLanguage } from "@/lib/useLanguage";
 
 export type NotificationTone = "success" | "info" | "warning" | "error";
 
@@ -57,6 +60,7 @@ export default function AppNotification({
   onDismiss,
 }: AppNotificationProps) {
   const styles = toneStyles[tone];
+  const { language } = useLanguage();
 
   return (
     <div
@@ -83,7 +87,11 @@ export default function AppNotification({
           <button
             type="button"
             onClick={onDismiss}
-            aria-label="Dismiss notification"
+            aria-label={
+              language === "ka"
+                ? "შეტყობინების დახურვა"
+                : "Dismiss notification"
+            }
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/70 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
           >
             <XIcon className="h-4 w-4" strokeWidth={2} />

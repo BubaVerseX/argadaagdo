@@ -19,7 +19,7 @@ export function BusinessReviews({
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-        Customer Feedback
+        {language === "ka" ? "მომხმარებლის გამოხმაურება" : "Customer Feedback"}
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
         {t("businessDashboard.businessReviews")}
@@ -63,7 +63,8 @@ export function BusinessReviews({
                   {review.rating}
                 </p>
                 <p className="mt-1 font-bold text-[#2e2a22]">
-                  {businessNameById[Number(review.business_id)] || "Business"}
+                  {businessNameById[Number(review.business_id)] ||
+                    t("common.business")}
                 </p>
               </div>
 

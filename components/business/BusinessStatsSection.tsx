@@ -1,8 +1,11 @@
+"use client";
+
 import {
   metricToneStyles,
   type MetricTone,
 } from "@/lib/business/dashboard";
 import type { TranslationKey } from "@/lib/i18n";
+import { useLanguage } from "@/lib/useLanguage";
 
 type BusinessMetric = {
   title: string;
@@ -21,11 +24,13 @@ export function BusinessStatsSection({
   hasAnalyticsActivity,
   metrics,
 }: BusinessStatsSectionProps) {
+  const { language } = useLanguage();
+
   return (
     <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div>
         <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-          Dashboard Overview
+          {language === "ka" ? "პანელის მიმოხილვა" : "Dashboard Overview"}
         </p>
         <h2 className="mt-2 text-2xl font-black sm:text-3xl">
           {t("businessDashboard.stats")}

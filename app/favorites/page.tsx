@@ -12,6 +12,7 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import type { TranslationKey } from "@/lib/i18n";
 import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
@@ -253,7 +254,9 @@ export default function FavoritesPage() {
 
         {message && (
           <div className="mt-5 sm:mt-6">
-            <Notice tone={messageTone}>{message}</Notice>
+            <Notice tone={messageTone}>
+              {translateUserMessage(message, language)}
+            </Notice>
           </div>
         )}
 
@@ -443,12 +446,18 @@ export default function FavoritesPage() {
                       <button
                         onClick={() => removeFavorite(favorite)}
                         disabled={removingFavoriteId !== null}
-                        aria-label={`Remove ${offer?.title || "offer"} from favorites`}
+                        aria-label={
+                          language === "ka"
+                            ? `რჩეულებიდან წაშლა: ${offer?.title || "შეთავაზება"}`
+                            : `Remove ${offer?.title || "offer"} from favorites`
+                        }
                         className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-red-50 px-5 py-3 font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <HeartIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
                         {removingFavoriteId === favorite.id
-                          ? "Removing..."
+                          ? language === "ka"
+                            ? "იშლება..."
+                            : "Removing..."
                           : t("offers.removeFavorite")}
                       </button>
 

@@ -15,6 +15,7 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
@@ -524,13 +525,21 @@ export default function OfferDetailPage() {
                       ))}
                     </div>
                     <div className="mt-4">
-                      <SupportLink label="Need help before reserving?" />
+                      <SupportLink
+                        label={
+                          language === "ka"
+                            ? "გჭირდება დახმარება დაჯავშნამდე?"
+                            : "Need help before reserving?"
+                        }
+                      />
                     </div>
                   </div>
 
                   {favoriteMessage && (
                     <div className="mt-4">
-                      <Notice tone={favoriteMessageTone}>{favoriteMessage}</Notice>
+                      <Notice tone={favoriteMessageTone}>
+                        {translateUserMessage(favoriteMessage, language)}
+                      </Notice>
                     </div>
                   )}
 
@@ -571,7 +580,9 @@ export default function OfferDetailPage() {
                     </h2>
                     <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
                       {offer.description ||
-                        "A surprise rescue box prepared by the business from available food."}
+                        (language === "ka"
+                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული სიურპრიზის ყუთი."
+                          : "A surprise rescue box prepared by the business from available food.")}
                     </p>
 
                     <h3 className="mt-6 text-xl font-black">

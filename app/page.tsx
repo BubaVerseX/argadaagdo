@@ -6,6 +6,7 @@ import { OfferCard } from "@/components/OfferCard";
 import OfferImage from "@/components/OfferImage";
 import { ShoppingBagIcon } from "@/components/icons";
 import { getUserErrorMessage } from "@/lib/errors";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
@@ -469,7 +470,7 @@ export default function Home() {
 
           {errorMessage && (
             <div className="soft-raised mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-[#6b6152]">
-              {errorMessage}
+              {translateUserMessage(errorMessage, language)}
             </div>
           )}
 

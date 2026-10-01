@@ -1,4 +1,7 @@
+"use client";
+
 import type { TranslationKey } from "@/lib/i18n";
+import { useLanguage } from "@/lib/useLanguage";
 
 type BusinessDashboardHeroProps = {
   t: (key: TranslationKey) => string;
@@ -15,10 +18,12 @@ export function BusinessDashboardHero({
   activeOffers,
   reservedOrders,
 }: BusinessDashboardHeroProps) {
+  const { language } = useLanguage();
+
   return (
     <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-12">
       <p className="premium-badge px-4 py-2">
-        Business control center
+        {language === "ka" ? "ბიზნესის მართვის ცენტრი" : "Business control center"}
       </p>
 
       <h1 className="mt-4 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-5xl">

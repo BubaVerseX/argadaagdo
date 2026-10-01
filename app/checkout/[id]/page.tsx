@@ -11,6 +11,7 @@ import {
 } from "@/lib/auth";
 import { getUserErrorMessage } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   formatMoney,
   getOriginalPrice,
@@ -23,6 +24,7 @@ import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
+import { getNativeBrowser } from "@/lib/native";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -303,6 +305,29 @@ export default function CheckoutPage() {
       return;
     }
 
+    const nativeBrowser = getNativeBrowser();
+
+    if (nativeBrowser) {
+      // iOS/Android app: open the bank page in an in-app browser sheet. A
+      // normal navigation to the bank's host is handed to Safari/Chrome,
+      // where the customer isn't signed in and the app stays on this page.
+      // When the sheet closes (paid or not), show the customer's orders —
+      // the payment itself is confirmed server-side by the bank callback.
+      try {
+        const finishedListener = await nativeBrowser.addListener(
+          "browserFinished",
+          () => {
+            void finishedListener.remove();
+            router.replace("/orders");
+          }
+        );
+        await nativeBrowser.open({ url: paymentSession.redirectUrl });
+        return;
+      } catch {
+        // Fall through to a normal navigation if the plugin fails.
+      }
+    }
+
     window.location.assign(paymentSession.redirectUrl);
   }
 
@@ -345,7 +370,9 @@ export default function CheckoutPage() {
 
           {message && (
             <div className="mt-5 sm:mt-6">
-              <Notice tone={messageTone}>{message}</Notice>
+              <Notice tone={messageTone}>
+                {translateUserMessage(message, language)}
+              </Notice>
             </div>
           )}
 
@@ -353,7 +380,10 @@ export default function CheckoutPage() {
             <LoadingState
               className="mt-8"
               title={t("common.loading")}
-              description="Loading the offer summary and pickup details."
+              description={{
+                en: "Loading the offer summary and pickup details.",
+                ka: "იტვირთება შეთავაზების შეჯამება და წაღების დეტალები.",
+              }}
             />
           )}
 

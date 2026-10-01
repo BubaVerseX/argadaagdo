@@ -16,6 +16,14 @@ import {
 } from "@/lib/orderStatus";
 import type { Order } from "@/lib/types";
 
+// Display labels for profiles.reliability_status values (shown raw in English).
+const georgianReliabilityLabels = new Map<string, string>([
+  ["excellent", "შესანიშნავი"],
+  ["good", "კარგი"],
+  ["warning", "გაფრთხილება"],
+  ["restricted", "შეზღუდული"],
+]);
+
 type ReservationSummaryItem = {
   label: string;
   value: number;
@@ -61,13 +69,15 @@ export function ReservationList({
   onOpenPickupVerification,
   onMarkNoShow,
 }: ReservationListProps) {
+  const isGeorgian = language === "ka";
+
   return (
     <div
       id="reservations"
       className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-        Pickup Operations
+        {isGeorgian ? "წაღების ოპერაციები" : "Pickup Operations"}
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
         {t("businessDashboard.reservations")}
@@ -126,18 +136,32 @@ export function ReservationList({
           value={reservationSearch}
           onChange={(event) => onReservationSearchChange(event.target.value)}
           className="premium-input px-4 py-3 font-semibold"
-          placeholder="Search customer email..."
-          aria-label="Search reservations by customer email"
+          placeholder={
+            isGeorgian
+              ? "მოძებნე მომხმარებლის ელფოსტა..."
+              : "Search customer email..."
+          }
+          aria-label={
+            isGeorgian
+              ? "ჯავშნების ძიება მომხმარებლის ელფოსტით"
+              : "Search reservations by customer email"
+          }
         />
       </div>
 
       <div className="mt-4 flex flex-wrap gap-3">
         {[
-          { value: "all", label: "All" },
-          { value: "reserved", label: "Active" },
-          { value: "collected", label: "Completed" },
-          { value: "cancelled", label: "Cancelled" },
-          { value: "no_show", label: "No-show" },
+          { value: "all", label: isGeorgian ? "ყველა" : "All" },
+          { value: "reserved", label: isGeorgian ? "აქტიური" : "Active" },
+          {
+            value: "collected",
+            label: isGeorgian ? "დასრულებული" : "Completed",
+          },
+          {
+            value: "cancelled",
+            label: isGeorgian ? "გაუქმებული" : "Cancelled",
+          },
+          { value: "no_show", label: t("businessDashboard.noShow") },
         ].map((filter) => {
           const isActive = reservationFilter === filter.value;
 
@@ -171,18 +195,26 @@ export function ReservationList({
               {orders.length === 0
                 ? t("businessDashboard.noReservations")
                 : normalizedReservationSearch
-                ? "No reservations found"
+                ? isGeorgian
+                  ? "ჯავშნები ვერ მოიძებნა"
+                  : "No reservations found"
                 : reservationFilter === "reserved"
-                ? "No active reservations"
+                ? isGeorgian
+                  ? "აქტიური ჯავშნები არ არის"
+                  : "No active reservations"
                 : t("businessDashboard.noFilteredReservations")}
             </h3>
             <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
               {orders.length === 0
                 ? t("businessDashboard.noReservationsHint")
                 : normalizedReservationSearch
-                ? "Try searching a different customer email."
+                ? isGeorgian
+                  ? "სცადე სხვა მომხმარებლის ელფოსტით ძიება."
+                  : "Try searching a different customer email."
                 : reservationFilter === "reserved"
-                ? "Completed, cancelled and no-show reservations are kept in history. Use the filters above to review them."
+                ? isGeorgian
+                  ? "დასრულებული, გაუქმებული და გამოუცხადებელი ჯავშნები ისტორიაში ინახება. მათ სანახავად ზემოთ მოცემული ფილტრები გამოიყენე."
+                  : "Completed, cancelled and no-show reservations are kept in history. Use the filters above to review them."
                 : t("businessDashboard.noFilteredReservationsHint")}
             </p>
           </div>
@@ -220,11 +252,13 @@ export function ReservationList({
                 <div className="mt-3 grid gap-2 rounded-2xl bg-[#f4efe4] p-4 text-sm font-semibold text-[#6b6152] sm:grid-cols-2">
                   <div>
                     <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
-                      Business receipt
+                      {isGeorgian ? "ბიზნესის ქვითარი" : "Business receipt"}
                     </p>
-                    <p className="mt-1">Reservation ID: #{order.id}</p>
+                    <p className="mt-1">
+                      {isGeorgian ? "ჯავშნის ID" : "Reservation ID"}: #{order.id}
+                    </p>
                     <p>
-                      Gross:{" "}
+                      {isGeorgian ? "ჯამური თანხა" : "Gross"}:{" "}
                       {order.amount
                         ? formatMoney(order.amount)
                         : order.offers
@@ -234,16 +268,16 @@ export function ReservationList({
                   </div>
                   <div>
                     <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
-                      Payout estimate
+                      {isGeorgian ? "ანაზღაურების შეფასება" : "Payout estimate"}
                     </p>
                     <p>
-                      Platform fee:{" "}
+                      {isGeorgian ? "პლატფორმის საკომისიო" : "Platform fee"}:{" "}
                       {order.platform_fee
                         ? formatMoney(order.platform_fee)
                         : t("common.unavailable")}
                     </p>
                     <p>
-                      Business amount:{" "}
+                      {isGeorgian ? "ბიზნესის თანხა" : "Business amount"}:{" "}
                       {order.business_amount
                         ? formatMoney(order.business_amount)
                         : t("common.unavailable")}
@@ -264,7 +298,12 @@ export function ReservationList({
                   {order.profiles?.reliability_score ??
                     t("common.unavailable")}{" "}
                   ·{" "}
-                  {order.profiles?.reliability_status ||
+                  {(isGeorgian && order.profiles?.reliability_status
+                    ? georgianReliabilityLabels.get(
+                        order.profiles.reliability_status
+                      )
+                    : undefined) ||
+                    order.profiles?.reliability_status ||
                     t("common.unavailable")}
                 </p>
 
@@ -277,9 +316,11 @@ export function ReservationList({
 
                   {isConfirmedOrderStatus(order.status) && (
                     <span className="rounded-full bg-[#f4efe4] px-4 py-2 text-sm font-black text-[#6b6152]">
-                      Pickup code:{" "}
+                      {isGeorgian ? "წაღების კოდი" : "Pickup code"}:{" "}
                       {order.pickup_code
                         ? `••••${String(order.pickup_code).slice(-2)}`
+                        : isGeorgian
+                        ? "მოლოდინში"
                         : "pending"}
                     </span>
                   )}
@@ -287,19 +328,22 @@ export function ReservationList({
 
                 {isConfirmedOrderStatus(order.status) && (
                   <p className="mt-3 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold leading-6 text-[#6b6152]">
-                    Ask the customer for the full code, then use Verify &
-                    Complete Pickup.
+                    {isGeorgian
+                      ? "მომხმარებელს სრული კოდი ჰკითხე და შემდეგ გამოიყენე ღილაკი „შემოწმება და წაღების დასრულება“."
+                      : "Ask the customer for the full code, then use Verify & Complete Pickup."}
                   </p>
                 )}
 
                 <div className="mt-4 rounded-3xl bg-[#f4efe4] p-4">
                   <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6152]">
-                    Reservation timeline
+                    {isGeorgian ? "ჯავშნის ეტაპები" : "Reservation timeline"}
                   </p>
                   <TimelineSteps
                     steps={timelineSteps}
                     columnsClassName="sm:grid-cols-5"
-                    ariaLabel="Reservation timeline"
+                    ariaLabel={
+                      isGeorgian ? "ჯავშნის ეტაპები" : "Reservation timeline"
+                    }
                   />
                 </div>
               </div>
@@ -313,7 +357,11 @@ export function ReservationList({
                       className="min-h-12 w-full rounded-full bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                     >
                       {updatingOrderId === order.id
-                        ? "Updating..."
+                        ? isGeorgian
+                          ? "ახლდება..."
+                          : "Updating..."
+                        : isGeorgian
+                        ? "მონიშვნა: არ გამოცხადდა"
                         : "Mark No-Show"}
                     </button>
                   )}
@@ -325,7 +373,11 @@ export function ReservationList({
                       className="premium-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                     >
                       {updatingOrderId === order.id
-                        ? "Completing..."
+                        ? isGeorgian
+                          ? "სრულდება..."
+                          : "Completing..."
+                        : isGeorgian
+                        ? "შემოწმება და წაღების დასრულება"
                         : "Verify & Complete Pickup"}
                     </button>
                   )}
@@ -341,7 +393,7 @@ export function ReservationList({
         page={reservationPage}
         totalItems={filteredOrderCount}
         pageSize={reservationPageSize}
-        label="Reservations"
+        label={t("businessDashboard.reservations")}
         onPageChange={onReservationPageChange}
       />
     </div>

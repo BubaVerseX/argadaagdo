@@ -13,6 +13,7 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   getOfferCategoryLabel,
   normalizeOfferCategory,
@@ -80,6 +81,7 @@ function matchesPriceFilter(offer: Offer, priceFilter: PriceFilter) {
 export default function OffersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [offers, setOffers] = useState<Offer[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -507,7 +509,11 @@ export default function OffersPage() {
                   setSelectedCategory(event.target.value);
                   setPage(1);
                 }}
-                aria-label="Filter offers by category"
+                aria-label={
+                  isGeorgian
+                    ? "შეთავაზებების ფილტრი კატეგორიით"
+                    : "Filter offers by category"
+                }
                 className="premium-input px-4 py-3"
               >
                 <option value="all">{t("offers.allCategories")}</option>
@@ -524,13 +530,25 @@ export default function OffersPage() {
                   setPriceFilter(event.target.value as PriceFilter);
                   setPage(1);
                 }}
-                aria-label="Filter offers by price"
+                aria-label={
+                  isGeorgian
+                    ? "შეთავაზებების ფილტრი ფასით"
+                    : "Filter offers by price"
+                }
                 className="premium-input px-4 py-3"
               >
-                <option value="all">All prices</option>
-                <option value="under-5">₾ 5 or less</option>
-                <option value="under-10">₾ 10 or less</option>
-                <option value="under-15">₾ 15 or less</option>
+                <option value="all">
+                  {isGeorgian ? "ყველა ფასი" : "All prices"}
+                </option>
+                <option value="under-5">
+                  {isGeorgian ? "₾ 5 ან ნაკლები" : "₾ 5 or less"}
+                </option>
+                <option value="under-10">
+                  {isGeorgian ? "₾ 10 ან ნაკლები" : "₾ 10 or less"}
+                </option>
+                <option value="under-15">
+                  {isGeorgian ? "₾ 15 ან ნაკლები" : "₾ 15 or less"}
+                </option>
               </select>
 
               <select
@@ -539,13 +557,23 @@ export default function OffersPage() {
                   setPickupFilter(event.target.value as PickupFilter);
                   setPage(1);
                 }}
-                aria-label="Filter offers by pickup date"
+                aria-label={
+                  isGeorgian
+                    ? "შეთავაზებების ფილტრი წაღების თარიღით"
+                    : "Filter offers by pickup date"
+                }
                 className="premium-input px-4 py-3"
               >
-                <option value="all">Any pickup date</option>
-                <option value="today">Pickup today</option>
-                <option value="tomorrow">Pickup tomorrow</option>
-                <option value="upcoming">Upcoming</option>
+                <option value="all">
+                  {isGeorgian ? "წაღების ნებისმიერი თარიღი" : "Any pickup date"}
+                </option>
+                <option value="today">
+                  {isGeorgian ? "წაღება დღეს" : "Pickup today"}
+                </option>
+                <option value="tomorrow">
+                  {isGeorgian ? "წაღება ხვალ" : "Pickup tomorrow"}
+                </option>
+                <option value="upcoming">{t("common.upcoming")}</option>
               </select>
 
               <select
@@ -554,14 +582,24 @@ export default function OffersPage() {
                   setOfferSort(event.target.value as OfferSort);
                   setPage(1);
                 }}
-                aria-label="Sort offers"
+                aria-label={
+                  isGeorgian ? "შეთავაზებების დალაგება" : "Sort offers"
+                }
                 className="premium-input px-4 py-3"
               >
-                <option value="recommended">Recommended</option>
+                <option value="recommended">
+                  {isGeorgian ? "რეკომენდებული" : "Recommended"}
+                </option>
                 <option value="price-asc">{t("offers.sortLowest")}</option>
                 <option value="price-desc">{t("offers.sortHighest")}</option>
-                <option value="savings-desc">Highest savings</option>
-                <option value="rating-desc">Highest rated businesses</option>
+                <option value="savings-desc">
+                  {isGeorgian ? "ყველაზე დიდი დანაზოგი" : "Highest savings"}
+                </option>
+                <option value="rating-desc">
+                  {isGeorgian
+                    ? "ყველაზე მაღალი შეფასების ბიზნესები"
+                    : "Highest rated businesses"}
+                </option>
               </select>
 
               <label className="soft-pressed flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-[#2e2a22] md:justify-start">
@@ -588,7 +626,9 @@ export default function OffersPage() {
 
           {message && (
             <div className="mt-5 sm:mt-6">
-              <Notice tone={messageTone}>{message}</Notice>
+              <Notice tone={messageTone}>
+                {translateUserMessage(message, language)}
+              </Notice>
             </div>
           )}
 
@@ -676,7 +716,8 @@ export default function OffersPage() {
                   <div className="mt-4 grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {section.offers.map((offer, offerIndex) => {
                       const businessAddress =
-                        offer.businesses?.address || "Tbilisi";
+                        offer.businesses?.address ||
+                        (isGeorgian ? "თბილისი" : "Tbilisi");
                       const mapsUrl = createMapsSearchUrl(
                         offer.businesses?.address,
                         offer.businesses?.name
@@ -778,7 +819,11 @@ export default function OffersPage() {
                                 onClick={() => toggleFavorite(offer)}
                                 disabled={updatingFavoriteId !== null}
                                 aria-label={
-                                  isFavorite
+                                  isGeorgian
+                                    ? isFavorite
+                                      ? `რჩეულებიდან წაშლა: ${offer.title}`
+                                      : `რჩეულებში დამატება: ${offer.title}`
+                                    : isFavorite
                                     ? `Remove ${offer.title} from favorites`
                                     : `Add ${offer.title} to favorites`
                                 }
@@ -821,7 +866,7 @@ export default function OffersPage() {
             page={paginatedOffers.page}
             totalItems={filteredOffers.length}
             pageSize={OFFERS_PAGE_SIZE}
-            label="Offers"
+            label={t("nav.offers")}
             onPageChange={setPage}
           />
         </div>

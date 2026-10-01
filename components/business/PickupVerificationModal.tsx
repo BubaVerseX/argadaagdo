@@ -27,6 +27,7 @@ export function PickupVerificationModal({
   onClose,
   onSubmit,
 }: PickupVerificationModalProps) {
+  const isGeorgian = language === "ka";
   const codeInputRef = useRef<HTMLInputElement>(null);
   const onCloseRef = useRef(onClose);
 
@@ -68,13 +69,15 @@ export function PickupVerificationModal({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
-                Pickup Operations
+                {isGeorgian ? "წაღების ოპერაციები" : "Pickup Operations"}
               </p>
               <h3
                 id="pickup-verification-title"
                 className="mt-2 text-2xl font-black text-[#2e2a22]"
               >
-                Verify Customer Pickup Code
+                {isGeorgian
+                  ? "შეამოწმე მომხმარებლის წაღების კოდი"
+                  : "Verify Customer Pickup Code"}
               </h3>
             </div>
 
@@ -82,7 +85,11 @@ export function PickupVerificationModal({
               type="button"
               onClick={onClose}
               disabled={updatingOrderId !== null}
-              aria-label="Close pickup verification"
+              aria-label={
+                isGeorgian
+                  ? "წაღების შემოწმების დახურვა"
+                  : "Close pickup verification"
+              }
               className="soft-raised flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2e2a22] transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               <XIcon className="h-4 w-4" strokeWidth={1.8} />
@@ -107,15 +114,16 @@ export function PickupVerificationModal({
           </div>
 
           <p className="mt-5 font-semibold leading-7 text-[#6b6152]">
-            Ask the customer to show the pickup code from their Orders page.
-            Enter it here before handing over the order.
+            {isGeorgian
+              ? "სთხოვე მომხმარებელს, შეკვეთების გვერდიდან წაღების კოდი გაჩვენოს. შეკვეთის გადაცემამდე კოდი აქ შეიყვანე."
+              : "Ask the customer to show the pickup code from their Orders page. Enter it here before handing over the order."}
           </p>
 
           <label
             htmlFor="pickup-verification-code"
             className="mt-5 block text-sm font-black uppercase tracking-wide text-[#6b6152]"
           >
-            Pickup Code
+            {t("orders.pickupCode")}
           </label>
           <input
             ref={codeInputRef}
@@ -151,7 +159,7 @@ export function PickupVerificationModal({
               disabled={updatingOrderId !== null}
               className="premium-button-secondary px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
 
             <button
@@ -161,7 +169,11 @@ export function PickupVerificationModal({
               className="premium-button px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {updatingOrderId === order.id
-                ? "Completing..."
+                ? isGeorgian
+                  ? "სრულდება..."
+                  : "Completing..."
+                : isGeorgian
+                ? "შემოწმება და წაღების დასრულება"
                 : "Verify & Complete Pickup"}
             </button>
           </div>

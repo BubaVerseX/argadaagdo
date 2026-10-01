@@ -14,8 +14,14 @@ export default function CheckoutError({
       error={error}
       reset={reset}
       route="/checkout/[id]"
-      title="Checkout could not load"
-      description="Your reservation step could not be prepared. Try again before reserving the offer."
+      title={{
+        en: "Checkout could not load",
+        ka: "გადახდის გვერდი ვერ ჩაიტვირთა",
+      }}
+      description={{
+        en: "Your reservation step could not be prepared. Try again before reserving the offer.",
+        ka: "ჯავშნის ეტაპი ვერ მომზადდა. შეთავაზების დაჯავშნამდე სცადე ხელახლა.",
+      }}
     />
   );
 }

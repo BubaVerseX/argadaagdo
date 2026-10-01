@@ -12,6 +12,7 @@ import {
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   notifyOrderCancelled,
   notifyRatingSubmitted,
@@ -36,6 +37,8 @@ import { useEffect, useRef, useState } from "react";
 
 type MessageTone = "success" | "error" | "warning";
 
+// These messages stay in English here; the page translates them (and other
+// known messages) with translateUserMessage when rendering the notice.
 function getInitialPaymentReturnMessage():
   | { tone: MessageTone; message: string }
   | null {
@@ -149,11 +152,12 @@ export default function OrdersPage() {
     }
 
     const reviewResult = validateTextField({
-      label: "Review",
+      label: language === "ka" ? "შეფასება" : "Review",
       value: reviewTexts[order.id] || "",
       maxLength: 500,
       required: false,
       multiline: true,
+      language,
     });
 
     if (reviewResult.error) {
@@ -364,6 +368,7 @@ export default function OrdersPage() {
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <OrdersHeader
           t={t}
+          language={language}
           confirmedCount={confirmedCount}
           collectedCount={collectedCount}
           cancelledCount={cancelledCount}
@@ -385,7 +390,9 @@ export default function OrdersPage() {
 
         {message && (
           <div className="mt-5 sm:mt-6">
-            <Notice tone={messageTone}>{message}</Notice>
+            <Notice tone={messageTone}>
+              {translateUserMessage(message, language)}
+            </Notice>
           </div>
         )}
 
@@ -404,7 +411,10 @@ export default function OrdersPage() {
           <LoadingState
             className="mt-8"
             title={t("orders.loading")}
-            description="Preparing your reservations, pickup codes and order history."
+            description={{
+              en: "Preparing your reservations, pickup codes and order history.",
+              ka: "მზადდება შენი ჯავშნები, წაღების კოდები და შეკვეთების ისტორია.",
+            }}
           />
         )}
 

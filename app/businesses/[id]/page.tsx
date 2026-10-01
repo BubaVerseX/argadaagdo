@@ -47,6 +47,7 @@ function getBusinessInitials(name: string) {
 export default function BusinessProfilePage() {
   const params = useParams<{ id: string }>();
   const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [business, setBusiness] = useState<Business | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -120,14 +121,22 @@ export default function BusinessProfilePage() {
     rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
   const joinedDate = business?.created_at
     ? formatReviewDate(business.created_at, language)
-    : "Tbilisi pilot";
+    : t("offers.tbilisiPilot");
   const businessDescription =
     business?.description?.trim() ||
-    `Verified ${
-      business?.business_type || "food"
-    } business offering pickup-only surprise bags in Tbilisi.`;
+    (isGeorgian
+      ? `დამოწმებული ბიზნესი${
+          business?.business_type ? ` (${business.business_type})` : ""
+        }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ სიურპრიზის ყუთებს გთავაზობს.`
+      : `Verified ${
+          business?.business_type || "food"
+        } business offering pickup-only surprise bags in Tbilisi.`);
   const completedPickupSignal =
-    reviewCount > 0 ? `${reviewCount}+` : "Not published yet";
+    reviewCount > 0
+      ? `${reviewCount}+`
+      : isGeorgian
+      ? "ჯერ არ გამოქვეყნებულა"
+      : "Not published yet";
 
   return (
     <main className="app-shell">
@@ -211,9 +220,12 @@ export default function BusinessProfilePage() {
                       </p>
                       <p>
                         <span className="font-black text-[#2e2a22]">
-                          Phone:
+                          {isGeorgian ? "ტელეფონი" : "Phone"}:
                         </span>{" "}
-                        {business.phone || "Contact through ArGadaagdo support"}
+                        {business.phone ||
+                          (isGeorgian
+                            ? "დაგვიკავშირდი ArGadaagdo-ს მხარდაჭერის მეშვეობით"
+                            : "Contact through ArGadaagdo support")}
                       </p>
                     </div>
 
@@ -257,13 +269,17 @@ export default function BusinessProfilePage() {
                       </div>
                       <div className="soft-raised rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
-                          Completed pickups
+                          {isGeorgian
+                            ? "დასრულებული წაღებები"
+                            : "Completed pickups"}
                         </p>
                         <p className="mt-2 text-3xl font-black text-[#2e2a22]">
                           {completedPickupSignal}
                         </p>
                         <p className="mt-1 text-sm font-bold text-[#6b6152]">
-                          Public signal from completed rated pickups
+                          {isGeorgian
+                            ? "საჯარო მაჩვენებელი დასრულებული და შეფასებული წაღებებიდან"
+                            : "Public signal from completed rated pickups"}
                         </p>
                       </div>
                       <div className="soft-raised rounded-3xl p-5">
@@ -279,35 +295,43 @@ export default function BusinessProfilePage() {
                       </div>
                       <div className="soft-raised rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
-                          Joined
+                          {isGeorgian ? "შემოგვიერთდა" : "Joined"}
                         </p>
                         <p className="mt-2 text-2xl font-black text-[#2e2a22]">
-                          {joinedDate || "Tbilisi pilot"}
+                          {joinedDate || t("offers.tbilisiPilot")}
                         </p>
                         <p className="mt-1 text-sm font-bold text-[#6b6152]">
-                          Approved local marketplace member
+                          {isGeorgian
+                            ? "მარკეტის დამტკიცებული ადგილობრივი წევრი"
+                            : "Approved local marketplace member"}
                         </p>
                       </div>
                       <div className="soft-raised rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
-                          Response rate
+                          {isGeorgian ? "პასუხის მაჩვენებელი" : "Response rate"}
                         </p>
                         <p className="mt-2 text-2xl font-black text-[#2e2a22]">
-                          Pilot support
+                          {isGeorgian ? "პილოტის მხარდაჭერა" : "Pilot support"}
                         </p>
                         <p className="mt-1 text-sm font-bold text-[#6b6152]">
-                          Support requests are handled by ArGadaagdo
+                          {isGeorgian
+                            ? "მხარდაჭერის მოთხოვნებს ArGadaagdo ამუშავებს"
+                            : "Support requests are handled by ArGadaagdo"}
                         </p>
                       </div>
                       <div className="soft-raised rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
-                          Opening hours
+                          {isGeorgian ? "სამუშაო საათები" : "Opening hours"}
                         </p>
                         <p className="mt-2 text-2xl font-black text-[#2e2a22]">
-                          See each offer
+                          {isGeorgian
+                            ? "იხილე თითოეულ შეთავაზებაზე"
+                            : "See each offer"}
                         </p>
                         <p className="mt-1 text-sm font-bold text-[#6b6152]">
-                          Pickup windows are shown on active offers
+                          {isGeorgian
+                            ? "წაღების ფანჯრები აქტიურ შეთავაზებებზეა მითითებული"
+                            : "Pickup windows are shown on active offers"}
                         </p>
                       </div>
                     </div>
@@ -319,9 +343,20 @@ export default function BusinessProfilePage() {
                           text={t("businessProfile.trustMessage")}
                         >
                           <div className="flex flex-wrap gap-2">
-                            <TrustBadge label="Pickup code verification" />
-                            <TrustBadge label="Customer ratings" tone="yellow" />
-                            <TrustBadge label="Local Tbilisi business" />
+                            <TrustBadge
+                              label={t("home.trustPickupCodeVerification")}
+                            />
+                            <TrustBadge
+                              label={t("home.trustCustomerRatings")}
+                              tone="yellow"
+                            />
+                            <TrustBadge
+                              label={
+                                isGeorgian
+                                  ? "ადგილობრივი თბილისური ბიზნესი"
+                                  : "Local Tbilisi business"
+                              }
+                            />
                           </div>
                         </InfoBanner>
                       </div>
@@ -366,7 +401,7 @@ export default function BusinessProfilePage() {
                           </span>
                           {discount !== null && (
                             <span className="premium-discount-badge absolute right-2 top-2 px-3 py-1">
-                              Save {discount}%
+                              {isGeorgian ? "დაზოგე" : "Save"} {discount}%
                             </span>
                           )}
                         </div>
@@ -422,7 +457,13 @@ export default function BusinessProfilePage() {
                         {t("businessProfile.noReviewsHint")}
                       </p>
                       <div className="mt-5 flex justify-center">
-                        <SupportLink label="How ratings work" />
+                        <SupportLink
+                          label={
+                            isGeorgian
+                              ? "როგორ მუშაობს შეფასებები"
+                              : "How ratings work"
+                          }
+                        />
                       </div>
                     </div>
                   )}

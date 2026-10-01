@@ -14,8 +14,14 @@ export default function BusinessesError({
       error={error}
       reset={reset}
       route="/businesses"
-      title="Businesses could not load"
-      description="The business directory hit a temporary problem. Try again to reload verified businesses."
+      title={{
+        en: "Businesses could not load",
+        ka: "ბიზნესები ვერ ჩაიტვირთა",
+      }}
+      description={{
+        en: "The business directory hit a temporary problem. Try again to reload verified businesses.",
+        ka: "ბიზნესების კატალოგში დროებითი პრობლემა წარმოიშვა. სცადე ხელახლა, რომ დამოწმებული ბიზნესები თავიდან ჩაიტვირთოს.",
+      }}
     />
   );
 }
