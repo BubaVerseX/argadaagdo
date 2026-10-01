@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
+import { isBearerSecretAuthorized } from "@/lib/requestAuth";
 import { logger } from "@/lib/logger";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
 function isCronAuthorized(request: Request) {
-  const secret = process.env.CRON_SECRET;
-
-  if (!secret) return false;
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+  return isBearerSecretAuthorized(request, process.env.CRON_SECRET);
 }
 
 export async function GET(request: Request) {
@@ -21,7 +19,10 @@ export async function GET(request: Request) {
     const { data: expiredPayments, error: paymentError } = await supabase.rpc(
       "expire_pending_provider_payments",
       {
-        p_older_than_minutes: 20,
+        // Must stay longer than the BOG checkout session TTL (20 min, see
+        // lib/payments/bog.ts) plus a margin: expiring a hold while the bank
+        // page is still payable lets a customer pay for a cancelled order.
+        p_older_than_minutes: 40,
       }
     );
 

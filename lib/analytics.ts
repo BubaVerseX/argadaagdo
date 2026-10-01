@@ -485,7 +485,14 @@ export function buildCsv(rows: Array<Record<string, string | number | null>>) {
 
   const headers = Object.keys(rows[0]);
   const escapeValue = (value: string | number | null) => {
-    const text = String(value ?? "");
+    let text = String(value ?? "");
+
+    // Text written by customers or businesses (reviews, titles) must not be
+    // run as a spreadsheet formula when the export is opened in Excel/Sheets.
+    if (typeof value === "string" && /^[=+\-@\t\r]/.test(text)) {
+      text = `'${text}`;
+    }
+
     return `"${text.replaceAll('"', '""')}"`;
   };
 
@@ -496,7 +503,9 @@ export function buildCsv(rows: Array<Record<string, string | number | null>>) {
 }
 
 export function downloadCsv(filename: string, csv: string) {
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  // The BOM makes Excel read the file as UTF-8 (Georgian text is garbled
+  // without it).
+  const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

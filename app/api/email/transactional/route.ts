@@ -172,6 +172,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // Only send an email that matches the order's real state — otherwise a
+    // client could trigger e.g. a genuine "Reservation confirmed" email for an
+    // unpaid order, or "Pickup completed" for a reservation not yet collected.
+    const allowedStatuses: Record<string, string[]> = {
+      reservation_confirmation: ["reserved", "confirmed"],
+      reservation_cancellation: ["cancelled", "refunded"],
+      pickup_reminder: ["reserved", "confirmed"],
+      rating_reminder: ["completed", "collected"],
+      pickup_completed: ["completed", "collected"],
+    };
+
+    if (!allowedStatuses[event]?.includes(String(order.status || ""))) {
+      return NextResponse.json(
+        { error: "This notification does not match the order status." },
+        { status: 409 }
+      );
+    }
+
     if (event === "reservation_confirmation") {
       const result = await sendReservationConfirmationEmail(supabase, orderId);
       return NextResponse.json({ ok: result.ok, result });

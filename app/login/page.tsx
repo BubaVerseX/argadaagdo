@@ -53,10 +53,19 @@ function getSafeInternalRedirectPath(value: string | null) {
 
   if (!trimmedValue.startsWith("/")) return null;
   if (trimmedValue.startsWith("//")) return null;
-  if (trimmedValue.toLowerCase().startsWith("http://")) return null;
-  if (trimmedValue.toLowerCase().startsWith("https://")) return null;
+  // Browsers treat "\" like "/" and strip tabs/newlines, so "/\evil.com"
+  // or "/<tab>/evil.com" would resolve to another origin.
+  if (/[\\\u0000-\u001f\u007f]/.test(trimmedValue)) return null;
 
-  return trimmedValue;
+  try {
+    const resolvedUrl = new URL(trimmedValue, window.location.origin);
+
+    if (resolvedUrl.origin !== window.location.origin) return null;
+
+    return `${resolvedUrl.pathname}${resolvedUrl.search}${resolvedUrl.hash}`;
+  } catch {
+    return null;
+  }
 }
 
 function readRedirectPath() {
