@@ -38,9 +38,11 @@ type NavbarBusiness = {
   approved: boolean | string | null;
 };
 
+// shortLabel is used by the mobile bottom bar, where five Georgian labels
+// must fit on a 320-375px screen.
 type TabItem =
-  | { kind: "link"; href: string; label: string; Icon: ComponentType<IconProps> }
-  | { kind: "action"; id: string; label: string; Icon: ComponentType<IconProps>; onClick: () => void };
+  | { kind: "link"; href: string; label: string; shortLabel?: string; Icon: ComponentType<IconProps> }
+  | { kind: "action"; id: string; label: string; shortLabel?: string; Icon: ComponentType<IconProps>; onClick: () => void };
 
 function isApprovedValue(value: boolean | string | null) {
   return value === true || String(value) === "true";
@@ -158,6 +160,7 @@ export default function Navbar() {
       kind: "link",
       href: "/offers",
       label: t("nav.browse"),
+      shortLabel: t("nav.browseTab"),
       Icon: SearchIcon,
     };
     const more: TabItem = {
@@ -532,12 +535,12 @@ export default function Navbar() {
       </div>
 
       {/* Fixed floating bottom tab bar — primary mobile navigation. */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-2 min-[360px]:px-4 pb-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] lg:hidden">
         <div className="soft-raised flex w-full max-w-md items-stretch justify-between gap-1 rounded-[28px] p-2">
           {tabs.map((tabItem) => {
             const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;
             const active = tabItem.kind === "link" && isActivePath(tabItem.href);
-            const commonClass = `flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-1.5 text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+            const commonClass = `flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-0.5 py-1.5 text-[10px] min-[360px]:px-1 font-semibold min-[390px]:text-[11px] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
               active ? "soft-pressed text-[#a67c52]" : "text-[#8a8072]"
             }`;
 
@@ -545,7 +548,7 @@ export default function Navbar() {
               return (
                 <button key={key} type="button" onClick={tabItem.onClick} className={commonClass}>
                   <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
-                  <span>{tabItem.label}</span>
+                  <span>{tabItem.shortLabel ?? tabItem.label}</span>
                 </button>
               );
             }
@@ -558,7 +561,7 @@ export default function Navbar() {
                 className={commonClass}
               >
                 <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
-                <span>{tabItem.label}</span>
+                <span>{tabItem.shortLabel ?? tabItem.label}</span>
               </Link>
             );
           })}

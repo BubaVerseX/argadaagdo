@@ -45,6 +45,7 @@ const translations = {
     "nav.openMenu": "Open menu",
     "nav.closeMenu": "Close menu",
     "nav.browse": "Browse",
+    "nav.browseTab": "Browse",
     "nav.dashboardTab": "Dashboard",
     "nav.notifications": "Notifications",
     "nav.noNotifications": "No new notifications yet.",
@@ -841,6 +842,7 @@ const translations = {
     "nav.openMenu": "მენიუს გახსნა",
     "nav.closeMenu": "მენიუს დახურვა",
     "nav.browse": "დათვალიერება",
+    "nav.browseTab": "ძიება",
     "nav.dashboardTab": "პანელი",
     "nav.notifications": "შეტყობინებები",
     "nav.noNotifications": "ახალი შეტყობინებები არ არის.",
@@ -1542,7 +1544,7 @@ const translations = {
       "დაათვალიერე მიმდინარე შეთავაზებები ან დაგვიკავშირდი, თუ პლატფორმაზე მეტის გაგება გინდა.",
 
     "privacy.badge": "კონფიდენციალურობა",
-    "privacy.title": "კონფიდენციალურობის პოლიტიკა",
+    "privacy.title": "კონფიდენ\u00ADციალუ\u00ADრობის პოლიტიკა",
     "privacy.subtitle":
       "ეს მარტივი MVP კონფიდენციალურობის გვერდი ხსნის, რა ინფორმაციას იყენებს ArGadaagdo ანგარიშების, ჯავშნების და მხარდაჭერისთვის.",
     "privacy.infoTitle": "რა ინფორმაცია გროვდება",
@@ -1557,7 +1559,7 @@ const translations = {
     "privacy.contactTitle": "საკონტაქტო ინფორმაცია",
     "privacy.contactText":
       "თუ მხარდაჭერას დაუკავშირდები, შენი შეტყობინება და ელფოსტა შეიძლება გამოყენებულ იქნას პასუხისთვის და მარკეტის საკითხების მოსაგვარებლად.",
-    "privacy.helpTitle": "გაქვს კითხვა კონფიდენციალურობაზე?",
+    "privacy.helpTitle": "გაქვს კითხვა კონფიდენ\u00ADციალუ\u00ADრობაზე?",
     "privacy.helpText":
       "დაუკავშირდი ArGadaagdo-ს მხარდაჭერას ანგარიშის, შეკვეთის ან ბიზნესის ინფორმაციის შესახებ კითხვებისთვის.",
 

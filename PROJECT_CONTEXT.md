@@ -27,7 +27,13 @@ older notes below don't know:
   payment holds (released after 40 min instead of only by the daily cron),
   duplicate holds, text pickup-time validation, safe offer delete, owner
   transfer lock, pending-owner edits, business visibility of customer
-  profiles. Apply only with the founder's OK (standing rule below).
+  profiles, and adds `get_my_favorite_offers()` (favorites page shows
+  sold-out/expired favorites; the page falls back gracefully until it
+  exists). Apply only with the founder's OK (standing rule below).
+- 2026-10-12 follow-up: nothing had changed on `main` or the live DB since
+  10-01. Added the favorites RPC above and fixed Georgian text spilling off
+  320-375px phones (bottom tab bar uses `nav.browseTab` = "ძიება" as a
+  shorter label; Privacy titles have soft hyphens).
 - Infra: Supabase project is in Sydney and Vercel functions in Washington
   DC (~1 s DB queries, health-check timeouts) — move both near Georgia.
   Vercel Hobby = daily crons only (see `vercel.json`).
