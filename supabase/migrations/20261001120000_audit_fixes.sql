@@ -40,6 +40,10 @@
 --     in production, so replaying the repo no longer installs the older
 --     06-15/06-16 versions (rate_business there writes to a `ratings` table
 --     that doesn't exist in production).
+-- 12. Favorites of sold-out/expired offers showed as a blank card because
+--     the offers SELECT policy only exposes active offers. → new
+--     get_my_favorite_offers() returns the caller's own favorites with basic
+--     offer details whatever the offer's status (approved businesses only).
 
 begin;
 
@@ -543,5 +547,59 @@ $$;
 
 revoke all on function public.rate_business(bigint, integer, text) from public, anon;
 grant execute on function public.rate_business(bigint, integer, text) to authenticated;
+
+-- 12. The caller's favorites with basic offer details, any offer status ------
+create or replace function public.get_my_favorite_offers()
+returns table(
+  favorite_id bigint,
+  offer_id bigint,
+  business_id bigint,
+  title text,
+  category text,
+  price numeric,
+  old_price numeric,
+  quantity integer,
+  pickup_date date,
+  pickup_start text,
+  pickup_end text,
+  active boolean,
+  status text,
+  image_url text,
+  business_name text,
+  business_address text,
+  business_type text
+)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    favorites.id,
+    offers.id,
+    offers.business_id,
+    offers.title,
+    offers.category,
+    offers.price,
+    offers.old_price,
+    offers.quantity,
+    offers.pickup_date,
+    offers.pickup_start::text,
+    offers.pickup_end::text,
+    offers.active,
+    offers.status,
+    offers.image_url,
+    businesses.name,
+    businesses.address,
+    businesses.business_type
+  from public.favorites
+  join public.offers on offers.id = favorites.offer_id
+  join public.businesses on businesses.id = offers.business_id
+  where favorites.user_id = (select auth.uid())
+    and businesses.approved = true;
+$$;
+
+revoke all on function public.get_my_favorite_offers() from public, anon;
+grant execute on function public.get_my_favorite_offers() to authenticated;
 
 commit;
