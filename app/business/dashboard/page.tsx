@@ -90,6 +90,9 @@ type DashboardOfferFilter =
 const DASHBOARD_OFFER_PAGE_SIZE = 8;
 const DASHBOARD_RESERVATION_PAGE_SIZE = 8;
 
+const PICKUP_LOCKED_MESSAGE =
+  "This order is locked after 5 wrong pickup codes. Contact ArGadaagdo support to unlock it.";
+
 export default function BusinessDashboardPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
@@ -1189,7 +1192,7 @@ export default function BusinessDashboardPage() {
   async function completeOrder(
     orderId: number,
     pickupCodeValue: string
-  ): Promise<boolean | "invalid_code"> {
+  ): Promise<boolean | "invalid_code" | "locked"> {
     const completedOrder = allOrders.find((order) => order.id === orderId);
 
     // Note: a customer who arrives a little late with the correct code must
@@ -1203,7 +1206,7 @@ export default function BusinessDashboardPage() {
     }
 
     setUpdatingOrderId(orderId);
-    const { error } = await supabase.rpc("complete_pickup", {
+    const { data: pickupResult, error } = await supabase.rpc("complete_pickup", {
       p_order_id: orderId,
       p_pickup_code: pickupCodeValue.trim(),
     });
@@ -1217,6 +1220,19 @@ export default function BusinessDashboardPage() {
       setMessageTone("error");
       setMessage("Pickup could not be completed. Please check the pickup code and try again.");
       return error.message?.includes("Invalid pickup code") ? "invalid_code" : false;
+    }
+
+    // complete_pickup returns a result for wrong codes (so the failed-attempt
+    // count is kept) and locks the order after 5 of them.
+    if (pickupResult === "invalid_code" || pickupResult === "locked") {
+      setUpdatingOrderId(null);
+      setMessageTone("error");
+      setMessage(
+        pickupResult === "locked"
+          ? PICKUP_LOCKED_MESSAGE
+          : "Pickup could not be completed. Please check the pickup code and try again."
+      );
+      return pickupResult;
     }
 
     // Some versions of complete_pickup record a late pickup as a no-show
@@ -1295,6 +1311,11 @@ export default function BusinessDashboardPage() {
 
     if (completed === "invalid_code") {
       setPickupVerificationError("Pickup code does not match.");
+      return;
+    }
+
+    if (completed === "locked") {
+      setPickupVerificationError(PICKUP_LOCKED_MESSAGE);
       return;
     }
 
