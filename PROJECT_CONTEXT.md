@@ -20,9 +20,9 @@ Apply in this order — each step is safe with whatever code is live:
 2. Deploy the branch.
 3. `20261016110509_lock_pickup_codes_and_old_refunds.sql` (revokes
    `pickup_code` reads and `cancel_paid_order`; breaks older app code). — **applied 2026-10-16** after the deploy of `05961be`.
-4. `20261016130000_pickup_code_attempt_limit.sql`: locks an order after 5
-   wrong pickup codes (admin unlock: `reset_pickup_code_attempts`). Apply only
-   after the dashboard change from the same branch is deployed.
+4. `20261016141833_pickup_code_attempt_limit.sql`: locks an order after 5
+   wrong pickup codes (admin unlock: `reset_pickup_code_attempts`). **Applied 2026-10-16**
+   after the deploy of `7a299f2`.
 All three were dry-run on production in rolled-back transactions with
 end-to-end scenario checks on 2026-10-16. Never use `select("*")` on orders
 after step 3 — use `ORDER_COLUMNS`.

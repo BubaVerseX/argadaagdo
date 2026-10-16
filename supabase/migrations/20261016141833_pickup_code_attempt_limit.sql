@@ -1,5 +1,8 @@
 -- Limit wrong pickup-code attempts (2026-10-16).
 --
+-- STATUS: applied to production on 2026-10-16 (recorded as version
+-- 20261016141833), after the production deployment of 7a299f2.
+--
 -- Apply only AFTER the app code from the same change is deployed: wrong codes
 -- now come back as a result ('invalid_code' / 'locked') instead of an error,
 -- and older dashboard code would read that as "the pickup window ended".
