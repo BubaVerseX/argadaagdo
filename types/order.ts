@@ -26,6 +26,8 @@ export type Order = {
   pickup_code?: string | null;
   /** True once the order was paid and given a pickup code. */
   has_pickup_code?: boolean | null;
+  /** Wrong pickup codes entered; complete_pickup locks the order at 5. */
+  pickup_code_failed_attempts?: number | null;
   amount?: number | string | null;
   platform_fee?: number | string | null;
   business_amount?: number | string | null;
