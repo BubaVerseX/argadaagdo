@@ -1,4 +1,6 @@
 -- Payment safety for TBC, part 2 of 2 (2026-10-16): remove the old access.
+-- STATUS: applied to production on 2026-10-16 (recorded as version
+-- 20261016110509), after the production deployment of 05961be.
 --
 -- Apply only AFTER the app code that uses begin_customer_refund,
 -- get_my_pickup_codes and explicit order column lists is deployed; the older

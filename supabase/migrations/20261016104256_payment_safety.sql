@@ -3,7 +3,7 @@
 -- 20261016104256).
 --
 -- Safe to apply while the older app code is still live (it only adds states,
--- columns and functions). Part 2, 20261016120200_lock_pickup_codes_and_old_refunds.sql,
+-- columns and functions). Part 2, 20261016110509_lock_pickup_codes_and_old_refunds.sql,
 -- removes the old access and must be applied only AFTER the app code that
 -- uses these new functions is deployed.
 --

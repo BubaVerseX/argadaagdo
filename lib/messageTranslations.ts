@@ -588,6 +588,10 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Pickup code is required.", "წაღების კოდი სავალდებულოა."],
   ["Pickup code does not match.", "წაღების კოდი არ ემთხვევა."],
   [
+    "This order is locked after 5 wrong pickup codes. Contact ArGadaagdo support to unlock it.",
+    "შეკვეთა დაიბლოკა 5 არასწორი წაღების კოდის შემდეგ. განსაბლოკად დაუკავშირდი ArGadaagdo-ს მხარდაჭერას.",
+  ],
+  [
     "Pickup could not be completed. Check the code, or close this window to see the details.",
     "წაღება ვერ დასრულდა. შეამოწმე კოდი ან დახურე ეს ფანჯარა დეტალების სანახავად.",
   ],
