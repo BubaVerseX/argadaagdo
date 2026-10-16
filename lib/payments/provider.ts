@@ -1,32 +1,32 @@
 import {
-  createBogPaymentSession,
-  refundBogPayment,
-  verifyBogPayment,
-} from "@/lib/payments/bog";
+  createTbcPaymentSession,
+  refundTbcPayment,
+  verifyTbcPayment,
+} from "@/lib/payments/tbc";
 import type {
   CreatePaymentSessionInput,
   PaymentProvider,
   PaymentProviderId,
 } from "@/lib/payments/types";
 
-const bogProvider: PaymentProvider = {
-  id: "bog",
-  createPaymentSession: createBogPaymentSession,
-  verifyPayment: verifyBogPayment,
-  refundPayment: refundBogPayment,
+const tbcProvider: PaymentProvider = {
+  id: "tbc",
+  createPaymentSession: createTbcPaymentSession,
+  verifyPayment: verifyTbcPayment,
+  refundPayment: refundTbcPayment,
 };
 
 export function getPaymentProvider(
-  provider: PaymentProviderId = "bog"
+  provider: PaymentProviderId = "tbc"
 ): PaymentProvider {
-  if (provider === "bog") return bogProvider;
+  if (provider === "tbc") return tbcProvider;
 
   throw new Error("Unsupported payment provider.");
 }
 
 export function normalizePaymentProvider(value: unknown): PaymentProviderId {
-  if (value === "bog" || value === "bank_of_georgia") return "bog";
-  return "bog";
+  void value;
+  return "tbc";
 }
 
 export type { CreatePaymentSessionInput, PaymentProviderId };

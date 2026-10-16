@@ -6,6 +6,8 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { LoadingState } from "@/components/LoadingState";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -61,12 +63,15 @@ function DiscoverOfferCard({
           priority={priority}
         />
         <span className="soft-raised pointer-events-none absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold text-[#2e2a22]">
-          {offer.category || "Other"}
+          {language === "ka"
+            ? getOfferCategoryLabel(offer.category, language)
+            : offer.category || "Other"}
         </span>
       </div>
       <div className="pt-4">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#6b6152]">
-          {offer.businesses?.name || "Local business"}
+          {offer.businesses?.name ||
+            (language === "ka" ? "ადგილობრივი ბიზნესი" : "Local business")}
         </p>
         <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-[#2e2a22]">{offer.title}</h3>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -86,7 +91,8 @@ function DiscoverOfferCard({
 }
 
 export default function DiscoverClient() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [offers, setOffers] = useState<DiscoverOffer[]>([]);
   const [businesses, setBusinesses] = useState<DiscoverBusiness[]>([]);
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -181,28 +187,39 @@ export default function DiscoverClient() {
         <div className="mx-auto max-w-7xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
             <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-              Discover
+              {t("nav.discover")}
             </p>
             <h1 className="mt-3 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-6xl">
-              Find your next surprise bag.
+              {isGeorgian
+                ? "იპოვე შენი შემდეგი სიურპრიზის ყუთი."
+                : "Find your next surprise bag."}
             </h1>
             <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
-              Browse popular offers, newest drops, best-rated businesses and
-              pickup windows ending soon.
+              {isGeorgian
+                ? "დაათვალიერე პოპულარული შეთავაზებები, უახლესი დამატებები, საუკეთესო შეფასების ბიზნესები და მალე დასრულებადი წაღების ფანჯრები."
+                : "Browse popular offers, newest drops, best-rated businesses and pickup windows ending soon."}
             </p>
           </div>
 
           {message && (
             <div className="mt-5">
-              <Notice tone="error">{message}</Notice>
+              <Notice tone="error">
+                {translateUserMessage(message, language)}
+              </Notice>
             </div>
           )}
 
           {loading && (
             <div className="mt-6">
               <LoadingState
-                title="Loading discover..."
-                description="Finding active surprise bags and verified businesses."
+                title={{
+                  en: "Loading discover...",
+                  ka: "აღმოჩენის გვერდი იტვირთება...",
+                }}
+                description={{
+                  en: "Finding active surprise bags and verified businesses.",
+                  ka: "ვეძებთ აქტიურ სიურპრიზის ყუთებს და დამოწმებულ ბიზნესებს.",
+                }}
               />
             </div>
           )}
@@ -210,23 +227,35 @@ export default function DiscoverClient() {
           {!loading && (
             <div className="mt-6 grid gap-8">
               <DiscoverOfferSection
-                title="Popular Today"
-                text="Today’s best-rated available surprise bags."
+                title={isGeorgian ? "დღის პოპულარული" : "Popular Today"}
+                text={
+                  isGeorgian
+                    ? "დღევანდელი საუკეთესო შეფასების ხელმისაწვდომი სიურპრიზის ყუთები."
+                    : "Today’s best-rated available surprise bags."
+                }
                 offers={discoverSections.popularToday}
                 ratingSummaries={ratingSummaries}
                 language={language}
                 prioritizeFirst
               />
               <DiscoverOfferSection
-                title="Newest Offers"
-                text="Freshly published offers from local businesses."
+                title={isGeorgian ? "უახლესი შეთავაზებები" : "Newest Offers"}
+                text={
+                  isGeorgian
+                    ? "ადგილობრივი ბიზნესების ახლად გამოქვეყნებული შეთავაზებები."
+                    : "Freshly published offers from local businesses."
+                }
                 offers={discoverSections.newestOffers}
                 ratingSummaries={ratingSummaries}
                 language={language}
               />
               <DiscoverOfferSection
-                title="Ending Soon"
-                text="Pickup windows that end soonest."
+                title={isGeorgian ? "მალე სრულდება" : "Ending Soon"}
+                text={
+                  isGeorgian
+                    ? "წაღების ფანჯრები, რომლებიც ყველაზე მალე სრულდება."
+                    : "Pickup windows that end soonest."
+                }
                 offers={discoverSections.endingSoon}
                 ratingSummaries={ratingSummaries}
                 language={language}
@@ -236,17 +265,21 @@ export default function DiscoverClient() {
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-                      Best Rated Businesses
+                      {isGeorgian
+                        ? "საუკეთესო შეფასების ბიზნესები"
+                        : "Best Rated Businesses"}
                     </p>
                     <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
-                      Trusted local places
+                      {isGeorgian
+                        ? "სანდო ადგილობრივი ადგილები"
+                        : "Trusted local places"}
                     </h2>
                   </div>
                   <Link
                     href="/businesses"
                     className="premium-button min-h-11 px-5 py-2.5 text-center"
                   >
-                    View all businesses
+                    {isGeorgian ? "ყველა ბიზნესის ნახვა" : "View all businesses"}
                   </Link>
                 </div>
 
@@ -254,11 +287,14 @@ export default function DiscoverClient() {
                   {discoverSections.bestRatedBusinesses.length === 0 && (
                     <div className="rounded-3xl bg-[#f4efe4] p-6 md:col-span-2 xl:col-span-4">
                       <p className="text-lg font-black text-[#2e2a22]">
-                        No rated businesses yet.
+                        {isGeorgian
+                          ? "შეფასებული ბიზნესები ჯერ არ არის."
+                          : "No rated businesses yet."}
                       </p>
                       <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
-                        Businesses will appear here once customers start rating
-                        completed pickups.
+                        {isGeorgian
+                          ? "ბიზნესები აქ გამოჩნდება, როცა მომხმარებლები დასრულებული წაღებების შეფასებას დაიწყებენ."
+                          : "Businesses will appear here once customers start rating completed pickups."}
                       </p>
                     </div>
                   )}
@@ -270,13 +306,14 @@ export default function DiscoverClient() {
                       className="soft-raised rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                     >
                       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
-                        {business.business_type || "Food business"}
+                        {business.business_type ||
+                          (isGeorgian ? "კვების ბიზნესი" : "Food business")}
                       </p>
                       <h3 className="mt-2 text-xl font-black text-[#2e2a22]">
                         {business.name}
                       </h3>
                       <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
-                        {business.address || "Tbilisi"}
+                        {business.address || (isGeorgian ? "თბილისი" : "Tbilisi")}
                       </p>
                       <p className="soft-pressed mt-3 rounded-full px-3 py-1.5 text-sm font-black text-yellow-800">
                         {getRatingLabel(ratingSummaries[business.id], language)}
@@ -288,14 +325,17 @@ export default function DiscoverClient() {
 
               <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
                 <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-                  Location
+                  {isGeorgian ? "მდებარეობა" : "Location"}
                 </p>
                 <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
-                  Find pickup addresses easily
+                  {isGeorgian
+                    ? "მარტივად იპოვე წაღების მისამართები"
+                    : "Find pickup addresses easily"}
                 </h2>
                 <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
-                  Every offer shows the business address and a map link so you
-                  can plan pickup before reserving.
+                  {isGeorgian
+                    ? "ყველა შეთავაზებაზე ჩანს ბიზნესის მისამართი და რუკის ბმული, რომ წაღება დაჯავშნამდე დაგეგმო."
+                    : "Every offer shows the business address and a map link so you can plan pickup before reserving."}
                 </p>
               </section>
             </div>
@@ -336,7 +376,7 @@ function DiscoverOfferSection({
           href="/offers"
           className="premium-button min-h-11 px-5 py-2.5 text-center"
         >
-          Browse all offers
+          {language === "ka" ? "ყველა შეთავაზების ნახვა" : "Browse all offers"}
         </Link>
       </div>
 
@@ -344,10 +384,14 @@ function DiscoverOfferSection({
         {offers.length === 0 && (
           <div className="rounded-3xl bg-[#f4efe4] p-6 md:col-span-2 xl:col-span-4">
             <p className="text-lg font-black text-[#2e2a22]">
-              No offers in this section yet.
+              {language === "ka"
+                ? "ამ განყოფილებაში შეთავაზებები ჯერ არ არის."
+                : "No offers in this section yet."}
             </p>
             <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
-              New surprise bags will appear here as businesses publish offers.
+              {language === "ka"
+                ? "ახალი სიურპრიზის ყუთები აქ გამოჩნდება, როცა ბიზნესები შეთავაზებებს გამოაქვეყნებენ."
+                : "New surprise bags will appear here as businesses publish offers."}
             </p>
           </div>
         )}

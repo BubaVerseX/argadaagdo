@@ -55,27 +55,36 @@ this session has no way to create or pay for on your behalf:
 - A **Google Play Console** account ($25 one-time) — required for any Play
   Store listing.
 
+## Before any native build (both platforms)
+
+From a fresh clone, run `npm ci && npx cap sync` first. The generated
+`capacitor.config.json` and `public/` folders inside `android/` and `ios/`
+are git-ignored, so a native build without this step uses Capacitor's
+defaults (no `server.url`) or fails on a missing resource.
+
 ## What you need to do, on a Mac with full Xcode installed
 
-1. Install Xcode from the Mac App Store (not just Command Line Tools), then
-   install CocoaPods if you don't have it: `sudo gem install cocoapods`.
-2. `npx cap open ios` — opens `ios/App/App.xcworkspace` in Xcode (use the
-   `.xcworkspace`, not `.xcodeproj`, once CocoaPods has run).
+1. Install Xcode from the Mac App Store (not just Command Line Tools). No
+   CocoaPods needed — this project uses Swift Package Manager
+   (`ios/App/CapApp-SPM`).
+2. `npx cap open ios` — opens `ios/App/App.xcodeproj` in Xcode (there is no
+   `.xcworkspace` with SPM).
 3. In Xcode: set your Team under Signing & Capabilities, confirm the Bundle
    Identifier matches `com.argadaagdo.app` (or change it in
    `capacitor.config.ts` first and re-run `npx cap sync ios` if you want a
    different one).
-4. Generate real app icons/splash screens — the current setup has none
-   configured beyond Capacitor's defaults. The
-   [`@capacitor/assets`](https://github.com/ionic-team/capacitor-assets)
-   tool can generate the full icon/splash set from a single source image.
+4. App icons and splash screens are already generated from `assets/` (see
+   `docs/app-store-submission.md`); re-run
+   `npx capacitor-assets generate --iconBackgroundColor '#5c7a5c' --splashBackgroundColor '#ece4d6'`
+   only if the logo changes.
 5. Build → Archive → upload to App Store Connect, add it to TestFlight for
    real-device testing before public submission.
 
 ## What you need to do, on a machine with Android Studio + a JDK
 
 1. Install Android Studio (bundles a compatible JDK) or install a standalone
-   JDK 17+ and the Android SDK/command-line tools.
+   JDK 21 (Capacitor 8 compiles with Java 21 — JDK 17 fails) and the Android
+   SDK/command-line tools.
 2. `npx cap open android` — opens the project in Android Studio.
 3. Confirm `applicationId` in `android/app/build.gradle` matches
    `com.argadaagdo.app` (or your chosen id).

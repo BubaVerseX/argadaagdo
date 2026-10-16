@@ -16,7 +16,9 @@
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.1",
+    "@capacitor/app": "^8.1.1",
     "@capacitor/assets": "^3.0.5",
+    "@capacitor/browser": "^8.0.4",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
     "@capacitor/ios": "^8.4.1",

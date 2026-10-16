@@ -118,6 +118,8 @@ comment in that file), so:
 
 1. Edit `capacitor.config.ts` → `server.url` → change from
    `'https://argadaagdo-silk.vercel.app'` to `'https://argadaagdo.ge'`.
+   Also change the "Try again" link in `native-shell/offline.html` (the
+   app's no-connection page) to the new domain.
 2. Run `npx cap sync` to regenerate the native-side copies of this config —
    don't hand-edit `ios/App/App/capacitor.config.json` or
    `android/app/src/main/assets/capacitor.config.json` directly, they're
@@ -130,6 +132,11 @@ comment in that file), so:
    changing it later means a new build + new store submission, unlike the
    web app which redeploys instantly). If you *have* since submitted an app
    using the `.vercel.app` URL, this becomes a required update-and-resubmit.
+4. **Never redirect `argadaagdo-silk.vercel.app` to the new domain while
+   any app binary pointing at it is still installed.** The app treats any
+   other host as external: a redirect would open Safari/Chrome at launch
+   and leave the app blank. Changing origin also signs every app user out
+   (their session lives in the old origin's storage).
 
 ## 6. Update documentation references (cosmetic, do last)
 

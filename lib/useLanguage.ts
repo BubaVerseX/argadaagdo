@@ -12,11 +12,19 @@ import { useEffect, useSyncExternalStore } from "react";
 const languageStorageKey = "argadaagdo-language";
 const languageChangeEvent = "argadaagdo:language-change";
 
+// Fallback for when localStorage is unavailable (blocked site data, some
+// private modes) — accessing it then throws, which would break every page.
+let inMemoryLanguage: Language = defaultLanguage;
+
 function readSavedLanguage(): Language {
   if (typeof window === "undefined") return defaultLanguage;
 
-  const savedLanguage = window.localStorage.getItem(languageStorageKey);
-  return isSupportedLanguage(savedLanguage) ? savedLanguage : defaultLanguage;
+  try {
+    const savedLanguage = window.localStorage.getItem(languageStorageKey);
+    return isSupportedLanguage(savedLanguage) ? savedLanguage : defaultLanguage;
+  } catch {
+    return inMemoryLanguage;
+  }
 }
 
 function subscribeToLanguageChanges(callback: () => void) {
@@ -45,7 +53,14 @@ export function useLanguage() {
   function setLanguage(nextLanguage: Language) {
     if (typeof window === "undefined") return;
 
-    window.localStorage.setItem(languageStorageKey, nextLanguage);
+    inMemoryLanguage = nextLanguage;
+
+    try {
+      window.localStorage.setItem(languageStorageKey, nextLanguage);
+    } catch {
+      // Keep the in-memory choice for this session.
+    }
+
     document.documentElement.lang = nextLanguage;
     window.dispatchEvent(new Event(languageChangeEvent));
   }

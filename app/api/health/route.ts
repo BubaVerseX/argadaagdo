@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isBearerSecretAuthorized } from "@/lib/requestAuth";
 import {
   logHealthReport,
   runProductionHealthChecks,
@@ -16,10 +17,7 @@ function getRequestId(request: Request) {
 }
 
 function isDetailedHealthAuthorized(request: Request) {
-  const secret = process.env.HEALTH_CHECK_SECRET;
-
-  if (!secret) return false;
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+  return isBearerSecretAuthorized(request, process.env.HEALTH_CHECK_SECRET);
 }
 
 export async function GET(request: Request) {

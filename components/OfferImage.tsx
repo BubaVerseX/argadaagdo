@@ -42,6 +42,7 @@ export default function OfferImage({
   if (!src || failedSrc === src || !isAllowedOfferImage(src)) {
     return (
       <div
+        role="img"
         className="flex h-full w-full items-center justify-center bg-[#f4efe4]"
         aria-label={`${alt} image unavailable`}
       >
@@ -56,7 +57,10 @@ export default function OfferImage({
       alt={alt}
       fill
       sizes={sizes}
-      priority={priority}
+      // `priority` is deprecated in Next 16; above-the-fold images load
+      // eagerly with high fetch priority instead.
+      loading={priority ? "eager" : undefined}
+      fetchPriority={priority ? "high" : undefined}
       className={`object-cover ${className}`}
       onError={() => setFailedSrc(src)}
     />

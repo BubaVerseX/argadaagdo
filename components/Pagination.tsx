@@ -1,3 +1,7 @@
+"use client";
+
+import { useLanguage } from "@/lib/useLanguage";
+
 type PaginationProps = {
   page: number;
   totalItems: number;
@@ -12,9 +16,12 @@ export function Pagination({
   totalItems,
   pageSize,
   onPageChange,
-  label = "Results",
+  label,
   className = "",
 }: PaginationProps) {
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
+  const resolvedLabel = label ?? (isGeorgian ? "შედეგები" : "Results");
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const safePage = Math.min(Math.max(page, 1), totalPages);
   const start = totalItems === 0 ? 0 : (safePage - 1) * pageSize + 1;
@@ -27,7 +34,15 @@ export function Pagination({
       className={`soft-raised flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
       <p className="text-sm font-medium text-[#6b6152]">
-        {label}: {start}-{end} of {totalItems}
+        {isGeorgian ? (
+          <>
+            {resolvedLabel}: {start}-{end}, სულ {totalItems}
+          </>
+        ) : (
+          <>
+            {resolvedLabel}: {start}-{end} of {totalItems}
+          </>
+        )}
       </p>
 
       <div className="flex items-center gap-2">
@@ -37,7 +52,7 @@ export function Pagination({
           disabled={safePage <= 1}
           className="premium-button-secondary min-h-11 px-5 py-2.5"
         >
-          Previous
+          {isGeorgian ? "წინა" : "Previous"}
         </button>
         <span className="soft-pressed flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22]">
           {safePage} / {totalPages}
@@ -48,7 +63,7 @@ export function Pagination({
           disabled={safePage >= totalPages}
           className="premium-button-secondary min-h-11 px-5 py-2.5"
         >
-          Next
+          {isGeorgian ? "შემდეგი" : "Next"}
         </button>
       </div>
     </div>

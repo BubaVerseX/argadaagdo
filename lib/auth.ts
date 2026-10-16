@@ -155,5 +155,7 @@ export async function getCurrentRole() {
 }
 
 export async function logoutUser() {
-  await supabase.auth.signOut();
+  // "local" signs out this browser/app only. The default ("global") also
+  // ended the user's sessions on every other device.
+  await supabase.auth.signOut({ scope: "local" });
 }

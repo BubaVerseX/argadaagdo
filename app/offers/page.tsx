@@ -13,10 +13,17 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import { translateUserMessage } from "@/lib/messageTranslations";
+import {
+  getOfferCategoryLabel,
+  normalizeOfferCategory,
+  OFFER_CATEGORIES,
+} from "@/lib/offerCategories";
 import {
   compareMarketplaceOffers,
   formatMoney,
+  getDiscountPercent,
+  getOriginalPrice,
   formatPickupWindow,
   getOfferDateLabel,
   getOfferGroup,
@@ -27,7 +34,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { paginateItems } from "@/lib/pagination";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
@@ -74,6 +81,7 @@ function matchesPriceFilter(offer: Offer, priceFilter: PriceFilter) {
 export default function OffersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [offers, setOffers] = useState<Offer[]>([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -93,6 +101,7 @@ export default function OffersPage() {
   const [ratingSummaries, setRatingSummaries] = useState<
     Record<number, RatingSummary>
   >({});
+  const favoriteRequestsInFlight = useRef(new Set<number>());
   const [updatingFavoriteId, setUpdatingFavoriteId] = useState<number | null>(
     null
   );
@@ -114,8 +123,10 @@ export default function OffersPage() {
     );
   }, []);
 
-  const loadOffers = useCallback(async () => {
-    await processExpiredMarketplace();
+  const loadOffers = useCallback(async (runMaintenance = true) => {
+    // The maintenance RPC is a database write; run it on page load, not on
+    // every live update (that made every open browser run it at once).
+    if (runMaintenance) await processExpiredMarketplace();
 
     const { data, error } = await supabase
       .from("offers")
@@ -140,7 +151,11 @@ export default function OffersPage() {
 
   const scheduleRefresh = useCallback(() => {
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
-    refreshTimer.current = setTimeout(() => void loadOffers(), 150);
+    // Small random delay spreads the reloads of many open browsers.
+    refreshTimer.current = setTimeout(
+      () => void loadOffers(false),
+      300 + Math.random() * 1200
+    );
   }, [loadOffers]);
 
   function openOfferDetails(offer: Offer) {
@@ -148,12 +163,26 @@ export default function OffersPage() {
   }
 
   async function toggleFavorite(offer: Offer) {
+    // Synchronous guard: a double tap would otherwise send two inserts while
+    // the auth check below is still pending.
+    if (favoriteRequestsInFlight.current.has(offer.id)) return;
+
+    favoriteRequestsInFlight.current.add(offer.id);
+
+    try {
+      await updateFavorite(offer);
+    } finally {
+      favoriteRequestsInFlight.current.delete(offer.id);
+    }
+  }
+
+  async function updateFavorite(offer: Offer) {
     setMessage("");
 
     const authResult = await getConfirmedUser();
 
     if (authResult.status === "signed_out") {
-      router.push("/login");
+      router.push("/login?redirect=/offers");
       return;
     }
 
@@ -203,7 +232,8 @@ export default function OffersPage() {
       offer_id: offer.id,
     });
 
-    if (error) {
+    // 23505 = already saved (e.g. from another tab) — that's the goal state.
+    if (error && error.code !== "23505") {
       setMessageTone("error");
       setMessage("Favorite could not be saved. Please try again.");
       await loadFavorites(userId);
@@ -213,10 +243,28 @@ export default function OffersPage() {
   }
 
   useEffect(() => {
+    // Homepage category chips link to /offers?category=Bakery etc.
+    const initialCategory = window.setTimeout(() => {
+      const requestedCategory = new URLSearchParams(window.location.search).get(
+        "category"
+      );
+
+      if (
+        requestedCategory &&
+        (OFFER_CATEGORIES as readonly string[]).includes(requestedCategory)
+      ) {
+        setSelectedCategory(requestedCategory);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(initialCategory);
+  }, []);
+
+  useEffect(() => {
     const initialLoad = window.setTimeout(() => void loadOffers(), 0);
 
     const channel = supabase
-      .channel("offers-live-updates")
+      .channel(uniqueChannelName("offers-live-updates"))
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "offers" },
@@ -283,7 +331,7 @@ export default function OffersPage() {
     if (!currentUserId || !canUseFavorites) return;
 
     const channel = supabase
-      .channel(`favorites-live-updates-${currentUserId}`)
+      .channel(uniqueChannelName(`favorites-live-updates-${currentUserId}`))
       .on(
         "postgres_changes",
         {
@@ -371,15 +419,27 @@ export default function OffersPage() {
     [paginatedOffers.items]
   );
 
-  const offerSections = [
-    { key: "today" as const, title: t("common.today"), offers: groupedOffers.today },
-    {
-      key: "tomorrow" as const,
-      title: t("common.tomorrow"),
-      offers: groupedOffers.tomorrow,
-    },
-    { key: "upcoming" as const, title: t("common.upcoming"), offers: groupedOffers.upcoming },
-  ];
+  // Day sections only make sense for the default order; with an explicit
+  // sort (price, discount, ...) splitting into Today/Tomorrow put e.g. the
+  // cheapest "tomorrow" bag after pricier "today" ones.
+  const offerSections =
+    offerSort === "recommended"
+      ? [
+          { key: "today" as const, title: t("common.today"), offers: groupedOffers.today },
+          {
+            key: "tomorrow" as const,
+            title: t("common.tomorrow"),
+            offers: groupedOffers.tomorrow,
+          },
+          { key: "upcoming" as const, title: t("common.upcoming"), offers: groupedOffers.upcoming },
+        ]
+      : [
+          {
+            key: "today" as const,
+            title: t("offers.heading"),
+            offers: paginatedOffers.items,
+          },
+        ];
 
   const categoryOptions = useMemo(() => {
     return Array.from(new Set(offers.map(getOfferCategory))).sort();
@@ -449,13 +509,17 @@ export default function OffersPage() {
                   setSelectedCategory(event.target.value);
                   setPage(1);
                 }}
-                aria-label="Filter offers by category"
+                aria-label={
+                  isGeorgian
+                    ? "შეთავაზებების ფილტრი კატეგორიით"
+                    : "Filter offers by category"
+                }
                 className="premium-input px-4 py-3"
               >
                 <option value="all">{t("offers.allCategories")}</option>
                 {categoryOptions.map((category) => (
                   <option key={category} value={category}>
-                    {category}
+                    {getOfferCategoryLabel(category, language)}
                   </option>
                 ))}
               </select>
@@ -466,13 +530,25 @@ export default function OffersPage() {
                   setPriceFilter(event.target.value as PriceFilter);
                   setPage(1);
                 }}
-                aria-label="Filter offers by price"
+                aria-label={
+                  isGeorgian
+                    ? "შეთავაზებების ფილტრი ფასით"
+                    : "Filter offers by price"
+                }
                 className="premium-input px-4 py-3"
               >
-                <option value="all">All prices</option>
-                <option value="under-5">₾ 5 or less</option>
-                <option value="under-10">₾ 10 or less</option>
-                <option value="under-15">₾ 15 or less</option>
+                <option value="all">
+                  {isGeorgian ? "ყველა ფასი" : "All prices"}
+                </option>
+                <option value="under-5">
+                  {isGeorgian ? "₾ 5 ან ნაკლები" : "₾ 5 or less"}
+                </option>
+                <option value="under-10">
+                  {isGeorgian ? "₾ 10 ან ნაკლები" : "₾ 10 or less"}
+                </option>
+                <option value="under-15">
+                  {isGeorgian ? "₾ 15 ან ნაკლები" : "₾ 15 or less"}
+                </option>
               </select>
 
               <select
@@ -481,13 +557,23 @@ export default function OffersPage() {
                   setPickupFilter(event.target.value as PickupFilter);
                   setPage(1);
                 }}
-                aria-label="Filter offers by pickup date"
+                aria-label={
+                  isGeorgian
+                    ? "შეთავაზებების ფილტრი წაღების თარიღით"
+                    : "Filter offers by pickup date"
+                }
                 className="premium-input px-4 py-3"
               >
-                <option value="all">Any pickup date</option>
-                <option value="today">Pickup today</option>
-                <option value="tomorrow">Pickup tomorrow</option>
-                <option value="upcoming">Upcoming</option>
+                <option value="all">
+                  {isGeorgian ? "წაღების ნებისმიერი თარიღი" : "Any pickup date"}
+                </option>
+                <option value="today">
+                  {isGeorgian ? "წაღება დღეს" : "Pickup today"}
+                </option>
+                <option value="tomorrow">
+                  {isGeorgian ? "წაღება ხვალ" : "Pickup tomorrow"}
+                </option>
+                <option value="upcoming">{t("common.upcoming")}</option>
               </select>
 
               <select
@@ -496,14 +582,24 @@ export default function OffersPage() {
                   setOfferSort(event.target.value as OfferSort);
                   setPage(1);
                 }}
-                aria-label="Sort offers"
+                aria-label={
+                  isGeorgian ? "შეთავაზებების დალაგება" : "Sort offers"
+                }
                 className="premium-input px-4 py-3"
               >
-                <option value="recommended">Recommended</option>
+                <option value="recommended">
+                  {isGeorgian ? "რეკომენდებული" : "Recommended"}
+                </option>
                 <option value="price-asc">{t("offers.sortLowest")}</option>
                 <option value="price-desc">{t("offers.sortHighest")}</option>
-                <option value="savings-desc">Highest savings</option>
-                <option value="rating-desc">Highest rated businesses</option>
+                <option value="savings-desc">
+                  {isGeorgian ? "ყველაზე დიდი დანაზოგი" : "Highest savings"}
+                </option>
+                <option value="rating-desc">
+                  {isGeorgian
+                    ? "ყველაზე მაღალი შეფასების ბიზნესები"
+                    : "Highest rated businesses"}
+                </option>
               </select>
 
               <label className="soft-pressed flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-[#2e2a22] md:justify-start">
@@ -530,7 +626,9 @@ export default function OffersPage() {
 
           {message && (
             <div className="mt-5 sm:mt-6">
-              <Notice tone={messageTone}>{message}</Notice>
+              <Notice tone={messageTone}>
+                {translateUserMessage(message, language)}
+              </Notice>
             </div>
           )}
 
@@ -618,20 +716,14 @@ export default function OffersPage() {
                   <div className="mt-4 grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {section.offers.map((offer, offerIndex) => {
                       const businessAddress =
-                        offer.businesses?.address || "Tbilisi";
+                        offer.businesses?.address ||
+                        (isGeorgian ? "თბილისი" : "Tbilisi");
                       const mapsUrl = createMapsSearchUrl(
                         offer.businesses?.address,
                         offer.businesses?.name
                       );
-                      const discount =
-                        offer.old_price &&
-                        Number(offer.old_price) > Number(offer.price)
-                          ? Math.round(
-                              ((Number(offer.old_price) - Number(offer.price)) /
-                                Number(offer.old_price)) *
-                                100
-                            )
-                          : null;
+                      const discount = getDiscountPercent(offer);
+                      const originalPrice = getOriginalPrice(offer);
                       const rating = ratingSummaries[offer.business_id];
                       const reservable = isOfferReservable(offer);
                       const isFavorite = favoriteOfferIds.includes(offer.id);
@@ -652,14 +744,14 @@ export default function OffersPage() {
                               />
                             </div>
 
-                            {discount && (
+                            {discount !== null && (
                               <div className="premium-discount-badge pointer-events-none absolute left-2 top-2 px-3 py-1.5">
                                 -{discount}%
                               </div>
                             )}
 
                             <div className="soft-raised pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#2e2a22]">
-                              {getOfferCategory(offer)}
+                              {getOfferCategoryLabel(offer.category, language)}
                             </div>
                           </div>
 
@@ -692,9 +784,9 @@ export default function OffersPage() {
                                 <span className="text-2xl font-bold tracking-[-0.02em] text-[#a67c52]">
                                   {formatMoney(offer.price)}
                                 </span>
-                                {offer.old_price && (
+                                {originalPrice !== null && (
                                   <span className="text-sm font-medium text-[#8a8072] line-through">
-                                    {formatMoney(offer.old_price)}
+                                    {formatMoney(originalPrice)}
                                   </span>
                                 )}
                               </div>
@@ -727,7 +819,11 @@ export default function OffersPage() {
                                 onClick={() => toggleFavorite(offer)}
                                 disabled={updatingFavoriteId !== null}
                                 aria-label={
-                                  isFavorite
+                                  isGeorgian
+                                    ? isFavorite
+                                      ? `რჩეულებიდან წაშლა: ${offer.title}`
+                                      : `რჩეულებში დამატება: ${offer.title}`
+                                    : isFavorite
                                     ? `Remove ${offer.title} from favorites`
                                     : `Add ${offer.title} to favorites`
                                 }
@@ -770,7 +866,7 @@ export default function OffersPage() {
             page={paginatedOffers.page}
             totalItems={filteredOffers.length}
             pageSize={OFFERS_PAGE_SIZE}
-            label="Offers"
+            label={t("nav.offers")}
             onPageChange={setPage}
           />
         </div>

@@ -40,10 +40,11 @@ import { notifyBusinessApproved } from "@/lib/notifications";
 import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isFailedCheckoutOrder,
 } from "@/lib/orderStatus";
 import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Offer, Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
@@ -71,7 +72,34 @@ type AdminProfileFilter = "all" | "customer" | "business" | "admin";
 type ApprovalQueueFilter = "newest" | "oldest" | "needs_review" | "approved";
 
 const ADMIN_LIST_PAGE_SIZE = 8;
-const ADMIN_QUERY_LIMIT = 1000;
+// PostgREST returns at most 1000 rows per request, so read in pages; the old
+// single .limit(1000) silently truncated every marketplace total.
+const ADMIN_PAGE_SIZE = 1000;
+const ADMIN_MAX_ROWS = 20000;
+
+async function fetchAllRows<T>(
+  table: string,
+  columns: string,
+  orderColumn = "id"
+): Promise<{ data: T[]; error: { message: string } | null }> {
+  const rows: T[] = [];
+
+  for (let from = 0; from < ADMIN_MAX_ROWS; from += ADMIN_PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .order(orderColumn, { ascending: false })
+      .range(from, from + ADMIN_PAGE_SIZE - 1);
+
+    if (error) return { data: rows, error };
+
+    rows.push(...((data || []) as T[]));
+
+    if (!data || data.length < ADMIN_PAGE_SIZE) break;
+  }
+
+  return { data: rows, error: null };
+}
 
 export default function AdminPage() {
   const router = useRouter();
@@ -131,14 +159,12 @@ export default function AdminPage() {
       ratingsResult,
     ] =
       await Promise.all([
-        supabase
-          .from("businesses")
-          .select("*")
-          .order("id", { ascending: false })
-          .limit(ADMIN_QUERY_LIMIT),
-        supabase.from("offers").select("*").limit(ADMIN_QUERY_LIMIT),
-        supabase.from("orders").select("*").limit(ADMIN_QUERY_LIMIT),
-        supabase.from("profiles").select(`
+        fetchAllRows<AdminBusiness>("businesses", "*"),
+        fetchAllRows<Offer>("offers", "*"),
+        fetchAllRows<Order>("orders", "*"),
+        fetchAllRows<Profile>(
+          "profiles",
+          `
           id,
           email,
           role,
@@ -147,11 +173,12 @@ export default function AdminPage() {
           no_show_count,
           completed_pickup_count,
           cancelled_order_count
-        `).limit(ADMIN_QUERY_LIMIT),
-        supabase
-          .from("business_ratings")
-          .select("rating", { count: "exact" })
-          .limit(ADMIN_QUERY_LIMIT),
+        `
+        ),
+        fetchAllRows<{ rating: number | string | null }>(
+          "business_ratings",
+          "id, rating"
+        ),
       ]);
 
     if (
@@ -184,7 +211,7 @@ export default function AdminPage() {
     setOffers((offerResult.data || []) as Offer[]);
     setOrders((orderResult.data || []) as Order[]);
     setProfiles((profilesResult.data || []) as Profile[]);
-    setTotalRatings(ratingsResult.count || 0);
+    setTotalRatings(ratingsResult.data.length);
     setRatingScores(
       (ratingsResult.data || []) as Array<{ rating: number | string | null }>
     );
@@ -202,12 +229,24 @@ export default function AdminPage() {
   }, [checkAdminAndLoadData]);
 
   async function approveBusiness(id: number) {
+    if (updatingBusinessId !== null) return;
+
     setUpdatingBusinessId(id);
     const approvedBusiness = businesses.find((business) => business.id === id);
-    const { error } = await supabase
+    const { data: updatedRows, error } = await supabase
       .from("businesses")
       .update({ approved: true })
-      .eq("id", id);
+      .eq("id", id)
+      .select("id");
+
+    // RLS turns a disallowed update into "0 rows, no error" — don't report
+    // success or email the owner in that case.
+    if (!error && (!updatedRows || updatedRows.length === 0)) {
+      setUpdatingBusinessId(null);
+      setMessageTone("error");
+      setMessage("Business could not be approved. Please refresh and try again.");
+      return;
+    }
 
     if (error) {
       logAppError("Business approval failed", error, {
@@ -234,6 +273,27 @@ export default function AdminPage() {
   }
 
   async function moveToPending(id: number) {
+    if (updatingBusinessId !== null) return;
+
+    const business = businesses.find((item) => item.id === id);
+    const businessOfferIds = new Set(
+      offers.filter((offer) => offer.business_id === id).map((offer) => offer.id)
+    );
+    const activeOrderCount = orders.filter(
+      (order) =>
+        businessOfferIds.has(Number(order.offer_id)) &&
+        ["pending_payment", "reserved", "confirmed"].includes(String(order.status))
+    ).length;
+    const confirmed = window.confirm(
+      `Move ${business?.name || "this business"} back to pending?\n\n` +
+        "Its offers will be hidden from customers and the owner will lose access to the dashboard." +
+        (activeOrderCount > 0
+          ? `\n\nWarning: it has ${activeOrderCount} active reservation(s). The owner will not be able to verify these pickups, and they will become no-shows when the pickup window ends.`
+          : "")
+    );
+
+    if (!confirmed) return;
+
     setUpdatingBusinessId(id);
     const { error } = await supabase
       .from("businesses")
@@ -293,7 +353,7 @@ export default function AdminPage() {
     if (!realtimeReady) return;
 
     const channel = supabase
-      .channel("admin-dashboard-live-updates")
+      .channel(uniqueChannelName("admin-dashboard-live-updates"))
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "businesses" },
@@ -811,7 +871,9 @@ export default function AdminPage() {
     },
     {
       title: "Failed payments",
-      value: 0,
+      // Checkouts cancelled before a pickup code was issued: bank failure,
+      // abandoned bank page, or an expired hold.
+      value: orders.filter(isFailedCheckoutOrder).length,
       helper: "Provider failures to review during payment operations",
       className: "bg-red-50 text-red-800",
     },
@@ -1154,6 +1216,7 @@ export default function AdminPage() {
           t={t}
           language={language}
           businesses={paginatedPendingBusinesses.items}
+          waitingCount={approvalVisiblePendingBusinesses.length}
           updatingBusinessId={updatingBusinessId}
           onApprove={(id) => void approveBusiness(id)}
           onRequestChanges={requestBusinessChanges}

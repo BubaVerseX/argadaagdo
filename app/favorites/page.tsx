@@ -12,10 +12,12 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import type { TranslationKey } from "@/lib/i18n";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
+  getOriginalPrice,
   formatPickupTimeRange,
   getEffectiveOfferStatus,
   getOfferDateLabel,
@@ -38,6 +40,26 @@ function getSavingsAmount(offer: Offer) {
   const originalPrice = toNumber(offer.old_price);
   return originalPrice > currentPrice ? originalPrice - currentPrice : 0;
 }
+
+type FavoriteOfferDetails = {
+  favorite_id: number;
+  offer_id: number;
+  business_id: number;
+  title: string;
+  category: string | null;
+  price: number | string;
+  old_price: number | string | null;
+  quantity: number | null;
+  pickup_date: string | null;
+  pickup_start: string | null;
+  pickup_end: string | null;
+  active: boolean | null;
+  status: string | null;
+  image_url: string | null;
+  business_name: string | null;
+  business_address: string | null;
+  business_type: string | null;
+};
 
 function getFavoriteAvailability(
   offer: Offer | null | undefined,
@@ -137,7 +159,53 @@ export default function FavoritesPage() {
         return;
       }
 
-      setFavorites((data || []) as unknown as Favorite[]);
+      const loadedFavorites = (data || []) as unknown as Favorite[];
+
+      // The offers policy only exposes active offers, so a sold-out or
+      // expired favorite came back with offers = null (a blank card). Fill
+      // those in from get_my_favorite_offers(); until that database function
+      // exists the call fails and the page behaves as before.
+      if (loadedFavorites.some((favorite) => !favorite.offers)) {
+        const { data: details, error: detailsError } = await supabase.rpc(
+          "get_my_favorite_offers"
+        );
+
+        if (!detailsError && Array.isArray(details)) {
+          const offersByFavoriteId = new Map<number, Offer>(
+            (details as FavoriteOfferDetails[]).map((row) => [
+              row.favorite_id,
+              {
+                id: row.offer_id,
+                business_id: row.business_id,
+                title: row.title,
+                category: row.category,
+                price: row.price,
+                old_price: row.old_price,
+                quantity: row.quantity,
+                pickup_date: row.pickup_date,
+                pickup_start: row.pickup_start,
+                pickup_end: row.pickup_end,
+                active: row.active,
+                status: row.status,
+                image_url: row.image_url,
+                businesses: {
+                  name: row.business_name,
+                  address: row.business_address,
+                  business_type: row.business_type,
+                },
+              } as Offer,
+            ])
+          );
+
+          for (const favorite of loadedFavorites) {
+            if (!favorite.offers) {
+              favorite.offers = offersByFavoriteId.get(favorite.id) || null;
+            }
+          }
+        }
+      }
+
+      setFavorites(loadedFavorites);
       setLoading(false);
     },
     []
@@ -252,7 +320,9 @@ export default function FavoritesPage() {
 
         {message && (
           <div className="mt-5 sm:mt-6">
-            <Notice tone={messageTone}>{message}</Notice>
+            <Notice tone={messageTone}>
+              {translateUserMessage(message, language)}
+            </Notice>
           </div>
         )}
 
@@ -346,7 +416,7 @@ export default function FavoritesPage() {
 
                   {offer && (
                     <div className="soft-raised absolute right-2 top-2 rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
-                      {normalizeOfferCategory(offer.category)}
+                      {getOfferCategoryLabel(offer.category, language)}
                     </div>
                   )}
                 </div>
@@ -422,9 +492,9 @@ export default function FavoritesPage() {
                               {formatMoney(offer.price)}
                             </span>
 
-                            {offer.old_price && (
+                            {getOriginalPrice(offer) !== null && (
                               <span className="pb-1 font-medium text-[#6b6152] line-through">
-                                {formatMoney(offer.old_price)}
+                                {formatMoney(getOriginalPrice(offer))}
                               </span>
                             )}
                           </div>
@@ -442,21 +512,40 @@ export default function FavoritesPage() {
                       <button
                         onClick={() => removeFavorite(favorite)}
                         disabled={removingFavoriteId !== null}
-                        aria-label={`Remove ${offer?.title || "offer"} from favorites`}
+                        aria-label={
+                          language === "ka"
+                            ? `რჩეულებიდან წაშლა: ${offer?.title || "შეთავაზება"}`
+                            : `Remove ${offer?.title || "offer"} from favorites`
+                        }
                         className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-red-50 px-5 py-3 font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <HeartIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
                         {removingFavoriteId === favorite.id
-                          ? "Removing..."
+                          ? language === "ka"
+                            ? "იშლება..."
+                            : "Removing..."
                           : t("offers.removeFavorite")}
                       </button>
 
-                      {offer && (
+                      {offer && isOfferReservable(offer) && (
                         <Link
                           href={`/offers/${offer.id}`}
                           className="premium-button min-h-12 px-5 py-3 text-center"
                         >
                           {t("favorites.viewOffer")}
+                        </Link>
+                      )}
+
+                      {/* A sold-out/expired offer's own page isn't public any
+                          more; point to the business's current offers. */}
+                      {offer && !isOfferReservable(offer) && (
+                        <Link
+                          href={`/businesses/${offer.business_id}`}
+                          className="premium-button-secondary min-h-12 px-5 py-3 text-center"
+                        >
+                          {language === "ka"
+                            ? "ბიზნესის სხვა შეთავაზებები"
+                            : "More from this business"}
                         </Link>
                       )}
                     </div>

@@ -8,7 +8,7 @@
       html, body {
         height: 100%;
         margin: 0;
-        background: #d9d5cb;
+        background: #ece4d6;
         color: #1a1815;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
@@ -21,9 +21,9 @@
   </head>
   <body>
     <!--
-      This file is only ever seen for an instant, if at all — Capacitor's
-      `server.url` (see capacitor.config.ts) takes over and loads the real,
-      live Next.js app instead of these local assets.
+      Not shown in practice: with `server.url` set (capacitor.config.ts) the
+      app loads the live Next.js site directly. Capacitor still requires a
+      webDir with an index.html. Load errors show offline.html instead.
     -->
     <p>ArGadaagdo</p>
   </body>

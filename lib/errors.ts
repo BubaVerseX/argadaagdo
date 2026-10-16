@@ -9,6 +9,46 @@ export type FormattedAppError = {
 const fallbackUserMessage =
   "Something went wrong. Please try again in a moment.";
 
+// Exceptions raised by our own Supabase RPCs, mapped to messages the user can
+// act on. Checked before the generic heuristics below so that, for example,
+// a duplicate reservation is not reported as "please try again".
+const knownRpcErrors: Array<[string, string]> = [
+  [
+    "you already have an active reservation for this offer",
+    "You already have an active reservation for this offer. Open your orders to finish or cancel it.",
+  ],
+  [
+    "at most 3 active reservations",
+    "You already have 3 active reservations. Complete or cancel one before reserving another.",
+  ],
+  ["offer sold out", "This offer is sold out."],
+  [
+    "offer is not available",
+    "This offer is no longer available. It may be expired, sold out, or inactive.",
+  ],
+  [
+    "only unrestricted customer accounts",
+    "Only customer accounts in good standing can reserve offers.",
+  ],
+  [
+    "unsupported payment provider",
+    "Online payment is temporarily unavailable. Please try again later.",
+  ],
+  [
+    "cancellation window has closed",
+    "Cancellation deadline has passed. You can cancel only up to 2 hours before pickup.",
+  ],
+  [
+    "only reserved orders can be cancelled",
+    "Only confirmed reservations can be cancelled.",
+  ],
+  ["not logged in", "Please sign in and try again."],
+];
+
+const knownUserMessages = new Set(
+  knownRpcErrors.map(([, userMessage]) => userMessage)
+);
+
 function getErrorText(error: unknown) {
   if (error instanceof Error) return error.message;
 
@@ -43,7 +83,17 @@ export function getUserErrorMessage(
   error: unknown,
   fallback = fallbackUserMessage
 ) {
-  const message = getErrorText(error).toLowerCase();
+  const rawMessage = getErrorText(error);
+
+  // Already mapped (e.g. by an API route) — keep it as is.
+  if (knownUserMessages.has(rawMessage)) return rawMessage;
+
+  const message = rawMessage.toLowerCase();
+  const knownRpcError = knownRpcErrors.find(([rpcMessage]) =>
+    message.includes(rpcMessage)
+  );
+
+  if (knownRpcError) return knownRpcError[1];
 
   if (message.includes("row-level security") || message.includes("permission")) {
     return "This action is not allowed for your account. Please sign in again or contact support.";
@@ -88,7 +138,7 @@ export function getUserErrorMessage(
     return "Cancellation window has closed for this reservation.";
   }
 
-  if (message.includes("active reservations") || message.includes("max")) {
+  if (message.includes("active reservations")) {
     return "You already have 3 active reservations. Complete or cancel one before reserving another.";
   }
 

@@ -1,6 +1,9 @@
+"use client";
+
 import { HelpCard } from "@/components/help/HelpCard";
 import { CheckIcon, LockIcon, ReceiptIcon, StarIcon, TagIcon } from "@/components/icons";
 import type { TranslationKey } from "@/lib/i18n";
+import { useLanguage } from "@/lib/useLanguage";
 
 type ChecklistItem = {
   step: number;
@@ -17,6 +20,9 @@ export function BusinessOnboardingSections({
   t,
   checklist,
 }: BusinessOnboardingSectionsProps) {
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
+
   return (
     <>
       <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
@@ -89,27 +95,47 @@ export function BusinessOnboardingSections({
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <HelpCard
             icon={<TagIcon className="h-5 w-5" strokeWidth={1.8} />}
-            title="Create offers"
-            text="Publish one clear surprise bag with price, quantity and pickup time."
+            title={isGeorgian ? "შექმენი შეთავაზებები" : "Create offers"}
+            text={
+              isGeorgian
+                ? "გამოაქვეყნე ერთი მკაფიო სიურპრიზის ყუთი ფასით, რაოდენობითა და წაღების დროით."
+                : "Publish one clear surprise bag with price, quantity and pickup time."
+            }
           />
           <HelpCard
             icon={<ReceiptIcon className="h-5 w-5" strokeWidth={1.8} />}
-            title="Receive reservations"
-            text="Customers reserve available bags and appear in your dashboard."
+            title={isGeorgian ? "მიიღე ჯავშნები" : "Receive reservations"}
+            text={
+              isGeorgian
+                ? "მომხმარებლები ხელმისაწვდომ ყუთებს ჯავშნიან და შენს პანელში ჩნდებიან."
+                : "Customers reserve available bags and appear in your dashboard."
+            }
           />
           <HelpCard
             icon={<LockIcon className="h-5 w-5" strokeWidth={1.8} />}
-            title="Verify pickup codes"
-            text="Ask the customer for their code before handing over food."
+            title={isGeorgian ? "შეამოწმე წაღების კოდები" : "Verify pickup codes"}
+            text={
+              isGeorgian
+                ? "საკვების გადაცემამდე მომხმარებელს კოდი ჰკითხე."
+                : "Ask the customer for their code before handing over food."
+            }
           />
           <HelpCard
             icon={<StarIcon className="h-5 w-5" strokeWidth={1.8} filled />}
-            title="Receive ratings"
-            text="After completed pickups, customers can rate the experience."
+            title={isGeorgian ? "მიიღე შეფასებები" : "Receive ratings"}
+            text={
+              isGeorgian
+                ? "დასრულებული წაღების შემდეგ მომხმარებლებს გამოცდილების შეფასება შეუძლიათ."
+                : "After completed pickups, customers can rate the experience."
+            }
           />
           <HelpCard
-            title="Best practice"
-            text="Use realistic titles like Bakery Surprise Bag and keep pickup windows accurate."
+            title={isGeorgian ? "საუკეთესო პრაქტიკა" : "Best practice"}
+            text={
+              isGeorgian
+                ? "გამოიყენე რეალისტური სათაურები, მაგალითად „საცხობის სიურპრიზის ყუთი“, და წაღების ფანჯრები ზუსტად მიუთითე."
+                : "Use realistic titles like Bakery Surprise Bag and keep pickup windows accurate."
+            }
           />
         </div>
       </div>

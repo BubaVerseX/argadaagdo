@@ -4,6 +4,54 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-10-16 — payments are TBC-only in code too
+
+The BOG-vs-TBC mismatch below is resolved: the TBC integration
+(`lib/payments/tbc.ts`, `app/api/payments/tbc/{callback,return}`, `TBC_*`
+env vars, `business_payout_accounts` for native split) is merged onto this
+branch and all BOG code is deleted. Every "Bank of Georgia" / `BOG_*`
+section further down is historical. The audit's fail-safe payment fixes
+(unknown status → pending, no "success" without a reservation, idempotent
+confirmation emails, timing-safe callback secret) were carried over to TBC.
+
+## 🆕 2026-10-01 full audit + fix session — read this first
+
+A full audit (web app, iOS/Android wrappers, live Supabase read-only,
+Vercel) found ~90 issues. Code fixes are on branch
+`claude/keen-knuth-niinm2` (not merged at the time of writing — production
+deploys from `main`, so nothing is live until it is merged). Key facts the
+older notes below don't know:
+
+- **Checkout is broken in production**: on 2026-09-30 a migration was
+  applied directly to the live DB (`switch_payments_to_tbc_and_add_payout_accounts`,
+  now copied into `supabase/migrations/`) that makes
+  `create_provider_payment_order` accept only `'tbc'`, while all app code
+  sends `'bog'`. Decide BOG vs TBC before any other payment work.
+- **Repo ≠ production**: production runs older versions of several RPCs;
+  repo migrations 06-03…06-17 were only partly applied live, and two live
+  migrations were never committed (both now committed verbatim). Compare
+  `pg_proc.prosrc` with the repo before trusting either.
+- **DB audit migration — applied to production 2026-10-16** (after a
+  rolled-back dry run; recorded as version 20261016101117, file renamed to
+  `supabase/migrations/20261016101117_audit_fixes.sql`). It fixes no-show date check, reactivated paused offers, stale
+  payment holds (released after 40 min instead of only by the daily cron),
+  duplicate holds, text pickup-time validation, safe offer delete, owner
+  transfer lock, pending-owner edits, business visibility of customer
+  profiles, and adds `get_my_favorite_offers()` (favorites page shows
+  sold-out/expired favorites; the page falls back gracefully until it
+  exists).
+- 2026-10-12 follow-up: nothing had changed on `main` or the live DB since
+  10-01. Added the favorites RPC above and fixed Georgian text spilling off
+  320-375px phones (bottom tab bar uses `nav.browseTab` = "ძიება" as a
+  shorter label; Privacy titles have soft hyphens).
+- Infra: Supabase project is in Sydney and Vercel functions in Washington
+  DC (~1 s DB queries, health-check timeouts) — move both near Georgia.
+  Vercel Hobby = daily crons only (see `vercel.json`).
+- Native: `@capacitor/app` + `@capacitor/browser` added and synced; run
+  `npm ci && npx cap sync` before any native build. In-app account
+  deletion is still missing (Apple/Google requirement).
+- The repo is public: never commit passwords or keys here.
+
 ## 🔁 Resume-work note — start here if you're picking this up cold after a break
 
 Written 2026-09-27, right before the founder shut their laptop down for an
@@ -410,8 +458,9 @@ configuration, not local scratch state.
   mark a payment paid directly; all functions are `security definer` with
   `search_path = ''` and explicit grants/revokes. This is good design on
   paper — it just isn't live yet.
-- `app/api/cron/payment-maintenance/route.ts` — Vercel cron (every 30 min
-  per `vercel.json`) calls `expire_pending_provider_payments(20)`; this will
+- `app/api/cron/payment-maintenance/route.ts` — Vercel cron (once a day at
+  03:00 UTC per `vercel.json`; it was every 30 min before the Hobby-plan
+  change) calls `expire_pending_provider_payments(40)`; this will
   currently fail the same way (function not found) until the migration is
   applied.
 - `lib/monitoring.ts` / `/api/health` — checks presence of `BOG_CLIENT_ID`,
@@ -839,8 +888,9 @@ touched the real test data:
 
 **Left over from this fix, for whoever picks this up next**: two throwaway
 audit accounts now exist in `auth.users`
-(`security-audit-throwaway-<timestamp>@example.com`, both password
-`AuditThrowaway123!`, both plain `customer` role, **zero** orders/payments
+(`security-audit-throwaway-<timestamp>@example.com`, password not recorded
+here — this repository is public, so these accounts should be deleted or
+have their passwords rotated; both plain `customer` role, **zero** orders/payments
 — the nonexistent-offer-id trick above means neither ever created any real
 data). Harmless to leave, but delete them via Supabase Dashboard →
 Authentication → Users if you'd rather not have them around — the user

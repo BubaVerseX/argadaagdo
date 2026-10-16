@@ -26,14 +26,9 @@ export const platformFeeRate = 0.1;
 
 export const paymentProviderOptions = [
   {
-    id: "bank_of_georgia",
-    name: "Bank of Georgia",
-    role: "Primary Georgian card payment provider for production checkout.",
-  },
-  {
     id: "tbc_bank",
     name: "TBC Bank",
-    role: "Likely local card payment provider and bank integration option.",
+    role: "Primary Georgian card payment provider for production checkout.",
   },
   {
     id: "stripe",

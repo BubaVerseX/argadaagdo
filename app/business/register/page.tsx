@@ -2,12 +2,16 @@
 
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { BusinessOnboardingWizard } from "@/components/business/BusinessOnboardingWizard";
+import {
+  BusinessOnboardingWizard,
+  clearBusinessRegistrationDraft,
+} from "@/components/business/BusinessOnboardingWizard";
 import {
   getConfirmedUser,
   getProfileById,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import { notifyBusinessRegistrationSubmitted } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
@@ -17,7 +21,8 @@ import { useEffect, useState } from "react";
 
 export default function BusinessRegisterPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [name, setName] = useState("");
   const [businessType, setBusinessType] = useState("Cafe");
   const [address, setAddress] = useState("");
@@ -96,28 +101,32 @@ export default function BusinessRegisterPage() {
     }
 
     const nameResult = validateTextField({
-      label: "Business name",
+      label: isGeorgian ? "ბიზნესის სახელი" : "Business name",
       value: name,
       minLength: 2,
       maxLength: 80,
+      language,
     });
     const typeResult = validateTextField({
-      label: "Business type",
+      label: isGeorgian ? "ბიზნესის ტიპი" : "Business type",
       value: businessType,
       minLength: 2,
       maxLength: 60,
+      language,
     });
     const addressResult = validateTextField({
-      label: "Address",
+      label: isGeorgian ? "მისამართი" : "Address",
       value: address,
       minLength: 5,
       maxLength: 160,
+      language,
     });
     const phoneResult = validateTextField({
-      label: "Phone number",
+      label: isGeorgian ? "ტელეფონის ნომერი" : "Phone number",
       value: phone,
       minLength: 5,
       maxLength: 40,
+      language,
     });
 
     const validationError =
@@ -170,6 +179,25 @@ export default function BusinessRegisterPage() {
       return;
     }
 
+    // Don't create a second application while one is already waiting.
+    const { data: existingBusinesses } = await supabase
+      .from("businesses")
+      .select("id, approved")
+      .eq("owner_id", userId);
+
+    if (
+      (existingBusinesses || []).some(
+        (business: { approved: boolean | null }) => !business.approved
+      )
+    ) {
+      setSubmitting(false);
+      setMessageTone("warning");
+      setMessage(
+        "You already have a business application waiting for admin approval."
+      );
+      return;
+    }
+
     const { error } = await supabase.from("businesses").insert({
       owner_id: userId,
       name: nameResult.value,
@@ -189,6 +217,7 @@ export default function BusinessRegisterPage() {
       return;
     }
 
+    clearBusinessRegistrationDraft();
     setName("");
     setBusinessType("Cafe");
     setAddress("");
@@ -268,7 +297,9 @@ export default function BusinessRegisterPage() {
 
               {message && (
                 <div className="mt-4">
-                  <Notice tone={messageTone}>{message}</Notice>
+                  <Notice tone={messageTone}>
+                    {translateUserMessage(message, language)}
+                  </Notice>
                 </div>
               )}
             </div>

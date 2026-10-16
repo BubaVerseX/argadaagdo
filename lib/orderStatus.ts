@@ -32,13 +32,34 @@ export function isStrictlyCancelledOrderStatus(status: OrderStatus) {
   return status === "cancelled" || status === "refunded";
 }
 
+// A checkout that never became a reservation: still waiting for payment, or
+// abandoned/failed/expired before payment. These never received a pickup
+// code, so they must not count as reservations or cancellations.
+export function isUnpaidCheckoutOrder(
+  order: Pick<Order, "status" | "pickup_code">
+) {
+  return (
+    order.status === "pending_payment" ||
+    (order.status === "cancelled" && !order.pickup_code)
+  );
+}
+
+export function isFailedCheckoutOrder(
+  order: Pick<Order, "status" | "pickup_code">
+) {
+  return order.status === "cancelled" && !order.pickup_code;
+}
+
 export function isExpiredOrderStatus(status: OrderStatus) {
   return status === "expired";
 }
 
 export function getEffectiveOrderStatus(order: Order): OrderStatus {
+  // A reservation — or a payment that never completed — whose pickup window
+  // is over can no longer be collected.
   if (
-    isConfirmedOrderStatus(order.status) &&
+    (isConfirmedOrderStatus(order.status) ||
+      isPendingPaymentOrderStatus(order.status)) &&
     isOrderPastPickupEnd(
       order.offers,
       getTbilisiDateKeyFromValue(order.created_at)

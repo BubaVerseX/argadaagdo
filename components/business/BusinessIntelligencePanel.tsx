@@ -1,8 +1,11 @@
+"use client";
+
 import { KpiCardGrid, type KpiCard } from "@/components/analytics/KpiCardGrid";
 import type {
   RecommendationCard,
   SummaryMetric,
 } from "@/lib/marketplaceIntelligence";
+import { useLanguage } from "@/lib/useLanguage";
 
 type BusinessIntelligencePanelProps = {
   dailySummary: SummaryMetric[];
@@ -30,26 +33,34 @@ export function BusinessIntelligencePanel({
   weeklySummary,
   recommendations,
 }: BusinessIntelligencePanelProps) {
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
+
   return (
     <section className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-            Marketplace intelligence
+            {isGeorgian ? "მარკეტის ანალიტიკა" : "Marketplace intelligence"}
           </p>
           <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
-            Sell more surplus food
+            {isGeorgian ? "გაყიდე მეტი ჭარბი საკვები" : "Sell more surplus food"}
           </h2>
           <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
-            Rule-based summaries help you spot slow offers, strong demand and
-            pickup activity without changing the reservation flow.
+            {isGeorgian
+              ? "წესებზე დაფუძნებული შეჯამებები გეხმარება, შეამჩნიო ნელა გაყიდვადი შეთავაზებები, მაღალი მოთხოვნა და წაღების აქტივობა ჯავშნის პროცესის შეცვლის გარეშე."
+              : "Rule-based summaries help you spot slow offers, strong demand and pickup activity without changing the reservation flow."}
           </p>
         </div>
 
         <div className="soft-raised rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
-          <p className="font-black">No AI automation</p>
+          <p className="font-black">
+            {isGeorgian ? "AI ავტომატიზაციის გარეშე" : "No AI automation"}
+          </p>
           <p className="mt-1">
-            Recommendations use simple offer, order and pickup rules.
+            {isGeorgian
+              ? "რეკომენდაციები შეთავაზებების, შეკვეთებისა და წაღების მარტივ წესებს ეფუძნება."
+              : "Recommendations use simple offer, order and pickup rules."}
           </p>
         </div>
       </div>
@@ -57,7 +68,7 @@ export function BusinessIntelligencePanel({
       <div className="mt-6 grid gap-6">
         <div>
           <h3 className="text-xl font-black text-[#2e2a22]">
-            Today&apos;s Summary
+            {isGeorgian ? "დღის შეჯამება" : "Today's Summary"}
           </h3>
           <div className="mt-4">
             <KpiCardGrid cards={toKpiCards(dailySummary)} />
@@ -65,7 +76,9 @@ export function BusinessIntelligencePanel({
         </div>
 
         <div>
-          <h3 className="text-xl font-black text-[#2e2a22]">This Week</h3>
+          <h3 className="text-xl font-black text-[#2e2a22]">
+            {isGeorgian ? "ეს კვირა" : "This Week"}
+          </h3>
           <div className="mt-4">
             <KpiCardGrid cards={toKpiCards(weeklySummary)} />
           </div>
@@ -75,23 +88,26 @@ export function BusinessIntelligencePanel({
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
-                Recommendations
+                {isGeorgian ? "რეკომენდაციები" : "Recommendations"}
               </p>
               <h3 className="mt-2 text-xl font-black text-[#2e2a22]">
-                Next best actions
+                {isGeorgian ? "შემდეგი საუკეთესო ნაბიჯები" : "Next best actions"}
               </h3>
             </div>
 
             <p className="text-sm font-semibold text-[#6b6152] sm:text-right">
-              Based on reservation percentage, quantity and pickup timing.
+              {isGeorgian
+                ? "ეფუძნება ჯავშნების პროცენტს, რაოდენობასა და წაღების დროს."
+                : "Based on reservation percentage, quantity and pickup timing."}
             </p>
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {recommendations.length === 0 && (
               <div className="soft-raised rounded-2xl p-4 font-semibold text-[#6b6152]">
-                No urgent recommendations yet. Create or activate offers to
-                unlock more guidance.
+                {isGeorgian
+                  ? "სასწრაფო რეკომენდაციები ჯერ არ არის. მეტი რჩევისთვის შექმენი ან გაააქტიურე შეთავაზებები."
+                  : "No urgent recommendations yet. Create or activate offers to unlock more guidance."}
               </div>
             )}
 

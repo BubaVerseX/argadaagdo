@@ -179,10 +179,13 @@ function shouldSendPickupReminder(order: EmailOrderContext) {
   const endMinutes = parseTimeMinutes(offer.pickup_end);
   if (startMinutes === null || endMinutes === null) return false;
 
+  // The cron can only run once a day on the current Vercel plan (10:00
+  // Tbilisi, see vercel.json), so remind every reservation for today whose
+  // window hasn't ended yet. The old "starts within 6 hours of 16:00" rule
+  // skipped lunch windows and windows already open at run time.
   const nowMinutes = getTbilisiTimeMinutes();
-  const minutesUntilStart = startMinutes - nowMinutes;
 
-  return minutesUntilStart >= 0 && minutesUntilStart <= 360 && endMinutes >= nowMinutes;
+  return endMinutes > nowMinutes;
 }
 
 export async function sendReservationConfirmationEmail(

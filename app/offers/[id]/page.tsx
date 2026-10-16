@@ -15,7 +15,8 @@ import {
 } from "@/lib/auth";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
-import { normalizeOfferCategory } from "@/lib/offerCategories";
+import { translateUserMessage } from "@/lib/messageTranslations";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -34,7 +35,7 @@ import type { Business, Offer, PublicBusinessReview } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type OfferDetail = Offer & {
   businesses?: Business | null;
@@ -76,6 +77,7 @@ export default function OfferDetailPage() {
   const [canUseFavorites, setCanUseFavorites] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteUpdating, setFavoriteUpdating] = useState(false);
+  const favoriteRequestInFlight = useRef(false);
   const [favoriteMessage, setFavoriteMessage] = useState("");
   const [favoriteMessageTone, setFavoriteMessageTone] = useState<
     "success" | "error" | "warning"
@@ -180,6 +182,19 @@ export default function OfferDetailPage() {
   }, [params.id]);
 
   async function toggleFavorite() {
+    // Synchronous guard against double taps while the auth check is pending.
+    if (favoriteRequestInFlight.current) return;
+
+    favoriteRequestInFlight.current = true;
+
+    try {
+      await updateFavorite();
+    } finally {
+      favoriteRequestInFlight.current = false;
+    }
+  }
+
+  async function updateFavorite() {
     if (!offer) return;
 
     setFavoriteMessage("");
@@ -187,7 +202,7 @@ export default function OfferDetailPage() {
     const authResult = await getConfirmedUser();
 
     if (authResult.status === "signed_out") {
-      router.push("/login");
+      router.push(`/login?redirect=${encodeURIComponent(`/offers/${offer.id}`)}`);
       return;
     }
 
@@ -233,7 +248,8 @@ export default function OfferDetailPage() {
       offer_id: offer.id,
     });
 
-    if (error) {
+    // 23505 = already saved (e.g. from another tab) — that's the goal state.
+    if (error && error.code !== "23505") {
       setIsFavorite(false);
       setFavoriteMessageTone("error");
       setFavoriteMessage("Favorite could not be saved. Please try again.");
@@ -243,7 +259,7 @@ export default function OfferDetailPage() {
   }
 
   const rating = offer ? ratingSummaries[offer.business_id] : undefined;
-  const offerCategory = offer ? normalizeOfferCategory(offer.category) : "";
+  const offerCategory = offer ? getOfferCategoryLabel(offer.category, language) : "";
   const mapsUrl = offer
     ? createMapsSearchUrl(offer.businesses?.address, offer.businesses?.name)
     : "";
@@ -295,8 +311,8 @@ export default function OfferDetailPage() {
           question: language === "ka" ? "როდის ვიხდი?" : "When do I pay?",
           answer:
             language === "ka"
-              ? "Checkout-ზე გადახდა Bank of Georgia-ს მეშვეობით სრულდება. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
-              : "Payment is completed through Bank of Georgia checkout. Your reservation is confirmed only after payment succeeds.",
+              ? "Checkout-ზე გადახდა TBC Bank-ის მეშვეობით სრულდება. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
+              : "Payment is completed through TBC Bank checkout. Your reservation is confirmed only after payment succeeds.",
         },
         {
           question:
@@ -407,7 +423,7 @@ export default function OfferDetailPage() {
                       </p>
                       <p className="mt-2 text-sm font-bold text-[#6b6152]">
                         {t("checkout.regularPrice")}:{" "}
-                        {originalPrice > 0 ? (
+                        {originalPrice > currentPrice ? (
                           <span className="line-through">
                             {formatMoney(offer.old_price)}
                           </span>
@@ -509,13 +525,21 @@ export default function OfferDetailPage() {
                       ))}
                     </div>
                     <div className="mt-4">
-                      <SupportLink label="Need help before reserving?" />
+                      <SupportLink
+                        label={
+                          language === "ka"
+                            ? "გჭირდება დახმარება დაჯავშნამდე?"
+                            : "Need help before reserving?"
+                        }
+                      />
                     </div>
                   </div>
 
                   {favoriteMessage && (
                     <div className="mt-4">
-                      <Notice tone={favoriteMessageTone}>{favoriteMessage}</Notice>
+                      <Notice tone={favoriteMessageTone}>
+                        {translateUserMessage(favoriteMessage, language)}
+                      </Notice>
                     </div>
                   )}
 
@@ -556,7 +580,9 @@ export default function OfferDetailPage() {
                     </h2>
                     <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
                       {offer.description ||
-                        "A surprise rescue box prepared by the business from available food."}
+                        (language === "ka"
+                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული სიურპრიზის ყუთი."
+                          : "A surprise rescue box prepared by the business from available food.")}
                     </p>
 
                     <h3 className="mt-6 text-xl font-black">

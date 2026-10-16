@@ -39,6 +39,7 @@ import {
   type ReservationFilter,
 } from "@/lib/business/dashboard";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   buildBusinessDailySummary,
   buildBusinessRecommendations,
@@ -53,6 +54,7 @@ import {
 import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isFailedCheckoutOrder,
   isStrictlyCancelledOrderStatus,
 } from "@/lib/orderStatus";
 import {
@@ -69,7 +71,7 @@ import {
 import { logAppError } from "@/lib/errors";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { paginateItems } from "@/lib/pagination";
-import { supabase } from "@/lib/supabase";
+import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { isWithinCooldown, validateTextField } from "@/lib/validation";
@@ -90,6 +92,7 @@ const DASHBOARD_RESERVATION_PAGE_SIZE = 8;
 export default function BusinessDashboardPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [loading, setLoading] = useState(true);
 
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -119,6 +122,8 @@ export default function BusinessDashboardPage() {
   const [pickupStart, setPickupStart] = useState("");
   const [pickupEnd, setPickupEnd] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageInputKey, setImageInputKey] = useState(0);
+  const messageRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -144,6 +149,8 @@ export default function BusinessDashboardPage() {
   const [editPrice, setEditPrice] = useState("");
   const [editOldPrice, setEditOldPrice] = useState("");
   const [editQuantity, setEditQuantity] = useState("");
+  const editingOriginalQuantity = useRef<number | null>(null);
+  const [editPickupDate, setEditPickupDate] = useState("");
   const [editPickupStart, setEditPickupStart] = useState("");
   const [editPickupEnd, setEditPickupEnd] = useState("");
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -152,6 +159,13 @@ export default function BusinessDashboardPage() {
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastProfileSaveAt = useRef(0);
   const lastOfferPublishAt = useRef(0);
+
+  // The message box sits near the top of a long page; bring errors and
+  // warnings into view so a failed action doesn't look like nothing happened.
+  useEffect(() => {
+    if (!message || messageTone === "success") return;
+    messageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [message, messageTone]);
 
   const loadDashboard = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -302,16 +316,39 @@ export default function BusinessDashboardPage() {
     setOwnedOfferIds(offerIds);
 
     if (offerIds.length > 0) {
-      const { data: myOrders, error: orderError } = await supabase
-        .from("orders")
-        .select(`
+      const orderSelect = `
           *,
           offers(title, price, pickup_date, pickup_start, pickup_end),
           profiles(email, reliability_score, reliability_status)
-        `)
-        .in("offer_id", offerIds)
-        .order("id", { ascending: false })
-        .limit(500);
+        `;
+      // Active reservations are always loaded in full — they're what staff
+      // must verify at pickup — so a busy business's history can never push
+      // another business's open reservations out of the capped history list.
+      const [historyResult, activeResult] = await Promise.all([
+        supabase
+          .from("orders")
+          .select(orderSelect)
+          .in("offer_id", offerIds)
+          .order("id", { ascending: false })
+          .limit(1000),
+        supabase
+          .from("orders")
+          .select(orderSelect)
+          .in("offer_id", offerIds)
+          .in("status", ["pending_payment", "reserved", "confirmed"])
+          .order("id", { ascending: false }),
+      ]);
+      const orderError = historyResult.error || activeResult.error;
+      const ordersById = new Map<number, Order>();
+
+      for (const order of [
+        ...((activeResult.data || []) as Order[]),
+        ...((historyResult.data || []) as Order[]),
+      ]) {
+        ordersById.set(order.id, order);
+      }
+
+      const myOrders = [...ordersById.values()].sort((a, b) => b.id - a.id);
 
       if (orderError) {
         logAppError("Business dashboard failed to load reservations", orderError, {
@@ -384,30 +421,45 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    // Right after switching business the form still holds the previous
+    // business's details until the reload finishes — saving then would copy
+    // them onto the newly selected business.
+    if (profileBusinessId !== currentBusiness.id) {
+      setMessageTone("warning");
+      setMessage(
+        "The selected business is still loading. Please wait a moment and try again."
+      );
+      return;
+    }
+
     const nameResult = validateTextField({
-      label: "Business name",
+      label: isGeorgian ? "ბიზნესის სახელი" : "Business name",
       value: profileName,
       minLength: 2,
       maxLength: 80,
+      language,
     });
     const typeResult = validateTextField({
-      label: "Business type",
+      label: isGeorgian ? "ბიზნესის ტიპი" : "Business type",
       value: profileType,
       minLength: 2,
       maxLength: 60,
+      language,
     });
     const addressResult = validateTextField({
-      label: "Address",
+      label: isGeorgian ? "მისამართი" : "Address",
       value: profileAddress,
       minLength: 5,
       maxLength: 160,
+      language,
     });
     const phoneResult = validateTextField({
-      label: "Phone number",
+      label: isGeorgian ? "ტელეფონის ნომერი" : "Phone number",
       value: profilePhone,
       minLength: 5,
       maxLength: 40,
       required: false,
+      language,
     });
 
     const validationError =
@@ -474,7 +526,7 @@ export default function BusinessDashboardPage() {
     notifyProfileUpdated({ businessName: updatedBusiness.name || "Business" });
   }
 
-  async function uploadImage(): Promise<string | null> {
+  async function uploadImage(businessId: number): Promise<string | null> {
     if (!imageFile) return "";
 
     const validationError = getImageValidationError(imageFile);
@@ -485,7 +537,9 @@ export default function BusinessDashboardPage() {
       return null;
     }
 
-    const fileName = createImageFileName(imageFile);
+    // One folder per business keeps each business's images together (easier
+    // cleanup and per-business storage rules later).
+    const fileName = `business-${businessId}/${createImageFileName(imageFile)}`;
 
     const { error } = await supabase.storage
       .from("offer-images")
@@ -534,17 +588,19 @@ export default function BusinessDashboardPage() {
     }
 
     const titleResult = validateTextField({
-      label: "Offer title",
+      label: isGeorgian ? "შეთავაზების სათაური" : "Offer title",
       value: title,
       minLength: 3,
       maxLength: 120,
+      language,
     });
     const descriptionResult = validateTextField({
-      label: "Description",
+      label: isGeorgian ? "აღწერა" : "Description",
       value: description,
       maxLength: 500,
       required: false,
       multiline: true,
+      language,
     });
 
     if (titleResult.error) {
@@ -586,6 +642,13 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (oldPriceValue !== null && oldPriceValue <= priceValue) {
+      setMessage(
+        "Original price must be higher than the discounted price, or leave it empty."
+      );
+      return;
+    }
+
     if (!Number.isInteger(quantityValue) || quantityValue <= 0) {
       setMessage("Quantity must be a whole number greater than 0.");
       return;
@@ -606,12 +669,30 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    // The default date is computed when the page loads, so a tab left open
+    // overnight would otherwise publish an already-expired offer.
+    if (pickupDate < getTbilisiDateKey()) {
+      setMessage("Pickup date cannot be in the past.");
+      return;
+    }
+
+    if (
+      isOrderPastPickupEnd({
+        pickup_date: pickupDate,
+        pickup_start: pickupStart,
+        pickup_end: pickupEnd,
+      })
+    ) {
+      setMessage("This pickup window has already ended. Choose a later time.");
+      return;
+    }
+
     setPublishing(true);
     lastOfferPublishAt.current = actionTime;
     setMessageTone("success");
     setMessage("Publishing offer...");
 
-    const imageUrl = await uploadImage();
+    const imageUrl = await uploadImage(selectedBusinessId);
 
     if (imageUrl === null) {
       setPublishing(false);
@@ -659,6 +740,9 @@ export default function BusinessDashboardPage() {
     setPickupStart("");
     setPickupEnd("");
     setImageFile(null);
+    // The browser kept showing the previous file name while imageFile was
+    // already empty, so the next offer silently had no image.
+    setImageInputKey((currentKey) => currentKey + 1);
 
     setPublishing(false);
     setMessageTone("success");
@@ -678,6 +762,8 @@ export default function BusinessDashboardPage() {
     setEditPrice(String(offer.price ?? ""));
     setEditOldPrice(offer.old_price ? String(offer.old_price) : "");
     setEditQuantity(String(offer.quantity ?? 0));
+    editingOriginalQuantity.current = Number(offer.quantity ?? 0);
+    setEditPickupDate(offer.pickup_date || getTbilisiDateKey());
     setEditPickupStart(offer.pickup_start || "");
     setEditPickupEnd(offer.pickup_end || "");
   }
@@ -689,6 +775,7 @@ export default function BusinessDashboardPage() {
     setEditPrice("");
     setEditOldPrice("");
     setEditQuantity("");
+    setEditPickupDate("");
     setEditPickupStart("");
     setEditPickupEnd("");
   }
@@ -703,10 +790,11 @@ export default function BusinessDashboardPage() {
     }
 
     const titleResult = validateTextField({
-      label: "Offer title",
+      label: isGeorgian ? "შეთავაზების სათაური" : "Offer title",
       value: editTitle,
       minLength: 3,
       maxLength: 120,
+      language,
     });
 
     if (titleResult.error) {
@@ -732,6 +820,13 @@ export default function BusinessDashboardPage() {
       return;
     }
 
+    if (oldPriceValue !== null && oldPriceValue <= priceValue) {
+      setMessage(
+        "Original price must be higher than the discounted price, or leave it empty."
+      );
+      return;
+    }
+
     if (!Number.isInteger(quantityValue) || quantityValue < 0) {
       setMessage("Quantity must be 0 or greater.");
       return;
@@ -752,29 +847,96 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const nextActive = quantityValue > 0 ? offer.active : false;
-    const nextStatus =
-      quantityValue <= 0 ? "sold_out" : nextActive ? "active" : "inactive";
+    if (!editPickupDate) {
+      setMessage("Pickup date is required.");
+      return;
+    }
+
+    const pickupDateChanged = editPickupDate !== (offer.pickup_date || "");
+
+    // Only validate "not in the past" when the window itself changes, so a
+    // title fix on today's running offer is still possible.
+    if (
+      (pickupDateChanged ||
+        editPickupStart !== (offer.pickup_start || "") ||
+        editPickupEnd !== (offer.pickup_end || "")) &&
+      isOrderPastPickupEnd({
+        pickup_date: editPickupDate,
+        pickup_start: editPickupStart,
+        pickup_end: editPickupEnd,
+      })
+    ) {
+      setMessage("This pickup window has already ended. Choose a later date or time.");
+      return;
+    }
+
+    const pickupTimesChanged =
+      pickupDateChanged ||
+      editPickupStart !== (offer.pickup_start || "") ||
+      editPickupEnd !== (offer.pickup_end || "");
+    const hasActiveReservations = allOrders.some(
+      (order) =>
+        order.offer_id === offer.id &&
+        ["pending_payment", "reserved", "confirmed"].includes(
+          String(order.status)
+        )
+    );
+
+    if (
+      pickupTimesChanged &&
+      hasActiveReservations &&
+      !window.confirm(
+        isGeorgian
+          ? "ამ შეთავაზებას უკვე აქვს ჯავშნები. მომხმარებლებს თავდაპირველი წაღების დრო ეცნობათ და ცვლილების შესახებ ავტომატურად არ ეცნობებათ. მაინც შეცვლი წაღების დროს?"
+          : "This offer already has reservations. Customers were told the original pickup time and are not notified automatically. Change the pickup time anyway?"
+      )
+    ) {
+      return;
+    }
+
+    // Customers can reserve while this form is open, so only write the stock
+    // when the business actually changed it — and only if it still matches
+    // the value they started editing from. Otherwise a title fix would reset
+    // the stock and oversell.
+    const quantityChanged = quantityValue !== editingOriginalQuantity.current;
+    const stockFields = quantityChanged
+      ? (() => {
+          const nextActive = quantityValue > 0 ? offer.active : false;
+          return {
+            quantity: quantityValue,
+            active: nextActive,
+            status:
+              quantityValue <= 0
+                ? "sold_out"
+                : nextActive
+                  ? "active"
+                  : "inactive",
+          };
+        })()
+      : {};
 
     setUpdatingOfferId(offer.id);
 
-    const { data, error } = await supabase
+    let updateQuery = supabase
       .from("offers")
       .update({
         title: titleResult.value,
         category: selectedCategory,
         price: priceValue,
         old_price: oldPriceValue,
-        quantity: quantityValue,
+        pickup_date: editPickupDate,
         pickup_start: editPickupStart,
         pickup_end: editPickupEnd,
-        active: nextActive,
-        status: nextStatus,
+        ...stockFields,
       })
       .eq("id", offer.id)
-      .in("business_id", ownedBusinessIds)
-      .select("*")
-      .maybeSingle();
+      .in("business_id", ownedBusinessIds);
+
+    if (quantityChanged && editingOriginalQuantity.current !== null) {
+      updateQuery = updateQuery.eq("quantity", editingOriginalQuantity.current);
+    }
+
+    const { data, error } = await updateQuery.select("*").maybeSingle();
 
     if (error) {
       logAppError("Offer edit failed", error, {
@@ -790,7 +952,12 @@ export default function BusinessDashboardPage() {
     if (!data) {
       setUpdatingOfferId(null);
       setMessageTone("warning");
-      setMessage("Offer could not be updated.");
+      setMessage(
+        quantityChanged
+          ? "New reservations came in while you were editing, so the quantity was not changed. Check the current quantity and try again."
+          : "Offer could not be updated."
+      );
+      await loadDashboard();
       return;
     }
 
@@ -967,7 +1134,9 @@ export default function BusinessDashboardPage() {
     }
 
     const confirmed = window.confirm(
-      "Delete this offer permanently? Offers with reservations cannot be deleted. Use Inactive for offers you want to keep in history."
+      isGeorgian
+        ? "წაიშალოს ეს შეთავაზება სამუდამოდ? ჯავშნების მქონე შეთავაზებების წაშლა შეუძლებელია. ისტორიაში შესანახად გამოიყენე „არააქტიური“ სტატუსი."
+        : "Delete this offer permanently? Offers with reservations cannot be deleted. Use Inactive for offers you want to keep in history."
     );
 
     if (!confirmed) return;
@@ -1000,7 +1169,9 @@ export default function BusinessDashboardPage() {
     if (!data) {
       setUpdatingOfferId(null);
       setMessageTone("warning");
-      setMessage("Offer could not be deleted.");
+      setMessage(
+        "This offer could not be deleted. Offers that already have reservations can't be deleted — set it inactive instead."
+      );
       await loadDashboard();
       return;
     }
@@ -1017,10 +1188,9 @@ export default function BusinessDashboardPage() {
   async function completeOrder(orderId: number, pickupCodeValue: string) {
     const completedOrder = allOrders.find((order) => order.id === orderId);
 
-    if (completedOrder && isOrderPastPickupEnd(completedOrder.offers)) {
-      await markNoShow(completedOrder);
-      return false;
-    }
+    // Note: a customer who arrives a little late with the correct code must
+    // still be completable — never turn a "Verify" click into a no-show.
+    // Whether a late completion is allowed is decided by complete_pickup.
 
     if (!pickupCodeValue.trim()) {
       setMessageTone("error");
@@ -1042,6 +1212,26 @@ export default function BusinessDashboardPage() {
       setUpdatingOrderId(null);
       setMessageTone("error");
       setMessage("Pickup could not be completed. Please check the pickup code and try again.");
+      return false;
+    }
+
+    // Some versions of complete_pickup record a late pickup as a no-show
+    // instead of raising, so confirm the outcome before reporting success or
+    // emailing the customer.
+    const { data: updatedOrder } = await supabase
+      .from("orders")
+      .select("status")
+      .eq("id", orderId)
+      .maybeSingle();
+    const resultingStatus = (updatedOrder as { status?: string } | null)?.status;
+
+    if (resultingStatus && !["completed", "collected"].includes(resultingStatus)) {
+      setUpdatingOrderId(null);
+      setMessageTone("warning");
+      setMessage(
+        "The pickup window had already ended, so this order could not be completed."
+      );
+      await loadDashboard();
       return false;
     }
 
@@ -1083,6 +1273,8 @@ export default function BusinessDashboardPage() {
 
   async function submitPickupVerification() {
     if (!pickupVerificationOrder) return;
+    // Holding Enter in the code field would otherwise submit repeatedly.
+    if (updatingOrderId !== null) return;
 
     const enteredCode = pickupVerificationCode.trim();
     const expectedCode = String(pickupVerificationOrder.pickup_code || "").trim();
@@ -1099,6 +1291,14 @@ export default function BusinessDashboardPage() {
 
     setPickupVerificationError("");
     const completed = await completeOrder(pickupVerificationOrder.id, enteredCode);
+
+    if (!completed) {
+      // The page-level message sits behind this dialog, so repeat it here.
+      setPickupVerificationError(
+        "Pickup could not be completed. Check the code, or close this window to see the details."
+      );
+      return;
+    }
 
     if (completed) {
       setPickupVerificationOrder(null);
@@ -1146,7 +1346,7 @@ export default function BusinessDashboardPage() {
     if (!businessFilter) return;
 
     let channel = supabase
-      .channel(`business-dashboard-offers-${businessFilter}`)
+      .channel(uniqueChannelName(`business-dashboard-offers-${businessFilter}`))
       .on(
         "postgres_changes",
         {
@@ -1199,8 +1399,12 @@ export default function BusinessDashboardPage() {
   const offers = allOffers.filter(
     (offer) => offer.business_id === selectedBusinessId
   );
-  const orders = allOrders.filter((order) =>
-    offers.some((offer) => offer.id === order.offer_id)
+  // Failed/abandoned checkouts (cancelled before payment, never given a
+  // pickup code) aren't reservations — don't list or count them.
+  const orders = allOrders.filter(
+    (order) =>
+      offers.some((offer) => offer.id === order.offer_id) &&
+      !isFailedCheckoutOrder(order)
   );
   const reviews = allReviews.filter(
     (review) => review.business_id === selectedBusinessId
@@ -1241,7 +1445,11 @@ export default function BusinessDashboardPage() {
   const canCreateOffers = approvedBusinesses.length > 0;
   const businessStatusMessage =
     businesses.length === 0
-      ? "Register your business first."
+      ? isGeorgian
+        ? "ჯერ დაარეგისტრირე შენი ბიზნესი."
+        : "Register your business first."
+      : isGeorgian
+      ? "შენი ბიზნესი ჯერ არ არის დამტკიცებული."
       : "Your business is not approved yet.";
   const collectedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
@@ -1273,13 +1481,14 @@ export default function BusinessDashboardPage() {
     orders,
     reviews,
   });
-  const offerIntelligenceById = buildOfferIntelligence(offers, orders);
+  const offerIntelligenceById = buildOfferIntelligence(offers, orders, language);
   const businessRecommendations = buildBusinessRecommendations(
     offers,
-    offerIntelligenceById
+    offerIntelligenceById,
+    language
   );
-  const dailySummary = buildBusinessDailySummary({ offers, orders });
-  const weeklySummary = buildBusinessWeeklySummary({ orders, reviews });
+  const dailySummary = buildBusinessDailySummary({ offers, orders }, language);
+  const weeklySummary = buildBusinessWeeklySummary({ orders, reviews }, language);
   const onboardingChecklist = [
     {
       step: 1,
@@ -1329,72 +1538,100 @@ export default function BusinessDashboardPage() {
   );
   const businessHealthChecks = [
     {
-      label: "Profile complete",
-      helper: "Name, type, address and phone are filled in.",
+      label: isGeorgian ? "პროფილი შევსებულია" : "Profile complete",
+      helper: isGeorgian
+        ? "სახელი, ტიპი, მისამართი და ტელეფონი შევსებულია."
+        : "Name, type, address and phone are filled in.",
       complete: hasCompleteProfile,
     },
     {
-      label: "Logo or offer image uploaded",
-      helper: "Use clear images so customers trust your surprise bags.",
+      label: isGeorgian
+        ? "ლოგო ან შეთავაზების სურათი ატვირთულია"
+        : "Logo or offer image uploaded",
+      helper: isGeorgian
+        ? "გამოიყენე მკაფიო სურათები, რომ მომხმარებლებმა შენს სიურპრიზის ყუთებს ენდონ."
+        : "Use clear images so customers trust your surprise bags.",
       complete: hasBusinessImage,
     },
     {
-      label: "Description added",
-      helper: "Add a short description on your profile or offers.",
+      label: isGeorgian ? "აღწერა დამატებულია" : "Description added",
+      helper: isGeorgian
+        ? "დაამატე მოკლე აღწერა პროფილზე ან შეთავაზებებზე."
+        : "Add a short description on your profile or offers.",
       complete: hasBusinessDescription,
     },
     {
-      label: "Address added",
-      helper: "Customers need a clear pickup location.",
+      label: isGeorgian ? "მისამართი დამატებულია" : "Address added",
+      helper: isGeorgian
+        ? "მომხმარებლებს წაღების მკაფიო ადგილი სჭირდებათ."
+        : "Customers need a clear pickup location.",
       complete: Boolean(profileAddress.trim() || selectedBusiness?.address),
     },
     {
-      label: "Phone verified",
-      helper: "For now this means a contact phone is saved for admin review.",
+      label: isGeorgian ? "ტელეფონი დადასტურებულია" : "Phone verified",
+      helper: isGeorgian
+        ? "ამ ეტაპზე ეს ნიშნავს, რომ საკონტაქტო ტელეფონი ადმინის განსახილველად შენახულია."
+        : "For now this means a contact phone is saved for admin review.",
       complete: Boolean(profilePhone.trim() || selectedBusiness?.phone),
     },
     {
-      label: "Active offers",
-      helper: "At least one offer is visible to customers.",
+      label: isGeorgian ? "აქტიური შეთავაზებები" : "Active offers",
+      helper: isGeorgian
+        ? "მომხმარებლებს მინიმუმ ერთი შეთავაზება უჩანთ."
+        : "At least one offer is visible to customers.",
       complete: activeOffers.length > 0,
     },
     {
-      label: "Completed pickups",
-      helper: "At least one customer pickup has been completed.",
+      label: isGeorgian ? "დასრულებული წაღებები" : "Completed pickups",
+      helper: isGeorgian
+        ? "მინიმუმ ერთი წაღება უკვე დასრულებულია."
+        : "At least one customer pickup has been completed.",
       complete: collectedOrders.length > 0,
     },
   ];
   const businessOperationsChecklist = [
     {
-      label: "Create first offer",
-      helper: "Publish a realistic surprise bag with price and pickup time.",
+      label: isGeorgian ? "შექმენი პირველი შეთავაზება" : "Create first offer",
+      helper: isGeorgian
+        ? "გამოაქვეყნე რეალისტური სიურპრიზის ყუთი ფასითა და წაღების დროით."
+        : "Publish a realistic surprise bag with price and pickup time.",
       complete: offers.length > 0,
       anchor: "#create-offer",
     },
     {
-      label: "Upload logo or image",
-      helper: "Add a clear image to build customer trust.",
+      label: isGeorgian ? "ატვირთე ლოგო ან სურათი" : "Upload logo or image",
+      helper: isGeorgian
+        ? "დაამატე მკაფიო სურათი მომხმარებლების ნდობის მოსაპოვებლად."
+        : "Add a clear image to build customer trust.",
       complete: hasBusinessImage,
       anchor: "#create-offer",
     },
     {
-      label: "Complete profile",
-      helper: "Keep name, type, address and phone up to date.",
+      label: isGeorgian ? "შეავსე პროფილი" : "Complete profile",
+      helper: isGeorgian
+        ? "სახელი, ტიპი, მისამართი და ტელეფონი განახლებული გქონდეს."
+        : "Keep name, type, address and phone up to date.",
       complete: hasCompleteProfile,
     },
     {
-      label: "Receive first reservation",
-      helper: "New reservations will appear in the reservations section.",
+      label: isGeorgian ? "მიიღე პირველი ჯავშანი" : "Receive first reservation",
+      helper: isGeorgian
+        ? "ახალი ჯავშნები ჯავშნების განყოფილებაში გამოჩნდება."
+        : "New reservations will appear in the reservations section.",
       complete: orders.length > 0,
     },
     {
-      label: "Complete first pickup",
-      helper: "Ask for the pickup code before handing over food.",
+      label: isGeorgian ? "დაასრულე პირველი წაღება" : "Complete first pickup",
+      helper: isGeorgian
+        ? "საკვების გადაცემამდე მოითხოვე წაღების კოდი."
+        : "Ask for the pickup code before handing over food.",
       complete: collectedOrders.length > 0,
     },
     {
-      label: "Receive first rating",
-      helper: "Ratings help future customers trust your business.",
+      label: isGeorgian ? "მიიღე პირველი შეფასება" : "Receive first rating",
+      helper: isGeorgian
+        ? "შეფასებები მომავალ მომხმარებლებს შენი ბიზნესის ნდობაში ეხმარება."
+        : "Ratings help future customers trust your business.",
       complete: reviews.length > 0,
     },
   ];
@@ -1420,17 +1657,17 @@ export default function BusinessDashboardPage() {
       tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
     },
     {
-      title: "Boxes sold",
+      title: isGeorgian ? "გაყიდული ყუთები" : "Boxes sold",
       value: businessAnalytics.boxesSold,
       tone: "green" as const,
     },
     {
-      title: "Boxes available",
+      title: isGeorgian ? "ხელმისაწვდომი ყუთები" : "Boxes available",
       value: businessAnalytics.boxesRemaining,
       tone: "neutral" as const,
     },
     {
-      title: "Today's reservations",
+      title: isGeorgian ? "დღევანდელი ჯავშნები" : "Today's reservations",
       value: businessAnalytics.todayReservations,
       tone:
         businessAnalytics.todayReservations > 0
@@ -1464,27 +1701,37 @@ export default function BusinessDashboardPage() {
     ...(reservedOrders.length > 0
       ? [
           {
-            title: "New reservation",
-            text: `${reservedOrders.length} active ${
-              reservedOrders.length === 1 ? "reservation needs" : "reservations need"
-            } pickup attention.`,
+            title: isGeorgian ? "ახალი ჯავშანი" : "New reservation",
+            text: isGeorgian
+              ? `${reservedOrders.length} აქტიური ჯავშანი წაღების მოლოდინშია.`
+              : `${reservedOrders.length} active ${
+                  reservedOrders.length === 1
+                    ? "reservation needs"
+                    : "reservations need"
+                } pickup attention.`,
             className: "soft-raised text-[#2e2a22]",
           },
         ]
       : [
           {
-            title: "No active reservations",
-            text: "New reservations will appear here when customers reserve your offers.",
+            title: isGeorgian
+              ? "აქტიური ჯავშნები არ არის"
+              : "No active reservations",
+            text: isGeorgian
+              ? "ახალი ჯავშნები აქ გამოჩნდება, როცა მომხმარებლები შენს შეთავაზებებს დაჯავშნიან."
+              : "New reservations will appear here when customers reserve your offers.",
             className: "bg-[#f4efe4] text-[#2e2a22]",
           },
         ]),
     ...(offersExpiringToday.length > 0
       ? [
           {
-            title: "Offer expires today",
-            text: `${offersExpiringToday.length} active offer ${
-              offersExpiringToday.length === 1 ? "ends" : "end"
-            } today. Unsold quantity should stay as same-day inventory.`,
+            title: isGeorgian ? "შეთავაზება დღეს სრულდება" : "Offer expires today",
+            text: isGeorgian
+              ? `${offersExpiringToday.length} აქტიური შეთავაზება დღეს სრულდება. გაუყიდავი რაოდენობა იმავე დღის მარაგად უნდა დარჩეს.`
+              : `${offersExpiringToday.length} active offer ${
+                  offersExpiringToday.length === 1 ? "ends" : "end"
+                } today. Unsold quantity should stay as same-day inventory.`,
             className: "border-yellow-100 bg-yellow-50 text-yellow-950",
           },
         ]
@@ -1492,10 +1739,12 @@ export default function BusinessDashboardPage() {
     ...(reservationsWithStartedPickupWindow.length > 0
       ? [
           {
-            title: "Pickup window started",
-            text: `${reservationsWithStartedPickupWindow.length} reservation ${
-              reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
-            } inside the pickup window now.`,
+            title: isGeorgian ? "წაღების ფანჯარა დაიწყო" : "Pickup window started",
+            text: isGeorgian
+              ? `${reservationsWithStartedPickupWindow.length} ჯავშანი ახლა წაღების ფანჯარაშია.`
+              : `${reservationsWithStartedPickupWindow.length} reservation ${
+                  reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
+                } inside the pickup window now.`,
             className: "soft-raised text-[#2e2a22]",
           },
         ]
@@ -1503,27 +1752,33 @@ export default function BusinessDashboardPage() {
     ...(todaysActiveReservations.length > 0
       ? [
           {
-            title: "Pickup due today",
-            text: `${todaysActiveReservations.length} reservation ${
-              todaysActiveReservations.length === 1 ? "is" : "are"
-            } scheduled for pickup today.`,
+            title: isGeorgian ? "დღეს წასაღები" : "Pickup due today",
+            text: isGeorgian
+              ? `${todaysActiveReservations.length} ჯავშნის წაღება დღესაა დაგეგმილი.`
+              : `${todaysActiveReservations.length} reservation ${
+                  todaysActiveReservations.length === 1 ? "is" : "are"
+                } scheduled for pickup today.`,
             className: "border-yellow-100 bg-yellow-50 text-yellow-950",
           },
         ]
       : [
           {
-            title: "No reservations today",
-            text: "Nothing needs pickup action today. New reservations will appear here automatically.",
+            title: isGeorgian ? "დღეს ჯავშნები არ არის" : "No reservations today",
+            text: isGeorgian
+              ? "დღეს წაღებასთან დაკავშირებული მოქმედება საჭირო არ არის. ახალი ჯავშნები აქ ავტომატურად გამოჩნდება."
+              : "Nothing needs pickup action today. New reservations will appear here automatically.",
             className: "bg-[#f4efe4] text-[#2e2a22]",
           },
         ]),
     ...(nearlySoldOutOffers.length > 0
       ? [
           {
-            title: "Low quantity",
-            text: `${nearlySoldOutOffers.length} active offer ${
-              nearlySoldOutOffers.length === 1 ? "has" : "have"
-            } 2 or fewer boxes left.`,
+            title: isGeorgian ? "მცირე რაოდენობა" : "Low quantity",
+            text: isGeorgian
+              ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ყუთი დარჩა.`
+              : `${nearlySoldOutOffers.length} active offer ${
+                  nearlySoldOutOffers.length === 1 ? "has" : "have"
+                } 2 or fewer boxes left.`,
             className: "border-yellow-100 bg-yellow-50 text-yellow-950",
           },
         ]
@@ -1531,10 +1786,12 @@ export default function BusinessDashboardPage() {
     ...(inactiveOffers.length > 0
       ? [
           {
-            title: "Inactive offers",
-            text: `${inactiveOffers.length} offer ${
-              inactiveOffers.length === 1 ? "is" : "are"
-            } hidden from public browsing.`,
+            title: isGeorgian ? "არააქტიური შეთავაზებები" : "Inactive offers",
+            text: isGeorgian
+              ? `${inactiveOffers.length} შეთავაზება საჯარო დათვალიერებიდან დამალულია.`
+              : `${inactiveOffers.length} offer ${
+                  inactiveOffers.length === 1 ? "is" : "are"
+                } hidden from public browsing.`,
             className: "bg-[#f4efe4] text-[#2e2a22]",
           },
         ]
@@ -1542,10 +1799,12 @@ export default function BusinessDashboardPage() {
     ...(expiredOffers.length > 0
       ? [
           {
-            title: "Expired offer",
-            text: `${expiredOffers.length} offer ${
-              expiredOffers.length === 1 ? "has" : "have"
-            } passed the pickup window and should stay in history.`,
+            title: isGeorgian ? "ვადაგასული შეთავაზება" : "Expired offer",
+            text: isGeorgian
+              ? `${expiredOffers.length} შეთავაზებას წაღების ფანჯარა გაუვიდა და ისტორიაში უნდა დარჩეს.`
+              : `${expiredOffers.length} offer ${
+                  expiredOffers.length === 1 ? "has" : "have"
+                } passed the pickup window and should stay in history.`,
             className: "border-red-100 bg-red-50 text-red-800",
           },
         ]
@@ -1667,8 +1926,14 @@ export default function BusinessDashboardPage() {
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
           <LoadingState
-            title="Loading business dashboard..."
-            description="Preparing offers, reservations, pickup tasks and ratings."
+            title={{
+              en: "Loading business dashboard...",
+              ka: "ბიზნეს პანელი იტვირთება...",
+            }}
+            description={{
+              en: "Preparing offers, reservations, pickup tasks and ratings.",
+              ka: "მზადდება შეთავაზებები, ჯავშნები, წაღების დავალებები და შეფასებები.",
+            }}
           />
         </section>
       </main>
@@ -1689,8 +1954,10 @@ export default function BusinessDashboardPage() {
         />
 
         {message && (
-          <div className="mt-5 sm:mt-6">
-            <Notice tone={messageTone}>{message}</Notice>
+          <div ref={messageRef} className="mt-5 scroll-mt-24 sm:mt-6">
+            <Notice tone={messageTone}>
+              {translateUserMessage(message, language)}
+            </Notice>
           </div>
         )}
 
@@ -1748,7 +2015,11 @@ export default function BusinessDashboardPage() {
             </h2>
             <p className="mt-3 font-medium text-yellow-700">
               {businesses.length === 0
-                ? "Create a business profile before publishing food rescue offers."
+                ? isGeorgian
+                  ? "საკვების გადარჩენის შეთავაზებების გამოქვეყნებამდე შექმენი ბიზნესის პროფილი."
+                  : "Create a business profile before publishing food rescue offers."
+                : isGeorgian
+                ? "შენი ბიზნესი უკვე არსებობს, მაგრამ შეთავაზებების გამოქვეყნებამდე ის უნდა დამტკიცდეს."
                 : "Your business exists, but it must be approved before publishing offers."}
             </p>
           </div>
@@ -1783,14 +2054,19 @@ export default function BusinessDashboardPage() {
           onPickupStartChange={setPickupStart}
           onPickupEndChange={setPickupEnd}
           onImageFileChange={handleImageFileChange}
+          imageInputKey={imageInputKey}
           onCreateOffer={(actionTime) => void createOffer(actionTime)}
         />
 
         <div id="business-offers" className="scroll-mt-24">
           <FilterBar
             className="mt-6 sm:mt-8"
-            title="Offer management search"
-            description="Find offers by title, category or business. Filter history before editing or archiving."
+            title={isGeorgian ? "შეთავაზებების ძიება" : "Offer management search"}
+            description={
+              isGeorgian
+                ? "მოძებნე შეთავაზებები სათაურით, კატეგორიით ან ბიზნესით. რედაქტირებამდე ან დაარქივებამდე გაფილტრე ისტორია."
+                : "Find offers by title, category or business. Filter history before editing or archiving."
+            }
           >
             <SearchBar
               value={offerManagementSearch}
@@ -1798,8 +2074,10 @@ export default function BusinessDashboardPage() {
                 setOfferManagementSearch(value);
                 setOfferManagementPage(1);
               }}
-              placeholder="Search offers..."
-              label="Search offers"
+              placeholder={
+                isGeorgian ? "მოძებნე შეთავაზება..." : "Search offers..."
+              }
+              label={isGeorgian ? "შეთავაზებების ძიება" : "Search offers"}
             />
 
             <select
@@ -1810,14 +2088,24 @@ export default function BusinessDashboardPage() {
                 );
                 setOfferManagementPage(1);
               }}
-              aria-label="Filter offers by status"
+              aria-label={
+                isGeorgian
+                  ? "შეთავაზებების ფილტრი სტატუსით"
+                  : "Filter offers by status"
+              }
               className="premium-input px-4 py-3 font-semibold"
             >
-              <option value="all">All offers</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="archive">Archive</option>
-              <option value="sold_out">Sold out</option>
+              <option value="all">
+                {isGeorgian ? "ყველა შეთავაზება" : "All offers"}
+              </option>
+              <option value="active">{isGeorgian ? "აქტიური" : "Active"}</option>
+              <option value="inactive">
+                {isGeorgian ? "არააქტიური" : "Inactive"}
+              </option>
+              <option value="archive">{isGeorgian ? "არქივი" : "Archive"}</option>
+              <option value="sold_out">
+                {isGeorgian ? "გაყიდულია" : "Sold out"}
+              </option>
             </select>
           </FilterBar>
 
@@ -1826,11 +2114,17 @@ export default function BusinessDashboardPage() {
             language={language}
             offers={paginatedManagedOffers.items}
             emptyTitle={
-              offers.length === 0 ? undefined : "No offers match your filters"
+              offers.length === 0
+                ? undefined
+                : isGeorgian
+                ? "ფილტრებს შეთავაზება არ ემთხვევა"
+                : "No offers match your filters"
             }
             emptyText={
               offers.length === 0
                 ? undefined
+                : isGeorgian
+                ? "სცადე სხვა ძიება ან სტატუსის ფილტრი."
                 : "Try a different search or status filter."
             }
             ratingSummaries={ratingSummaries}
@@ -1843,6 +2137,7 @@ export default function BusinessDashboardPage() {
             editPrice={editPrice}
             editOldPrice={editOldPrice}
             editQuantity={editQuantity}
+            editPickupDate={editPickupDate}
             editPickupStart={editPickupStart}
             editPickupEnd={editPickupEnd}
             onStartEditing={startEditingOffer}
@@ -1857,6 +2152,7 @@ export default function BusinessDashboardPage() {
             onEditPriceChange={setEditPrice}
             onEditOldPriceChange={setEditOldPrice}
             onEditQuantityChange={setEditQuantity}
+            onEditPickupDateChange={setEditPickupDate}
             onEditPickupStartChange={setEditPickupStart}
             onEditPickupEndChange={setEditPickupEnd}
           />
@@ -1866,7 +2162,7 @@ export default function BusinessDashboardPage() {
             page={paginatedManagedOffers.page}
             totalItems={filteredManagedOffers.length}
             pageSize={DASHBOARD_OFFER_PAGE_SIZE}
-            label="Offers"
+            label={t("nav.offers")}
             onPageChange={setOfferManagementPage}
           />
         </div>
@@ -1905,7 +2201,7 @@ export default function BusinessDashboardPage() {
             language={language}
             order={pickupVerificationOrder}
             code={pickupVerificationCode}
-            error={pickupVerificationError}
+            error={translateUserMessage(pickupVerificationError, language)}
             updatingOrderId={updatingOrderId}
             onCodeChange={(value) => {
               setPickupVerificationCode(value);

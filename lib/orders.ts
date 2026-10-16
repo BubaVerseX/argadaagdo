@@ -5,6 +5,7 @@ import {
   isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
+  isFailedCheckoutOrder,
   isPendingPaymentOrderStatus,
 } from "@/lib/orderStatus";
 import type { Order, OrderStatus } from "@/lib/types";
@@ -133,7 +134,7 @@ export function getPickupReminderMessage(order: Order, language: Language) {
   if (minutesUntilPickup <= 60) {
     return language === "ka"
       ? `წაღება იწყება ${minutesUntilPickup} წუთში. არ დაგავიწყდეს კოდი.`
-      : `Pickup starts in ${minutesUntilPickup} minutes. Do not forget your pickup code.`;
+      : `Pickup starts in ${minutesUntilPickup} minute${minutesUntilPickup === 1 ? "" : "s"}. Do not forget your pickup code.`;
   }
 
   const hoursUntilPickup = Math.ceil(minutesUntilPickup / 60);
@@ -169,6 +170,15 @@ export function getCustomerTimelineSteps(
     return labels.map((label, index) => ({
       label,
       state: index === 0 ? "current" : "pending",
+    }));
+  }
+
+  // Cancelled before payment went through (abandoned, failed or expired
+  // checkout): it never got past the payment step.
+  if (isStopped && isFailedCheckoutOrder(order)) {
+    return labels.map((label, index) => ({
+      label,
+      state: index === 0 ? "stopped" : "pending",
     }));
   }
 

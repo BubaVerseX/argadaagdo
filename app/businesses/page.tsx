@@ -8,6 +8,7 @@ import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { MapPinIcon } from "@/components/icons";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   getRatingLabel,
   isOfferReservable,
@@ -17,6 +18,7 @@ import { paginateItems } from "@/lib/pagination";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -39,6 +41,8 @@ function getBusinessInitials(name: string) {
 }
 
 export default function BusinessesPage() {
+  const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [ratingSummaries, setRatingSummaries] = useState<
@@ -180,27 +184,36 @@ export default function BusinessesPage() {
         <div className="mx-auto max-w-7xl">
           <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-10">
             <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] md:text-sm">
-              Local businesses
+              {t("home.trustLocalBusinesses")}
             </p>
             <h1 className="mt-3 text-3xl font-black leading-tight text-[#2e2a22] sm:text-4xl md:text-5xl">
-              Discover verified Tbilisi businesses
+              {isGeorgian
+                ? "აღმოაჩინე თბილისის დამოწმებული ბიზნესები"
+                : "Discover verified Tbilisi businesses"}
             </h1>
             <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[#6b6152] md:text-lg">
-              Search bakeries, cafes, restaurants and shops that are approved
-              to publish surprise bags on ArGadaagdo.
+              {isGeorgian
+                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც ArGadaagdo-ზე სიურპრიზის ყუთების გამოქვეყნების უფლება აქვთ."
+                : "Search bakeries, cafes, restaurants and shops that are approved to publish surprise bags on ArGadaagdo."}
             </p>
           </div>
 
           {message && (
             <div className="mt-5">
-              <Notice tone="error">{message}</Notice>
+              <Notice tone="error">
+                {translateUserMessage(message, language)}
+              </Notice>
             </div>
           )}
 
           <FilterBar
             className="mt-6"
-            title="Find a business"
-            description="Search by name, type or address. Sort by rating, newest or alphabetical."
+            title={isGeorgian ? "იპოვე ბიზნესი" : "Find a business"}
+            description={
+              isGeorgian
+                ? "მოძებნე სახელით, ტიპით ან მისამართით. დაალაგე შეფასებით, სიახლით ან ანბანის მიხედვით."
+                : "Search by name, type or address. Sort by rating, newest or alphabetical."
+            }
           >
             <SearchBar
               value={search}
@@ -208,8 +221,10 @@ export default function BusinessesPage() {
                 setSearch(value);
                 setPage(1);
               }}
-              placeholder="Search businesses..."
-              label="Search businesses"
+              placeholder={
+                isGeorgian ? "მოძებნე ბიზნესი..." : "Search businesses..."
+              }
+              label={isGeorgian ? "ბიზნესების ძიება" : "Search businesses"}
             />
 
             <select
@@ -218,10 +233,16 @@ export default function BusinessesPage() {
                 setBusinessType(event.target.value);
                 setPage(1);
               }}
-              aria-label="Filter businesses by type"
+              aria-label={
+                isGeorgian
+                  ? "ბიზნესების ფილტრი ტიპით"
+                  : "Filter businesses by type"
+              }
               className="premium-input px-4 py-3 font-semibold"
             >
-              <option value="all">All business types</option>
+              <option value="all">
+                {isGeorgian ? "ბიზნესის ყველა ტიპი" : "All business types"}
+              </option>
               {businessTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -235,12 +256,24 @@ export default function BusinessesPage() {
                 setOfferFilter(event.target.value as BusinessOfferFilter);
                 setPage(1);
               }}
-              aria-label="Filter businesses by offer availability"
+              aria-label={
+                isGeorgian
+                  ? "ბიზნესების ფილტრი შეთავაზებების ხელმისაწვდომობით"
+                  : "Filter businesses by offer availability"
+              }
               className="premium-input px-4 py-3 font-semibold"
             >
-              <option value="all">All businesses</option>
-              <option value="with-offers">With active offers</option>
-              <option value="no-offers">No active offers</option>
+              <option value="all">
+                {isGeorgian ? "ყველა ბიზნესი" : "All businesses"}
+              </option>
+              <option value="with-offers">
+                {isGeorgian ? "აქტიური შეთავაზებებით" : "With active offers"}
+              </option>
+              <option value="no-offers">
+                {isGeorgian
+                  ? "აქტიური შეთავაზებების გარეშე"
+                  : "No active offers"}
+              </option>
             </select>
 
             <select
@@ -249,51 +282,66 @@ export default function BusinessesPage() {
                 setSort(event.target.value as BusinessSort);
                 setPage(1);
               }}
-              aria-label="Sort businesses"
+              aria-label={isGeorgian ? "ბიზნესების დალაგება" : "Sort businesses"}
               className="premium-input px-4 py-3 font-semibold"
             >
-              <option value="rating">Highest rated</option>
-              <option value="newest">Newest</option>
-              <option value="alphabetical">Alphabetical</option>
+              <option value="rating">
+                {isGeorgian ? "ყველაზე მაღალი შეფასება" : "Highest rated"}
+              </option>
+              <option value="newest">{isGeorgian ? "უახლესი" : "Newest"}</option>
+              <option value="alphabetical">
+                {isGeorgian ? "ანბანის მიხედვით" : "Alphabetical"}
+              </option>
             </select>
           </FilterBar>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-black text-[#6b6152]">
               {filteredBusinesses.length}{" "}
-              {filteredBusinesses.length === 1 ? "business" : "businesses"}
+              {isGeorgian
+                ? "ბიზნესი"
+                : filteredBusinesses.length === 1
+                ? "business"
+                : "businesses"}
             </p>
             <button
               type="button"
               onClick={resetFilters}
               className="premium-button-secondary min-h-11 px-5 py-2.5"
             >
-              Clear filters
+              {t("offers.clearFilters")}
             </button>
           </div>
 
           {loading && (
             <LoadingState
               className="mt-6"
-              title="Loading businesses..."
-              description="Checking approved local businesses."
+              title={{
+                en: "Loading businesses...",
+                ka: "ბიზნესები იტვირთება...",
+              }}
+              description={{
+                en: "Checking approved local businesses.",
+                ka: "მოწმდება დამტკიცებული ადგილობრივი ბიზნესები.",
+              }}
             />
           )}
 
           {!loading && filteredBusinesses.length === 0 && (
             <div className="soft-raised mt-6 rounded-3xl p-8 text-center">
               <h2 className="text-2xl font-black text-[#2e2a22]">
-                No businesses found
+                {isGeorgian ? "ბიზნესები ვერ მოიძებნა" : "No businesses found"}
               </h2>
               <p className="mx-auto mt-2 max-w-lg font-semibold leading-7 text-[#6b6152]">
-                Try clearing filters or browsing offers directly. New verified
-                businesses will appear here as the pilot grows.
+                {isGeorgian
+                  ? "სცადე ფილტრების გასუფთავება ან პირდაპირ შეთავაზებების დათვალიერება. ახალი დამოწმებული ბიზნესები აქ პილოტის ზრდასთან ერთად გამოჩნდება."
+                  : "Try clearing filters or browsing offers directly. New verified businesses will appear here as the pilot grows."}
               </p>
               <Link
                 href="/offers"
                 className="premium-button mt-5 inline-flex px-6 py-3"
               >
-                Browse Offers
+                {t("common.browseOffers")}
               </Link>
             </div>
           )}
@@ -320,30 +368,37 @@ export default function BusinessesPage() {
                           {business.name}
                         </h2>
                         <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
-                          Verified
+                          {isGeorgian ? "დამოწმებული" : "Verified"}
                         </span>
                       </div>
                       <p className="mt-2 font-semibold text-[#6b6152]">
-                        {business.business_type || "Food business"}
+                        {business.business_type ||
+                          (isGeorgian ? "კვების ბიზნესი" : "Food business")}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
                     <div className="rounded-2xl bg-yellow-50 p-4">
-                      <p className="text-xs font-black text-yellow-800">Rating</p>
+                      <p className="text-xs font-black text-yellow-800">
+                        {t("common.rating")}
+                      </p>
                       <p className="mt-1 text-sm font-black text-[#2e2a22]">
-                        {getRatingLabel(rating)}
+                        {getRatingLabel(rating, language)}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-[#f4efe4] p-4">
-                      <p className="text-xs font-black text-[#a67c52]">Offers</p>
+                      <p className="text-xs font-black text-[#a67c52]">
+                        {t("nav.offers")}
+                      </p>
                       <p className="mt-1 text-2xl font-black text-[#2e2a22]">
                         {activeOfferCount}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-[#f4efe4] p-4">
-                      <p className="text-xs font-black text-[#6b6152]">Sort ID</p>
+                      <p className="text-xs font-black text-[#6b6152]">
+                        {isGeorgian ? "რიგითი ID" : "Sort ID"}
+                      </p>
                       <p className="mt-1 text-2xl font-black text-[#2e2a22]">
                         #{business.id}
                       </p>
@@ -352,11 +407,11 @@ export default function BusinessesPage() {
 
                   <p className="mt-4 flex items-center gap-1.5 font-semibold leading-7 text-[#6b6152]">
                     <MapPinIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
-                    {business.address || "Address unavailable"}
+                    {business.address || t("common.addressUnavailable")}
                   </p>
 
                   <span className="premium-button mt-5 inline-flex min-h-11 px-5 py-2.5">
-                    View business
+                    {isGeorgian ? "ბიზნესის ნახვა" : "View business"}
                   </span>
                 </Link>
               );
@@ -368,7 +423,7 @@ export default function BusinessesPage() {
             page={paginatedBusinesses.page}
             totalItems={filteredBusinesses.length}
             pageSize={BUSINESS_PAGE_SIZE}
-            label="Businesses"
+            label={t("nav.businesses")}
             onPageChange={setPage}
           />
         </div>

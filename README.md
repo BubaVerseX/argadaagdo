@@ -21,7 +21,7 @@ Production beta URL:
 - Business registration with admin approval
 - Business dashboard for offers, reservations, pickup verification, and reviews
 - Public marketplace with categories, sorting, favorites, and offer detail pages
-- Bank of Georgia checkout session preparation through server route handlers
+- TBC Bank checkout session preparation through server route handlers
 - Payment-first reservation flow through Supabase RPC functions
 - Pickup codes for customers and manual code verification for businesses
 - Customer orders, cancellation, completed pickup history, and ratings
@@ -53,7 +53,7 @@ Production beta URL:
 4. A customer browses active offers and confirms a reservation.
 5. The payment RPC creates a pending order and payment hold while decreasing
    offer quantity atomically.
-6. Bank of Georgia confirms payment through a verified server callback.
+6. TBC Bank confirms payment through a verified server callback.
 7. The order becomes reserved and the pickup code is created.
 8. The customer shows the pickup code during the pickup window.
 9. The business verifies the code and completes the pickup.
@@ -76,7 +76,7 @@ Payment-first inventory holds must go through:
 ```ts
 supabase.rpc("create_provider_payment_order", {
   p_offer_id: offerId,
-  p_provider: "bog",
+  p_provider: "tbc",
 })
 ```
 
@@ -84,7 +84,7 @@ Payment callbacks must be finalized server-side through:
 
 ```ts
 supabase.rpc("finalize_provider_payment", {
-  p_provider: "bog",
+  p_provider: "tbc",
   p_provider_reference: providerReference,
   p_external_order_id: externalOrderId,
   p_provider_status: providerStatus,
@@ -149,14 +149,10 @@ Server-only payment variables:
 
 ```bash
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-BOG_CLIENT_ID=your-bank-of-georgia-client-id
-BOG_CLIENT_SECRET=your-bank-of-georgia-client-secret
-BOG_AUTH_URL=https://oauth2.bog.ge/auth/realms/bog/protocol/openid-connect/token
-BOG_API_BASE_URL=https://api.bog.ge
-BOG_CALLBACK_SECRET=use-a-long-random-callback-secret
-BOG_CALLBACK_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
-BOG_REQUIRE_CALLBACK_SIGNATURE=true
-BOG_REFUND_PATH_TEMPLATE=/payments/v1/payment/refund/{order_id}
+TBC_CLIENT_ID=your-tbc-client-id
+TBC_CLIENT_SECRET=your-tbc-client-secret
+TBC_API_KEY=your-tbc-developer-portal-apikey
+TBC_CALLBACK_SECRET=use-a-long-random-callback-secret
 ```
 
 Server-only email variables:
@@ -177,8 +173,8 @@ NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA=provided-by-vercel
 ```
 
 Only public browser-safe values should use the `NEXT_PUBLIC_` prefix. Never
-expose `SUPABASE_SERVICE_ROLE_KEY`, `BOG_CLIENT_SECRET`,
-`BOG_CALLBACK_SECRET`, `BOG_CALLBACK_PUBLIC_KEY`, `RESEND_API_KEY`, or
+expose `SUPABASE_SERVICE_ROLE_KEY`, `TBC_CLIENT_SECRET`,
+`TBC_API_KEY`, `TBC_CALLBACK_SECRET`, `RESEND_API_KEY`, or
 `CRON_SECRET` to the browser. Do not commit `.env.local`.
 
 ## Local Development
@@ -246,15 +242,20 @@ back successful reservations, cancellations, approvals, or pickups.
 - Set all required environment variables in Vercel.
 - Use `NEXT_PUBLIC_SITE_URL=https://argadaagdo-silk.vercel.app` for canonical
   metadata, sitemap, and robots URLs.
-- Configure the Bank of Georgia merchant callback URL as:
-  `https://argadaagdo-silk.vercel.app/api/payments/bog/callback?secret=<BOG_CALLBACK_SECRET>`
+- Configure the TBC Bank merchant callback URL as:
+  `https://argadaagdo-silk.vercel.app/api/payments/tbc/callback?secret=<TBC_CALLBACK_SECRET>`
 - Configure successful and failed payment redirects to use the generated
   checkout session URLs returned by ArGadaagdo.
 - Set `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`,
   `TRANSACTIONAL_EMAIL_REPLY_TO`, and `CRON_SECRET` in Vercel.
 - Set `HEALTH_CHECK_SECRET` in Vercel for detailed authenticated health checks.
 - The Vercel crons in `vercel.json` call `/api/cron/pickup-reminders` once per
-  day and `/api/cron/payment-maintenance` every 30 minutes. Vercel sends
+  day (06:00 UTC = 10:00 Tbilisi, reminding every reservation for that day
+  whose window hasn't ended) and `/api/cron/payment-maintenance` once per day (03:00
+  UTC) — the Vercel Hobby plan only allows daily crons. Because pending
+  payment holds are only released by payment-maintenance, an abandoned
+  checkout keeps its box reserved until that daily run; schedule it more
+  often (Vercel Pro or Supabase `pg_cron`) before launch. Vercel sends
   `Authorization: Bearer $CRON_SECRET`; keep that secret set in production.
 - Use `/api/health` for public uptime checks. Use
   `Authorization: Bearer $HEALTH_CHECK_SECRET` for detailed operational checks.

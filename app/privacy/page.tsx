@@ -37,7 +37,7 @@ export default function PrivacyPage() {
             <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
               {t("privacy.badge")}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-black break-words sm:text-4xl md:text-6xl">
               {t("privacy.title")}
             </h1>
             <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
           </div>
 
           <div className="mt-6 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
-            <h2 className="text-2xl font-black text-[#2e2a22]">
+            <h2 className="break-words text-2xl font-black text-[#2e2a22]">
               {t("privacy.helpTitle")}
             </h2>
             <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6152]">

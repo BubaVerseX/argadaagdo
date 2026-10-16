@@ -1,12 +1,16 @@
+"use client";
+
 import { RequiredMark } from "@/components/RequiredMark";
 import {
   OFFER_CATEGORIES,
+  getOfferCategoryLabel,
   normalizeOfferCategory,
   type OfferCategory,
 } from "@/lib/offerCategories";
 import type { TranslationKey } from "@/lib/i18n";
 import { getTbilisiDateKey } from "@/lib/offerLifecycle";
 import type { Business } from "@/lib/types";
+import { useLanguage } from "@/lib/useLanguage";
 import type { ChangeEvent } from "react";
 
 type GuidanceItem = {
@@ -43,6 +47,8 @@ type OfferFormProps = {
   onPickupStartChange: (value: string) => void;
   onPickupEndChange: (value: string) => void;
   onImageFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  /** Changes after each publish so the file input is cleared. */
+  imageInputKey?: number;
   onCreateOffer: (actionTime: number) => void;
 };
 
@@ -75,15 +81,19 @@ export function OfferForm({
   onPickupStartChange,
   onPickupEndChange,
   onImageFileChange,
+  imageInputKey = 0,
   onCreateOffer,
 }: OfferFormProps) {
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
+
   return (
     <div
       id="create-offer"
       className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
     >
       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
-        Offer Management
+        {isGeorgian ? "შეთავაზებების მართვა" : "Offer Management"}
       </p>
       <h2 className="mt-2 text-2xl font-black sm:text-3xl">
         {t("businessDashboard.createOffer")}
@@ -110,7 +120,7 @@ export function OfferForm({
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Business <RequiredMark />
+                {t("common.business")} <RequiredMark />
               </span>
               <select
                 value={businessId}
@@ -127,31 +137,35 @@ export function OfferForm({
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Title <RequiredMark />
+                {isGeorgian ? "სათაური" : "Title"} <RequiredMark />
               </span>
               <input
                 value={title}
                 onChange={(event) => onTitleChange(event.target.value)}
                 maxLength={120}
                 className="premium-input w-full min-w-0 p-4 font-semibold"
-                placeholder="Bakery Surprise Bag"
+                placeholder={t("businessOnboarding.recommendedTitleValue")}
               />
             </label>
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152] md:col-span-2">
-              Description
+              {isGeorgian ? "აღწერა" : "Description"}
               <textarea
                 value={description}
                 onChange={(event) => onDescriptionChange(event.target.value)}
                 maxLength={500}
                 className="premium-input min-h-28 w-full min-w-0 p-4 font-semibold"
-                placeholder="Fresh bakery items saved from today's closing stock."
+                placeholder={
+                  isGeorgian
+                    ? "დღევანდელი დახურვისას დარჩენილი ახალი საცხობი პროდუქცია."
+                    : "Fresh bakery items saved from today's closing stock."
+                }
               />
             </label>
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Category <RequiredMark />
+                {t("common.category")} <RequiredMark />
               </span>
               <select
                 value={category}
@@ -163,7 +177,9 @@ export function OfferForm({
               >
                 {OFFER_CATEGORIES.map((offerCategory) => (
                   <option key={offerCategory} value={offerCategory}>
-                    {offerCategory}
+                    {isGeorgian
+                      ? getOfferCategoryLabel(offerCategory, language)
+                      : offerCategory}
                   </option>
                 ))}
               </select>
@@ -171,7 +187,7 @@ export function OfferForm({
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Price <RequiredMark />
+                {t("common.price")} <RequiredMark />
               </span>
               <input
                 value={price}
@@ -186,7 +202,7 @@ export function OfferForm({
             </label>
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
-              Original price
+              {isGeorgian ? "საწყისი ფასი" : "Original price"}
               <input
                 value={oldPrice}
                 onChange={(event) => onOldPriceChange(event.target.value)}
@@ -201,7 +217,7 @@ export function OfferForm({
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Quantity <RequiredMark />
+                {t("common.quantity")} <RequiredMark />
               </span>
               <input
                 value={quantity}
@@ -217,7 +233,7 @@ export function OfferForm({
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Pickup date <RequiredMark />
+                {t("offerDetail.pickupDate")} <RequiredMark />
               </span>
               <input
                 value={pickupDate}
@@ -230,7 +246,7 @@ export function OfferForm({
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Pickup start <RequiredMark />
+                {isGeorgian ? "წაღების დაწყება" : "Pickup start"} <RequiredMark />
               </span>
               <input
                 value={pickupStart}
@@ -242,7 +258,7 @@ export function OfferForm({
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
               <span>
-                Pickup end <RequiredMark />
+                {isGeorgian ? "წაღების დასრულება" : "Pickup end"} <RequiredMark />
               </span>
               <input
                 value={pickupEnd}
@@ -253,8 +269,9 @@ export function OfferForm({
             </label>
 
             <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152] md:col-span-2">
-              Offer image
+              {isGeorgian ? "შეთავაზების სურათი" : "Offer image"}
               <input
+                key={imageInputKey}
                 type="file"
                 accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
                 onChange={onImageFileChange}

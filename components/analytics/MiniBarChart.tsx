@@ -5,6 +5,7 @@ type MiniBarChartProps = {
   description: string;
   data: ChartDatum[];
   valuePrefix?: string;
+  emptyText?: string;
 };
 
 export function MiniBarChart({
@@ -12,6 +13,7 @@ export function MiniBarChart({
   description,
   data,
   valuePrefix = "",
+  emptyText = "Not enough data yet.",
 }: MiniBarChartProps) {
   const maxValue = Math.max(...data.map((item) => item.value), 0);
 
@@ -29,7 +31,7 @@ export function MiniBarChart({
       <div className="mt-5 grid gap-3">
         {data.length === 0 && (
           <div className="rounded-2xl bg-[#f4efe4] p-4 text-sm font-semibold text-[#6b6152]">
-            Not enough data yet.
+            {emptyText}
           </div>
         )}
 

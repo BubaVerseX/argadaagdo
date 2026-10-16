@@ -6,6 +6,8 @@ import { OfferCard } from "@/components/OfferCard";
 import OfferImage from "@/components/OfferImage";
 import { ShoppingBagIcon } from "@/components/icons";
 import { getUserErrorMessage } from "@/lib/errors";
+import { translateUserMessage } from "@/lib/messageTranslations";
+import { getOfferCategoryLabel } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
@@ -276,10 +278,10 @@ export default function Home() {
                   {categoryLinks.map((category) => (
                     <Link
                       key={category}
-                      href="/offers"
+                      href={`/offers?category=${encodeURIComponent(category)}`}
                       className="soft-raised flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                     >
-                      {category}
+                      {getOfferCategoryLabel(category, language)}
                     </Link>
                   ))}
                 </div>
@@ -468,7 +470,7 @@ export default function Home() {
 
           {errorMessage && (
             <div className="soft-raised mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-[#6b6152]">
-              {errorMessage}
+              {translateUserMessage(errorMessage, language)}
             </div>
           )}
 

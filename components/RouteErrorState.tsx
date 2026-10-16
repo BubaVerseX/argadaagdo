@@ -3,13 +3,18 @@
 import Navbar from "@/components/Navbar";
 import { AlertTriangleIcon } from "@/components/icons";
 import { logAppError } from "@/lib/errors";
+import {
+  resolveLocalizedText,
+  type LocalizedText,
+} from "@/lib/localizedText";
+import { useLanguage } from "@/lib/useLanguage";
 import { useEffect } from "react";
 
 type RouteErrorStateProps = {
   error: Error & { digest?: string };
   reset: () => void;
-  title: string;
-  description: string;
+  title: LocalizedText;
+  description: LocalizedText;
   route: string;
 };
 
@@ -20,6 +25,8 @@ export function RouteErrorState({
   description,
   route,
 }: RouteErrorStateProps) {
+  const { language, t } = useLanguage();
+
   useEffect(() => {
     logAppError("Route error boundary triggered", error, {
       route,
@@ -38,11 +45,11 @@ export function RouteErrorState({
           </div>
 
           <h1 className="mt-5 text-3xl font-black text-[#2e2a22] sm:mt-6 sm:text-4xl">
-            {title}
+            {resolveLocalizedText(title, language)}
           </h1>
 
           <p className="mx-auto mt-4 max-w-md font-semibold leading-7 text-[#6b6152]">
-            {description}
+            {resolveLocalizedText(description, language)}
           </p>
 
           <button
@@ -50,7 +57,7 @@ export function RouteErrorState({
             onClick={reset}
             className="premium-button mt-7 w-full px-8 py-3 sm:mt-8 sm:w-auto sm:py-4"
           >
-            Try again
+            {t("offline.retry")}
           </button>
         </div>
       </section>

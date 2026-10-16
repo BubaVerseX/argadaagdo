@@ -1,7 +1,12 @@
-const CACHE_VERSION = "argadaagdo-v1";
+// Bump when this file's caching behavior changes: the activate handler
+// deletes every cache from older versions.
+const CACHE_VERSION = "argadaagdo-v2";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const OFFLINE_URL = "/offline";
+// Each visited page and every deploy's hashed chunks land in the runtime
+// cache; cap it so it can't grow forever on a device.
+const RUNTIME_CACHE_MAX_ENTRIES = 80;
 
 const APP_SHELL_URLS = [
   OFFLINE_URL,
@@ -67,6 +72,25 @@ function isApiRequest(url) {
   return url.pathname.startsWith("/api/");
 }
 
+// Only keep real, successful same-origin responses — never a 404/500 page
+// that would be replayed when offline.
+function isCacheableResponse(response) {
+  return response && response.ok && response.type === "basic";
+}
+
+async function putInRuntimeCache(cacheKey, response) {
+  const cache = await caches.open(RUNTIME_CACHE);
+  await cache.put(cacheKey, response);
+
+  const keys = await cache.keys();
+  const overflow = keys.length - RUNTIME_CACHE_MAX_ENTRIES;
+
+  // Cache keys come back in insertion order, so drop the oldest first.
+  for (let index = 0; index < overflow; index += 1) {
+    await cache.delete(keys[index]);
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
@@ -82,15 +106,22 @@ self.addEventListener("fetch", (event) => {
   // app shell when online, falling back to a cached copy or the offline
   // page only when the network is unavailable.
   if (request.mode === "navigate") {
+    // Pages are client-rendered shells, so the query string (e.g.
+    // ?payment=success, ?redirect=...) doesn't change the HTML — key the
+    // cache by path to avoid one entry per URL variant.
+    const pageCacheKey = `${url.origin}${url.pathname}`;
+
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const responseCopy = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, responseCopy));
+          if (isCacheableResponse(response)) {
+            const responseCopy = response.clone();
+            putInRuntimeCache(pageCacheKey, responseCopy).catch(() => {});
+          }
           return response;
         })
         .catch(async () => {
-          const cached = await caches.match(request);
+          const cached = await caches.match(pageCacheKey);
           return cached || (await caches.match(OFFLINE_URL));
         })
     );
@@ -107,8 +138,10 @@ self.addEventListener("fetch", (event) => {
       caches.match(request).then((cached) => {
         const networkFetch = fetch(request)
           .then((response) => {
-            const responseCopy = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, responseCopy));
+            if (isCacheableResponse(response)) {
+              const responseCopy = response.clone();
+              putInRuntimeCache(request, responseCopy).catch(() => {});
+            }
             return response;
           })
           .catch(() => cached);

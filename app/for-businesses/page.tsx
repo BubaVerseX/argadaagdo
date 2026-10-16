@@ -52,13 +52,13 @@ export default function ForBusinessesPage() {
 
       <section className="px-4 pb-12 pt-12 sm:px-6 sm:pb-16 sm:pt-16 lg:px-12 lg:pt-20">
         <div className="premium-container">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="min-w-0 max-w-2xl">
               <p className="soft-raised inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
                 {t("forBusinesses.metaBadge")}
               </p>
 
-              <h1 className="mt-7 text-balance text-[2.75rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2e2a22] sm:text-[3.25rem] lg:text-[3.5rem]">
+              <h1 className="mt-7 text-balance break-words text-[2.25rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2e2a22] min-[360px]:text-[2.75rem] sm:text-[3.25rem] lg:text-[3.5rem]">
                 {t("forBusinesses.heroTitle")}
               </h1>
 

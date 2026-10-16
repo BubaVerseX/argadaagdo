@@ -469,7 +469,7 @@ export function AdminPaymentsOverview({
         </div>
 
         <p className="max-w-xl text-sm font-semibold text-[#6b6152] sm:text-right">
-          Bank of Georgia checkout support is wired through server route
+          TBC Bank checkout support is wired through server route
           handlers. This panel shows the financial fields recorded by orders and
           the states admins should monitor during pilot operations.
         </p>
@@ -485,7 +485,7 @@ export function AdminPaymentsOverview({
           <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
             Current database payments support{" "}
             {currentDatabasePaymentStatuses.join(", ")}. Pending sessions hold
-            inventory until Bank of Georgia confirms, fails, cancels or expires
+            inventory until TBC Bank confirms, fails, cancels or expires
             the payment.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -628,6 +628,7 @@ export function PendingBusinesses({
   t,
   language,
   businesses,
+  waitingCount,
   updatingBusinessId,
   onApprove,
   onRequestChanges,
@@ -636,6 +637,8 @@ export function PendingBusinesses({
   t: (key: TranslationKey) => string;
   language: Language;
   businesses: AdminBusiness[];
+  /** Total pending businesses (the list itself is one page). */
+  waitingCount?: number;
   updatingBusinessId: number | null;
   onApprove: (id: number) => void;
   onRequestChanges: (id: number, reason: string) => void;
@@ -649,7 +652,13 @@ export function PendingBusinesses({
 
     const formData = new FormData(event.currentTarget);
     const reason = String(formData.get("reason") || "").trim();
-    const action = String(formData.get("approval_action") || "");
+    // FormData(form) never includes the clicked submit button, so read the
+    // action from the event's submitter instead.
+    const submitter = (event.nativeEvent as SubmitEvent).submitter as
+      | HTMLButtonElement
+      | null;
+    const action =
+      submitter?.name === "approval_action" ? submitter.value : "";
 
     if (action === "request_changes") {
       onRequestChanges(businessId, reason);
@@ -678,7 +687,7 @@ export function PendingBusinesses({
         </div>
 
         <span className="w-full rounded-full bg-yellow-100 px-4 py-2 text-center text-sm font-black text-yellow-800 sm:w-auto">
-          {businesses.length} waiting
+          {waitingCount ?? businesses.length} waiting
         </span>
       </div>
 

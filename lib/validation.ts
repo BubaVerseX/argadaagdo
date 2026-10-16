@@ -1,3 +1,5 @@
+import type { Language } from "@/lib/i18n";
+
 type TextValidationOptions = {
   label: string;
   value: string;
@@ -5,6 +7,9 @@ type TextValidationOptions = {
   maxLength?: number;
   required?: boolean;
   multiline?: boolean;
+  // Language of the returned error message. Pass a label in the same
+  // language. Defaults to English.
+  language?: Language;
 };
 
 export type TextValidationResult = {
@@ -56,45 +61,60 @@ export function validateTextField({
   maxLength = 160,
   required = true,
   multiline = false,
+  language = "en",
 }: TextValidationOptions): TextValidationResult {
   const normalizedValue = normalizeText(value, multiline);
+  const isGeorgian = language === "ka";
 
   if (required && normalizedValue.length === 0) {
-    return { value: normalizedValue, error: `${label} is required.` };
+    return {
+      value: normalizedValue,
+      error: isGeorgian ? `${label} სავალდებულოა.` : `${label} is required.`,
+    };
   }
 
   if (normalizedValue.length > 0 && normalizedValue.length < minLength) {
     return {
       value: normalizedValue,
-      error: `${label} must be at least ${minLength} characters.`,
+      error: isGeorgian
+        ? `${label} უნდა შეიცავდეს მინიმუმ ${minLength} სიმბოლოს.`
+        : `${label} must be at least ${minLength} characters.`,
     };
   }
 
   if (normalizedValue.length > maxLength) {
     return {
       value: normalizedValue,
-      error: `${label} must be ${maxLength} characters or fewer.`,
+      error: isGeorgian
+        ? `${label} არ უნდა აღემატებოდეს ${maxLength} სიმბოლოს.`
+        : `${label} must be ${maxLength} characters or fewer.`,
     };
   }
 
   if (containsUnsafeMarkup(normalizedValue)) {
     return {
       value: normalizedValue,
-      error: `${label} cannot include HTML or scripts.`,
+      error: isGeorgian
+        ? `${label} არ შეიძლება შეიცავდეს HTML-ს ან სკრიპტებს.`
+        : `${label} cannot include HTML or scripts.`,
     };
   }
 
   if (hasExcessiveRepeatedCharacters(normalizedValue)) {
     return {
       value: normalizedValue,
-      error: `${label} looks like repeated-character spam. Please use normal text.`,
+      error: isGeorgian
+        ? `${label} განმეორებადი სიმბოლოების გამო სპამს ჰგავს. გთხოვ, გამოიყენე ჩვეულებრივი ტექსტი.`
+        : `${label} looks like repeated-character spam. Please use normal text.`,
     };
   }
 
   if (hasTooManyLinks(normalizedValue)) {
     return {
       value: normalizedValue,
-      error: `${label} contains too many links.`,
+      error: isGeorgian
+        ? `${label} ზედმეტად ბევრ ბმულს შეიცავს.`
+        : `${label} contains too many links.`,
     };
   }
 

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
-import { absoluteSiteUrl, siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const appDescription =
@@ -58,10 +58,11 @@ export const metadata: Metadata = {
     "talentapp:project_verification":
       "cb3b653b92cfc9e35bf68e3b8430bc1606628d56462d120b76e4e5f33d6fbddf50ed31c35c852219c7dbb6e3f9509866519a33bc798635634e00a62dd4601b38",
   },
+  // No `url` here: routes without their own openGraph inherit this object,
+  // and a root url made every such page claim to be the homepage when shared.
   openGraph: {
     title: "ArGadaagdo | Rescue Good Food in Tbilisi",
     description: appDescription,
-    url: absoluteSiteUrl("/"),
     siteName: "ArGadaagdo",
     type: "website",
   },

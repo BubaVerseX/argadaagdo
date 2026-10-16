@@ -5,6 +5,7 @@ import {
   normalizePaymentProvider,
 } from "@/lib/payments/provider";
 import {
+  createServiceRoleSupabaseClient,
   createUserScopedSupabaseClient,
 } from "@/lib/supabaseServer";
 import { isEmailConfirmed } from "@/lib/auth";
@@ -21,6 +22,7 @@ type PendingPaymentOrder = {
 
 type CheckoutOffer = {
   id: number;
+  business_id: number;
   title: string;
   price: number | string;
   businesses?: {
@@ -91,7 +93,7 @@ export async function POST(request: Request) {
 
     const { data: offerData, error: offerError } = await userClient
       .from("offers")
-      .select("id, title, price, businesses(name)")
+      .select("id, business_id, title, price, businesses(name)")
       .eq("id", offerId)
       .maybeSingle();
 
@@ -119,6 +121,23 @@ export async function POST(request: Request) {
     pendingPayment = rpcData as PendingPaymentOrder;
     const offer = offerData as CheckoutOffer;
 
+    // Native split: the business's share goes straight to its payout account.
+    // The IBAN table is server-only, so it is read with the service role. A
+    // business without an IBAN on file falls back to an unsplit payment (full
+    // amount to us, paid out manually) rather than blocking the sale.
+    const { data: payoutAccount } = await createServiceRoleSupabaseClient()
+      .from("business_payout_accounts")
+      .select("iban")
+      .eq("business_id", offer.business_id)
+      .maybeSingle();
+
+    if (!payoutAccount?.iban) {
+      logger.warn("Business has no payout IBAN; creating unsplit payment", {
+        businessId: offer.business_id,
+        paymentId: pendingPayment.payment_id,
+      });
+    }
+
     const session = await provider.createPaymentSession({
       paymentId: pendingPayment.payment_id,
       orderId: pendingPayment.order_id,
@@ -128,6 +147,12 @@ export async function POST(request: Request) {
       amount: Number(pendingPayment.amount),
       currency: "GEL",
       externalOrderId: pendingPayment.external_order_id,
+      split: payoutAccount?.iban
+        ? {
+            iban: payoutAccount.iban,
+            amount: Number(pendingPayment.business_amount),
+          }
+        : undefined,
     });
 
     const { error: attachError } = await userClient.rpc(
@@ -156,10 +181,21 @@ export async function POST(request: Request) {
     logger.error("Payment checkout session failed", { error });
 
     if (pendingPayment && userClient) {
-      await userClient.rpc("record_provider_payment_failure", {
-        p_payment_id: pendingPayment.payment_id,
-        p_reason: "provider_session_failed",
-      });
+      const { error: rollbackError } = await userClient.rpc(
+        "record_provider_payment_failure",
+        {
+          p_payment_id: pendingPayment.payment_id,
+          p_reason: "provider_session_failed",
+        }
+      );
+
+      if (rollbackError) {
+        // The inventory hold stays in place until the expiry job runs.
+        logger.error("Checkout rollback failed; hold left pending", {
+          paymentId: pendingPayment.payment_id,
+          error: rollbackError.message,
+        });
+      }
     }
 
     return NextResponse.json(

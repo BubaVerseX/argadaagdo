@@ -45,6 +45,7 @@ const translations = {
     "nav.openMenu": "Open menu",
     "nav.closeMenu": "Close menu",
     "nav.browse": "Browse",
+    "nav.browseTab": "Browse",
     "nav.dashboardTab": "Dashboard",
     "nav.notifications": "Notifications",
     "nav.noNotifications": "No new notifications yet.",
@@ -578,7 +579,7 @@ const translations = {
       "Review the offer, pickup time and cancellation rules.",
     "checkout.stepPaymentTitle": "Payment",
     "checkout.stepPaymentText":
-      "Complete secure online payment through Bank of Georgia before the reservation is finalized.",
+      "Complete secure online payment through TBC Bank before the reservation is finalized.",
     "checkout.stepPickupTitle": "Pickup",
     "checkout.stepPickupText":
       "After confirmation, use your pickup code during the pickup window.",
@@ -595,10 +596,10 @@ const translations = {
     "checkout.regularPrice": "Regular price",
     "checkout.paymentMethod": "Payment method",
     "checkout.pilotReservationMethod":
-      "Online card payment via Bank of Georgia.",
+      "Online card payment via TBC Bank.",
     "checkout.paymentPreparationTitle": "Secure payment",
     "checkout.paymentPreparationText":
-      "You will be redirected to Bank of Georgia checkout. ArGadaagdo confirms the reservation only after payment succeeds.",
+      "You will be redirected to TBC Bank checkout. ArGadaagdo confirms the reservation only after payment succeeds.",
     "checkout.futurePaymentTitle": "Payment safety",
     "checkout.futurePaymentText":
       "If payment fails, is cancelled, or expires, the held quantity is released automatically.",
@@ -841,6 +842,7 @@ const translations = {
     "nav.openMenu": "მენიუს გახსნა",
     "nav.closeMenu": "მენიუს დახურვა",
     "nav.browse": "დათვალიერება",
+    "nav.browseTab": "ძიება",
     "nav.dashboardTab": "პანელი",
     "nav.notifications": "შეტყობინებები",
     "nav.noNotifications": "ახალი შეტყობინებები არ არის.",
@@ -1374,7 +1376,7 @@ const translations = {
       "გადაამოწმე შეთავაზება, წაღების დრო და გაუქმების წესები.",
     "checkout.stepPaymentTitle": "გადახდა",
     "checkout.stepPaymentText":
-      "ჯავშნის დასასრულებლად Bank of Georgia-ს მეშვეობით უსაფრთხო ონლაინ გადახდა დაასრულე.",
+      "ჯავშნის დასასრულებლად TBC Bank-ის მეშვეობით უსაფრთხო ონლაინ გადახდა დაასრულე.",
     "checkout.stepPickupTitle": "წაღება",
     "checkout.stepPickupText":
       "დადასტურების შემდეგ გამოიყენე წაღების კოდი მითითებულ ფანჯარაში.",
@@ -1391,10 +1393,10 @@ const translations = {
     "checkout.regularPrice": "სტანდარტული ფასი",
     "checkout.paymentMethod": "გადახდის მეთოდი",
     "checkout.pilotReservationMethod":
-      "ონლაინ ბარათით გადახდა Bank of Georgia-ს მეშვეობით.",
+      "ონლაინ ბარათით გადახდა TBC Bank-ის მეშვეობით.",
     "checkout.paymentPreparationTitle": "უსაფრთხო გადახდა",
     "checkout.paymentPreparationText":
-      "გადახდის დასასრულებლად Bank of Georgia-ს checkout-ზე გადახვალ. ArGadaagdo ჯავშანს მხოლოდ წარმატებული გადახდის შემდეგ დაადასტურებს.",
+      "გადახდის დასასრულებლად TBC Bank-ის checkout-ზე გადახვალ. ArGadaagdo ჯავშანს მხოლოდ წარმატებული გადახდის შემდეგ დაადასტურებს.",
     "checkout.futurePaymentTitle": "გადახდის უსაფრთხოება",
     "checkout.futurePaymentText":
       "თუ გადახდა ვერ შესრულდა, გაუქმდა ან ვადა გაუვიდა, დაჭერილი რაოდენობა ავტომატურად გათავისუფლდება.",
@@ -1402,10 +1404,10 @@ const translations = {
     "checkout.reservationIdAfterConfirmation":
       "ჯავშნის ID დადასტურების შემდეგ გამოჩნდება.",
     "checkout.paymentReferenceFuture":
-      "გადახდის reference ბანკის დადასტურების შემდეგ გამოჩნდება.",
+      "გადახდის იდენტიფიკატორი ბანკის დადასტურების შემდეგ გამოჩნდება.",
     "checkout.rules": "მესმის წაღებისა და გაუქმების წესები.",
     "checkout.payReserve": "გადახდა და დაჯავშნა",
-    "checkout.reserving": "უსაფრთხო checkout იქმნება...",
+    "checkout.reserving": "უსაფრთხო გადახდა მზადდება...",
     "checkout.successMessage":
       "ჯავშანი დადასტურდა. წაღების კოდი შეკვეთებშია.",
     "checkout.address": "მისამართი",
@@ -1452,7 +1454,7 @@ const translations = {
       "ArGadaagdo არის ქართული საკვების გადარჩენის მარკეტი, სადაც ადგილობრივ ბიზნესებს შეუძლიათ დარჩენილი საკვების ყუთების ფასდაკლებით გაყიდვა ნარჩენად გადაყრის ნაცვლად.",
     "faq.customer.reservations.question": "როგორ მუშაობს დაჯავშნა?",
     "faq.customer.reservations.answer":
-      "დაათვალიერე ხელმისაწვდომი სიურპრიზის ყუთები, გახსენი შეთავაზება, გადადი checkout-ზე და დაადასტურე ჯავშანი. დადასტურების შემდეგ შეკვეთა Orders გვერდზე გამოჩნდება.",
+      "დაათვალიერე ხელმისაწვდომი სიურპრიზის ყუთები, გახსენი შეთავაზება, გადადი გადახდის გვერდზე და დაადასტურე ჯავშანი. დადასტურების შემდეგ შეკვეთა „შეკვეთების“ გვერდზე გამოჩნდება.",
     "faq.customer.pickups.question": "როგორ მუშაობს წაღება?",
     "faq.customer.pickups.answer":
       "შეკვეთა უნდა წაიღო პირდაპირ ბიზნესიდან მითითებულ წაღების ფანჯარაში. აჩვენე წაღების კოდი, რომ ბიზნესმა შეკვეთა გადაამოწმოს და დაასრულოს.",
@@ -1467,7 +1469,7 @@ const translations = {
       "დასრულებული წაღების შემდეგ მომხმარებელს შეუძლია ბიზნესის შეფასება და სურვილისამებრ ტექსტური მიმოხილვის დატოვება. შეფასებები სხვებს სანდო ადგილების აღმოჩენაში ეხმარება.",
     "faq.business.join.question": "როგორ შევუერთდე ArGadaagdo-ს?",
     "faq.business.join.answer":
-      "შექმენი ანგარიში, რეგისტრაციისას აირჩიე ბიზნესი და შემდეგ business registration გვერდიდან გაგზავნე შენი ბიზნესის დეტალები.",
+      "შექმენი ანგარიში, რეგისტრაციისას აირჩიე ბიზნესი და შემდეგ ბიზნესის რეგისტრაციის გვერდიდან გაგზავნე შენი ბიზნესის დეტალები.",
     "faq.business.approval.question": "როგორ მუშაობს დამტკიცება?",
     "faq.business.approval.answer":
       "ადმინი ამოწმებს გაგზავნილ ბიზნესებს, სანამ ისინი შეთავაზებების გამოქვეყნებას შეძლებენ. ეს მარკეტს უფრო უსაფრთხოს და სანდოს ხდის.",
@@ -1476,7 +1478,7 @@ const translations = {
       "დამტკიცების შემდეგ გახსენი ბიზნეს პანელი და შექმენი სიურპრიზის ყუთი სათაურით, ფასით, რაოდენობით, სურათით და წაღების ფანჯარით.",
     "faq.business.collect.question": "როგორ იღებენ მომხმარებლები შეკვეთებს?",
     "faq.business.collect.answer":
-      "მომხმარებელი ბიზნესში აჩვენებს წაღების კოდს. შენ კოდს პანელში ამოწმებ და შეკვეთას collected სტატუსით ასრულებ.",
+      "მომხმარებელი ბიზნესში აჩვენებს წაღების კოდს. შენ კოდს პანელში ამოწმებ და შეკვეთას „წაღებულის“ სტატუსით ასრულებ.",
     "faq.general.tbilisi.question": "ხელმისაწვდომია ArGadaagdo თბილისის გარეთ?",
     "faq.general.tbilisi.answer":
       "პირველი სამიზნე ბაზარი თბილისია. სხვა ქართულ ქალაქებში გაფართოება შესაძლებელია მას შემდეგ, რაც ადგილობრივი პილოტი კარგად იმუშავებს.",
@@ -1542,7 +1544,7 @@ const translations = {
       "დაათვალიერე მიმდინარე შეთავაზებები ან დაგვიკავშირდი, თუ პლატფორმაზე მეტის გაგება გინდა.",
 
     "privacy.badge": "კონფიდენციალურობა",
-    "privacy.title": "კონფიდენციალურობის პოლიტიკა",
+    "privacy.title": "კონფიდენ\u00ADციალუ\u00ADრობის პოლიტიკა",
     "privacy.subtitle":
       "ეს მარტივი MVP კონფიდენციალურობის გვერდი ხსნის, რა ინფორმაციას იყენებს ArGadaagdo ანგარიშების, ჯავშნების და მხარდაჭერისთვის.",
     "privacy.infoTitle": "რა ინფორმაცია გროვდება",
@@ -1557,7 +1559,7 @@ const translations = {
     "privacy.contactTitle": "საკონტაქტო ინფორმაცია",
     "privacy.contactText":
       "თუ მხარდაჭერას დაუკავშირდები, შენი შეტყობინება და ელფოსტა შეიძლება გამოყენებულ იქნას პასუხისთვის და მარკეტის საკითხების მოსაგვარებლად.",
-    "privacy.helpTitle": "გაქვს კითხვა კონფიდენციალურობაზე?",
+    "privacy.helpTitle": "გაქვს კითხვა კონფიდენ\u00ADციალუ\u00ADრობაზე?",
     "privacy.helpText":
       "დაუკავშირდი ArGadaagdo-ს მხარდაჭერას ანგარიშის, შეკვეთის ან ბიზნესის ინფორმაციის შესახებ კითხვებისთვის.",
 
@@ -1570,7 +1572,7 @@ const translations = {
       "მომხმარებლები ჯავშნიან ხელმისაწვდომ სიურპრიზის ყუთებს დამტკიცებული ბიზნესებიდან. ჯავშანი ადასტურებს შეკვეთის მითითებულ წაღების ფანჯარაში აღების განზრახვას.",
     "terms.pickupTitle": "წაღების პასუხისმგებლობა",
     "terms.pickupText":
-      "მომხმარებელი პასუხისმგებელია ბიზნესში მითითებულ წაღების ფანჯარაში მისვლაზე და Orders გვერდიდან წაღების კოდის ჩვენებაზე.",
+      "მომხმარებელი პასუხისმგებელია ბიზნესში მითითებულ წაღების ფანჯარაში მისვლაზე და „შეკვეთების“ გვერდიდან წაღების კოდის ჩვენებაზე.",
     "terms.cancellationTitle": "გაუქმების პოლიტიკა",
     "terms.cancellationText":
       "ჯავშნის გაუქმება შესაძლებელია მხოლოდ აპში ნაჩვენები დაშვებული გაუქმების ფანჯრის ფარგლებში. დაგვიანებული გაუქმება შეიძლება ხელმისაწვდომი აღარ იყოს.",

@@ -43,13 +43,30 @@ body {
   body {
     overscroll-behavior-y: none;
   }
+}
 
-  body {
-    /* The status bar area is otherwise unpadded, so content (e.g. the
-       sticky navbar) would start flush at the very top, right under the
-       clock/battery icons. */
-    padding-top: env(safe-area-inset-top);
-  }
+/* Status bar / notch inset. This must NOT be limited to
+   (display-mode: standalone): the iOS/Android app shells (Capacitor
+   WebViews) report display-mode "browser" while drawing the page under the
+   status bar (viewport-fit=cover), which put the navbar under the clock and
+   Dynamic Island. Where there is no inset (normal browser tabs, PWAs with an
+   opaque status bar) env() is 0 and nothing changes. */
+body {
+  /* Capacitor's Android shell injects --safe-area-inset-* (older Android
+     WebViews report env() as 0); everywhere else env() is used. */
+  padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+}
+
+/* Opaque strip behind the status bar so scrolled content doesn't show
+   through it; the sticky navbar sticks just below it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  background: var(--background);
+  z-index: 60;
+  pointer-events: none;
 }
 
 html {
@@ -105,7 +122,7 @@ textarea {
   color: var(--foreground);
   /* Clears the fixed floating bottom tab bar (mobile only — the tab bar is
      lg:hidden, so no reservation is needed at the lg breakpoint). */
-  padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  padding-bottom: calc(6rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
 
 @media (min-width: 1024px) {

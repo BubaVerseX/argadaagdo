@@ -84,6 +84,43 @@ export function formatMoney(value: number | string | null | undefined) {
   return `₾ ${safeValue.toFixed(2)}`;
 }
 
+type OfferPricing = {
+  price: number | string | null | undefined;
+  old_price?: number | string | null;
+};
+
+// The "regular" price is only meaningful when it is higher than the sale
+// price; businesses can enter any value, so never show a crossed-out price
+// that is equal to or lower than what the customer pays.
+export function getOriginalPrice(offer: OfferPricing) {
+  const price = Number(offer.price);
+  const originalPrice = Number(offer.old_price);
+
+  if (
+    offer.old_price === null ||
+    offer.old_price === undefined ||
+    !Number.isFinite(price) ||
+    !Number.isFinite(originalPrice) ||
+    originalPrice <= 0 ||
+    originalPrice <= price
+  ) {
+    return null;
+  }
+
+  return originalPrice;
+}
+
+export function getDiscountPercent(offer: OfferPricing) {
+  const originalPrice = getOriginalPrice(offer);
+  if (originalPrice === null) return null;
+
+  const percent = Math.round(
+    ((originalPrice - Number(offer.price)) / originalPrice) * 100
+  );
+
+  return percent > 0 ? percent : null;
+}
+
 export function formatDisplayDateTime(
   value: string | null | undefined,
   language: Language = "en"
@@ -96,9 +133,11 @@ export function formatDisplayDateTime(
     return language === "ka" ? "თარიღი მიუწვდომელია" : "Date unavailable";
   }
 
+  // Always show marketplace times in Tbilisi time, not the device's zone.
   return new Intl.DateTimeFormat(language === "ka" ? "ka-GE" : "en-GB", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: TBILISI_TIME_ZONE,
   }).format(date);
 }
 
@@ -115,6 +154,7 @@ export function formatReviewDate(
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: TBILISI_TIME_ZONE,
   }).format(date);
 }
 
@@ -146,11 +186,13 @@ export function getOfferStartKey(
 }
 
 export function getEffectiveOfferStatus(offer: Offer): OfferLifecycleStatus {
-  if (offer.status === "inactive") return "inactive";
   if (offer.status === "expired") return "expired";
+  // A past pickup window wins over "inactive": a paused offer whose date has
+  // passed can't be reactivated, and belongs in the archive.
   if (offer.pickup_date && getOfferEndKey(offer) < getTbilisiDateTimeKey()) {
     return "expired";
   }
+  if (offer.status === "inactive") return "inactive";
   if (offer.status === "sold_out" || Number(offer.quantity || 0) <= 0) {
     return "sold_out";
   }

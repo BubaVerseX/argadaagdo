@@ -10,17 +10,20 @@ import {
   SIGNUP_VERIFIED_EMAIL_MESSAGE,
   VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
 } from "@/lib/auth";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import { isValidEmail, normalizeEmail } from "@/lib/validation";
 import { supabase } from "@/lib/supabase";
 import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore, type KeyboardEvent } from "react";
 
 type PasswordHelpMode = "none" | "forgot" | "reset";
 type PasswordHelpOverride = PasswordHelpMode | "hidden";
 
+// The messages set on this page stay in English in state; the notice
+// translates them with translateUserMessage when rendering.
 function getAuthErrorMessage(message?: string) {
   const normalizedMessage = (message || "").toLowerCase();
 
@@ -53,10 +56,19 @@ function getSafeInternalRedirectPath(value: string | null) {
 
   if (!trimmedValue.startsWith("/")) return null;
   if (trimmedValue.startsWith("//")) return null;
-  if (trimmedValue.toLowerCase().startsWith("http://")) return null;
-  if (trimmedValue.toLowerCase().startsWith("https://")) return null;
+  // Browsers treat "\" like "/" and strip tabs/newlines, so "/\evil.com"
+  // or "/<tab>/evil.com" would resolve to another origin.
+  if (/[\\\u0000-\u001f\u007f]/.test(trimmedValue)) return null;
 
-  return trimmedValue;
+  try {
+    const resolvedUrl = new URL(trimmedValue, window.location.origin);
+
+    if (resolvedUrl.origin !== window.location.origin) return null;
+
+    return `${resolvedUrl.pathname}${resolvedUrl.search}${resolvedUrl.hash}`;
+  } catch {
+    return null;
+  }
 }
 
 function readRedirectPath() {
@@ -115,7 +127,8 @@ function getRedirectMessage(
 
 export default function LoginPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const isGeorgian = language === "ka";
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const redirectPath = useSyncExternalStore(
     subscribeToRedirectChanges,
@@ -222,6 +235,15 @@ export default function LoginPage() {
     if (signupUserIsVerified) {
       setAuthMode("login");
     }
+  }
+
+  // The page isn't a <form> (it hosts several flows), so Enter in the email
+  // or password field didn't submit.
+  function submitOnEnter(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Enter" || submitting) return;
+
+    event.preventDefault();
+    void (authMode === "login" ? signIn() : createAccount());
   }
 
   async function signIn() {
@@ -523,14 +545,20 @@ export default function LoginPage() {
 
             <div className="mt-6 grid gap-4 sm:gap-5">
               {authMode === "login" && redirectMessage && !message && (
-                <Notice tone="warning">{redirectMessage}</Notice>
+                <Notice tone="warning">
+                  {translateUserMessage(redirectMessage, language)}
+                </Notice>
               )}
 
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={submitOnEnter}
                 type="email"
-                aria-label="Email address"
+                autoComplete="email"
+                aria-label={
+                  isGeorgian ? "ელფოსტის მისამართი" : "Email address"
+                }
                 placeholder={t("login.email")}
                 className="premium-input px-4 py-3"
               />
@@ -538,15 +566,23 @@ export default function LoginPage() {
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={submitOnEnter}
                 type="password"
-                aria-label="Password"
+                autoComplete={
+                  authMode === "login" ? "current-password" : "new-password"
+                }
+                aria-label={t("login.password")}
                 placeholder={t("login.password")}
                 className="premium-input px-4 py-3"
               />
 
               {authMode === "login" && (
                 <div className="flex flex-col gap-2 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold text-[#6b6152] sm:flex-row sm:items-center sm:justify-between sm:text-base">
-                  <span>Need help signing in?</span>
+                  <span>
+                    {isGeorgian
+                      ? "შესვლასთან დაკავშირებით დახმარება გჭირდება?"
+                      : "Need help signing in?"}
+                  </span>
                   <button
                     type="button"
                     onClick={() => {
@@ -559,17 +595,20 @@ export default function LoginPage() {
                     }}
                     className="flex min-h-11 items-center text-left font-black text-[#a67c52] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#a67c52] sm:justify-end sm:text-right"
                   >
-                    Forgot password?
+                    {isGeorgian ? "დაგავიწყდა პაროლი?" : "Forgot password?"}
                   </button>
                 </div>
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "forgot" && (
                 <div className="soft-raised rounded-3xl p-4">
-                  <h3 className="font-black text-[#2e2a22]">Reset password</h3>
+                  <h3 className="font-black text-[#2e2a22]">
+                    {isGeorgian ? "პაროლის აღდგენა" : "Reset password"}
+                  </h3>
                   <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
-                    Enter your account email above. We will send a secure reset
-                    link if the account exists.
+                    {isGeorgian
+                      ? "ზემოთ შეიყვანე ანგარიშის ელფოსტა. თუ ანგარიში არსებობს, უსაფრთხო აღდგენის ბმულს გამოგიგზავნით."
+                      : "Enter your account email above. We will send a secure reset link if the account exists."}
                   </p>
                   <button
                     type="button"
@@ -577,7 +616,13 @@ export default function LoginPage() {
                     disabled={submitting}
                     className="premium-button mt-4 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
-                    {submitting ? "Sending..." : "Send reset link"}
+                    {submitting
+                      ? isGeorgian
+                        ? "იგზავნება..."
+                        : "Sending..."
+                      : isGeorgian
+                      ? "აღდგენის ბმულის გაგზავნა"
+                      : "Send reset link"}
                   </button>
                 </div>
               )}
@@ -586,11 +631,14 @@ export default function LoginPage() {
                 <div className="soft-raised grid gap-4 rounded-3xl p-4">
                   <div>
                     <h3 className="font-black text-[#2e2a22]">
-                      Choose a new password
+                      {isGeorgian
+                        ? "აირჩიე ახალი პაროლი"
+                        : "Choose a new password"}
                     </h3>
                     <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
-                      Use at least 6 characters. Avoid passwords you use on
-                      other websites.
+                      {isGeorgian
+                        ? "გამოიყენე მინიმუმ 6 სიმბოლო. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
+                        : "Use at least 6 characters. Avoid passwords you use on other websites."}
                     </p>
                   </div>
 
@@ -598,8 +646,8 @@ export default function LoginPage() {
                     value={newPassword}
                     onChange={(event) => setNewPassword(event.target.value)}
                     type="password"
-                    aria-label="New password"
-                    placeholder="New password"
+                    aria-label={isGeorgian ? "ახალი პაროლი" : "New password"}
+                    placeholder={isGeorgian ? "ახალი პაროლი" : "New password"}
                     className="premium-input p-4 font-medium"
                   />
 
@@ -609,8 +657,16 @@ export default function LoginPage() {
                       setConfirmNewPassword(event.target.value)
                     }
                     type="password"
-                    aria-label="Confirm new password"
-                    placeholder="Confirm new password"
+                    aria-label={
+                      isGeorgian
+                        ? "გაიმეორე ახალი პაროლი"
+                        : "Confirm new password"
+                    }
+                    placeholder={
+                      isGeorgian
+                        ? "გაიმეორე ახალი პაროლი"
+                        : "Confirm new password"
+                    }
                     className="premium-input p-4 font-medium"
                   />
 
@@ -620,7 +676,13 @@ export default function LoginPage() {
                     disabled={submitting}
                     className="premium-button min-h-11 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
-                    {submitting ? "Updating..." : "Update password"}
+                    {submitting
+                      ? isGeorgian
+                        ? "ახლდება..."
+                        : "Updating..."
+                      : isGeorgian
+                      ? "პაროლის განახლება"
+                      : "Update password"}
                   </button>
                 </div>
               )}
@@ -705,7 +767,9 @@ export default function LoginPage() {
 
               {authMode === "login" && (
                 <div className="soft-raised rounded-2xl px-4 py-3 text-center text-sm font-bold text-[#2e2a22] sm:text-base">
-                  Need to verify your email?{" "}
+                  {isGeorgian
+                    ? "ელფოსტის დადასტურება გჭირდება?"
+                    : "Need to verify your email?"}{" "}
                   <button
                     type="button"
                     onClick={resendVerificationEmail}
@@ -713,14 +777,20 @@ export default function LoginPage() {
                     className="inline-flex min-h-11 items-center font-black text-[#a67c52] underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#a67c52]"
                   >
                     {resendingVerification
-                      ? "Sending..."
+                      ? isGeorgian
+                        ? "იგზავნება..."
+                        : "Sending..."
+                      : isGeorgian
+                      ? "დადასტურების წერილის ხელახლა გაგზავნა"
                       : "Resend verification email"}
                   </button>
                 </div>
               )}
 
               {message && (
-                <Notice tone={messageTone}>{message}</Notice>
+                <Notice tone={messageTone}>
+                  {translateUserMessage(message, language)}
+                </Notice>
               )}
             </div>
           </div>

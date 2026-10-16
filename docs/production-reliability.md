@@ -41,7 +41,7 @@ Check logs in this order:
 1. Vercel deployment logs
 2. Vercel function runtime logs
 3. Supabase logs for database/RPC/auth/storage issues
-4. Bank of Georgia payment callback logs
+4. TBC Bank payment callback logs
 5. Resend email delivery logs
 
 Important log fields:
@@ -91,7 +91,7 @@ checks with Vercel logs.
 
 1. Check Vercel function logs for `/api/payments/checkout`.
 2. Check Supabase RPC errors for payment/order functions.
-3. Check Bank of Georgia credentials and callback configuration.
+3. Check TBC Bank credentials and callback configuration.
 4. Verify offer quantity/status was not manually changed incorrectly.
 5. If a payment was taken but an order did not reserve, handle manually before
    asking the customer to retry.
@@ -170,7 +170,7 @@ Critical:
 
 - Supabase RLS enabled
 - Service role key server-only
-- Bank of Georgia secrets server-only
+- TBC Bank secrets server-only
 - Resend API key server-only
 - `HEALTH_CHECK_SECRET` configured
 - `CRON_SECRET` configured

@@ -1,4 +1,5 @@
 import { ClockIcon, XIcon } from "@/components/icons";
+import { useEffect, useRef } from "react";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import { formatPickupWindow } from "@/lib/offerLifecycle";
 import type { Order } from "@/lib/types";
@@ -26,6 +27,36 @@ export function PickupVerificationModal({
   onClose,
   onSubmit,
 }: PickupVerificationModalProps) {
+  const isGeorgian = language === "ka";
+  const codeInputRef = useRef<HTMLInputElement>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Dialog basics: focus the code field, close on Escape, stop the page
+  // behind from scrolling, and give focus back to where it was on close.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    codeInputRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onCloseRef.current();
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus?.();
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-[#2e2a22]/60 px-4 py-6 sm:py-10">
       <div className="mx-auto flex min-h-full max-w-lg items-center">
@@ -38,13 +69,15 @@ export function PickupVerificationModal({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
-                Pickup Operations
+                {isGeorgian ? "წაღების ოპერაციები" : "Pickup Operations"}
               </p>
               <h3
                 id="pickup-verification-title"
                 className="mt-2 text-2xl font-black text-[#2e2a22]"
               >
-                Verify Customer Pickup Code
+                {isGeorgian
+                  ? "შეამოწმე მომხმარებლის წაღების კოდი"
+                  : "Verify Customer Pickup Code"}
               </h3>
             </div>
 
@@ -52,7 +85,11 @@ export function PickupVerificationModal({
               type="button"
               onClick={onClose}
               disabled={updatingOrderId !== null}
-              aria-label="Close pickup verification"
+              aria-label={
+                isGeorgian
+                  ? "წაღების შემოწმების დახურვა"
+                  : "Close pickup verification"
+              }
               className="soft-raised flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2e2a22] transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               <XIcon className="h-4 w-4" strokeWidth={1.8} />
@@ -77,17 +114,19 @@ export function PickupVerificationModal({
           </div>
 
           <p className="mt-5 font-semibold leading-7 text-[#6b6152]">
-            Ask the customer to show the pickup code from their Orders page.
-            Enter it here before handing over the order.
+            {isGeorgian
+              ? "სთხოვე მომხმარებელს, შეკვეთების გვერდიდან წაღების კოდი გაჩვენოს. შეკვეთის გადაცემამდე კოდი აქ შეიყვანე."
+              : "Ask the customer to show the pickup code from their Orders page. Enter it here before handing over the order."}
           </p>
 
           <label
             htmlFor="pickup-verification-code"
             className="mt-5 block text-sm font-black uppercase tracking-wide text-[#6b6152]"
           >
-            Pickup Code
+            {t("orders.pickupCode")}
           </label>
           <input
+            ref={codeInputRef}
             id="pickup-verification-code"
             value={code}
             onChange={(event) => onCodeChange(event.target.value)}
@@ -105,7 +144,10 @@ export function PickupVerificationModal({
           />
 
           {error && (
-            <p className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700">
+            <p
+              role="alert"
+              className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700"
+            >
               {error}
             </p>
           )}
@@ -117,7 +159,7 @@ export function PickupVerificationModal({
               disabled={updatingOrderId !== null}
               className="premium-button-secondary px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
 
             <button
@@ -127,7 +169,11 @@ export function PickupVerificationModal({
               className="premium-button px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {updatingOrderId === order.id
-                ? "Completing..."
+                ? isGeorgian
+                  ? "სრულდება..."
+                  : "Completing..."
+                : isGeorgian
+                ? "შემოწმება და წაღების დასრულება"
                 : "Verify & Complete Pickup"}
             </button>
           </div>

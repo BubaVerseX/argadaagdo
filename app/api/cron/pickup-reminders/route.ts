@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
+import { isBearerSecretAuthorized } from "@/lib/requestAuth";
 import { sendDuePickupReminderEmails } from "@/lib/email/events";
 import { logger } from "@/lib/logger";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 function isCronAuthorized(request: Request) {
-  const secret = process.env.CRON_SECRET;
-
-  if (!secret) return false;
-  return request.headers.get("authorization") === `Bearer ${secret}`;
+  return isBearerSecretAuthorized(request, process.env.CRON_SECRET);
 }
 
 export async function GET(request: Request) {
