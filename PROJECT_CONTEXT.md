@@ -15,8 +15,8 @@ in-app account deletion (`/api/account/delete`, settings page) that
 anonymizes orders/payments instead of deleting them.
 
 Apply in this order — each step is safe with whatever code is live:
-1. `20261016120000_payment_safety.sql` + `20261016120100_account_deletion.sql`
-   (additive; can go in before the deploy).
+1. `20261016104256_payment_safety.sql` + `20261016104337_account_deletion.sql`
+   (additive) — **applied to production 2026-10-16**.
 2. Deploy the branch.
 3. `20261016120200_lock_pickup_codes_and_old_refunds.sql` (revokes
    `pickup_code` reads and `cancel_paid_order`; breaks older app code).

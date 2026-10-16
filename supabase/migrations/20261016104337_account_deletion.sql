@@ -1,8 +1,8 @@
 -- In-app account deletion (2026-10-16). Required by Apple and Google.
 --
--- Additive and safe to apply while the older app code is live; apply
--- together with 20261016120000_payment_safety.sql. The delete button only
--- works once the app code from the same change is deployed.
+-- STATUS: applied to production on 2026-10-16 (recorded as version
+-- 20261016104337). Additive; the delete button only works once the app code
+-- from the same change is deployed.
 --
 -- Orders and payments are accounting records, so they are anonymized, not
 -- deleted. Before this migration, deleting a user cascaded

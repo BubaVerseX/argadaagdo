@@ -9,7 +9,7 @@ import {
 // are accounting records, so anonymize_account_for_deletion strips the person
 // from them instead of deleting them; deleting the auth user then removes the
 // profile (email) and favorites. See
-// supabase/migrations/20261016120100_account_deletion.sql.
+// supabase/migrations/20261016104337_account_deletion.sql.
 
 const ACTIVE_RESERVATIONS_MESSAGE =
   "You have a reservation in progress. Pick it up or cancel it, then delete your account.";

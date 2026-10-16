@@ -1,4 +1,6 @@
 -- Payment safety for TBC, part 1 of 2 (2026-10-16): additive changes only.
+-- STATUS: applied to production on 2026-10-16 (recorded as version
+-- 20261016104256).
 --
 -- Safe to apply while the older app code is still live (it only adds states,
 -- columns and functions). Part 2, 20261016120200_lock_pickup_codes_and_old_refunds.sql,
