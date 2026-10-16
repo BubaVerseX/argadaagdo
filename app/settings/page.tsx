@@ -15,6 +15,7 @@ import {
 } from "@/lib/emailNotifications";
 import type { Language } from "@/lib/i18n";
 import { translateUserMessage } from "@/lib/messageTranslations";
+import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import type { Profile } from "@/lib/types";
 import type { User } from "@supabase/supabase-js";
@@ -120,7 +121,64 @@ export default function SettingsPage() {
   const [messageTone, setMessageTone] = useState<"warning" | "error">(
     "warning"
   );
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const emailPlaceholders = getEmailNotificationPlaceholders();
+  const deleteConfirmWord = isGeorgian ? "წაშლა" : "DELETE";
+  const deleteConfirmed =
+    deleteConfirmText.trim().toUpperCase() === deleteConfirmWord.toUpperCase();
+
+  async function deleteAccount() {
+    if (!deleteConfirmed || deletingAccount) return;
+
+    setDeletingAccount(true);
+    setDeleteError("");
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.access_token) {
+      setDeletingAccount(false);
+      router.replace("/login?redirect=/settings");
+      return;
+    }
+
+    let response: Response;
+
+    try {
+      response = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ confirm: true }),
+      });
+    } catch {
+      setDeletingAccount(false);
+      setDeleteError("Network problem. Please check your connection and try again.");
+      return;
+    }
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      setDeletingAccount(false);
+      setDeleteError(
+        typeof result?.error === "string"
+          ? result.error
+          : "Your account could not be deleted. Please try again or contact support."
+      );
+      return;
+    }
+
+    // The account no longer exists; drop the local session too.
+    await supabase.auth.signOut().catch(() => undefined);
+    router.replace("/?account=deleted");
+  }
 
   const loadSettings = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -402,8 +460,8 @@ export default function SettingsPage() {
               </h2>
               <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
                 {isGeorgian
-                  ? "მონაცემების ექსპორტის ან ანგარიშის წაშლის მოთხოვნისთვის დაუკავშირდი მხარდაჭერას. ასეთ მოთხოვნებს ყურადღებით განვიხილავთ, რადგან ჯავშნები, შეფასებები და ბიზნესის ჩანაწერები შესაძლოა მარკეტის ისტორიაში უნდა დარჩეს."
-                  : "For data export or account deletion requests, contact support. We review these requests carefully because reservations, ratings and business records may need to remain in marketplace history."}
+                  ? "მონაცემების ექსპორტისთვის ან სხვა კითხვებისთვის დაუკავშირდი მხარდაჭერას."
+                  : "For a copy of your data or any other privacy question, contact support."}
               </p>
               <div className="mt-5 grid gap-3">
                 <Link
@@ -422,23 +480,82 @@ export default function SettingsPage() {
                 {isGeorgian ? "საშიში ზონა" : "Danger Zone"}
               </p>
               <h2 className="mt-2 text-2xl font-black text-red-950">
-                {isGeorgian
-                  ? "ანგარიშის წაშლის მოთხოვნა"
-                  : "Account deletion request"}
+                {isGeorgian ? "ანგარიშის წაშლა" : "Delete account"}
               </h2>
               <p className="mt-2 font-semibold leading-7 text-red-800">
                 {isGeorgian
-                  ? "ანგარიშის წაშლა მხარდაჭერამ უნდა განიხილოს, რადგან შეკვეთები, შეფასებები და ბიზნესის ჩანაწერები შესაძლოა მარკეტის ისტორიისთვის უნდა შენარჩუნდეს."
-                  : "Account deletion should be reviewed by support because orders, ratings and business records may need to remain for marketplace history."}
+                  ? "ანგარიში, ელფოსტა და რჩეულები სამუდამოდ წაიშლება. შეკვეთებისა და გადახდების ჩანაწერები ბუღალტრული აღრიცხვისთვის რჩება, მაგრამ შენთან აღარ იქნება დაკავშირებული. ბიზნესის ანგარიშის წაშლისას ბიზნესი და მისი შეთავაზებები დაიმალება."
+                  : "Your account, email and favorites are permanently deleted. Order and payment records are kept for accounting, but no longer linked to you. Deleting a business account also hides the business and its offers."}
               </p>
-              <Link
-                href="/contact"
-                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-red-600 px-6 py-3 font-black text-white transition hover:bg-red-700 sm:w-auto"
-              >
-                {isGeorgian
-                  ? "ანგარიშთან დაკავშირებით დახმარების მოთხოვნა"
-                  : "Request account help"}
-              </Link>
+
+              {!showDeleteConfirm ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDeleteConfirm(true);
+                    setDeleteError("");
+                  }}
+                  className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-red-600 px-6 py-3 font-black text-white transition hover:bg-red-700 sm:w-auto"
+                >
+                  {isGeorgian ? "ჩემი ანგარიშის წაშლა" : "Delete my account"}
+                </button>
+              ) : (
+                <div className="mt-5 grid gap-3">
+                  <label
+                    htmlFor="delete-account-confirm"
+                    className="font-bold leading-6 text-red-900"
+                  >
+                    {isGeorgian
+                      ? `დასადასტურებლად ჩაწერე „${deleteConfirmWord}“. ამის გაუქმება შეუძლებელია.`
+                      : `Type ${deleteConfirmWord} to confirm. This can't be undone.`}
+                  </label>
+                  <input
+                    id="delete-account-confirm"
+                    value={deleteConfirmText}
+                    onChange={(event) => setDeleteConfirmText(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") void deleteAccount();
+                    }}
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    disabled={deletingAccount}
+                    className="min-h-12 rounded-2xl border border-red-200 bg-white px-4 font-bold text-red-950 outline-none focus:border-red-500"
+                  />
+                  {deleteError && (
+                    <p role="alert" className="font-bold leading-6 text-red-700">
+                      {translateUserMessage(deleteError, language)}
+                    </p>
+                  )}
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={() => void deleteAccount()}
+                      disabled={!deleteConfirmed || deletingAccount}
+                      className="inline-flex min-h-12 items-center justify-center rounded-full bg-red-600 px-6 py-3 font-black text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {deletingAccount
+                        ? isGeorgian
+                          ? "იშლება…"
+                          : "Deleting…"
+                        : isGeorgian
+                        ? "ანგარიშის სამუდამოდ წაშლა"
+                        : "Permanently delete account"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteConfirmText("");
+                        setDeleteError("");
+                      }}
+                      disabled={deletingAccount}
+                      className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-6 py-3 font-black text-red-800 transition hover:bg-red-100"
+                    >
+                      {isGeorgian ? "გაუქმება" : "Cancel"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -75,6 +75,7 @@ import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Business, Offer, Order, Rating } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { isWithinCooldown, validateTextField } from "@/lib/validation";
+import { ORDER_COLUMNS } from "@/lib/orderColumns";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -317,7 +318,7 @@ export default function BusinessDashboardPage() {
 
     if (offerIds.length > 0) {
       const orderSelect = `
-          *,
+          ${ORDER_COLUMNS},
           offers(title, price, pickup_date, pickup_start, pickup_end),
           profiles(email, reliability_score, reliability_status)
         `;
@@ -342,8 +343,8 @@ export default function BusinessDashboardPage() {
       const ordersById = new Map<number, Order>();
 
       for (const order of [
-        ...((activeResult.data || []) as Order[]),
-        ...((historyResult.data || []) as Order[]),
+        ...((activeResult.data || []) as unknown as Order[]),
+        ...((historyResult.data || []) as unknown as Order[]),
       ]) {
         ordersById.set(order.id, order);
       }
@@ -1185,7 +1186,10 @@ export default function BusinessDashboardPage() {
     await loadDashboard();
   }
 
-  async function completeOrder(orderId: number, pickupCodeValue: string) {
+  async function completeOrder(
+    orderId: number,
+    pickupCodeValue: string
+  ): Promise<boolean | "invalid_code"> {
     const completedOrder = allOrders.find((order) => order.id === orderId);
 
     // Note: a customer who arrives a little late with the correct code must
@@ -1212,7 +1216,7 @@ export default function BusinessDashboardPage() {
       setUpdatingOrderId(null);
       setMessageTone("error");
       setMessage("Pickup could not be completed. Please check the pickup code and try again.");
-      return false;
+      return error.message?.includes("Invalid pickup code") ? "invalid_code" : false;
     }
 
     // Some versions of complete_pickup record a late pickup as a no-show
@@ -1276,21 +1280,23 @@ export default function BusinessDashboardPage() {
     // Holding Enter in the code field would otherwise submit repeatedly.
     if (updatingOrderId !== null) return;
 
+    // The code is checked by complete_pickup on the server; the dashboard
+    // never sees the real code, so staff can only complete a pickup with the
+    // code the customer shows them.
     const enteredCode = pickupVerificationCode.trim();
-    const expectedCode = String(pickupVerificationOrder.pickup_code || "").trim();
 
     if (!enteredCode) {
       setPickupVerificationError("Pickup code is required.");
       return;
     }
 
-    if (!expectedCode || enteredCode !== expectedCode) {
+    setPickupVerificationError("");
+    const completed = await completeOrder(pickupVerificationOrder.id, enteredCode);
+
+    if (completed === "invalid_code") {
       setPickupVerificationError("Pickup code does not match.");
       return;
     }
-
-    setPickupVerificationError("");
-    const completed = await completeOrder(pickupVerificationOrder.id, enteredCode);
 
     if (!completed) {
       // The page-level message sits behind this dialog, so repeat it here.

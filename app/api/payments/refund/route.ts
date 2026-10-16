@@ -3,18 +3,17 @@ import { isEmailConfirmed } from "@/lib/auth";
 import { sendReservationCancellationEmail } from "@/lib/email/events";
 import { getUserErrorMessage } from "@/lib/errors";
 import { logger } from "@/lib/logger";
-import { getPaymentProvider } from "@/lib/payments/provider";
+import {
+  settleRequiredRefund,
+  type RefundablePayment,
+} from "@/lib/payments/refunds";
 import {
   createServiceRoleSupabaseClient,
   createUserScopedSupabaseClient,
 } from "@/lib/supabaseServer";
 
-type RefundPayment = {
-  payment_id: number;
-  provider: string;
-  provider_reference: string | null;
-  amount: number | string;
-};
+const REFUND_PROCESSING_MESSAGE =
+  "Your reservation is cancelled. The bank is still processing your refund; it will reach your account automatically.";
 
 function extractBearerToken(request: Request) {
   const authHeader = request.headers.get("authorization") || "";
@@ -70,65 +69,48 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: refundData, error: refundLookupError } = await userClient
-      .rpc("get_customer_refund_payment", {
+    // Phase 1: lock the order (refund_pending) and put the box back on sale.
+    // A retry for an order that is already locked returns the same refund.
+    const { data: refundData, error: beginError } = await userClient
+      .rpc("begin_customer_refund", {
         p_order_id: orderId,
       })
       .maybeSingle();
 
-    if (refundLookupError) {
+    if (beginError) {
       return NextResponse.json(
-        { error: getRefundErrorMessage(refundLookupError.message) },
+        { error: getRefundErrorMessage(beginError.message) },
         { status: 400 }
       );
     }
 
-    const refundPayment = refundData as RefundPayment | null;
+    const refundPayment = refundData as RefundablePayment | null;
+    const serviceClient = createServiceRoleSupabaseClient();
 
-    if (
-      refundPayment?.provider === "tbc" &&
-      refundPayment.provider_reference
-    ) {
-      const provider = getPaymentProvider("tbc");
-      const refundResult = await provider.refundPayment({
-        providerReference: refundPayment.provider_reference,
-        amount: Number(refundPayment.amount),
-        currency: "GEL",
-      });
-
-      if (
-        refundResult.status !== "refunded" &&
-        refundResult.status !== "cancelled"
-      ) {
-        return NextResponse.json(
-          { error: "Bank refund could not be confirmed. Please try again." },
-          { status: 502 }
-        );
-      }
-    }
-
-    const { error: cancelError } = await userClient.rpc("cancel_paid_order", {
-      p_order_id: orderId,
-    });
-
-    if (cancelError) {
-      return NextResponse.json(
-        { error: getRefundErrorMessage(cancelError.message) },
-        { status: 400 }
-      );
-    }
+    // Phases 2 and 3: refund at the bank, then record it. If the bank can't
+    // confirm it now, the order stays locked and the payment-maintenance
+    // cron finishes the refund; the customer's reservation is cancelled
+    // either way.
+    const settlement = refundPayment
+      ? await settleRequiredRefund(serviceClient, refundPayment)
+      : "refunded";
 
     // The cancellation is already committed — an email problem must not be
     // reported to the customer as a failed cancellation.
     try {
-      await sendReservationCancellationEmail(
-        createServiceRoleSupabaseClient(),
-        orderId
-      );
+      await sendReservationCancellationEmail(serviceClient, orderId);
     } catch (emailError) {
       logger.error("Reservation cancellation email failed", {
         orderId,
         error: emailError,
+      });
+    }
+
+    if (settlement !== "refunded") {
+      return NextResponse.json({
+        cancelled: true,
+        refundPending: true,
+        message: REFUND_PROCESSING_MESSAGE,
       });
     }
 
