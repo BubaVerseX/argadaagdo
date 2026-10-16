@@ -31,15 +31,15 @@ older notes below don't know:
   repo migrations 06-03…06-17 were only partly applied live, and two live
   migrations were never committed (both now committed verbatim). Compare
   `pg_proc.prosrc` with the repo before trusting either.
-- **Pending DB migration, NOT applied**:
-  `supabase/migrations/20261001120000_audit_fixes.sql` — tested on a local
-  replica; fixes no-show date check, reactivated paused offers, stale
+- **DB audit migration — applied to production 2026-10-16** (after a
+  rolled-back dry run; recorded as version 20261016101117, file renamed to
+  `supabase/migrations/20261016101117_audit_fixes.sql`). It fixes no-show date check, reactivated paused offers, stale
   payment holds (released after 40 min instead of only by the daily cron),
   duplicate holds, text pickup-time validation, safe offer delete, owner
   transfer lock, pending-owner edits, business visibility of customer
   profiles, and adds `get_my_favorite_offers()` (favorites page shows
   sold-out/expired favorites; the page falls back gracefully until it
-  exists). Apply only with the founder's OK (standing rule below).
+  exists).
 - 2026-10-12 follow-up: nothing had changed on `main` or the live DB since
   10-01. Added the favorites RPC above and fixed Georgian text spilling off
   320-375px phones (bottom tab bar uses `nav.browseTab` = "ძიება" as a

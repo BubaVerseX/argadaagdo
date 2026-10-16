@@ -1,8 +1,8 @@
 -- ArGadaagdo audit fixes (2026-10-01).
 --
--- STATUS: written and tested on a local copy only. NOT yet applied to the
--- production database — apply only after review (Supabase SQL editor,
--- `supabase db push`, or the MCP apply_migration tool).
+-- STATUS: applied to production on 2026-10-16 (after a rolled-back dry run)
+-- via apply_migration, which recorded it as version 20261016101117; the file
+-- was renamed from 20261001120000 to match.
 --
 -- Deliberately does NOT touch create_provider_payment_order or
 -- finalize_provider_payment: those depend on the BOG-vs-TBC decision.
