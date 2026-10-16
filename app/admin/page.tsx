@@ -77,6 +77,9 @@ const ADMIN_LIST_PAGE_SIZE = 8;
 // single .limit(1000) silently truncated every marketplace total.
 const ADMIN_PAGE_SIZE = 1000;
 const ADMIN_MAX_ROWS = 20000;
+// Matches max_attempts in complete_pickup
+// (supabase/migrations/20261016141833_pickup_code_attempt_limit.sql).
+const PICKUP_CODE_MAX_ATTEMPTS = 5;
 
 async function fetchAllRows<T>(
   table: string,
@@ -136,6 +139,9 @@ export default function AdminPage() {
   const [updatingBusinessId, setUpdatingBusinessId] = useState<number | null>(
     null
   );
+  const [unlockingOrderId, setUnlockingOrderId] = useState<number | null>(
+    null
+  );
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const checkAdminAndLoadData = useCallback(async () => {
@@ -162,7 +168,10 @@ export default function AdminPage() {
       await Promise.all([
         fetchAllRows<AdminBusiness>("businesses", "*"),
         fetchAllRows<Offer>("offers", "*"),
-        fetchAllRows<Order>("orders", ORDER_COLUMNS),
+        fetchAllRows<Order>(
+          "orders",
+          `${ORDER_COLUMNS}, pickup_code_failed_attempts`
+        ),
         fetchAllRows<Profile>(
           "profiles",
           `
@@ -318,6 +327,38 @@ export default function AdminPage() {
     await checkAdminAndLoadData();
   }
 
+  async function unlockPickupCode(orderId: number) {
+    if (unlockingOrderId !== null) return;
+
+    const confirmed = window.confirm(
+      `Unlock pickup code for order #${orderId}?\n\n` +
+        `It was locked after ${PICKUP_CODE_MAX_ATTEMPTS} wrong codes. Only unlock it once you have confirmed with the business and customer that the pickup is genuine.`
+    );
+
+    if (!confirmed) return;
+
+    setUnlockingOrderId(orderId);
+    const { error } = await supabase.rpc("reset_pickup_code_attempts", {
+      p_order_id: orderId,
+    });
+
+    if (error) {
+      logAppError("Pickup code unlock failed", error, {
+        operation: "reset_pickup_code_attempts",
+        orderId,
+      });
+      setUnlockingOrderId(null);
+      setMessageTone("error");
+      setMessage("Pickup code could not be unlocked. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage(`Order #${orderId} unlocked. The business can enter the pickup code again.`);
+    setUnlockingOrderId(null);
+    await checkAdminAndLoadData();
+  }
+
   function requestBusinessChanges(id: number, reason: string) {
     const business = businesses.find((item) => item.id === id);
     setMessageTone("warning");
@@ -405,6 +446,10 @@ export default function AdminPage() {
     (offer) => getEffectiveOfferStatus(offer) === "inactive"
   );
   const reservedOrders = orders.filter((order) => order.status === "reserved");
+  const lockedPickupOrders = reservedOrders.filter(
+    (order) =>
+      Number(order.pickup_code_failed_attempts || 0) >= PICKUP_CODE_MAX_ATTEMPTS
+  );
   const activeReservationOrders = orders.filter((order) =>
     isConfirmedOrderStatus(order.status)
   );
@@ -1050,6 +1095,51 @@ export default function AdminPage() {
         <AdminModerationVisibility metrics={moderationStats} />
 
         <AdminSupportTools metrics={supportLookupMetrics} />
+
+        {lockedPickupOrders.length > 0 && (
+          <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8">
+            <h3 className="text-lg font-black text-[#2e2a22]">
+              Locked pickup codes
+            </h3>
+            <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+              Reserved orders locked after {PICKUP_CODE_MAX_ATTEMPTS} wrong
+              pickup codes. The business cannot complete them until unlocked.
+            </p>
+            <div className="mt-4 grid gap-3">
+              {lockedPickupOrders.map((order) => {
+                const businessId = offerBusinessIdById.get(order.offer_id);
+                return (
+                  <div
+                    key={order.id}
+                    className="flex flex-col gap-3 rounded-2xl bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-black text-red-800">
+                        Order #{order.id}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+                        Offer #{order.offer_id} ·{" "}
+                        {(businessId && businessNameById[businessId]) ||
+                          "Business"}{" "}
+                        · {order.pickup_code_failed_attempts} wrong codes
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => void unlockPickupCode(order.id)}
+                      disabled={unlockingOrderId !== null}
+                      className="rounded-2xl bg-[#2e2a22] px-4 py-3 text-sm font-black text-white disabled:opacity-50"
+                    >
+                      {unlockingOrderId === order.id
+                        ? "Unlocking..."
+                        : "Unlock pickup code"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <FilterBar
           className="mt-6 sm:mt-8"
