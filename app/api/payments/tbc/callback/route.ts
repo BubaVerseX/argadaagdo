@@ -5,6 +5,7 @@ import {
   verifyTbcPayment,
 } from "@/lib/payments/tbc";
 import { sendReservationConfirmationEmail } from "@/lib/email/events";
+import { settleRefundForPayment } from "@/lib/payments/refunds";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -125,16 +126,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (
-      !orderId &&
-      (verifiedPayment.status === "paid" ||
-        verifiedPayment.status === "authorized")
-    ) {
+    const finalizedRow = asRecord(Array.isArray(data) ? data[0] : null);
+
+    if (readString(finalizedRow, ["payment_status"]) === "refund_required") {
       // Money was captured but the order is no longer waiting for payment
-      // (e.g. the hold expired first). Needs a refund or manual re-reserve.
-      logger.error("Paid provider payment has no active reservation", {
+      // (e.g. the hold expired first): send it straight back.
+      const settlement = await settleRefundForPayment(
+        supabase,
+        Number(finalizedRow.payment_id)
+      );
+      logger.warn("Late payment refunded automatically", {
         providerReference: verifiedPayment.providerReference,
-        finalizeResult: data,
+        settlement,
       });
     }
 

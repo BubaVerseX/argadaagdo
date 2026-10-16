@@ -45,6 +45,7 @@ import {
 import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
+import { ORDER_COLUMNS } from "@/lib/orderColumns";
 import type { Offer, Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
@@ -161,7 +162,7 @@ export default function AdminPage() {
       await Promise.all([
         fetchAllRows<AdminBusiness>("businesses", "*"),
         fetchAllRows<Offer>("offers", "*"),
-        fetchAllRows<Order>("orders", "*"),
+        fetchAllRows<Order>("orders", ORDER_COLUMNS),
         fetchAllRows<Profile>(
           "profiles",
           `

@@ -4,6 +4,26 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-10-16 — payment safety + account deletion (deploy order matters)
+
+Branch `claude/payment-safety-account-deletion` (stacked on the TBC PR) adds:
+late-payment auto-refunds (`refund_required`), two-phase customer refunds
+(`begin_customer_refund` → bank → `complete_provider_refund`, retried by the
+payment-maintenance cron), pickup codes hidden from businesses
+(`get_my_pickup_codes()`, `has_pickup_code`, `lib/orderColumns.ts`), and
+in-app account deletion (`/api/account/delete`, settings page) that
+anonymizes orders/payments instead of deleting them.
+
+Apply in this order — each step is safe with whatever code is live:
+1. `20261016120000_payment_safety.sql` + `20261016120100_account_deletion.sql`
+   (additive; can go in before the deploy).
+2. Deploy the branch.
+3. `20261016120200_lock_pickup_codes_and_old_refunds.sql` (revokes
+   `pickup_code` reads and `cancel_paid_order`; breaks older app code).
+All three were dry-run on production in rolled-back transactions with
+end-to-end scenario checks on 2026-10-16. Never use `select("*")` on orders
+after step 3 — use `ORDER_COLUMNS`.
+
 ## 🆕 2026-10-16 — payments are TBC-only in code too
 
 The BOG-vs-TBC mismatch below is resolved: the TBC integration

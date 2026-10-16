@@ -10,17 +10,22 @@ export type OrderStatus =
   | "completed"
   | "expired"
   | "cancelled"
+  | "refund_pending"
   | "refunded"
   | "no_show";
 
 export type Order = {
   id: number;
-  user_id: string;
+  /** Null once the customer has deleted their account. */
+  user_id: string | null;
   offer_id: number;
   created_at?: string | null;
   status: OrderStatus;
   payment_method: string | null;
-  pickup_code: string | null;
+  /** Only present on the customer's own active orders (from get_my_pickup_codes). */
+  pickup_code?: string | null;
+  /** True once the order was paid and given a pickup code. */
+  has_pickup_code?: boolean | null;
   amount?: number | string | null;
   platform_fee?: number | string | null;
   business_amount?: number | string | null;
