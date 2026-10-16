@@ -579,7 +579,7 @@ const translations = {
       "Review the offer, pickup time and cancellation rules.",
     "checkout.stepPaymentTitle": "Payment",
     "checkout.stepPaymentText":
-      "Complete secure online payment through Bank of Georgia before the reservation is finalized.",
+      "Complete secure online payment through TBC Bank before the reservation is finalized.",
     "checkout.stepPickupTitle": "Pickup",
     "checkout.stepPickupText":
       "After confirmation, use your pickup code during the pickup window.",
@@ -596,10 +596,10 @@ const translations = {
     "checkout.regularPrice": "Regular price",
     "checkout.paymentMethod": "Payment method",
     "checkout.pilotReservationMethod":
-      "Online card payment via Bank of Georgia.",
+      "Online card payment via TBC Bank.",
     "checkout.paymentPreparationTitle": "Secure payment",
     "checkout.paymentPreparationText":
-      "You will be redirected to Bank of Georgia checkout. ArGadaagdo confirms the reservation only after payment succeeds.",
+      "You will be redirected to TBC Bank checkout. ArGadaagdo confirms the reservation only after payment succeeds.",
     "checkout.futurePaymentTitle": "Payment safety",
     "checkout.futurePaymentText":
       "If payment fails, is cancelled, or expires, the held quantity is released automatically.",
@@ -1376,7 +1376,7 @@ const translations = {
       "გადაამოწმე შეთავაზება, წაღების დრო და გაუქმების წესები.",
     "checkout.stepPaymentTitle": "გადახდა",
     "checkout.stepPaymentText":
-      "ჯავშნის დასასრულებლად Bank of Georgia-ს მეშვეობით უსაფრთხო ონლაინ გადახდა დაასრულე.",
+      "ჯავშნის დასასრულებლად TBC Bank-ის მეშვეობით უსაფრთხო ონლაინ გადახდა დაასრულე.",
     "checkout.stepPickupTitle": "წაღება",
     "checkout.stepPickupText":
       "დადასტურების შემდეგ გამოიყენე წაღების კოდი მითითებულ ფანჯარაში.",
@@ -1393,10 +1393,10 @@ const translations = {
     "checkout.regularPrice": "სტანდარტული ფასი",
     "checkout.paymentMethod": "გადახდის მეთოდი",
     "checkout.pilotReservationMethod":
-      "ონლაინ ბარათით გადახდა Bank of Georgia-ს მეშვეობით.",
+      "ონლაინ ბარათით გადახდა TBC Bank-ის მეშვეობით.",
     "checkout.paymentPreparationTitle": "უსაფრთხო გადახდა",
     "checkout.paymentPreparationText":
-      "გადახდის დასასრულებლად Bank of Georgia-ს გადახდის გვერდზე გადახვალ. ArGadaagdo ჯავშანს მხოლოდ წარმატებული გადახდის შემდეგ დაადასტურებს.",
+      "გადახდის დასასრულებლად TBC Bank-ის checkout-ზე გადახვალ. ArGadaagdo ჯავშანს მხოლოდ წარმატებული გადახდის შემდეგ დაადასტურებს.",
     "checkout.futurePaymentTitle": "გადახდის უსაფრთხოება",
     "checkout.futurePaymentText":
       "თუ გადახდა ვერ შესრულდა, გაუქმდა ან ვადა გაუვიდა, დაჭერილი რაოდენობა ავტომატურად გათავისუფლდება.",

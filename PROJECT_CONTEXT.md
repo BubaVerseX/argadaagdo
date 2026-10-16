@@ -4,6 +4,16 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-10-16 — payments are TBC-only in code too
+
+The BOG-vs-TBC mismatch below is resolved: the TBC integration
+(`lib/payments/tbc.ts`, `app/api/payments/tbc/{callback,return}`, `TBC_*`
+env vars, `business_payout_accounts` for native split) is merged onto this
+branch and all BOG code is deleted. Every "Bank of Georgia" / `BOG_*`
+section further down is historical. The audit's fail-safe payment fixes
+(unknown status → pending, no "success" without a reservation, idempotent
+confirmation emails, timing-safe callback secret) were carried over to TBC.
+
 ## 🆕 2026-10-01 full audit + fix session — read this first
 
 A full audit (web app, iOS/Android wrappers, live Supabase read-only,

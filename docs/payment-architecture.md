@@ -10,13 +10,13 @@ for database compatibility.
 2. Customer accepts pickup and cancellation rules.
 3. Frontend calls `POST /api/payments/checkout`.
 4. The server validates the signed-in, email-confirmed user.
-5. The server calls `create_provider_payment_order(p_offer_id, 'bog')`.
+5. The server calls `create_provider_payment_order(p_offer_id, 'tbc')`.
 6. The RPC creates:
    - a `pending_payment` order
    - a `pending` payment
    - an inventory hold by decreasing offer quantity once
-7. The server creates a Bank of Georgia checkout session.
-8. Bank of Georgia confirms payment through callback or return verification.
+7. The server creates a TBC Bank checkout session.
+8. TBC Bank confirms payment through callback or return verification.
 9. The server calls `finalize_provider_payment(...)`.
 10. Paid orders become `reserved` and receive a pickup code.
 
@@ -51,7 +51,6 @@ Providers share the same internal shape:
 
 Provider candidates for future expansion:
 
-- Bank of Georgia
 - TBC Bank
 - Stripe
 - PayPal
@@ -62,7 +61,7 @@ Provider candidates for future expansion:
 
 1. Customer cancels through `cancel_paid_order(p_order_id)`.
 2. The refund route first validates ownership, status, and cancellation deadline.
-3. For Bank of Georgia payments, the provider refund is requested.
+3. For TBC Bank payments, the provider refund is requested.
 4. Local payment and order state are updated through `cancel_paid_order`.
 5. Inventory is restored exactly once through the RPC.
 
@@ -124,7 +123,7 @@ visibility. It does not initiate payouts yet.
 
 ## Pending Payment Cleanup
 
-If a customer closes the browser or abandons Bank of Georgia checkout, the order
+If a customer closes the browser or abandons TBC Bank checkout, the order
 can remain `pending_payment` while inventory is held. The protected cron route
 `/api/cron/payment-maintenance` runs `expire_pending_provider_payments(20)` to
 release abandoned holds and mark expired local payments safely.

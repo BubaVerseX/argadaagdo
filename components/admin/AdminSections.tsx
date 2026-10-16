@@ -469,7 +469,7 @@ export function AdminPaymentsOverview({
         </div>
 
         <p className="max-w-xl text-sm font-semibold text-[#6b6152] sm:text-right">
-          Bank of Georgia checkout support is wired through server route
+          TBC Bank checkout support is wired through server route
           handlers. This panel shows the financial fields recorded by orders and
           the states admins should monitor during pilot operations.
         </p>
@@ -485,7 +485,7 @@ export function AdminPaymentsOverview({
           <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
             Current database payments support{" "}
             {currentDatabasePaymentStatuses.join(", ")}. Pending sessions hold
-            inventory until Bank of Georgia confirms, fails, cancels or expires
+            inventory until TBC Bank confirms, fails, cancels or expires
             the payment.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">

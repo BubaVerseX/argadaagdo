@@ -1,4 +1,4 @@
-export type PaymentProviderId = "bog";
+export type PaymentProviderId = "tbc";
 
 export type ProviderPaymentStatus =
   | "pending"
@@ -18,6 +18,11 @@ export type CreatePaymentSessionInput = {
   amount: number;
   currency: "GEL";
   externalOrderId: string;
+  /** Native split: send `amount` straight to the business's payout account. */
+  split?: {
+    iban: string;
+    amount: number;
+  };
 };
 
 export type CreatePaymentSessionResult = {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { absoluteSiteUrl } from "@/lib/site";
 import { sendReservationConfirmationEmail } from "@/lib/email/events";
-import { verifyBogPayment } from "@/lib/payments/bog";
+import { verifyTbcPayment } from "@/lib/payments/tbc";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 type PaymentLookup = {
@@ -78,14 +78,14 @@ export async function GET(request: NextRequest) {
       return redirectToOrders("pending");
     }
 
-    const verifiedPayment = await verifyBogPayment(
+    const verifiedPayment = await verifyTbcPayment(
       paymentRecord.provider_reference
     );
 
     const { data: finalizeData, error: finalizeError } = await supabase.rpc(
       "finalize_provider_payment",
       {
-        p_provider: "bog",
+        p_provider: "tbc",
         p_provider_reference: verifiedPayment.providerReference,
         p_external_order_id: verifiedPayment.externalOrderId,
         p_provider_status: verifiedPayment.status,
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
     );
 
     if (finalizeError) {
-      logger.error("Bank of Georgia return finalize failed", {
+      logger.error("TBC return finalize failed", {
         paymentId,
         error: finalizeError.message,
       });
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
       verifiedPayment.status === "pending" ? "pending" : "failed"
     );
   } catch (error) {
-    logger.error("Bank of Georgia return handling failed", { paymentId, error });
+    logger.error("TBC return handling failed", { paymentId, error });
     return redirectToOrders("pending");
   }
 }

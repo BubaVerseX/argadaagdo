@@ -280,7 +280,7 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           offerId: offer.id,
-          provider: "bog",
+          provider: "tbc",
         }),
       });
     } catch {
@@ -550,7 +550,7 @@ export default function CheckoutPage() {
                       {t("checkout.paymentPreparationText")}
                     </p>
                     <div className="soft-pressed mt-4 rounded-2xl px-3 py-2 text-sm font-black text-[#2e2a22]">
-                      Bank of Georgia
+                      TBC Bank
                     </div>
                   </div>
 

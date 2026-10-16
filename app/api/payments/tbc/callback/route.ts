@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import {
-  isBogCallbackSecretValid,
-  verifyBogCallbackSignature,
-  verifyBogPayment,
-} from "@/lib/payments/bog";
+  isTbcCallbackSecretValid,
+  verifyTbcPayment,
+} from "@/lib/payments/tbc";
 import { sendReservationConfirmationEmail } from "@/lib/email/events";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
@@ -29,8 +28,8 @@ function extractProviderReference(payload: unknown) {
   const body = asRecord(record.body);
 
   return (
-    readString(record, ["order_id", "id", "payment_id"]) ||
-    readString(body, ["order_id", "id", "payment_id"])
+    readString(record, ["PaymentId", "paymentId", "payId"]) ||
+    readString(body, ["PaymentId", "paymentId", "payId"])
   );
 }
 
@@ -57,20 +56,13 @@ export async function POST(request: NextRequest) {
   try {
     const secret = request.nextUrl.searchParams.get("secret");
 
-    if (!isBogCallbackSecretValid(secret)) {
+    if (!isTbcCallbackSecretValid(secret)) {
       return NextResponse.json({ error: "Unauthorized callback" }, { status: 401 });
     }
 
+    // TBC callbacks are unsigned: the shared secret above gates the route, and
+    // the payment state is always re-read from TBC rather than trusted from the body.
     const rawBody = await request.text();
-    const callbackSignature = request.headers.get("Callback-Signature");
-
-    if (!verifyBogCallbackSignature(rawBody, callbackSignature)) {
-      return NextResponse.json(
-        { error: "Invalid callback signature" },
-        { status: 401 }
-      );
-    }
-
     let payload: unknown = {};
 
     try {
@@ -88,7 +80,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const verifiedPayment = await verifyBogPayment(providerReference);
+    const verifiedPayment = await verifyTbcPayment(providerReference);
 
     const supabase = createServiceRoleSupabaseClient();
     // Remember whether this payment was already confirmed, so a repeated
@@ -97,14 +89,14 @@ export async function POST(request: NextRequest) {
     const { data: existingPayment } = await supabase
       .from("payments")
       .select("status")
-      .eq("provider", "bog")
+      .eq("provider", "tbc")
       .eq("provider_reference", verifiedPayment.providerReference)
       .maybeSingle();
     const wasAlreadyPaid =
       (existingPayment as { status?: string } | null)?.status === "paid";
 
     const { data, error } = await supabase.rpc("finalize_provider_payment", {
-      p_provider: "bog",
+      p_provider: "tbc",
       p_provider_reference: verifiedPayment.providerReference,
       p_external_order_id: verifiedPayment.externalOrderId,
       p_provider_status: verifiedPayment.status,
@@ -112,7 +104,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      logger.error("Bank of Georgia callback finalize failed", {
+      logger.error("TBC callback finalize failed", {
         providerReference,
         error: error.message,
       });
@@ -148,7 +140,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true, result: data });
   } catch (error) {
-    logger.error("Bank of Georgia callback failed", { error });
+    logger.error("TBC callback failed", { error });
     return NextResponse.json({ error: "Payment callback failed" }, { status: 500 });
   }
 }

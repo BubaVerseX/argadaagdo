@@ -311,8 +311,8 @@ export default function OfferDetailPage() {
           question: language === "ka" ? "როდის ვიხდი?" : "When do I pay?",
           answer:
             language === "ka"
-              ? "Checkout-ზე გადახდა Bank of Georgia-ს მეშვეობით სრულდება. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
-              : "Payment is completed through Bank of Georgia checkout. Your reservation is confirmed only after payment succeeds.",
+              ? "Checkout-ზე გადახდა TBC Bank-ის მეშვეობით სრულდება. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
+              : "Payment is completed through TBC Bank checkout. Your reservation is confirmed only after payment succeeds.",
         },
         {
           question:

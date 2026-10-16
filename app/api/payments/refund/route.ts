@@ -86,10 +86,10 @@ export async function POST(request: Request) {
     const refundPayment = refundData as RefundPayment | null;
 
     if (
-      refundPayment?.provider === "bog" &&
+      refundPayment?.provider === "tbc" &&
       refundPayment.provider_reference
     ) {
-      const provider = getPaymentProvider("bog");
+      const provider = getPaymentProvider("tbc");
       const refundResult = await provider.refundPayment({
         providerReference: refundPayment.provider_reference,
         amount: Number(refundPayment.amount),
