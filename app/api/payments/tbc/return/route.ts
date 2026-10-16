@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { absoluteSiteUrl } from "@/lib/site";
 import { sendReservationConfirmationEmail } from "@/lib/email/events";
+import { settleRefundForPayment } from "@/lib/payments/refunds";
 import { verifyTbcPayment } from "@/lib/payments/tbc";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
@@ -9,6 +10,7 @@ type PaymentLookup = {
   id: number;
   provider_reference: string | null;
   status: string;
+  created_at: string | null;
 };
 
 type FinalizedPaymentRow = {
@@ -17,8 +19,13 @@ type FinalizedPaymentRow = {
   payment_status?: string | null;
 };
 
+// A customer can still pay on the bank page shortly after our hold on the box
+// was released. Payments closed this recently are re-checked with the bank so
+// a late payment is refunded (and explained) instead of shown as "failed".
+const LATE_PAYMENT_WINDOW_MS = 2 * 60 * 60 * 1000;
+
 function redirectToOrders(
-  status: "success" | "pending" | "failed" | "review"
+  status: "success" | "pending" | "failed" | "review" | "refunded"
 ) {
   return NextResponse.redirect(absoluteSiteUrl(`/orders?payment=${status}`));
 }
@@ -51,7 +58,7 @@ export async function GET(request: NextRequest) {
     const supabase = createServiceRoleSupabaseClient();
     const { data: payment, error: paymentError } = await supabase
       .from("payments")
-      .select("id, provider_reference, status")
+      .select("id, provider_reference, status, created_at")
       .eq("id", paymentId)
       .maybeSingle();
 
@@ -70,7 +77,18 @@ export async function GET(request: NextRequest) {
       return redirectToOrders("success");
     }
 
-    if (paymentRecord.status !== "pending") {
+    if (paymentRecord.status === "refund_required") {
+      const settlement = await settleRefundForPayment(supabase, paymentId);
+      return redirectToOrders(settlement === "refunded" ? "refunded" : "review");
+    }
+
+    const createdAt = Date.parse(paymentRecord.created_at || "");
+    const mayBeLatePayment =
+      ["expired", "failed", "cancelled"].includes(paymentRecord.status) &&
+      Number.isFinite(createdAt) &&
+      Date.now() - createdAt < LATE_PAYMENT_WINDOW_MS;
+
+    if (paymentRecord.status !== "pending" && !mayBeLatePayment) {
       return redirectToOrders("failed");
     }
 
@@ -116,14 +134,30 @@ export async function GET(request: NextRequest) {
       return redirectToOrders("success");
     }
 
-    const bankReportsPaid =
-      verifiedPayment.status === "paid" ||
-      verifiedPayment.status === "authorized";
+    const finalizedRow = Array.isArray(finalizeData)
+      ? (finalizeData[0] as FinalizedPaymentRow & { payment_id?: number | string })
+      : null;
 
-    if (bankReportsPaid) {
+    if (finalizedRow?.payment_status === "refund_required") {
       // The bank took the money but the order was no longer waiting for
-      // payment (e.g. the hold already expired). Never show "success" here —
-      // the customer has no reservation — and make sure someone looks at it.
+      // payment (the hold had already expired). Never show "success" here —
+      // the customer has no reservation — and send the money back.
+      const settlement = await settleRefundForPayment(
+        supabase,
+        Number(finalizedRow.payment_id)
+      );
+      logger.warn("Late payment refunded automatically", {
+        paymentId,
+        settlement,
+      });
+      return redirectToOrders(settlement === "refunded" ? "refunded" : "review");
+    }
+
+    if (
+      verifiedPayment.status === "paid" ||
+      verifiedPayment.status === "authorized"
+    ) {
+      // Paid, yet neither reserved nor refundable: someone has to look.
       logger.error("Paid provider payment has no active reservation", {
         paymentId,
         providerReference: verifiedPayment.providerReference,

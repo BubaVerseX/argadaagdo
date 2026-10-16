@@ -178,6 +178,35 @@ const georgianMessageEntries: Array<[string, string]> = [
     "Payment was not completed, so this reservation was not confirmed.",
     "გადახდა არ დასრულებულა, ამიტომ ჯავშანი არ დადასტურდა.",
   ],
+  // app/api/account/delete and the settings page.
+  [
+    "You have a reservation in progress. Pick it up or cancel it, then delete your account.",
+    "გაქვს მიმდინარე ჯავშანი. ჯერ წაიღე ან გააუქმე, შემდეგ წაშალე ანგარიში.",
+  ],
+  [
+    "Your business has reservations in progress. Complete or resolve them, then delete your account.",
+    "შენს ბიზნესს მიმდინარე ჯავშნები აქვს. ჯერ დაასრულე ისინი, შემდეგ წაშალე ანგარიში.",
+  ],
+  [
+    "Your account could not be deleted. Please try again or contact support.",
+    "ანგარიშის წაშლა ვერ მოხერხდა. სცადე ხელახლა ან დაუკავშირდი მხარდაჭერას.",
+  ],
+  [
+    "Admin accounts can't be deleted from the app.",
+    "ადმინის ანგარიშის აპიდან წაშლა შეუძლებელია.",
+  ],
+  [
+    "Please sign in to delete your account.",
+    "ანგარიშის წასაშლელად შედი სისტემაში.",
+  ],
+  [
+    "Your payment arrived after the reservation hold had expired, so we refunded it automatically. Please reserve again if the offer is still available.",
+    "გადახდა ჯავშნის ვადის გასვლის შემდეგ შემოვიდა, ამიტომ თანხა ავტომატურად დაგიბრუნეთ. თუ შეთავაზება ჯერ კიდევ ხელმისაწვდომია, ხელახლა დაჯავშნე.",
+  ],
+  [
+    "Your reservation is cancelled. The bank is still processing your refund; it will reach your account automatically.",
+    "ჯავშანი გაუქმდა. ბანკი თანხის დაბრუნებას ჯერ კიდევ ამუშავებს; ის ავტომატურად დაგიბრუნდება ანგარიშზე.",
+  ],
   [
     "We received your payment, but the reservation could not be confirmed automatically. Please contact support so we can confirm it or refund you.",
     "გადახდა მივიღეთ, მაგრამ ჯავშნის ავტომატურად დადასტურება ვერ მოხერხდა. გთხოვ, დაუკავშირდი მხარდაჭერას, რომ ჯავშანი დავადასტუროთ ან თანხა დაგიბრუნოთ.",

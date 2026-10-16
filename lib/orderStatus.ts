@@ -19,7 +19,10 @@ export function isCollectedOrderStatus(status: OrderStatus) {
 
 export function isCancelledOrderStatus(status: OrderStatus) {
   return (
-    status === "cancelled" || status === "refunded" || status === "no_show"
+    status === "cancelled" ||
+    status === "refund_pending" ||
+    status === "refunded" ||
+    status === "no_show"
   );
 }
 
@@ -29,25 +32,36 @@ export function isCancelledOrderStatus(status: OrderStatus) {
 // exclusive; use isCancelledOrderStatus for the broader "order did not
 // result in a pickup" grouping (styling, inactive-order filters, etc.).
 export function isStrictlyCancelledOrderStatus(status: OrderStatus) {
-  return status === "cancelled" || status === "refunded";
+  return (
+    status === "cancelled" ||
+    status === "refund_pending" ||
+    status === "refunded"
+  );
+}
+
+// Whether the order was ever paid. Businesses can't read pickup_code, so the
+// generated has_pickup_code column is the source of truth; pickup_code is a
+// fallback for rows loaded before that column existed.
+function wasEverPaid(order: Pick<Order, "has_pickup_code" | "pickup_code">) {
+  return Boolean(order.has_pickup_code ?? order.pickup_code);
 }
 
 // A checkout that never became a reservation: still waiting for payment, or
 // abandoned/failed/expired before payment. These never received a pickup
 // code, so they must not count as reservations or cancellations.
 export function isUnpaidCheckoutOrder(
-  order: Pick<Order, "status" | "pickup_code">
+  order: Pick<Order, "status" | "pickup_code" | "has_pickup_code">
 ) {
   return (
     order.status === "pending_payment" ||
-    (order.status === "cancelled" && !order.pickup_code)
+    (order.status === "cancelled" && !wasEverPaid(order))
   );
 }
 
 export function isFailedCheckoutOrder(
-  order: Pick<Order, "status" | "pickup_code">
+  order: Pick<Order, "status" | "pickup_code" | "has_pickup_code">
 ) {
-  return order.status === "cancelled" && !order.pickup_code;
+  return order.status === "cancelled" && !wasEverPaid(order);
 }
 
 export function isExpiredOrderStatus(status: OrderStatus) {
@@ -86,6 +100,9 @@ export function getOrderStatusLabel(status: OrderStatus, language: Language = "e
   }
   if (status === "no_show") {
     return language === "ka" ? "არ გამოცხადდა" : "No show";
+  }
+  if (status === "refund_pending") {
+    return language === "ka" ? "თანხა ბრუნდება" : "Refund in progress";
   }
   if (isCancelledOrderStatus(status)) {
     return language === "ka" ? "გაუქმებული" : "Cancelled";

@@ -11,6 +11,7 @@ import {
   getProfileById,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import { logAppError } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
@@ -27,6 +28,7 @@ import {
   getCancellationErrorMessage,
   getLoginRedirectUrl,
 } from "@/lib/orders";
+import { ORDER_COLUMNS } from "@/lib/orderColumns";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -70,6 +72,14 @@ function getInitialPaymentReturnMessage():
     };
   }
 
+  if (paymentStatus === "refunded") {
+    return {
+      tone: "warning",
+      message:
+        "Your payment arrived after the reservation hold had expired, so we refunded it automatically. Please reserve again if the offer is still available.",
+    };
+  }
+
   if (paymentStatus === "review") {
     return {
       tone: "warning",
@@ -102,11 +112,11 @@ export default function OrdersPage() {
     if (showLoading) setLoading(true);
     await processExpiredMarketplace();
 
-    const { data, error } = await supabase
+    const ordersRequest = supabase
       .from("orders")
       .select(
         `
-        *,
+        ${ORDER_COLUMNS},
         offers(
           id,
           title,
@@ -122,6 +132,12 @@ export default function OrdersPage() {
       )
       .eq("user_id", userId)
       .order("id", { ascending: false });
+    // Pickup codes aren't readable from the orders table (so businesses
+    // can't see them); the customer's own codes come from this RPC.
+    const [{ data, error }, codesResult] = await Promise.all([
+      ordersRequest,
+      supabase.rpc("get_my_pickup_codes"),
+    ]);
 
     if (error) {
       setMessageTone("error");
@@ -130,7 +146,24 @@ export default function OrdersPage() {
       return;
     }
 
-    setOrders((data || []) as Order[]);
+    if (codesResult.error) {
+      logAppError("Pickup codes could not be loaded", codesResult.error, {
+        operation: "get_my_pickup_codes",
+      });
+    }
+
+    const codesByOrderId = new Map(
+      ((codesResult.data || []) as { order_id: number; pickup_code: string }[]).map(
+        (row) => [row.order_id, row.pickup_code]
+      )
+    );
+
+    setOrders(
+      ((data || []) as unknown as Order[]).map((order) => ({
+        ...order,
+        pickup_code: codesByOrderId.get(order.id) ?? null,
+      }))
+    );
     setLoading(false);
   }
 
@@ -206,7 +239,7 @@ export default function OrdersPage() {
       return nextReviews;
     });
     setRatingOrderId(null);
-    await loadOrders(order.user_id);
+    await loadOrders(order.user_id ?? "");
   }
 
   async function cancelOrder(order: Order) {
@@ -249,16 +282,23 @@ export default function OrdersPage() {
     if (!response.ok) {
       setMessageTone("error");
       setMessage(getCancellationErrorMessage(result?.error));
-      await loadOrders(order.user_id);
+      await loadOrders(order.user_id ?? "");
       setCancellingOrderId(null);
       return;
     }
 
-    setMessageTone("success");
-    setMessage("Reservation cancelled.");
+    const refundPending = Boolean(result?.refundPending);
+    setMessageTone(refundPending ? "warning" : "success");
+    setMessage(
+      refundPending && typeof result?.message === "string"
+        ? result.message
+        : "Reservation cancelled."
+    );
     setOrders((currentOrders) =>
       currentOrders.map((item) =>
-        item.id === order.id ? { ...item, status: "cancelled" } : item
+        item.id === order.id
+          ? { ...item, status: refundPending ? "refund_pending" : "refunded" }
+          : item
       )
     );
     notifyOrderCancelled({
@@ -266,7 +306,7 @@ export default function OrdersPage() {
       offerTitle: order.offers?.title,
       businessName: order.offers?.businesses?.name,
     });
-    await loadOrders(order.user_id);
+    await loadOrders(order.user_id ?? "");
     setCancellingOrderId(null);
   }
 

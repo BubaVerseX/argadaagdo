@@ -317,8 +317,10 @@ export function ReservationList({
                   {isConfirmedOrderStatus(order.status) && (
                     <span className="rounded-full bg-[#f4efe4] px-4 py-2 text-sm font-black text-[#6b6152]">
                       {isGeorgian ? "წაღების კოდი" : "Pickup code"}:{" "}
-                      {order.pickup_code
-                        ? `••••${String(order.pickup_code).slice(-2)}`
+                      {order.has_pickup_code
+                        ? isGeorgian
+                          ? "სთხოვე მომხმარებელს"
+                          : "ask the customer"
                         : isGeorgian
                         ? "მოლოდინში"
                         : "pending"}
