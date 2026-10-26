@@ -1,4 +1,6 @@
 -- App Store review demo (2026-10-26).
+-- STATUS: applied to production on 2026-10-26 (recorded as version
+-- 20261026121039) after a rolled-back dry run with scenario checks.
 --
 -- Apple's reviewer has to reserve a bag, get a pickup code and have it
 -- collected without paying real money. This adds a review-only business whose

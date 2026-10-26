@@ -4,6 +4,33 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-10-26 — iOS 1.0.0 App Store submission prep
+
+Branch `claude/app-store-review-prep`. The full submission pack (listing
+copy, age rating, App Privacy answers, review notes, screenshots, Xcode and
+App Store Connect steps) is section 1 of `docs/app-store-submission.md`.
+
+- iOS: version 1.0.0 (build 1), `npx cap sync ios` re-run (the generated
+  `capacitor.config.json` was stale). Xcode 27 is installed.
+- **Reviewer demo data lives in production — don't delete it.**
+  Migration `20261026121039_app_review_demo.sql` (applied 2026-10-26 after
+  a rolled-back dry run) adds `businesses.is_review_demo` (only the service
+  role can set it), `private.review_demo_accounts`, RLS that hides demo
+  businesses/offers from everyone but those accounts, price 0 for demo
+  businesses only, `reserve_review_demo_offer` (reservation + pickup code,
+  no payment row) and `refresh_review_demo_offers` (daily cron).
+  Data: business 14 "Demo Bakery (App Review)", offer 20 (0 GEL), logins
+  `argadaagdo.support+review.customer@gmail.com` and
+  `argadaagdo.support+review.business@gmail.com` (passwords not in the repo).
+  The checkout route sends 0 GEL offers to the demo RPC instead of TBC.
+- Support address is now `argadaagdo.support@gmail.com` on /support and
+  /contact (`argadaagdo.ge` has no DNS, so `support@argadaagdo.ge` bounced).
+- Privacy policy rewritten for App Store guideline 5.1.1 (payments,
+  processors, retention, in-app deletion), EN + KA.
+- The "install the web app" prompt is now hidden inside the native app.
+- App Store Connect has no Georgian localization: the listing is English
+  (U.K.) with a Georgian section in the description.
+
 ## 🆕 2026-10-16 — payment safety + account deletion (deploy order matters)
 
 Branch `claude/payment-safety-account-deletion` (stacked on the TBC PR) adds:
