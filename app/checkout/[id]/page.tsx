@@ -305,6 +305,12 @@ export default function CheckoutPage() {
       return;
     }
 
+    // App Store review demo bag: reserved without a bank page.
+    if (paymentSession.provider === "review_demo") {
+      router.replace(paymentSession.redirectUrl);
+      return;
+    }
+
     const nativeBrowser = getNativeBrowser();
 
     if (nativeBrowser) {
@@ -578,6 +584,14 @@ export default function CheckoutPage() {
                       <p>{t("checkout.paymentReferenceFuture")}</p>
                     </div>
                   </div>
+
+                  {Number(offer.price) === 0 && (
+                    <Notice tone="success">
+                      {language === "ka"
+                        ? "სადემონსტრაციო ჯავშანი App Review-სთვის: გადახდა არ ხდება."
+                        : "Demo reservation for App Review: no payment is taken."}
+                    </Notice>
+                  )}
 
                   <label className="soft-raised flex items-start gap-3 rounded-2xl p-4 font-bold text-[#2e2a22]">
                     <input

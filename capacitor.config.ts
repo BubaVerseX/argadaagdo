@@ -6,12 +6,12 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // has to point at an existing folder (native-shell/index.html) — Capacitor
 // only shows it briefly before handing off to `server.url`.
 //
-// Re-verified 2026-09-24: `argadaagdo.ge` is NOT yet registered under the
-// Vercel account (`vercel domains ls` shows only blackseacomplex.ge and
-// tryourcoach.app — argadaagdo.ge isn't there) and doesn't resolve
+// Re-verified 2026-10-26 for the iOS 1.0.0 (1) build: `argadaagdo.ge` is
+// still NOT registered under the Vercel account (`vercel domains ls` shows
+// only blackseacomplex.ge and tryourcoach.app) and doesn't resolve
 // (`dig argadaagdo.ge` returns nothing). `argadaagdo-silk.vercel.app` is
-// confirmed the current production URL (`vercel project ls`, HTTP 200) and
-// is correctly what this still points at. native-shell/offline.html hard-codes
+// confirmed the current production URL (HTTP 200) and is correctly what this
+// still points at. native-shell/offline.html hard-codes
 // the same URL for its "Try again" button — update both on domain day.
 //
 // TODO once the custom domain is purchased and live: update `server.url`

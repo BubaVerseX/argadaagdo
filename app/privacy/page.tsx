@@ -18,8 +18,20 @@ export default function PrivacyPage() {
       text: t("privacy.accountText"),
     },
     {
+      title: t("privacy.paymentsTitle"),
+      text: t("privacy.paymentsText"),
+    },
+    {
+      title: t("privacy.sharingTitle"),
+      text: t("privacy.sharingText"),
+    },
+    {
       title: t("privacy.ordersTitle"),
       text: t("privacy.ordersText"),
+    },
+    {
+      title: t("privacy.deletionTitle"),
+      text: t("privacy.deletionText"),
     },
     {
       title: t("privacy.contactTitle"),

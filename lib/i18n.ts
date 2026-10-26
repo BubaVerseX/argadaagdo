@@ -749,19 +749,28 @@ const translations = {
     "privacy.badge": "Privacy",
     "privacy.title": "Privacy Policy",
     "privacy.subtitle":
-      "This simple MVP privacy page explains what information ArGadaagdo uses to operate accounts, reservations and support.",
-    "privacy.infoTitle": "What information is collected",
+      "How ArGadaagdo collects, uses, shares and deletes your information. Last updated: 26 October 2026.",
+    "privacy.infoTitle": "What information we collect",
     "privacy.infoText":
-      "ArGadaagdo may collect account information such as email address, profile role, business registration details, offer information, reservation records, pickup codes, ratings and support messages.",
-    "privacy.accountTitle": "How account information is used",
+      "Account: your email address and password (stored only as a secure hash by our sign-in provider). Profile details you choose to add: display name and phone number. Activity: reservations, pickup codes, order and payment status, cancellations, pickups and no-shows, favorites, and ratings and review comments. Businesses: business name, type, address, phone, offer details and offer photos, and the bank account (IBAN) used for payouts, which businesses give us directly. Support: the messages you send us. We don't access your location or contacts, we only receive photos that a business chooses to upload for its offers, and we use no advertising or analytics trackers.",
+    "privacy.accountTitle": "How we use it",
     "privacy.accountText":
-      "Account information is used to sign users in, show the correct customer, business or admin experience, protect marketplace access and support account-related questions.",
-    "privacy.ordersTitle": "How orders are stored",
+      "To create and secure your account, show offers, take reservations and payments, let businesses verify pickups, send emails about your reservations (confirmations, pickup reminders, cancellations and refunds), keep the marketplace fair (for example a reliability score based on pickups, cancellations and no-shows), and answer support requests. We don't sell your information, show ads or track you across other apps and websites.",
+    "privacy.paymentsTitle": "Payments",
+    "privacy.paymentsText":
+      "Card payments are handled by TBC Bank on its own secure payment page. ArGadaagdo never sees or stores your card details; we only receive the payment amount and status, and use them to confirm or refund your reservation.",
+    "privacy.sharingTitle": "Who can see or receive your information",
+    "privacy.sharingText":
+      "The business you reserve from sees your reservation, your account email and your reliability score, so it can hand over your order. Ratings and review comments are shown publicly on the business's page without your name or email. Service providers process data for us only to run ArGadaagdo: Supabase (database, sign-in and file storage), Vercel (hosting), Resend (email delivery) and TBC Bank (payments). They are required to protect it at least as well as we do. We may also disclose information when the law requires it.",
+    "privacy.ordersTitle": "How long we keep it",
     "privacy.ordersText":
-      "Reservation and order records are stored so customers can see pickup information, businesses can verify pickups and admins can monitor marketplace activity.",
-    "privacy.contactTitle": "Contact information",
+      "We keep your account information for as long as your account exists. Order and payment records are accounting records, so we keep them after an account is deleted, but they are no longer linked to you.",
+    "privacy.deletionTitle": "Deleting your account",
+    "privacy.deletionText":
+      "You can delete your account at any time in the app: Settings → Delete my account. This permanently deletes your sign-in, email, profile details and favorites, and removes your review comments. Order and payment records are kept for accounting but no longer linked to you. Deleting a business account also hides the business and its offers. You can also email us to ask for a copy of your information, or to have it corrected or deleted.",
+    "privacy.contactTitle": "Contact",
     "privacy.contactText":
-      "If you contact support, your message and email address may be used to respond to your question and resolve marketplace issues.",
+      "Questions or requests about your information: argadaagdo.support@gmail.com. We aim to reply within 1–2 business days.",
     "privacy.helpTitle": "Questions about privacy?",
     "privacy.helpText":
       "Contact ArGadaagdo support if you have questions about account, order or business information.",
@@ -1546,19 +1555,28 @@ const translations = {
     "privacy.badge": "კონფიდენციალურობა",
     "privacy.title": "კონფიდენ\u00ADციალუ\u00ADრობის პოლიტიკა",
     "privacy.subtitle":
-      "ეს მარტივი MVP კონფიდენციალურობის გვერდი ხსნის, რა ინფორმაციას იყენებს ArGadaagdo ანგარიშების, ჯავშნების და მხარდაჭერისთვის.",
-    "privacy.infoTitle": "რა ინფორმაცია გროვდება",
+      "როგორ აგროვებს, იყენებს, უზიარებს და შლის ArGadaagdo შენს ინფორმაციას. ბოლო განახლება: 2026 წლის 26 ოქტომბერი.",
+    "privacy.infoTitle": "რა ინფორმაციას ვაგროვებთ",
     "privacy.infoText":
-      "ArGadaagdo შეიძლება აგროვებდეს ანგარიშის ინფორმაციას, როგორიცაა ელფოსტა, პროფილის როლი, ბიზნეს რეგისტრაციის დეტალები, შეთავაზებები, ჯავშნები, წაღების კოდები, შეფასებები და მხარდაჭერის შეტყობინებები.",
-    "privacy.accountTitle": "როგორ გამოიყენება ანგარიშის ინფორმაცია",
+      "ანგარიში: შენი ელფოსტა და პაროლი (ავტორიზაციის პროვაიდერი მას მხოლოდ დაცული ჰეშის სახით ინახავს). პროფილის დეტალები, რომლებსაც თავად დაამატებ: სახელი და ტელეფონის ნომერი. აქტივობა: ჯავშნები, წაღების კოდები, შეკვეთისა და გადახდის სტატუსი, გაუქმებები, წაღებები და გამოუცხადებლობები, რჩეულები, შეფასებები და მიმოხილვის კომენტარები. ბიზნესები: ბიზნესის სახელი, ტიპი, მისამართი, ტელეფონი, შეთავაზებების დეტალები და ფოტოები, ასევე ანგარიშსწორებისთვის საბანკო ანგარიში (IBAN), რომელსაც ბიზნესი პირდაპირ გვაწვდის. მხარდაჭერა: შეტყობინებები, რომლებსაც გვიგზავნი. შენს მდებარეობასა და კონტაქტებზე წვდომა არ გვაქვს, ვიღებთ მხოლოდ იმ ფოტოებს, რომლებსაც ბიზნესი თავისი შეთავაზებისთვის ტვირთავს, და არ ვიყენებთ სარეკლამო ან ანალიტიკურ ტრეკერებს.",
+    "privacy.accountTitle": "როგორ ვიყენებთ მას",
     "privacy.accountText":
-      "ანგარიშის ინფორმაცია გამოიყენება შესვლისთვის, მომხმარებლის, ბიზნესის ან ადმინის სწორი გამოცდილების საჩვენებლად, მარკეტის წვდომის დასაცავად და ანგარიშთან დაკავშირებული კითხვებისთვის.",
-    "privacy.ordersTitle": "როგორ ინახება შეკვეთები",
+      "ანგარიშის შესაქმნელად და დასაცავად, შეთავაზებების საჩვენებლად, ჯავშნებისა და გადახდების მისაღებად, ბიზნესებისთვის წაღების გადასამოწმებლად, ჯავშნებთან დაკავშირებული წერილების გასაგზავნად (დადასტურება, წაღების შეხსენება, გაუქმება და თანხის დაბრუნება), მარკეტის სამართლიანობის შესანარჩუნებლად (მაგალითად, სანდოობის ქულა წაღებების, გაუქმებებისა და გამოუცხადებლობების მიხედვით) და მხარდაჭერის მოთხოვნებზე პასუხისთვის. ჩვენ არ ვყიდით შენს ინფორმაციას, არ ვაჩვენებთ რეკლამას და არ გაკვირდებით სხვა აპებსა და ვებსაიტებზე.",
+    "privacy.paymentsTitle": "გადახდები",
+    "privacy.paymentsText":
+      "ბარათით გადახდას თიბისი ბანკი ამუშავებს საკუთარ დაცულ გადახდის გვერდზე. ArGadaagdo ვერასდროს ხედავს და არ ინახავს შენი ბარათის მონაცემებს; ვიღებთ მხოლოდ გადახდის თანხასა და სტატუსს, რათა ჯავშანი დავადასტუროთ ან თანხა დაგიბრუნოთ.",
+    "privacy.sharingTitle": "ვინ ხედავს ან იღებს შენს ინფორმაციას",
+    "privacy.sharingText":
+      "ბიზნესი, რომლისგანაც ჯავშნი, ხედავს შენს ჯავშანს, ანგარიშის ელფოსტასა და სანდოობის ქულას, რომ შეკვეთა გადმოგცეს. შეფასებები და მიმოხილვის კომენტარები საჯაროდ ჩანს ბიზნესის გვერდზე, შენი სახელისა და ელფოსტის გარეშე. მომსახურების მიმწოდებლები მონაცემებს ჩვენი სახელით მხოლოდ ArGadaagdo-ს მუშაობისთვის ამუშავებენ: Supabase (მონაცემთა ბაზა, ავტორიზაცია და ფაილების შენახვა), Vercel (ჰოსტინგი), Resend (ელფოსტის მიწოდება) და თიბისი ბანკი (გადახდები). ისინი ვალდებულნი არიან, ინფორმაცია სულ მცირე ისევე დაიცვან, როგორც ჩვენ. ინფორმაცია შეიძლება ასევე გავამჟღავნოთ, თუ ამას კანონი მოითხოვს.",
+    "privacy.ordersTitle": "რამდენ ხანს ვინახავთ",
     "privacy.ordersText":
-      "ჯავშნისა და შეკვეთის ჩანაწერები ინახება, რომ მომხმარებლებმა ნახონ წაღების ინფორმაცია, ბიზნესებმა გადაამოწმონ წაღებები და ადმინებმა მარკეტის აქტივობა აკონტროლონ.",
-    "privacy.contactTitle": "საკონტაქტო ინფორმაცია",
+      "ანგარიშის ინფორმაციას ვინახავთ, სანამ ანგარიში არსებობს. შეკვეთებისა და გადახდების ჩანაწერები საბუღალტრო ჩანაწერებია, ამიტომ ანგარიშის წაშლის შემდეგაც ვინახავთ, მაგრამ ისინი შენთან აღარ არის დაკავშირებული.",
+    "privacy.deletionTitle": "ანგარიშის წაშლა",
+    "privacy.deletionText":
+      "ანგარიშის წაშლა ნებისმიერ დროს შეგიძლია აპში: პარამეტრები → ჩემი ანგარიშის წაშლა. ეს სამუდამოდ შლის შესვლის მონაცემებს, ელფოსტას, პროფილის დეტალებსა და რჩეულებს, ასევე შენს მიმოხილვის კომენტარებს. შეკვეთებისა და გადახდების ჩანაწერები ბუღალტრული აღრიცხვისთვის რჩება, მაგრამ შენთან აღარ არის დაკავშირებული. ბიზნეს ანგარიშის წაშლა ბიზნესსა და მის შეთავაზებებსაც მალავს. ასევე შეგიძლია მოგვწერო, თუ გინდა შენი ინფორმაციის ასლი, მისი გასწორება ან წაშლა.",
+    "privacy.contactTitle": "კონტაქტი",
     "privacy.contactText":
-      "თუ მხარდაჭერას დაუკავშირდები, შენი შეტყობინება და ელფოსტა შეიძლება გამოყენებულ იქნას პასუხისთვის და მარკეტის საკითხების მოსაგვარებლად.",
+      "კითხვები ან მოთხოვნები შენს ინფორმაციასთან დაკავშირებით: argadaagdo.support@gmail.com. ვცდილობთ, 1–2 სამუშაო დღეში გიპასუხოთ.",
     "privacy.helpTitle": "გაქვს კითხვა კონფიდენ\u00ADციალუ\u00ADრობაზე?",
     "privacy.helpText":
       "დაუკავშირდი ArGadaagdo-ს მხარდაჭერას ანგარიშის, შეკვეთის ან ბიზნესის ინფორმაციის შესახებ კითხვებისთვის.",

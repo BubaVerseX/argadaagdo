@@ -9,6 +9,7 @@ import {
   createUserScopedSupabaseClient,
 } from "@/lib/supabaseServer";
 import { isEmailConfirmed } from "@/lib/auth";
+import { sendReservationConfirmationEmail } from "@/lib/email/events";
 import { getUserErrorMessage } from "@/lib/errors";
 
 type PendingPaymentOrder = {
@@ -102,6 +103,44 @@ export async function POST(request: Request) {
         { error: "This offer is no longer available." },
         { status: 404 }
       );
+    }
+
+    // App Store review demo: 0 GEL bags exist only on the review demo
+    // business and are reserved without a bank payment. The RPC accepts
+    // only the registered reviewer logins (see
+    // supabase/migrations/20261026121039_app_review_demo.sql).
+    if (Number((offerData as CheckoutOffer).price) === 0) {
+      const { data: demoOrderId, error: demoError } = await userClient.rpc(
+        "reserve_review_demo_offer",
+        { p_offer_id: offerId }
+      );
+
+      if (demoError || !demoOrderId) {
+        return NextResponse.json(
+          { error: getCheckoutErrorMessage(demoError?.message) },
+          { status: 400 }
+        );
+      }
+
+      const orderId = Number(demoOrderId);
+
+      try {
+        await sendReservationConfirmationEmail(
+          createServiceRoleSupabaseClient(),
+          orderId
+        );
+      } catch (emailError) {
+        logger.error("Review demo confirmation email failed", {
+          orderId,
+          error: emailError,
+        });
+      }
+
+      return NextResponse.json({
+        provider: "review_demo",
+        redirectUrl: "/orders?payment=success",
+        orderId,
+      });
     }
 
     const { data: rpcData, error: rpcError } = await userClient

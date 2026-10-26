@@ -27,6 +27,10 @@ function getCapacitor(): CapacitorGlobal | null {
   return capacitor?.isNativePlatform?.() ? capacitor : null;
 }
 
+export function isNativeApp() {
+  return getCapacitor() !== null;
+}
+
 // In-app browser (SFSafariViewController / Chrome Custom Tabs). Inside the
 // app, navigating the WebView to another host hands the URL to Safari or
 // Chrome, where the customer isn't signed in and the app is left behind.

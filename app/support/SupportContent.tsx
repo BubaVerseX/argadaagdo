@@ -10,7 +10,7 @@ import { MapPinIcon, ReceiptIcon, StoreIcon } from "@/components/icons";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 
-const supportEmail = "support@argadaagdo.ge";
+const supportEmail = "argadaagdo.support@gmail.com";
 
 const customerQuestions = {
   en: [

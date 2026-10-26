@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { SmartphoneIcon } from "@/components/icons";
+import { isNativeApp } from "@/lib/native";
 import { useLanguage } from "@/lib/useLanguage";
 
 const DISMISS_KEY = "argadaagdo-install-dismissed";
@@ -65,7 +66,8 @@ function wasDismissed() {
 let dismissedThisSession = false;
 
 function getSnapshot(): Visibility {
-  if (isStandalone() || wasDismissed()) {
+  // Already in the iOS/Android app: never suggest installing the web app.
+  if (isNativeApp() || isStandalone() || wasDismissed()) {
     return "hidden";
   }
   if (capturedPrompt) return "native-prompt";

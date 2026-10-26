@@ -52,6 +52,18 @@ export async function GET(request: Request) {
       });
     }
 
+    // Keep the App Store review demo bags on sale for tomorrow so they never
+    // expire while Apple is reviewing a build.
+    const { error: reviewDemoError } = await supabase.rpc(
+      "refresh_review_demo_offers"
+    );
+
+    if (reviewDemoError) {
+      logger.warn("Review demo offers could not be refreshed", {
+        error: reviewDemoError.message,
+      });
+    }
+
     // Finish refunds whose bank call failed or timed out earlier (customer
     // cancellations and late payments). Each one is re-checked with the bank
     // first, so a refund that already went through is only recorded.
