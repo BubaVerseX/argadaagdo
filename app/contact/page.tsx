@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 
-const supportEmail = "support@argadaagdo.ge";
+const supportEmail = "argadaagdo.support@gmail.com";
 
 export default function ContactPage() {
   const { t } = useLanguage();
