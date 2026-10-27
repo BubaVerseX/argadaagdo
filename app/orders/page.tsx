@@ -419,10 +419,10 @@ export default function OrdersPage() {
 
         {!loading && orders.length > 0 && (
           <div className="premium-card mt-5 rounded-3xl p-5 sm:mt-6 sm:p-6">
-            <p className="text-lg font-black text-[#2e2a22]">
+            <p className="text-lg font-semibold text-cream">
               {t("orders.pickupInstructionTitle")}
             </p>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 leading-7 text-body">
               {t("orders.pickupInstructionText")}
             </p>
           </div>
@@ -438,10 +438,10 @@ export default function OrdersPage() {
 
         {shouldShowRatingEducation && (
           <div className="premium-card mt-6 rounded-3xl p-5 sm:p-6">
-            <p className="text-lg font-black text-[#a67c52]">
+            <p className="text-lg font-semibold text-mint">
               {t("orders.ratingEducationTitle")}
             </p>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 leading-7 text-body">
               {t("orders.ratingEducationText")}
             </p>
           </div>

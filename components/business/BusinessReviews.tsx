@@ -25,7 +25,7 @@ export function BusinessReviews({
         {t("businessDashboard.businessReviews")}
       </h2>
 
-      <p className="mt-2 flex items-center gap-1.5 font-semibold text-body">
+      <p className="mt-2 flex items-center gap-1.5 text-body">
         <CheckIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
         {t("businessOnboarding.ratingsGuidanceText")}
       </p>
@@ -39,7 +39,7 @@ export function BusinessReviews({
             <h3 className="mt-4 text-2xl font-semibold text-cream">
               {t("businessDashboard.noReviews")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
               {t("businessDashboard.noReviewsHint")}
             </p>
             <a
@@ -68,12 +68,12 @@ export function BusinessReviews({
                 </p>
               </div>
 
-              <p className="text-sm font-semibold text-body">
+              <p className="text-sm text-body">
                 {formatDisplayDateTime(review.created_at, language)}
               </p>
             </div>
 
-            <p className="mt-4 font-semibold text-body">
+            <p className="mt-4 text-body">
               {review.review?.trim() || t("common.noWrittenReview")}
             </p>
           </div>

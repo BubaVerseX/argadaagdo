@@ -234,45 +234,45 @@ export default function BusinessRegisterPage() {
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
-        <div className="premium-surface mx-auto max-w-5xl rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:p-12">
+        <div className="premium-surface mx-auto max-w-5xl rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:p-12">
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div>
               <p className="premium-badge px-4 py-2">
                 {t("businessRegister.badge")}
               </p>
 
-              <h1 className="mt-3 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-6xl">
+              <h1 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
                 {t("businessRegister.title")}
               </h1>
 
-              <p className="mt-4 text-base font-medium leading-7 text-[#6b6152] sm:mt-5 sm:text-lg sm:leading-8">
+              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
                 {t("businessRegister.subtitle")}
               </p>
 
               <div className="mt-8 grid gap-4">
                 <div className="ui-card rounded-3xl p-5">
-                  <h3 className="text-xl font-black text-[#2e2a22]">
+                  <h3 className="text-xl font-semibold text-cream">
                     {t("businessRegister.step1")}
                   </h3>
-                  <p className="mt-2 font-medium text-[#a67c52]">
+                  <p className="mt-2 font-medium text-mint">
                     {t("businessRegister.step1Text")}
                   </p>
                 </div>
 
-                <div className="rounded-3xl bg-yellow-50 p-5">
-                  <h3 className="text-xl font-black text-yellow-800">
+                <div className="rounded-3xl bg-warning-soft p-5">
+                  <h3 className="text-xl font-semibold text-warning">
                     {t("businessRegister.step2")}
                   </h3>
-                  <p className="mt-2 font-medium text-yellow-700">
+                  <p className="mt-2 font-medium text-warning">
                     {t("businessRegister.step2Text")}
                   </p>
                 </div>
 
                 <div className="ui-card rounded-3xl p-5">
-                  <h3 className="text-xl font-black text-[#2e2a22]">
+                  <h3 className="text-xl font-semibold text-cream">
                     {t("businessRegister.step3")}
                   </h3>
-                  <p className="mt-2 font-medium text-[#a67c52]">
+                  <p className="mt-2 font-medium text-mint">
                     {t("businessRegister.step3Text")}
                   </p>
                 </div>

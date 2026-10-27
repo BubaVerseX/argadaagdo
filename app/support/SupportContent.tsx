@@ -106,16 +106,16 @@ export default function SupportContent() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {isGeorgian ? "მხარდაჭერის ცენტრი" : "Support Center"}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
               {isGeorgian
                 ? "დახმარება ჯავშნებში, წაღებასა და ბიზნესებისთვის."
                 : "Help for reservations, pickups and businesses."}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {isGeorgian
                 ? "მკაფიო პასუხები მომხმარებლებისა და ბიზნესებისთვის, რომლებიც ArGadaagdo-ს თბილისის პილოტის დროს იყენებენ."
                 : "Clear answers for customers and businesses using ArGadaagdo during the Tbilisi pilot."}
@@ -164,13 +164,13 @@ export default function SupportContent() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
-              <h2 className="text-2xl font-black sm:text-3xl">
+            <section className="rounded-3xl ui-card p-5 sm:p-8">
+              <h2 className="text-2xl font-semibold sm:text-3xl">
                 {isGeorgian
                   ? "ხშირად დასმული კითხვები"
                   : "Frequently Asked Questions"}
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
+              <p className="mt-3 leading-7 text-body">
                 {isGeorgian
                   ? "დაიწყე აქედან, თუ არ ხარ დარწმუნებული, როგორ მუშაობს სიურპრიზის ყუთები, ჯავშნები, წაღება, გაუქმება ან შეფასებები."
                   : "Start here if you are unsure how surprise bags, reservations, pickups, cancellations or ratings work."}
@@ -178,13 +178,13 @@ export default function SupportContent() {
 
               <div className="mt-6 grid gap-6">
                 <div>
-                  <h3 className="mb-3 text-lg font-black text-[#a67c52]">
+                  <h3 className="mb-3 text-lg font-semibold text-mint">
                     {isGeorgian ? "მომხმარებლები" : "Customers"}
                   </h3>
                   <FAQAccordion items={customerQuestions[language]} />
                 </div>
                 <div>
-                  <h3 className="mb-3 text-lg font-black text-[#a67c52]">
+                  <h3 className="mb-3 text-lg font-semibold text-mint">
                     {t("nav.businesses")}
                   </h3>
                   <FAQAccordion items={businessQuestions[language]} />

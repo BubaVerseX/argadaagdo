@@ -245,7 +245,7 @@ export function BusinessOnboardingWizard({
           <h2 className="mt-2 text-2xl font-semibold text-cream">
             {currentStep.title}
           </h2>
-          <p className="mt-2 text-sm font-semibold leading-6 text-body">
+          <p className="mt-2 text-sm leading-6 text-body">
             {currentStep.helper}
           </p>
         </div>
@@ -428,7 +428,7 @@ export function BusinessOnboardingWizard({
                 ]
             ).map(([label, value]) => (
               <div key={label} className="rounded-2xl bg-well p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                <p className="text-xs uppercase tracking-wide text-body">
                   {label}
                 </p>
                 <p className="mt-1 break-words font-semibold text-cream">
@@ -444,7 +444,7 @@ export function BusinessOnboardingWizard({
             <h3 className="text-xl font-semibold text-cream">
               {isGeorgian ? "მზადაა განსახილველად" : "Ready for review"}
             </h3>
-            <p className="mt-2 font-semibold leading-7 text-body">
+            <p className="mt-2 leading-7 text-body">
               {isGeorgian
                 ? "გაგზავნე ბიზნესი ადმინის დასამტკიცებლად. დამტკიცების შემდეგ პანელიდან შეძლებ შეთავაზებების შექმნას და ჯავშნების მართვას."
                 : "Submit your business for admin approval. After approval, your dashboard will let you create offers and manage reservations."}

@@ -60,7 +60,7 @@ export function AdminHero({ t }: AdminHeroProps) {
       <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
         {t("admin.title")}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-body sm:text-lg">
+      <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
         {t("admin.subtitle")}
       </p>
     </div>
@@ -84,7 +84,7 @@ export function AdminMarketplaceOverview({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           The core numbers admins need before approving businesses or checking
           marketplace activity.
         </p>
@@ -164,7 +164,7 @@ export function AdminRevenueInsights({
           <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
             Financial and operational insight
           </h2>
-          <p className="mt-3 max-w-3xl font-semibold leading-7 text-body">
+          <p className="mt-3 max-w-3xl leading-7 text-body">
             These are pilot estimates from existing orders. They prepare the
             admin view for a future commission model without connecting real
             payment providers.
@@ -223,7 +223,7 @@ export function AdminOperationalDashboard({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           Fast pilot signals for reservations, pickups, cancellations,
           no-shows and marketplace activity.
         </p>
@@ -255,7 +255,7 @@ export function AdminMarketplaceIntelligence({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           Rule-based operations view for spotting active partners, inactive
           businesses and offers that need admin attention.
         </p>
@@ -283,7 +283,7 @@ export function AdminSupportTools({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           Use the admin search box below to look up reservations, customers,
           businesses and orders during pilot operations.
         </p>
@@ -326,7 +326,7 @@ export function AdminHealthSections({
             Use this dashboard to approve businesses and monitor marketplace
             activity.
           </h2>
-          <p className="mt-4 font-semibold leading-7 text-body">
+          <p className="mt-4 leading-7 text-body">
             Review pending businesses before they can publish offers, then watch
             orders, active offers, ratings and reliability signals as the pilot
             grows.
@@ -344,7 +344,7 @@ export function AdminHealthSections({
               </h2>
             </div>
 
-            <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+            <p className="max-w-xl text-sm text-body sm:text-right">
               Lightweight status cards based on the current businesses, offers,
               orders and ratings visible to admins.
             </p>
@@ -369,7 +369,7 @@ export function AdminHealthSections({
             </h2>
           </div>
 
-          <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+          <p className="max-w-xl text-sm text-body sm:text-right">
             Fast counts for approvals, today&apos;s reservations, pickups, expired
             offers and active customer demand.
           </p>
@@ -393,7 +393,7 @@ export function AdminHealthSections({
             </h2>
           </div>
 
-          <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+          <p className="max-w-xl text-sm text-body sm:text-right">
             Lightweight checks for environment variables, Supabase, Storage,
             Realtime and the deployed build identifier.
           </p>
@@ -431,7 +431,7 @@ export function AdminHealthSections({
             </h2>
           </div>
 
-          <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+          <p className="max-w-xl text-sm text-body sm:text-right">
             Extra signals for spotting sold-out offers, no-shows and customer
             reliability risks during the pilot.
           </p>
@@ -468,7 +468,7 @@ export function AdminPaymentsOverview({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           TBC Bank checkout support is wired through server route
           handlers. This panel shows the financial fields recorded by orders and
           the states admins should monitor during pilot operations.
@@ -482,7 +482,7 @@ export function AdminPaymentsOverview({
           <h3 className="text-xl font-semibold text-cream">
             Payment states
           </h3>
-          <p className="mt-2 text-sm font-semibold leading-6 text-body">
+          <p className="mt-2 text-sm leading-6 text-body">
             Current database payments support{" "}
             {currentDatabasePaymentStatuses.join(", ")}. Pending sessions hold
             inventory until TBC Bank confirms, fails, cancels or expires
@@ -508,7 +508,7 @@ export function AdminPaymentsOverview({
             {paymentProviderOptions.map((provider) => (
               <div key={provider.id} className="rounded-2xl bg-well p-3 text-sm">
                 <p className="font-semibold text-cream">{provider.name}</p>
-                <p className="mt-1 font-semibold leading-5 text-body">
+                <p className="mt-1 leading-5 text-body">
                   {provider.role}
                 </p>
               </div>
@@ -524,7 +524,7 @@ export function AdminPaymentsOverview({
             className="ui-card rounded-2xl p-4"
           >
             <p className="font-semibold text-cream">{section.title}</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-body">
+            <p className="mt-2 text-sm leading-6 text-body">
               {section.text}
             </p>
           </div>
@@ -553,7 +553,7 @@ export function AdminAccountView({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           Admins can review role distribution here. Roles still cannot be
           changed from this dashboard.
         </p>
@@ -570,7 +570,7 @@ export function AdminAccountView({
 
         <div>
           {profiles.length === 0 && (
-            <p className="px-4 py-5 font-semibold text-body">
+            <p className="px-4 py-5 text-body">
               No profiles available.
             </p>
           )}
@@ -613,7 +613,7 @@ export function AdminModerationVisibility({
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           Rejected businesses are not a separate state in the current approval
           model; unapproved businesses stay in the pending queue.
         </p>
@@ -680,7 +680,7 @@ export function PendingBusinesses({
           <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
             {t("admin.pendingBusinesses")}
           </h2>
-          <p className="mt-2 max-w-2xl font-semibold leading-7 text-body">
+          <p className="mt-2 max-w-2xl leading-7 text-body">
             Review new business registrations before they can publish food
             rescue offers.
           </p>
@@ -708,7 +708,7 @@ export function PendingBusinesses({
         ].map((step) => (
           <div key={step.title} className="rounded-2xl bg-well p-4 text-sm">
             <p className="font-semibold text-cream">{step.title}</p>
-            <p className="mt-2 font-semibold leading-6 text-body">
+            <p className="mt-2 leading-6 text-body">
               {step.text}
             </p>
           </div>
@@ -724,7 +724,7 @@ export function PendingBusinesses({
             <h3 className="mt-4 text-2xl font-semibold text-cream">
               No businesses awaiting approval
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
               New registrations will appear here.
             </p>
           </div>
@@ -804,7 +804,7 @@ export function PendingBusinesses({
                 </button>
               </div>
 
-              <p className="mt-3 text-xs font-semibold leading-5 text-body">
+              <p className="mt-3 text-xs leading-5 text-body">
                 Current database stores approval as approved or pending. Notes
                 help the operator decide what to tell the business manually.
               </p>
@@ -835,7 +835,7 @@ export function ApprovedBusinesses({
             <h3 className="text-2xl font-semibold text-cream">
               No approved businesses yet
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
               Approved businesses will appear here after you review new
               registrations.
             </p>
@@ -910,7 +910,7 @@ function BusinessDetail({
 }) {
   return (
     <div className="rounded-2xl bg-well p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-body">
+      <p className="text-xs uppercase tracking-wide text-body">
         {label}
       </p>
       <p className="mt-1 break-words text-cream">

@@ -33,7 +33,7 @@ export function Pagination({
     <div
       className={`ui-card flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
-      <p className="text-sm font-medium text-body">
+      <p className="text-sm text-body">
         {isGeorgian ? (
           <>
             {resolvedLabel}: {start}-{end}, სულ {totalItems}

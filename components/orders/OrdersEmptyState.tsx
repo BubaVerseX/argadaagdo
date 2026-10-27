@@ -21,7 +21,7 @@ export function OrdersEmptyState({ t }: OrdersEmptyStateProps) {
         {t("orders.educationTitle")}
       </h2>
 
-      <p className="mx-auto mt-3 max-w-xl font-medium leading-7 text-body">
+      <p className="mx-auto mt-3 max-w-xl leading-7 text-body">
         {t("orders.educationText")}
       </p>
 
@@ -29,12 +29,12 @@ export function OrdersEmptyState({ t }: OrdersEmptyStateProps) {
         <p className="font-semibold text-cream">
           {t("orders.ratingEducationTitle")}
         </p>
-        <p className="mt-2 text-sm font-semibold leading-6 text-body">
+        <p className="mt-2 text-sm leading-6 text-body">
           {t("orders.ratingEducationText")}
         </p>
       </div>
 
-      <p className="mt-4 text-sm font-semibold text-body">
+      <p className="mt-4 text-sm text-body">
         {t("orders.emptyHint")}
       </p>
 

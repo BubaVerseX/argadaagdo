@@ -41,7 +41,7 @@ export function BusinessProfileSection({
           <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
             {isGeorgian ? "მართე საჯარო ინფორმაცია" : "Manage public details"}
           </h2>
-          <p className="mt-2 max-w-2xl font-semibold leading-7 text-body">
+          <p className="mt-2 max-w-2xl leading-7 text-body">
             {isGeorgian
               ? "ბიზნესის საჯარო ინფორმაცია მკაფიო გქონდეს, რომ მომხმარებლებმა იცოდნენ, სად წაიღონ სიურპრიზის ყუთი."
               : "Keep your public business information clear so customers know where to collect their surprise bag."}
@@ -59,7 +59,7 @@ export function BusinessProfileSection({
           </div>
           <div className="rounded-3xl bg-well p-5 text-center">
             <div className="ui-well mx-auto h-16 rounded-2xl" />
-            <p className="mt-3 text-sm font-semibold text-body">
+            <p className="mt-3 text-sm text-body">
               {isGeorgian ? "ქავერის სურათის გადახედვა" : "Cover image preview"}
             </p>
           </div>

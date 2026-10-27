@@ -115,7 +115,7 @@ export function OrderCard({
           </p>
 
           <div className="ui-card mt-4 rounded-3xl p-4">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-body">
+            <p className="mb-3 text-sm uppercase tracking-widest text-body">
               {isGeorgian ? "შეკვეთის ეტაპები" : "Order timeline"}
             </p>
             <TimelineSteps
@@ -126,23 +126,23 @@ export function OrderCard({
 
           {pickupReminderMessage && (
             <div className="ui-card mt-4 rounded-3xl p-4">
-              <p className="text-sm font-semibold uppercase tracking-widest text-body">
+              <p className="text-sm uppercase tracking-widest text-body">
                 {t("orders.pickupReminder")}
               </p>
-              <p className="mt-2 font-semibold leading-7 text-body">
+              <p className="mt-2 leading-7 text-body">
                 {pickupReminderMessage}
               </p>
             </div>
           )}
 
           <div className="premium-muted-card mt-4 rounded-3xl p-4">
-            <p className="text-sm font-semibold uppercase tracking-widest text-body">
+            <p className="text-sm uppercase tracking-widest text-body">
               {t("orders.pickupReminder")}
             </p>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl bg-well p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                <p className="text-xs uppercase tracking-wide text-body">
                   {t("orders.pickupDate")}
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 font-semibold text-cream">
@@ -152,7 +152,7 @@ export function OrderCard({
               </div>
 
               <div className="rounded-2xl bg-well p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                <p className="text-xs uppercase tracking-wide text-body">
                   {t("orders.pickupTime")}
                 </p>
                 <p className="mt-1 flex items-center gap-1.5 font-semibold text-cream">
@@ -162,7 +162,7 @@ export function OrderCard({
               </div>
 
               <div className="rounded-2xl bg-well p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                <p className="text-xs uppercase tracking-wide text-body">
                   {t("orders.businessName")}
                 </p>
                 <p className="mt-1 font-semibold text-cream">
@@ -172,10 +172,10 @@ export function OrderCard({
               </div>
 
               <div className="rounded-2xl bg-well p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                <p className="text-xs uppercase tracking-wide text-body">
                   {t("orders.businessAddress")}
                 </p>
-                <p className="mt-1 flex items-center gap-1.5 font-semibold text-body">
+                <p className="mt-1 flex items-center gap-1.5 text-body">
                   <MapPinIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
                   {businessAddress}
                 </p>
@@ -197,7 +197,7 @@ export function OrderCard({
               </div>
             </div>
 
-            <p className="mt-3 font-semibold text-body">
+            <p className="mt-3 text-body">
               {t("common.price")}:{" "}
               {/* What the customer paid; the offer's price may have changed since. */}
               {order.amount
@@ -208,7 +208,7 @@ export function OrderCard({
             </p>
 
             <div className="mt-4 rounded-2xl bg-well p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-body">
+              <p className="text-xs uppercase tracking-wide text-body">
                 {isGeorgian ? "ქვითარი" : "Receipt"}
               </p>
               <div className="mt-2 grid gap-1 text-sm font-semibold text-body">
@@ -234,14 +234,14 @@ export function OrderCard({
         </div>
 
         <div className="premium-muted-card order-1 rounded-3xl p-4 text-center sm:rounded-3xl sm:p-5 lg:order-2 lg:min-w-[280px]">
-          <p className="text-sm font-semibold uppercase tracking-widest text-body">
+          <p className="text-sm uppercase tracking-widest text-body">
             {t("orders.pickupCode")}
           </p>
 
           {isConfirmed ? (
             <>
               <div className="ui-card mt-3 rounded-2xl px-4 py-5 sm:rounded-3xl sm:px-6 sm:py-6">
-                <p className="text-sm font-semibold text-body">
+                <p className="text-sm text-body">
                   {t("orders.pickupCode")}:
                 </p>
                 <p className="font-mono text-3xl font-semibold tracking-[0.18em] text-mint sm:text-4xl">
@@ -249,7 +249,7 @@ export function OrderCard({
                 </p>
               </div>
 
-              <p className="mt-3 text-sm font-semibold text-body">
+              <p className="mt-3 text-sm text-body">
                 {t("orders.showCode")}
               </p>
 
@@ -265,7 +265,7 @@ export function OrderCard({
                     ? t("orders.cancelAvailable")
                     : t("orders.cancelUnavailable")}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-body">
+                <p className="mt-2 text-sm text-body">
                   {t("orders.ratingBeforePickup")}
                 </p>
               </div>
@@ -301,7 +301,7 @@ export function OrderCard({
                   <p className="text-center text-base font-semibold text-cream">
                     {t("orders.ratePickup")}
                   </p>
-                  <p className="mt-1 text-center text-sm font-semibold text-body">
+                  <p className="mt-1 text-center text-sm text-body">
                     {t("orders.ratingAvailable")}
                   </p>
                   <div className="mt-3 grid grid-cols-5 gap-2">

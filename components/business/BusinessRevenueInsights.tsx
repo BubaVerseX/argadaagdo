@@ -226,7 +226,7 @@ export function BusinessRevenueInsights({
               ? "ბიზნესის შედეგების მიმოხილვა"
               : "Business performance snapshot"}
           </h2>
-          <p className="mt-3 max-w-3xl font-semibold leading-7 text-body">
+          <p className="mt-3 max-w-3xl leading-7 text-body">
             {isGeorgian
               ? "სავარაუდო შემოსავალი შეკვეთების გადახდის არსებულ მონაცემებს ეფუძნება. პილოტის პერიოდში ბიზნესის საბოლოო ანაზღაურება ჯერ კიდევ ხელით მოწმდება."
               : "Estimated revenue uses existing order payment fields. Final business payouts are still reviewed manually during the pilot."}
@@ -309,7 +309,7 @@ export function BusinessRevenueInsights({
         <h3 className="text-xl font-semibold text-cream">
           {isGeorgian ? "მარკეტინგული ანალიტიკა" : "Marketing insights"}
         </h3>
-        <p className="mt-2 max-w-3xl font-semibold leading-7 text-body">
+        <p className="mt-2 max-w-3xl leading-7 text-body">
           {isGeorgian
             ? "ეს სიგნალები პანელს ზრდის კამპანიებისთვის ამზადებს. ნახვებისა და კონვერსიის ზუსტი აღრიცხვისთვის ჯერ კიდევ ცალკე მოვლენებია საჭირო."
             : "These signals prepare the dashboard for growth campaigns. View and conversion tracking still need dedicated events before they become exact."}
@@ -334,7 +334,7 @@ export function BusinessRevenueInsights({
             <h3 className="text-xl font-semibold text-cream">
               {isGeorgian ? "CSV ექსპორტი" : "CSV exports"}
             </h3>
-            <p className="mt-2 font-semibold leading-7 text-body">
+            <p className="mt-2 leading-7 text-body">
               {isGeorgian
                 ? "ჩამოტვირთე მსუბუქი CSV ფაილები ჯავშნების, დასრულებული წაღებებისა და შეთავაზებების სტატისტიკისთვის."
                 : "Download lightweight CSV files for reservations, completed pickups and offer statistics."}

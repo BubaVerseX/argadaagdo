@@ -68,7 +68,7 @@ function getFavoriteAvailability(
   if (!offer) {
     return {
       label: t("common.unavailable"),
-      className: "ui-card text-[#6b6152]",
+      className: "ui-card text-body",
     };
   }
 
@@ -77,27 +77,27 @@ function getFavoriteAvailability(
   if (status === "active") {
     return {
       label: t("common.available"),
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     };
   }
 
   if (status === "sold_out") {
     return {
       label: t("common.soldOut"),
-      className: "bg-yellow-100 text-yellow-800",
+      className: "bg-warning-soft text-warning",
     };
   }
 
   if (status === "expired") {
     return {
       label: t("common.expired"),
-      className: "bg-red-100 text-red-700",
+      className: "bg-danger-soft text-danger",
     };
   }
 
   return {
     label: t("common.unavailable"),
-    className: "ui-card text-[#6b6152]",
+    className: "ui-card text-body",
   };
 }
 
@@ -290,16 +290,16 @@ export default function FavoritesPage() {
       <Navbar />
 
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
-        <div className="premium-surface rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
+        <div className="premium-surface rounded-3xl p-5 sm:rounded-[22px] sm:p-8 md:rounded-3xl md:p-12">
           <p className="premium-badge px-4 py-2">
             {t("favorites.badge")}
           </p>
 
-          <h1 className="mt-4 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-6xl">
+          <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
             {t("favorites.title")}
           </h1>
 
-          <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
             {t("favorites.subtitle")}
           </p>
 
@@ -328,31 +328,31 @@ export default function FavoritesPage() {
 
         {loading && (
           <div className="mt-8 premium-card rounded-3xl p-8">
-            <p className="font-semibold text-[#6b6152]">
+            <p className="text-body">
               {t("favorites.loading")}
             </p>
           </div>
         )}
 
         {!loading && favorites.length === 0 && !message && (
-          <div className="mt-8 premium-card rounded-[1.75rem] p-10 text-center">
+          <div className="mt-8 premium-card rounded-[22px] p-10 text-center">
             <div className="ui-well mx-auto flex h-20 w-20 items-center justify-center rounded-full">
-              <HeartIcon className="h-9 w-9 text-[#a67c52]" strokeWidth={1.6} />
+              <HeartIcon className="h-9 w-9 text-mint" strokeWidth={1.6} />
             </div>
 
-            <p className="mt-5 text-sm font-black uppercase tracking-widest text-[#a67c52]">
+            <p className="mt-5 text-sm font-semibold uppercase tracking-widest text-mint">
               {t("favorites.emptyTitle")}
             </p>
 
-            <h2 className="mt-2 text-3xl font-black text-[#2e2a22]">
+            <h2 className="mt-2 text-3xl font-semibold text-cream">
               {t("favorites.educationTitle")}
             </h2>
 
-            <p className="mx-auto mt-3 max-w-xl font-medium leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-3 max-w-xl leading-7 text-body">
               {t("favorites.educationText")}
             </p>
 
-            <p className="mt-4 text-sm font-bold text-[#6b6152]">
+            <p className="mt-4 text-sm text-body">
               {t("favorites.emptyHint")}
             </p>
 
@@ -367,7 +367,7 @@ export default function FavoritesPage() {
 
         {!loading && favorites.length > 0 && (
           <div className="mt-6 premium-muted-card rounded-3xl p-5 sm:p-6">
-            <p className="font-semibold text-[#2e2a22]">
+            <p className="font-semibold text-cream">
               {t("favorites.trustReminder")}
             </p>
           </div>
@@ -388,7 +388,7 @@ export default function FavoritesPage() {
             return (
               <div
                 key={favorite.id}
-                className="ui-card rounded-[1.75rem] p-4"
+                className="ui-card rounded-[22px] p-4"
               >
                 <div className="relative">
                   <div
@@ -402,53 +402,53 @@ export default function FavoritesPage() {
                         priority={index === 0}
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-center text-xl font-black text-[#2e2a22]">
+                      <div className="flex h-full w-full items-center justify-center text-center text-xl font-semibold text-cream">
                         {t("common.offerUnavailable")}
                       </div>
                     )}
                   </div>
 
                   <div
-                    className={`absolute left-2 top-2 rounded-full px-4 py-2 text-sm font-black ${availability.className}`}
+                    className={`absolute left-2 top-2 rounded-full px-4 py-2 text-sm font-semibold ${availability.className}`}
                   >
                     {availability.label}
                   </div>
 
                   {offer && (
-                    <div className="ui-card absolute right-2 top-2 rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
+                    <div className="ui-card absolute right-2 top-2 rounded-full px-4 py-2 text-sm font-semibold text-cream">
                       {getOfferCategoryLabel(offer.category, language)}
                     </div>
                   )}
                 </div>
 
                 <div className="pt-5">
-                  <h2 className="text-xl font-black leading-tight tracking-[-0.02em] text-[#2e2a22] sm:text-2xl">
+                  <h2 className="text-xl font-semibold leading-tight text-cream sm:text-2xl">
                     {offer?.title || t("favorites.offerUnavailable")}
                   </h2>
 
-                  <p className="mt-2 text-lg font-bold text-[#2e2a22]">
+                  <p className="mt-2 text-lg font-semibold text-cream">
                     {offer?.businesses?.name || t("common.businessUnavailable")}
                   </p>
 
-                  <div className="mt-4 grid gap-3 font-semibold text-[#6b6152]">
-                    <div className="grid gap-3 rounded-3xl bg-[#f4efe4] p-4">
+                  <div className="mt-4 grid gap-3 font-semibold text-body">
+                    <div className="grid gap-3 rounded-3xl bg-well p-4">
                       <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-white/60 p-4">
-                          <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                        <div className="rounded-2xl bg-well p-4">
+                          <p className="text-xs uppercase tracking-wide text-body">
                             {t("offerDetail.pickupDate")}
                           </p>
-                          <p className="mt-1 font-black text-[#2e2a22]">
+                          <p className="mt-1 font-semibold text-cream">
                             {offer
                               ? getOfferDateLabel(offer, language)
                               : t("common.unavailable")}
                           </p>
                         </div>
 
-                        <div className="rounded-2xl bg-white/60 p-4">
-                          <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                        <div className="rounded-2xl bg-well p-4">
+                          <p className="text-xs uppercase tracking-wide text-body">
                             {t("offerDetail.pickupTime")}
                           </p>
-                          <p className="mt-1 font-black text-[#2e2a22]">
+                          <p className="mt-1 font-semibold text-cream">
                             {offer
                               ? formatPickupTimeRange(offer, language)
                               : t("common.unavailable")}
@@ -458,7 +458,7 @@ export default function FavoritesPage() {
 
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <p className="flex items-center gap-1.5">
-                          <MapPinIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+                          <MapPinIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
                           {offer?.businesses?.address ||
                             t("favorites.offerEndedHint")}
                         </p>
@@ -471,7 +471,7 @@ export default function FavoritesPage() {
                             aria-label={`${t("common.openMap")} ${
                               offer.businesses?.name || offer.title
                             }`}
-                            className="ui-card inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition hover:text-[#a67c52] sm:w-auto"
+                            className="ui-card inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition hover:text-mint sm:w-auto"
                           >
                             {t("common.openMap")}
                           </a>
@@ -484,21 +484,21 @@ export default function FavoritesPage() {
                     <div className="ui-card rounded-3xl p-4">
                       {offer && (
                         <>
-                          <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                          <p className="text-xs uppercase tracking-wide text-body">
                             {t("common.price")}
                           </p>
                           <div className="mt-1 flex flex-wrap items-end gap-3">
-                            <span className="text-4xl font-black text-[#a67c52]">
+                            <span className="text-4xl font-semibold text-mint">
                               {formatMoney(offer.price)}
                             </span>
 
                             {getOriginalPrice(offer) !== null && (
-                              <span className="pb-1 font-medium text-[#6b6152] line-through">
+                              <span className="pb-1 font-medium text-body line-through">
                                 {formatMoney(getOriginalPrice(offer))}
                               </span>
                             )}
                           </div>
-                          <p className="mt-2 text-sm font-black text-[#6b6152]">
+                          <p className="mt-2 text-sm text-body">
                             {t("offerDetail.savings")}:{" "}
                             {savings > 0
                               ? formatMoney(savings)
@@ -517,7 +517,7 @@ export default function FavoritesPage() {
                             ? `რჩეულებიდან წაშლა: ${offer?.title || "შეთავაზება"}`
                             : `Remove ${offer?.title || "offer"} from favorites`
                         }
-                        className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-red-50 px-5 py-3 font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-danger-soft px-5 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <HeartIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
                         {removingFavoriteId === favorite.id

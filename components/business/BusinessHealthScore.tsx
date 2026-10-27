@@ -42,7 +42,7 @@ export function BusinessHealthScore({
             <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
               {score}% {isGeorgian ? "მზადაა" : "ready"}
             </h2>
-            <p className="mt-2 font-semibold leading-7 text-body">
+            <p className="mt-2 leading-7 text-body">
               {isGeorgian
                 ? "მარტივი ოპერაციული ქულა პროფილის ხარისხის, აქტიური შეთავაზებებისა და წაღების ისტორიის მიხედვით."
                 : "A simple operations score for profile quality, active offers and pickup history."}
@@ -106,7 +106,7 @@ export function BusinessHealthScore({
             ? "ბიზნესის პირველი ეტაპები"
             : "First business milestones"}
         </h2>
-        <p className="mt-2 font-semibold leading-7 text-body">
+        <p className="mt-2 leading-7 text-body">
           {isGeorgian
             ? "პილოტი მარტივად წარმართე: გამოაქვეყნე ერთი ძლიერი შეთავაზება, შეამოწმე წაღებები და შეფასებებით მოიპოვე ნდობა."
             : "Keep the pilot simple: publish one strong offer, verify pickups and build trust through ratings."}

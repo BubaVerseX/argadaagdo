@@ -153,7 +153,7 @@ export default function BusinessProfilePage() {
           </Link>
 
           {loading && (
-            <div className="mt-6 h-96 animate-pulse rounded-[2rem] bg-[#f4efe4]" />
+            <div className="mt-6 h-96 animate-pulse rounded-3xl bg-well" />
           )}
 
           {!loading && message && (
@@ -164,9 +164,9 @@ export default function BusinessProfilePage() {
 
           {!loading && business && (
             <>
-              <div className="premium-card mt-6 overflow-hidden rounded-[2rem]">
+              <div className="premium-card mt-6 overflow-hidden rounded-3xl">
                 <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
-                  <div className="photo-frame relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96 lg:h-full">
+                  <div className="photo-frame relative isolate h-72 overflow-hidden bg-well sm:h-96 lg:h-full">
                     {heroOffer ? (
                       <OfferImage
                         src={heroOffer.image_url}
@@ -176,7 +176,7 @@ export default function BusinessProfilePage() {
                       />
                     ) : (
                       <div className="flex h-full min-h-72 items-center justify-center">
-                        <div className="ui-card flex h-28 w-28 items-center justify-center rounded-[2rem] bg-[#a67c52] text-4xl font-black text-white">
+                        <div className="ui-card flex h-28 w-28 items-center justify-center rounded-3xl bg-mint text-4xl font-semibold text-cream">
                           {getBusinessInitials(business.name)}
                         </div>
                       </div>
@@ -185,41 +185,41 @@ export default function BusinessProfilePage() {
 
                   <div className="p-5 sm:p-8 md:p-10">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-mint">
                         {t("businessProfile.title")}
                       </p>
                       {isVerified && <TrustBadge label={t("businessProfile.verified")} />}
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#a67c52] text-2xl font-black text-white">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-mint text-2xl font-semibold text-cream">
                         {getBusinessInitials(business.name)}
                       </div>
                       <div>
-                        <h1 className="text-3xl font-black text-[#2e2a22] sm:text-5xl">
+                        <h1 className="text-3xl font-semibold text-cream sm:text-5xl">
                           {business.name}
                         </h1>
-                        <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+                        <p className="mt-2 leading-7 text-body">
                           {businessDescription}
                         </p>
                       </div>
                     </div>
 
-                    <div className="mt-5 grid gap-3 premium-muted-card rounded-3xl p-4 font-semibold text-[#6b6152]">
+                    <div className="mt-5 grid gap-3 premium-muted-card rounded-3xl p-4 font-semibold text-body">
                       <p>
-                        <span className="font-black text-[#2e2a22]">
+                        <span className="font-semibold text-cream">
                           {t("businessProfile.businessType")}:
                         </span>{" "}
                         {business.business_type || t("common.food")}
                       </p>
                       <p>
-                        <span className="font-black text-[#2e2a22]">
+                        <span className="font-semibold text-cream">
                           {t("businessProfile.address")}:
                         </span>{" "}
                         {business.address || t("common.addressUnavailable")}
                       </p>
                       <p>
-                        <span className="font-black text-[#2e2a22]">
+                        <span className="font-semibold text-cream">
                           {isGeorgian ? "ტელეფონი" : "Phone"}:
                         </span>{" "}
                         {business.phone ||
@@ -244,91 +244,91 @@ export default function BusinessProfilePage() {
 
                     <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {t("common.rating")}
                         </p>
-                        <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+                        <p className="mt-2 text-3xl font-semibold text-cream">
                           {averageRating ? `${averageRating}/5` : t("common.noRatings")}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {averageRating
                             ? t("businessProfile.outOfFive")
                             : t("common.noRatings")}
                         </p>
                       </div>
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {t("common.reviews")}
                         </p>
-                        <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+                        <p className="mt-2 text-3xl font-semibold text-cream">
                           {reviewCount}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {t("businessProfile.customerReviews")}
                         </p>
                       </div>
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {isGeorgian
                             ? "დასრულებული წაღებები"
                             : "Completed pickups"}
                         </p>
-                        <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+                        <p className="mt-2 text-3xl font-semibold text-cream">
                           {completedPickupSignal}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {isGeorgian
                             ? "საჯარო მაჩვენებელი დასრულებული და შეფასებული წაღებებიდან"
                             : "Public signal from completed rated pickups"}
                         </p>
                       </div>
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {t("businessProfile.activeOffers")}
                         </p>
-                        <p className="mt-2 text-3xl font-black">
+                        <p className="mt-2 text-3xl font-semibold">
                           {offers.length}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {t("businessProfile.activeOffersHint")}
                         </p>
                       </div>
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {isGeorgian ? "შემოგვიერთდა" : "Joined"}
                         </p>
-                        <p className="mt-2 text-2xl font-black text-[#2e2a22]">
+                        <p className="mt-2 text-2xl font-semibold text-cream">
                           {joinedDate || t("offers.tbilisiPilot")}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {isGeorgian
                             ? "მარკეტის დამტკიცებული ადგილობრივი წევრი"
                             : "Approved local marketplace member"}
                         </p>
                       </div>
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {isGeorgian ? "პასუხის მაჩვენებელი" : "Response rate"}
                         </p>
-                        <p className="mt-2 text-2xl font-black text-[#2e2a22]">
+                        <p className="mt-2 text-2xl font-semibold text-cream">
                           {isGeorgian ? "პილოტის მხარდაჭერა" : "Pilot support"}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {isGeorgian
                             ? "მხარდაჭერის მოთხოვნებს ArGadaagdo ამუშავებს"
                             : "Support requests are handled by ArGadaagdo"}
                         </p>
                       </div>
                       <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm font-black text-[#6b6152]">
+                        <p className="text-sm text-body">
                           {isGeorgian ? "სამუშაო საათები" : "Opening hours"}
                         </p>
-                        <p className="mt-2 text-2xl font-black text-[#2e2a22]">
+                        <p className="mt-2 text-2xl font-semibold text-cream">
                           {isGeorgian
                             ? "იხილე თითოეულ შეთავაზებაზე"
                             : "See each offer"}
                         </p>
-                        <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                        <p className="mt-1 text-sm text-body">
                           {isGeorgian
                             ? "წაღების ფანჯრები აქტიურ შეთავაზებებზეა მითითებული"
                             : "Pickup windows are shown on active offers"}
@@ -365,8 +365,8 @@ export default function BusinessProfilePage() {
                 </div>
               </div>
 
-              <div className="premium-card mt-6 rounded-[2rem] p-5 sm:p-8">
-                <h2 className="text-2xl font-black">
+              <div className="premium-card mt-6 rounded-3xl p-5 sm:p-8">
+                <h2 className="text-2xl font-semibold">
                   {t("businessProfile.activeOffers")}
                 </h2>
 
@@ -388,15 +388,15 @@ export default function BusinessProfilePage() {
                       <Link
                         key={offer.id}
                         href={`/offers/${offer.id}`}
-                        className="ui-card block rounded-[1.75rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                        className="ui-card block rounded-[22px] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                       >
-                        <div className="photo-frame relative isolate h-48 overflow-hidden bg-[#f4efe4]">
+                        <div className="photo-frame relative isolate h-48 overflow-hidden bg-well">
                           <OfferImage
                             src={offer.image_url}
                             alt={offer.title}
                             sizes="(max-width: 768px) 100vw, 33vw"
                           />
-                          <span className="ui-card absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-black text-[#a67c52]">
+                          <span className="ui-card absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-semibold text-mint">
                             {getOfferCategoryLabel(offer.category, language)}
                           </span>
                           {discount !== null && (
@@ -406,21 +406,21 @@ export default function BusinessProfilePage() {
                           )}
                         </div>
                         <div className="pt-4">
-                          <h3 className="text-xl font-black text-[#2e2a22]">{offer.title}</h3>
+                          <h3 className="text-xl font-semibold text-cream">{offer.title}</h3>
                           <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="flex items-center gap-1.5 rounded-full bg-[#f4efe4] px-3 py-2 text-sm font-black text-[#2e2a22]">
+                            <span className="flex items-center gap-1.5 rounded-full bg-well px-3 py-2 text-sm font-semibold text-cream">
                               <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
                               {formatPickupWindow(offer, language)}
                             </span>
-                            <span className="rounded-full bg-[#f4efe4] px-3 py-2 text-sm font-black text-[#6b6152]">
+                            <span className="rounded-full bg-well px-3 py-2 text-sm font-semibold text-body">
                               {t("common.quantity")}: {offer.quantity}
                             </span>
                           </div>
                           <div className="mt-4 flex items-center justify-between gap-3">
-                            <p className="text-2xl font-black text-[#a67c52]">
+                            <p className="text-2xl font-semibold text-mint">
                               {formatMoney(offer.price)}
                             </p>
-                            <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-sm font-black text-[#6b6152]">
+                            <span className="rounded-full bg-well px-3 py-1 text-sm font-semibold text-body">
                               {isOfferReservable(offer)
                                 ? t("common.available")
                                 : t("common.unavailable")}
@@ -436,24 +436,24 @@ export default function BusinessProfilePage() {
                 </div>
               </div>
 
-              <div className="premium-card mt-6 rounded-[2rem] p-5 sm:p-8">
-                <h2 className="text-2xl font-black">
+              <div className="premium-card mt-6 rounded-3xl p-5 sm:p-8">
+                <h2 className="text-2xl font-semibold">
                   {t("businessProfile.customerReviews")}
                 </h2>
-                <p className="mt-2 max-w-2xl font-semibold leading-7 text-[#6b6152]">
+                <p className="mt-2 max-w-2xl leading-7 text-body">
                   {t("businessProfile.reviewsIntro")}
                 </p>
 
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (
-                    <div className="rounded-3xl bg-[#f4efe4] p-6 text-center">
+                    <div className="rounded-3xl bg-well p-6 text-center">
                       <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-                        <StarIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.6} />
+                        <StarIcon className="h-6 w-6 text-mint" strokeWidth={1.6} />
                       </div>
-                      <p className="mt-4 text-lg font-black text-[#2e2a22]">
+                      <p className="mt-4 text-lg font-semibold text-cream">
                         {t("common.noReviews")}
                       </p>
-                      <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
+                      <p className="mx-auto mt-2 max-w-md leading-7 text-body">
                         {t("businessProfile.noReviewsHint")}
                       </p>
                       <div className="mt-5 flex justify-center">
@@ -469,19 +469,19 @@ export default function BusinessProfilePage() {
                   )}
 
                   {reviews.map((review) => (
-                    <div key={review.id} className="rounded-3xl bg-[#f4efe4] p-5">
+                    <div key={review.id} className="rounded-3xl bg-well p-5">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="flex items-center gap-1.5 font-black text-[#2e2a22]">
-                          <StarIcon className="h-4 w-4 text-[#a67c52]" strokeWidth={1.8} filled />
+                        <p className="flex items-center gap-1.5 font-semibold text-cream">
+                          <StarIcon className="h-4 w-4 text-mint" strokeWidth={1.8} filled />
                           {review.rating}/5
                         </p>
                         {formatReviewDate(review.created_at, language) && (
-                          <p className="text-sm font-bold text-[#6b6152]">
+                          <p className="text-sm text-body">
                             {formatReviewDate(review.created_at, language)}
                           </p>
                         )}
                       </div>
-                      <p className="mt-2 font-semibold text-[#6b6152]">
+                      <p className="mt-2 text-body">
                         {review.review?.trim() || t("common.noWrittenReview")}
                       </p>
                     </div>

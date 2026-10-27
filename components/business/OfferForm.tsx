@@ -102,7 +102,7 @@ export function OfferForm({
       {canCreateOffers ? (
         <>
           <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-            <p className="text-sm font-semibold uppercase tracking-widest text-body">
+            <p className="text-sm uppercase tracking-widest text-body">
               {t("businessOnboarding.firstOfferGuidanceTitle")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -295,7 +295,7 @@ export function OfferForm({
             ))}
           </div>
 
-          <p className="mt-4 rounded-2xl bg-well px-4 py-3 text-sm font-semibold leading-6 text-body">
+          <p className="mt-4 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
             {t("businessOnboarding.offerValidationHint")}
           </p>
 

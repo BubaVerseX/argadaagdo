@@ -20,49 +20,49 @@ export default function AboutPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {t("about.badge")}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
               {t("about.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {t("about.subtitle")}
             </p>
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+            <section className="rounded-3xl ui-card p-5 sm:p-8">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("about.whatLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black text-[#2e2a22]">
+              <h2 className="mt-3 text-3xl font-semibold text-cream">
                 {t("about.whatTitle")}
               </h2>
-              <p className="mt-4 font-semibold leading-8 text-[#6b6152]">
+              <p className="mt-4 leading-8 text-body">
                 {t("about.whatText")}
               </p>
             </section>
 
-            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+            <section className="rounded-3xl ui-card p-5 sm:p-8">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("about.launchAreaLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black text-[#2e2a22]">
+              <h2 className="mt-3 text-3xl font-semibold text-cream">
                 {t("about.launchAreaTitle")}
               </h2>
-              <p className="mt-4 font-semibold leading-8 text-[#6b6152]">
+              <p className="mt-4 leading-8 text-body">
                 {t("about.launchAreaText")}
               </p>
             </section>
           </div>
 
-          <section className="mt-6 rounded-[2rem] ui-card p-5 sm:p-8">
-            <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+          <section className="mt-6 rounded-3xl ui-card p-5 sm:p-8">
+            <p className="text-sm font-semibold uppercase tracking-widest text-mint">
               {t("about.missionLabel")}
             </p>
-            <h2 className="mt-3 text-3xl font-black text-[#2e2a22]">
+            <h2 className="mt-3 text-3xl font-semibold text-cream">
               {t("about.missionTitle")}
             </h2>
 
@@ -72,17 +72,17 @@ export default function AboutPage() {
                   key={item}
                   className="rounded-3xl ui-card p-5 text-center "
                 >
-                  <p className="text-2xl font-black text-[#a67c52]">{item}</p>
+                  <p className="text-2xl font-semibold text-mint">{item}</p>
                 </div>
               ))}
             </div>
           </section>
 
-          <div className="premium-card mt-6 rounded-[2rem] p-5 text-center sm:p-8">
-            <h2 className="text-2xl font-black text-[#2e2a22] sm:text-3xl">
+          <div className="premium-card mt-6 rounded-3xl p-5 text-center sm:p-8">
+            <h2 className="text-2xl font-semibold text-cream sm:text-3xl">
               {t("about.ctaTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-3 max-w-2xl leading-7 text-body">
               {t("about.ctaText")}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">

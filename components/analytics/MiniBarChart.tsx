@@ -22,7 +22,7 @@ export function MiniBarChart({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-cream">{title}</h3>
-          <p className="mt-1 text-sm font-semibold leading-6 text-body">
+          <p className="mt-1 text-sm leading-6 text-body">
             {description}
           </p>
         </div>

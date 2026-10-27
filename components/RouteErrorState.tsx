@@ -48,7 +48,7 @@ export function RouteErrorState({
             {resolveLocalizedText(title, language)}
           </h1>
 
-          <p className="mx-auto mt-4 max-w-md font-semibold leading-7 text-body">
+          <p className="mx-auto mt-4 max-w-md leading-7 text-body">
             {resolveLocalizedText(description, language)}
           </p>
 

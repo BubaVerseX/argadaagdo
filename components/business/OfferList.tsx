@@ -130,7 +130,7 @@ export function OfferList({
             <h3 className="mt-4 text-2xl font-semibold text-cream">
               {emptyTitle || t("businessDashboard.noOffers")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
               {emptyText || t("businessDashboard.noOffersHint")}
             </p>
             {!emptyTitle && (
@@ -176,7 +176,7 @@ export function OfferList({
                       </span>
                     </div>
 
-                    <p className="font-medium text-body">
+                    <p className="text-body">
                       {formatMoney(offer.price)} · {t("common.quantity")}:{" "}
                       {offer.quantity}
                     </p>
@@ -187,7 +187,7 @@ export function OfferList({
                       <StarIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
                       {getRatingLabel(rating, language)}
                     </p>
-                    <p className="mt-1 text-xs font-semibold text-body">
+                    <p className="mt-1 text-xs text-body">
                       {t("businessDashboard.created")}:{" "}
                       {formatDisplayDateTime(offer.created_at, language)}
                     </p>
@@ -332,7 +332,7 @@ export function OfferList({
                     },
                   ].map((item) => (
                     <div key={item.label} className="rounded-2xl bg-well p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                      <p className="text-xs uppercase tracking-wide text-body">
                         {item.label}
                       </p>
                       <p className="mt-1 text-xl font-semibold text-cream">

@@ -59,7 +59,7 @@ export default function Footer() {
             taglineClassName="text-sm text-body"
           />
 
-          <p className="mt-5 max-w-md text-sm font-medium leading-6 text-body">
+          <p className="mt-5 max-w-md text-sm leading-6 text-body">
             {t("footer.reduceWasteGeorgia")}
           </p>
 

@@ -47,7 +47,7 @@ export function OrdersHeader({
         {t("orders.title")}
       </h1>
 
-      <p className="mt-4 max-w-2xl text-base font-semibold text-body md:text-lg">
+      <p className="mt-4 max-w-2xl text-base text-body md:text-lg">
         {t("orders.subtitle")}
       </p>
 

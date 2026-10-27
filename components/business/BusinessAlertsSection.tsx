@@ -28,7 +28,7 @@ export function BusinessAlertsSection({ alerts }: BusinessAlertsSectionProps) {
           </h2>
         </div>
 
-        <p className="max-w-xl text-sm font-semibold text-body sm:text-right">
+        <p className="max-w-xl text-sm text-body sm:text-right">
           {isGeorgian
             ? "სწრაფი სიგნალები ჯავშნების, წაღების, მარაგის ამოწურვის რისკისა და ვადაგასული შეთავაზებების შესახებ."
             : "Quick signals for reservations, pickups, sold-out risk and expired offers."}

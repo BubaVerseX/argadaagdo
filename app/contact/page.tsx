@@ -31,14 +31,14 @@ export default function ContactPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {t("contact.badge")}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
               {t("contact.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {t("contact.subtitle")}
             </p>
           </div>
@@ -49,10 +49,10 @@ export default function ContactPage() {
                 key={card.title}
                 className="premium-card rounded-3xl p-5 sm:p-6"
               >
-                <h2 className="text-xl font-black text-[#2e2a22]">
+                <h2 className="text-xl font-semibold text-cream">
                   {card.title}
                 </h2>
-                <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
+                <p className="mt-3 leading-7 text-body">
                   {card.text}
                 </p>
               </div>
@@ -60,14 +60,14 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+            <section className="rounded-3xl ui-card p-5 sm:p-8">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("contact.supportEmailLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black text-[#2e2a22]">
+              <h2 className="mt-3 text-3xl font-semibold text-cream">
                 {t("contact.emailTitle")}
               </h2>
-              <p className="mt-4 font-semibold leading-7 text-[#6b6152]">
+              <p className="mt-4 leading-7 text-body">
                 {t("contact.emailText")}
               </p>
 
@@ -79,14 +79,14 @@ export default function ContactPage() {
               </a>
             </section>
 
-            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+            <section className="rounded-3xl ui-card p-5 sm:p-8">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("contact.businessInquiriesLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black text-[#2e2a22]">
+              <h2 className="mt-3 text-3xl font-semibold text-cream">
                 {t("contact.businessInquiriesTitle")}
               </h2>
-              <p className="mt-4 font-semibold leading-7 text-[#6b6152]">
+              <p className="mt-4 leading-7 text-body">
                 {t("contact.businessInquiriesText")}
               </p>
 
@@ -101,35 +101,35 @@ export default function ContactPage() {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <section className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("contact.responseTimeLabel")}
               </p>
-              <h2 className="mt-3 text-2xl font-black text-[#2e2a22]">
+              <h2 className="mt-3 text-2xl font-semibold text-cream">
                 {t("contact.responseTimeTitle")}
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
+              <p className="mt-3 leading-7 text-body">
                 {t("contact.responseTimeText")}
               </p>
             </section>
 
             <section className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("contact.serviceAreaLabel")}
               </p>
-              <h2 className="mt-3 text-2xl font-black text-[#2e2a22]">
+              <h2 className="mt-3 text-2xl font-semibold text-cream">
                 {t("contact.serviceAreaTitle")}
               </h2>
-              <p className="mt-3 font-semibold leading-7 text-[#6b6152]">
+              <p className="mt-3 leading-7 text-body">
                 {t("contact.serviceAreaText")}
               </p>
             </section>
           </div>
 
-          <div className="mt-6 rounded-[2rem] ui-card p-5 text-center sm:p-8">
-            <h2 className="text-2xl font-black text-[#2e2a22]">
+          <div className="mt-6 rounded-3xl ui-card p-5 text-center sm:p-8">
+            <h2 className="text-2xl font-semibold text-cream">
               {t("contact.footerTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-3 max-w-2xl leading-7 text-body">
               {t("contact.footerText")}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">

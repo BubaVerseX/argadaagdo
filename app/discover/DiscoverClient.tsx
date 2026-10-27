@@ -53,35 +53,35 @@ function DiscoverOfferCard({
   return (
     <Link
       href={`/offers/${offer.id}`}
-      className="ui-card block rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+      className="ui-card block rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
     >
-      <div className="photo-frame relative isolate h-44 overflow-hidden bg-[#f4efe4]">
+      <div className="photo-frame relative isolate h-44 overflow-hidden bg-well">
         <OfferImage
           src={offer.image_url}
           alt={offer.title}
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={priority}
         />
-        <span className="ui-card pointer-events-none absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold text-[#2e2a22]">
+        <span className="ui-card pointer-events-none absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold text-cream">
           {language === "ka"
             ? getOfferCategoryLabel(offer.category, language)
             : offer.category || "Other"}
         </span>
       </div>
       <div className="pt-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#6b6152]">
+        <p className="text-xs uppercase tracking-widest text-body">
           {offer.businesses?.name ||
             (language === "ka" ? "ადგილობრივი ბიზნესი" : "Local business")}
         </p>
-        <h3 className="mt-2 text-xl font-bold tracking-[-0.02em] text-[#2e2a22]">{offer.title}</h3>
+        <h3 className="mt-2 text-xl font-semibold text-cream">{offer.title}</h3>
         <div className="mt-3 flex flex-wrap gap-2">
-          <span className="rounded-full bg-[#f4efe4] px-3 py-1.5 text-sm font-bold text-[#a67c52]">
+          <span className="rounded-full bg-well px-3 py-1.5 text-sm font-semibold text-mint">
             {formatMoney(offer.price)}
           </span>
-          <span className="rounded-full bg-[#f4efe4] px-3 py-1.5 text-sm font-semibold text-[#6b6152]">
+          <span className="rounded-full bg-well px-3 py-1.5 text-sm font-semibold text-body">
             {formatPickupWindow(offer, language)}
           </span>
-          <span className="rounded-full bg-[#f4efe4] px-3 py-1.5 text-sm font-semibold text-[#6b6152]">
+          <span className="rounded-full bg-well px-3 py-1.5 text-sm font-semibold text-body">
             {getRatingLabel(rating, language)}
           </span>
         </div>
@@ -185,16 +185,16 @@ export default function DiscoverClient() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-7xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-[22px] sm:p-8 md:rounded-3xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {t("nav.discover")}
             </p>
-            <h1 className="mt-3 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
               {isGeorgian
                 ? "იპოვე შენი შემდეგი სიურპრიზის ყუთი."
                 : "Find your next surprise bag."}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {isGeorgian
                 ? "დაათვალიერე პოპულარული შეთავაზებები, უახლესი დამატებები, საუკეთესო შეფასების ბიზნესები და მალე დასრულებადი წაღების ფანჯრები."
                 : "Browse popular offers, newest drops, best-rated businesses and pickup windows ending soon."}
@@ -261,15 +261,15 @@ export default function DiscoverClient() {
                 language={language}
               />
 
-              <section className="ui-card rounded-[1.75rem] p-5 sm:p-8">
+              <section className="ui-card rounded-[22px] p-5 sm:p-8">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
                       {isGeorgian
                         ? "საუკეთესო შეფასების ბიზნესები"
                         : "Best Rated Businesses"}
                     </p>
-                    <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
+                    <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
                       {isGeorgian
                         ? "სანდო ადგილობრივი ადგილები"
                         : "Trusted local places"}
@@ -285,13 +285,13 @@ export default function DiscoverClient() {
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                   {discoverSections.bestRatedBusinesses.length === 0 && (
-                    <div className="rounded-3xl bg-[#f4efe4] p-6 md:col-span-2 xl:col-span-4">
-                      <p className="text-lg font-black text-[#2e2a22]">
+                    <div className="rounded-3xl bg-well p-6 md:col-span-2 xl:col-span-4">
+                      <p className="text-lg font-semibold text-cream">
                         {isGeorgian
                           ? "შეფასებული ბიზნესები ჯერ არ არის."
                           : "No rated businesses yet."}
                       </p>
-                      <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+                      <p className="mt-2 leading-7 text-body">
                         {isGeorgian
                           ? "ბიზნესები აქ გამოჩნდება, როცა მომხმარებლები დასრულებული წაღებების შეფასებას დაიწყებენ."
                           : "Businesses will appear here once customers start rating completed pickups."}
@@ -303,19 +303,19 @@ export default function DiscoverClient() {
                     <Link
                       key={business.id}
                       href={`/businesses/${business.id}`}
-                      className="ui-card rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                      className="ui-card rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                     >
-                      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-mint">
                         {business.business_type ||
                           (isGeorgian ? "კვების ბიზნესი" : "Food business")}
                       </p>
-                      <h3 className="mt-2 text-xl font-black text-[#2e2a22]">
+                      <h3 className="mt-2 text-xl font-semibold text-cream">
                         {business.name}
                       </h3>
-                      <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
+                      <p className="mt-2 text-sm leading-6 text-body">
                         {business.address || (isGeorgian ? "თბილისი" : "Tbilisi")}
                       </p>
-                      <p className="ui-well mt-3 rounded-full px-3 py-1.5 text-sm font-black text-yellow-800">
+                      <p className="ui-well mt-3 rounded-full px-3 py-1.5 text-sm font-semibold text-warning">
                         {getRatingLabel(ratingSummaries[business.id], language)}
                       </p>
                     </Link>
@@ -323,16 +323,16 @@ export default function DiscoverClient() {
                 </div>
               </section>
 
-              <section className="ui-card rounded-[1.75rem] p-5 sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+              <section className="ui-card rounded-[22px] p-5 sm:p-8">
+                <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
                   {isGeorgian ? "მდებარეობა" : "Location"}
                 </p>
-                <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
+                <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
                   {isGeorgian
                     ? "მარტივად იპოვე წაღების მისამართები"
                     : "Find pickup addresses easily"}
                 </h2>
-                <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
+                <p className="mt-3 max-w-3xl leading-7 text-body">
                   {isGeorgian
                     ? "ყველა შეთავაზებაზე ჩანს ბიზნესის მისამართი და რუკის ბმული, რომ წაღება დაჯავშნამდე დაგეგმო."
                     : "Every offer shows the business address and a map link so you can plan pickup before reserving."}
@@ -364,13 +364,13 @@ function DiscoverOfferSection({
   prioritizeFirst?: boolean;
 }) {
   return (
-    <section className="ui-card rounded-[1.75rem] p-5 sm:p-8">
+    <section className="ui-card rounded-[22px] p-5 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
             {title}
           </p>
-          <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">{text}</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">{text}</h2>
         </div>
         <Link
           href="/offers"
@@ -382,13 +382,13 @@ function DiscoverOfferSection({
 
       <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {offers.length === 0 && (
-          <div className="rounded-3xl bg-[#f4efe4] p-6 md:col-span-2 xl:col-span-4">
-            <p className="text-lg font-black text-[#2e2a22]">
+          <div className="rounded-3xl bg-well p-6 md:col-span-2 xl:col-span-4">
+            <p className="text-lg font-semibold text-cream">
               {language === "ka"
                 ? "ამ განყოფილებაში შეთავაზებები ჯერ არ არის."
                 : "No offers in this section yet."}
             </p>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 leading-7 text-body">
               {language === "ka"
                 ? "ახალი სიურპრიზის ყუთები აქ გამოჩნდება, როცა ბიზნესები შეთავაზებებს გამოაქვეყნებენ."
                 : "New surprise bags will appear here as businesses publish offers."}

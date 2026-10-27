@@ -100,11 +100,11 @@ export function PickupVerificationModal({
             <p className="text-lg font-semibold text-cream">
               {order.offers?.title || t("common.offerUnavailable")}
             </p>
-            <p className="mt-2 font-semibold text-body">
+            <p className="mt-2 text-body">
               {t("businessDashboard.customer")}:{" "}
               {order.profiles?.email || t("common.unavailable")}
             </p>
-            <p className="mt-1 flex items-center gap-1.5 font-semibold text-body">
+            <p className="mt-1 flex items-center gap-1.5 text-body">
               <ClockIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
               {t("common.pickup")}:{" "}
               {order.offers
@@ -113,7 +113,7 @@ export function PickupVerificationModal({
             </p>
           </div>
 
-          <p className="mt-5 font-semibold leading-7 text-body">
+          <p className="mt-5 leading-7 text-body">
             {isGeorgian
               ? "სთხოვე მომხმარებელს, შეკვეთების გვერდიდან წაღების კოდი გაჩვენოს. შეკვეთის გადაცემამდე კოდი აქ შეიყვანე."
               : "Ask the customer to show the pickup code from their Orders page. Enter it here before handing over the order."}

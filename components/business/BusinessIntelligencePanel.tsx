@@ -46,7 +46,7 @@ export function BusinessIntelligencePanel({
           <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
             {isGeorgian ? "გაყიდე მეტი ჭარბი საკვები" : "Sell more surplus food"}
           </h2>
-          <p className="mt-3 max-w-3xl font-semibold leading-7 text-body">
+          <p className="mt-3 max-w-3xl leading-7 text-body">
             {isGeorgian
               ? "წესებზე დაფუძნებული შეჯამებები გეხმარება, შეამჩნიო ნელა გაყიდვადი შეთავაზებები, მაღალი მოთხოვნა და წაღების აქტივობა ჯავშნის პროცესის შეცვლის გარეშე."
               : "Rule-based summaries help you spot slow offers, strong demand and pickup activity without changing the reservation flow."}
@@ -95,7 +95,7 @@ export function BusinessIntelligencePanel({
               </h3>
             </div>
 
-            <p className="text-sm font-semibold text-body sm:text-right">
+            <p className="text-sm text-body sm:text-right">
               {isGeorgian
                 ? "ეფუძნება ჯავშნების პროცენტს, რაოდენობასა და წაღების დროს."
                 : "Based on reservation percentage, quantity and pickup timing."}

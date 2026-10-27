@@ -84,7 +84,7 @@ export function ReservationList({
       </h2>
 
       <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-        <p className="text-sm font-semibold uppercase tracking-widest text-body">
+        <p className="text-sm uppercase tracking-widest text-body">
           {t("businessOnboarding.reservationGuidanceTitle")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -108,7 +108,7 @@ export function ReservationList({
         <div className="mt-6 rounded-3xl bg-well p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-body">
+              <p className="text-xs uppercase tracking-widest text-body">
                 {t("businessDashboard.reservationSummary")}
               </p>
               <h3 className="mt-2 text-2xl font-semibold text-cream">
@@ -203,7 +203,7 @@ export function ReservationList({
                   : "No active reservations"
                 : t("businessDashboard.noFilteredReservations")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
               {orders.length === 0
                 ? t("businessDashboard.noReservationsHint")
                 : normalizedReservationSearch
@@ -232,12 +232,12 @@ export function ReservationList({
                   {order.offers?.title || t("common.offerUnavailable")}
                 </h3>
 
-                <p className="mt-2 font-semibold text-body">
+                <p className="mt-2 text-body">
                   {t("businessDashboard.customer")}:{" "}
                   {order.profiles?.email || t("common.unavailable")}
                 </p>
 
-                <p className="mt-1 font-semibold text-body">
+                <p className="mt-1 text-body">
                   {t("businessDashboard.created")}:{" "}
                   {formatDisplayDateTime(order.created_at, language)}
                 </p>
@@ -250,7 +250,7 @@ export function ReservationList({
 
                 <div className="mt-3 grid gap-2 rounded-2xl bg-well p-4 text-sm font-semibold text-body sm:grid-cols-2">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                    <p className="text-xs uppercase tracking-wide text-body">
                       {isGeorgian ? "ბიზნესის ქვითარი" : "Business receipt"}
                     </p>
                     <p className="mt-1">
@@ -266,7 +266,7 @@ export function ReservationList({
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-body">
+                    <p className="text-xs uppercase tracking-wide text-body">
                       {isGeorgian ? "ანაზღაურების შეფასება" : "Payout estimate"}
                     </p>
                     <p>
@@ -284,7 +284,7 @@ export function ReservationList({
                   </div>
                 </div>
 
-                <p className="mt-1 flex items-center gap-1.5 font-semibold text-body">
+                <p className="mt-1 flex items-center gap-1.5 text-body">
                   <ClockIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
                   {t("common.pickup")}:{" "}
                   {order.offers
@@ -292,7 +292,7 @@ export function ReservationList({
                     : t("orders.pickupUnavailable")}
                 </p>
 
-                <p className="mt-1 text-sm font-semibold text-body">
+                <p className="mt-1 text-sm text-body">
                   {t("businessDashboard.reliability")}:{" "}
                   {order.profiles?.reliability_score ??
                     t("common.unavailable")}{" "}
@@ -328,7 +328,7 @@ export function ReservationList({
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
-                  <p className="mt-3 rounded-2xl bg-well px-4 py-3 text-sm font-semibold leading-6 text-body">
+                  <p className="mt-3 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
                     {isGeorgian
                       ? "მომხმარებელს სრული კოდი ჰკითხე და შემდეგ გამოიყენე ღილაკი „შემოწმება და წაღების დასრულება“."
                       : "Ask the customer for the full code, then use Verify & Complete Pickup."}
@@ -336,7 +336,7 @@ export function ReservationList({
                 )}
 
                 <div className="mt-4 rounded-3xl bg-well p-4">
-                  <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-body">
+                  <p className="mb-3 text-sm uppercase tracking-widest text-body">
                     {isGeorgian ? "ჯავშნის ეტაპები" : "Reservation timeline"}
                   </p>
                   <TimelineSteps

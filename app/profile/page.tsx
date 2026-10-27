@@ -254,7 +254,7 @@ export default function ProfilePage() {
       <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
-          <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-[#f4efe4]" />
+          <div className="mx-auto h-72 max-w-5xl animate-pulse rounded-3xl bg-well" />
         </section>
       </main>
     );
@@ -269,14 +269,14 @@ export default function ProfilePage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-12">
+          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-3xl md:p-12">
             <p className="premium-badge px-4 py-2">
               {isGeorgian ? "ანგარიში" : "Account"}
             </p>
-            <h1 className="mt-4 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-5xl">
+            <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-5xl">
               {isGeorgian ? "პროფილის პარამეტრები" : "Profile settings"}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg">
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
               {isGeorgian
                 ? "მართე ანგარიშის პირადი მონაცემები ისე, რომ ანგარიშის როლი და მარკეტის უფლებები არ შეიცვალოს."
                 : "Manage your personal account details without changing your account role or marketplace permissions."}
@@ -293,17 +293,17 @@ export default function ProfilePage() {
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             <div className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+              <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
                 {isGeorgian ? "პირადი მონაცემები" : "Personal details"}
               </p>
-              <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+              <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
                 {isGeorgian
                   ? "შენი ანგარიშის ინფორმაცია"
                   : "Your account information"}
               </h2>
 
               <div className="mt-6 grid gap-4">
-                <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+                <label className="grid gap-2 text-sm font-semibold text-body">
                   {isGeorgian ? "ელფოსტის მისამართი" : "Email address"}
                   <input
                     value={user?.email || ""}
@@ -312,7 +312,7 @@ export default function ProfilePage() {
                   />
                 </label>
 
-                <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+                <label className="grid gap-2 text-sm font-semibold text-body">
                   {isGeorgian ? "საჩვენებელი სახელი" : "Display name"}
                   <input
                     value={displayName}
@@ -321,13 +321,13 @@ export default function ProfilePage() {
                     placeholder={isGeorgian ? "შენი სახელი" : "Your name"}
                     className="premium-input p-4 font-semibold"
                   />
-                  <span className="text-xs font-bold text-[#6b6152]">
+                  <span className="text-xs font-semibold text-body">
                     {isGeorgian ? "არასავალდებულო" : "Optional"} ·{" "}
                     {displayName.length}/80
                   </span>
                 </label>
 
-                <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+                <label className="grid gap-2 text-sm font-semibold text-body">
                   {isGeorgian ? "ტელეფონის ნომერი" : "Phone number"}
                   <input
                     value={phone}
@@ -338,13 +338,13 @@ export default function ProfilePage() {
                     placeholder="+995 555 123 456"
                     className="premium-input p-4 font-semibold"
                   />
-                  <span className="text-xs font-bold text-[#6b6152]">
+                  <span className="text-xs font-semibold text-body">
                     {isGeorgian ? "არასავალდებულო" : "Optional"} ·{" "}
                     {phone.length}/40
                   </span>
                 </label>
 
-                <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+                <label className="grid gap-2 text-sm font-semibold text-body">
                   {isGeorgian ? "სასურველი ენა" : "Preferred language"}
                   <select
                     value={preferredLanguage}
@@ -383,19 +383,19 @@ export default function ProfilePage() {
 
             <aside className="grid gap-6">
               <div className="premium-card rounded-3xl p-5 sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
                   {isGeorgian ? "ანგარიშის უსაფრთხოება" : "Account security"}
                 </p>
-                <h2 className="mt-2 text-2xl font-black">
+                <h2 className="mt-2 text-2xl font-semibold">
                   {isGeorgian ? "უსაფრთხოების სტატუსი" : "Security status"}
                 </h2>
 
                 <div className="mt-5 grid gap-3">
-                  <div className="rounded-2xl bg-[#f4efe4] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-[#a67c52]">
+                  <div className="rounded-2xl bg-well p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-mint">
                       {isGeorgian ? "ელფოსტა" : "Email"}
                     </p>
-                    <p className="mt-1 font-black text-[#2e2a22]">
+                    <p className="mt-1 font-semibold text-cream">
                       {verified
                         ? isGeorgian
                           ? "ელფოსტა დადასტურებულია"
@@ -406,32 +406,32 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#f4efe4] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                  <div className="rounded-2xl bg-well p-4">
+                    <p className="text-xs uppercase tracking-wide text-body">
                       {t("login.accountType")}
                     </p>
-                    <p className="mt-1 font-black text-[#2e2a22]">{roleLabel}</p>
-                    <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+                    <p className="mt-1 font-semibold text-cream">{roleLabel}</p>
+                    <p className="mt-1 text-sm text-body">
                       {isGeorgian
                         ? "როლებს ArGadaagdo მართავს და აქ მათი შეცვლა შეუძლებელია."
                         : "Roles are managed by ArGadaagdo and cannot be changed here."}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#f4efe4] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                  <div className="rounded-2xl bg-well p-4">
+                    <p className="text-xs uppercase tracking-wide text-body">
                       {isGeorgian ? "შექმნის თარიღი" : "Created"}
                     </p>
-                    <p className="mt-1 font-black text-[#2e2a22]">
+                    <p className="mt-1 font-semibold text-cream">
                       {formatAccountDate(user?.created_at, language)}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl bg-[#f4efe4] p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                  <div className="rounded-2xl bg-well p-4">
+                    <p className="text-xs uppercase tracking-wide text-body">
                       {isGeorgian ? "ბოლო შესვლა" : "Last sign-in"}
                     </p>
-                    <p className="mt-1 font-black text-[#2e2a22]">
+                    <p className="mt-1 font-semibold text-cream">
                       {formatAccountDate(user?.last_sign_in_at, language)}
                     </p>
                   </div>
@@ -439,13 +439,13 @@ export default function ProfilePage() {
               </div>
 
               <div className="premium-card rounded-3xl p-5 sm:p-8">
-                <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
                   {isGeorgian ? "ანგარიშის ინსტრუმენტები" : "Account tools"}
                 </p>
-                <h2 className="mt-2 text-2xl font-black">
+                <h2 className="mt-2 text-2xl font-semibold">
                   {isGeorgian ? "მონაცემების მართვა" : "Data controls"}
                 </h2>
-                <p className="mt-3 text-sm font-semibold leading-6 text-[#6b6152]">
+                <p className="mt-3 text-sm leading-6 text-body">
                   {isGeorgian
                     ? "გჭირდება მონაცემების ექსპორტი ან ანგარიშის წაშლის განხილვა? დაუკავშირდი მხარდაჭერას და მოთხოვნაში დაგეხმარებით."
                     : "Need a data export or account deletion review? Contact support and we will help with the request."}
@@ -453,7 +453,7 @@ export default function ProfilePage() {
                 <div className="mt-5 grid gap-3">
                   <Link
                     href="/contact"
-                    className="premium-button px-5 py-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                    className="premium-button px-5 py-3 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                   >
                     {isGeorgian
                       ? "მხარდაჭერასთან დაკავშირება ჩემი მონაცემების შესახებ"
@@ -466,10 +466,10 @@ export default function ProfilePage() {
 
           <div className="mt-6">
             <section className="premium-card rounded-3xl p-5 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+              <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
                 {isGeorgian ? "აქტივობა მარკეტზე" : "Marketplace activity"}
               </p>
-              <h2 className="mt-2 text-2xl font-black">
+              <h2 className="mt-2 text-2xl font-semibold">
                 {isGeorgian
                   ? "შენი საკვების გადარჩენის სტატისტიკა"
                   : "Your food rescue stats"}
@@ -514,14 +514,14 @@ export default function ProfilePage() {
                       : "Offers saved for later",
                   },
                 ].map((stat) => (
-                  <div key={stat.title} className="rounded-2xl bg-[#f4efe4] p-4">
-                    <p className="text-sm font-black text-[#6b6152]">
+                  <div key={stat.title} className="rounded-2xl bg-well p-4">
+                    <p className="text-sm text-body">
                       {stat.title}
                     </p>
-                    <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+                    <p className="mt-2 text-3xl font-semibold text-cream">
                       {stat.value}
                     </p>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
+                    <p className="mt-2 text-sm leading-6 text-body">
                       {stat.helper}
                     </p>
                   </div>
@@ -531,12 +531,12 @@ export default function ProfilePage() {
           </div>
 
           <div className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
-            <h2 className="text-2xl font-black">
+            <h2 className="text-2xl font-semibold">
               {isGeorgian
                 ? "პაროლთან დაკავშირებით დახმარება გჭირდება?"
                 : "Need password help?"}
             </h2>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 leading-7 text-body">
               {isGeorgian
                 ? "გამოიყენე პაროლის აღდგენა შესვლის გვერდიდან. ანგარიშის ელფოსტაზე უსაფრთხო აღდგენის ბმულს გამოგიგზავნით."
                 : "Use the password reset flow from the sign-in page. We will email a secure reset link to your account email."}

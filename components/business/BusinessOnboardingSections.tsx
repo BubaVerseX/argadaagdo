@@ -32,7 +32,7 @@ export function BusinessOnboardingSections({
         <h2 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl">
           {t("businessOnboarding.welcomeTitle")}
         </h2>
-        <p className="mt-3 max-w-3xl font-semibold leading-7 text-body">
+        <p className="mt-3 max-w-3xl leading-7 text-body">
           {t("businessOnboarding.welcomeText")}
         </p>
         <a

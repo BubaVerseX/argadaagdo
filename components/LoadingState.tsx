@@ -47,7 +47,7 @@ export function LoadingState({
       <h1 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
         {resolvedTitle}
       </h1>
-      <p className="mx-auto mt-3 max-w-md font-semibold leading-7 text-body">
+      <p className="mx-auto mt-3 max-w-md leading-7 text-body">
         {resolvedDescription}
       </p>
     </div>

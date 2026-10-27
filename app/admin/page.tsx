@@ -510,55 +510,55 @@ export default function AdminPage() {
       title: "Total Businesses",
       value: businesses.length,
       helper: "All submitted business profiles",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Approved Businesses",
       value: approvedBusinesses.length,
       helper: "Businesses allowed to publish offers",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Pending Businesses",
       value: pendingBusinesses.length,
       helper: "Registrations waiting for review",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Active Offers",
       value: activeOffers.length,
       helper: "Offers currently visible to customers",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Total Orders",
       value: orders.length,
       helper: "All reservations and pickup records",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Total Ratings",
       value: totalRatings,
       helper: "Customer reviews submitted",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Customers",
       value: customerProfiles.length,
       helper: "Customer accounts in profiles",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Business Accounts",
       value: businessProfiles.length,
       helper: "Users with business account role",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Admins",
       value: adminProfiles.length,
       helper: "Admin accounts with approval access",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
   ];
   const accountOverview = [
@@ -566,25 +566,25 @@ export default function AdminPage() {
       title: "Customers",
       value: customerProfiles.length,
       helper: "Can browse, reserve, favorite and rate completed pickups",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Businesses",
       value: businessProfiles.length,
       helper: "Can register businesses and manage approved business offers",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Admins",
       value: adminProfiles.length,
       helper: "Can approve businesses and monitor marketplace activity",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Missing role",
       value: unknownProfiles.length,
       helper: "Profiles that may need support review",
-      className: "bg-red-50 text-red-800",
+      className: "bg-danger-soft text-danger",
     },
   ];
   const marketplaceHealth = [
@@ -655,25 +655,25 @@ export default function AdminPage() {
       title: "Pending businesses",
       value: pendingBusinesses.length,
       helper: "Applications waiting for approval",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Approved businesses",
       value: approvedBusinesses.length,
       helper: "Businesses allowed to publish offers",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Inactive offers",
       value: inactiveOffers.length,
       helper: "Offers hidden by businesses or admins",
-      className: "bg-[#f4efe4] text-[#6b6152]",
+      className: "bg-well text-body",
     },
     {
       title: "Expired offers",
       value: expiredOffers.length,
       helper: "Pickup windows that have already passed",
-      className: "bg-red-50 text-red-800",
+      className: "bg-danger-soft text-danger",
     },
   ];
   const paymentSummary = calculatePaymentSummary(orders);
@@ -887,7 +887,7 @@ export default function AdminPage() {
       title: "Paid reservations",
       value: paymentSummary.activePaidCount,
       helper: "Current reserved/completed orders with recorded amounts",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Refunded/cancelled",
@@ -895,25 +895,25 @@ export default function AdminPage() {
       helper: `${formatMoney(
         paymentSummary.refundedAmount
       )} marked for refund history`,
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Platform revenue",
       value: formatMoney(paymentSummary.platformRevenue),
       helper: "Estimated 10% marketplace fee",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Business payout",
       value: formatMoney(paymentSummary.businessPayout),
       helper: "Estimated 90% business revenue",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Pending payouts",
       value: formatMoney(paymentSummary.pendingPayoutEstimate),
       helper: "Manual payout estimate from completed pickups",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Failed payments",
@@ -921,7 +921,7 @@ export default function AdminPage() {
       // abandoned bank page, or an expired hold.
       value: orders.filter(isFailedCheckoutOrder).length,
       helper: "Provider failures to review during payment operations",
-      className: "bg-red-50 text-red-800",
+      className: "bg-danger-soft text-danger",
     },
   ];
   const operationalDashboardMetrics = [
@@ -972,7 +972,7 @@ export default function AdminPage() {
       title: "Reservation lookup",
       value: filteredAdminOrders.length,
       helper: "Use search to find reservation/order records by id or status",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Customer lookup",
@@ -980,19 +980,19 @@ export default function AdminPage() {
         (profile) => profile.role === "customer"
       ).length,
       helper: "Customer accounts matching the current admin search",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Business lookup",
       value: filteredApprovedBusinesses.length + filteredPendingBusinesses.length,
       helper: "Approved and pending businesses matching the search",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Order lookup",
       value: filteredAdminOrders.length,
       helper: "Orders matching the selected status and search term",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
   ];
   const marketplaceIntelligenceMetrics = [
@@ -1004,7 +1004,7 @@ export default function AdminPage() {
       helper: mostActiveBusiness
         ? `${mostActiveBusiness.reservations} total reservations`
         : "Reservations will identify the strongest active partner.",
-      className: "ui-card text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       title: "Least active business",
@@ -1014,31 +1014,31 @@ export default function AdminPage() {
       helper: leastActiveBusiness
         ? `${leastActiveBusiness.reservations} total reservations`
         : "Approved businesses will appear here after onboarding.",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Offers created today",
       value: offersCreatedToday.length,
       helper: "New offers published in the current Tbilisi day",
-      className: "ui-card text-[#2e2a22]",
+      className: "ui-card text-cream",
     },
     {
       title: "Offers expiring",
       value: offersExpiringToday.length,
       helper: "Active offers with pickup scheduled today",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
     {
       title: "Businesses without offers",
       value: businessesWithZeroOffers.length,
       helper: "Businesses that may need onboarding help",
-      className: "bg-red-50 text-red-800",
+      className: "bg-danger-soft text-danger",
     },
     {
       title: "Without reservations",
       value: businessesWithoutReservations.length,
       helper: "Approved businesses that have not received reservations yet",
-      className: "bg-yellow-50 text-yellow-900",
+      className: "bg-warning-soft text-warning",
     },
   ];
 
@@ -1098,10 +1098,10 @@ export default function AdminPage() {
 
         {lockedPickupOrders.length > 0 && (
           <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8">
-            <h3 className="text-lg font-black text-[#2e2a22]">
+            <h3 className="text-lg font-semibold text-cream">
               Locked pickup codes
             </h3>
-            <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+            <p className="mt-1 text-sm text-body">
               Reserved orders locked after {PICKUP_CODE_MAX_ATTEMPTS} wrong
               pickup codes. The business cannot complete them until unlocked.
             </p>
@@ -1111,13 +1111,13 @@ export default function AdminPage() {
                 return (
                   <div
                     key={order.id}
-                    className="flex flex-col gap-3 rounded-2xl bg-red-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-3 rounded-2xl bg-danger-soft p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="font-black text-red-800">
+                      <p className="font-semibold text-danger">
                         Order #{order.id}
                       </p>
-                      <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+                      <p className="mt-1 text-sm text-body">
                         Offer #{order.offer_id} ·{" "}
                         {(businessId && businessNameById[businessId]) ||
                           "Business"}{" "}
@@ -1128,7 +1128,7 @@ export default function AdminPage() {
                       type="button"
                       onClick={() => void unlockPickupCode(order.id)}
                       disabled={unlockingOrderId !== null}
-                      className="rounded-2xl bg-[#2e2a22] px-4 py-3 text-sm font-black text-white disabled:opacity-50"
+                      className="rounded-2xl premium-button px-4 py-3 text-sm disabled:opacity-50"
                     >
                       {unlockingOrderId === order.id
                         ? "Unlocking..."
@@ -1222,26 +1222,26 @@ export default function AdminPage() {
 
         <div className="mt-5 grid gap-3 md:grid-cols-4">
           <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm font-black text-[#6b6152]">Businesses found</p>
-            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+            <p className="text-sm text-body">Businesses found</p>
+            <p className="mt-2 text-3xl font-semibold text-cream">
               {filteredPendingBusinesses.length + filteredApprovedBusinesses.length}
             </p>
           </div>
           <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm font-black text-[#6b6152]">Offers found</p>
-            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+            <p className="text-sm text-body">Offers found</p>
+            <p className="mt-2 text-3xl font-semibold text-cream">
               {filteredAdminOffers.length}
             </p>
           </div>
           <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm font-black text-[#6b6152]">Orders found</p>
-            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+            <p className="text-sm text-body">Orders found</p>
+            <p className="mt-2 text-3xl font-semibold text-cream">
               {filteredAdminOrders.length}
             </p>
           </div>
           <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm font-black text-[#6b6152]">Accounts found</p>
-            <p className="mt-2 text-3xl font-black text-[#2e2a22]">
+            <p className="text-sm text-body">Accounts found</p>
+            <p className="mt-2 text-3xl font-semibold text-cream">
               {filteredAdminProfiles.length}
             </p>
           </div>
@@ -1249,55 +1249,55 @@ export default function AdminPage() {
 
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
           <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-black text-[#2e2a22]">Offer matches</h3>
+            <h3 className="text-lg font-semibold text-cream">Offer matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminOffers.slice(0, 5).map((offer) => (
-                <div key={offer.id} className="rounded-2xl bg-[#f4efe4] p-4">
-                  <p className="font-black text-[#2e2a22]">{offer.title}</p>
-                  <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+                <div key={offer.id} className="rounded-2xl bg-well p-4">
+                  <p className="font-semibold text-cream">{offer.title}</p>
+                  <p className="mt-1 text-sm text-body">
                     {businessNameById[offer.business_id] || "Business"} ·{" "}
                     {getEffectiveOfferStatus(offer)}
                   </p>
                 </div>
               ))}
               {filteredAdminOffers.length === 0 && (
-                <p className="font-semibold text-[#6b6152]">No offers found.</p>
+                <p className="text-body">No offers found.</p>
               )}
             </div>
           </div>
 
           <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-black text-[#2e2a22]">Order matches</h3>
+            <h3 className="text-lg font-semibold text-cream">Order matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminOrders.slice(0, 5).map((order) => (
-                <div key={order.id} className="rounded-2xl bg-[#f4efe4] p-4">
-                  <p className="font-black text-[#2e2a22]">Order #{order.id}</p>
-                  <p className="mt-1 text-sm font-semibold text-[#6b6152]">
+                <div key={order.id} className="rounded-2xl bg-well p-4">
+                  <p className="font-semibold text-cream">Order #{order.id}</p>
+                  <p className="mt-1 text-sm text-body">
                     Offer #{order.offer_id} · {order.status}
                   </p>
                 </div>
               ))}
               {filteredAdminOrders.length === 0 && (
-                <p className="font-semibold text-[#6b6152]">No orders found.</p>
+                <p className="text-body">No orders found.</p>
               )}
             </div>
           </div>
 
           <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-black text-[#2e2a22]">Account matches</h3>
+            <h3 className="text-lg font-semibold text-cream">Account matches</h3>
             <div className="mt-4 grid gap-3">
               {filteredAdminProfiles.slice(0, 5).map((profile) => (
-                <div key={profile.id} className="rounded-2xl bg-[#f4efe4] p-4">
-                  <p className="break-words font-black text-[#2e2a22]">
+                <div key={profile.id} className="rounded-2xl bg-well p-4">
+                  <p className="break-words font-semibold text-cream">
                     {profile.email || "Email unavailable"}
                   </p>
-                  <p className="mt-1 text-sm font-semibold capitalize text-[#6b6152]">
+                  <p className="mt-1 text-sm capitalize text-body">
                     {profile.role || "Missing role"}
                   </p>
                 </div>
               ))}
               {filteredAdminProfiles.length === 0 && (
-                <p className="font-semibold text-[#6b6152]">No accounts found.</p>
+                <p className="text-body">No accounts found.</p>
               )}
             </div>
           </div>
