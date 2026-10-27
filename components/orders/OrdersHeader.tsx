@@ -60,10 +60,13 @@ export function OrdersHeader({
           value={profile?.reliability_score ?? t("common.unavailable")}
           tone={reliabilityTone}
         />
+        {/* Fifth card: full width on phones so long Georgian status words
+            ("შესანიშნავი") don't have to break mid-word. */}
         <StatCard
           title={t("orders.status")}
           value={reliabilityStatusLabel}
           tone={reliabilityTone}
+          className="col-span-2 md:col-span-1"
         />
       </div>
     </div>

@@ -788,7 +788,7 @@ export function PendingBusinesses({
                   name="approval_action"
                   value="request_changes"
                   disabled={updatingBusinessId !== null}
-                  className="min-h-12 rounded-full bg-warning-soft px-6 py-3 font-semibold text-warning transition hover:bg-warning-soft disabled:cursor-not-allowed disabled:opacity-60"
+                  className="min-h-12 rounded-full bg-warning-soft px-6 py-3 font-semibold text-warning transition hover:bg-warning-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
                 >
                   Request changes
                 </button>
@@ -798,7 +798,7 @@ export function PendingBusinesses({
                   name="approval_action"
                   value="reject"
                   disabled={updatingBusinessId !== null}
-                  className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
+                  className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
                 >
                   Reject
                 </button>
@@ -861,7 +861,7 @@ export function ApprovedBusinesses({
             <button
               onClick={() => onMoveToPending(business.id)}
               disabled={updatingBusinessId !== null}
-              className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
+              className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
             >
               {updatingBusinessId === business.id
                 ? "Updating..."
@@ -888,11 +888,11 @@ function MetricCardGrid({
           key={metric.title}
           className={`rounded-2xl p-4 sm:rounded-3xl sm:p-5 ${metric.className}`}
         >
-          <p className="text-sm font-semibold opacity-75">{metric.title}</p>
+          <p className="text-sm font-semibold">{metric.title}</p>
           <p className="mt-2 text-3xl font-semibold sm:text-4xl">
             {metric.value}
           </p>
-          <p className="mt-3 text-sm font-semibold leading-6 opacity-70">
+          <p className="mt-3 text-sm leading-6 text-body">
             {metric.helper}
           </p>
         </div>

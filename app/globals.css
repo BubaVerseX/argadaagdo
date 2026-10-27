@@ -284,11 +284,14 @@ textarea {
     transform: scale(0.98);
   }
 
+  /* Disabled: cream text (not muted) so it still reads at ≥4.5:1 even
+     under the `disabled:opacity-60` that many call sites add. */
   .premium-button:disabled,
   .premium-button[aria-disabled="true"] {
     background: var(--well);
-    color: var(--muted);
+    color: var(--cream);
     border-color: var(--line);
+    box-shadow: none;
     transform: none;
     cursor: not-allowed;
   }
@@ -325,7 +328,7 @@ textarea {
 
   .premium-button-secondary:disabled,
   .premium-button-secondary[aria-disabled="true"] {
-    color: var(--muted);
+    color: var(--cream);
     border-color: var(--line);
     cursor: not-allowed;
   }

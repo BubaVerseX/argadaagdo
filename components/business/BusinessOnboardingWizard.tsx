@@ -473,7 +473,7 @@ export function BusinessOnboardingWizard({
             type="button"
             onClick={() => goToStep(step - 1)}
             disabled={step === 1}
-            className="ui-card min-h-12 rounded-full px-6 py-3 font-semibold text-body transition disabled:cursor-not-allowed disabled:opacity-50"
+            className="ui-card min-h-12 rounded-full px-6 py-3 font-semibold text-body transition disabled:cursor-not-allowed disabled:text-muted"
           >
             {isGeorgian ? "უკან" : "Back"}
           </button>

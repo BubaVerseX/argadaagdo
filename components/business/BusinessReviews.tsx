@@ -44,7 +44,7 @@ export function BusinessReviews({
             </p>
             <a
               href="#reservations"
-              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-warning-soft px-6 py-3 font-semibold text-warning transition hover:bg-warning-soft"
+              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-warning px-6 py-3 font-semibold text-ink transition hover:bg-warning/90"
             >
               {t("businessDashboard.viewReservations")}
             </a>

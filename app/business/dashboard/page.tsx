@@ -1711,12 +1711,12 @@ export default function BusinessDashboardPage() {
     {
       label: t("orders.collected"),
       value: collectedOrders.length,
-      className: "bg-warning-soft text-warning",
+      className: "border border-warning-line bg-warning-soft text-cream",
     },
     {
       label: t("orders.cancelled"),
       value: cancelledOrders.length,
-      className: "bg-danger-soft text-danger",
+      className: "border border-danger-line bg-danger-soft text-cream",
     },
     {
       label: t("businessDashboard.noShow"),
@@ -1759,7 +1759,7 @@ export default function BusinessDashboardPage() {
               : `${offersExpiringToday.length} active ${
                   offersExpiringToday.length === 1 ? "offer ends" : "offers end"
                 } today. Unsold quantity should stay as same-day inventory.`,
-            className: "border-warning-line bg-warning-soft text-warning",
+            className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
       : []),
@@ -1789,7 +1789,7 @@ export default function BusinessDashboardPage() {
                     ? "reservation is"
                     : "reservations are"
                 } scheduled for pickup today.`,
-            className: "border-warning-line bg-warning-soft text-warning",
+            className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
       : [
@@ -1810,7 +1810,7 @@ export default function BusinessDashboardPage() {
               : `${nearlySoldOutOffers.length} active ${
                   nearlySoldOutOffers.length === 1 ? "offer has" : "offers have"
                 } 2 or fewer boxes left.`,
-            className: "border-warning-line bg-warning-soft text-warning",
+            className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
       : []),
@@ -1836,7 +1836,7 @@ export default function BusinessDashboardPage() {
               : `${expiredOffers.length} ${
                   expiredOffers.length === 1 ? "offer has" : "offers have"
                 } passed the pickup window and should stay in history.`,
-            className: "border-danger-line bg-danger-soft text-danger",
+            className: "border border-danger-line bg-danger-soft text-cream",
           },
         ]
       : []),

@@ -74,7 +74,7 @@ export default function AnalyticsBarCard({
         />
       </div>
 
-      <p className="mt-3 text-sm font-semibold opacity-75">{caption}</p>
+      <p className="mt-3 text-sm text-body">{caption}</p>
     </div>
   );
 }
