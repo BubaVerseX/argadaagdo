@@ -130,7 +130,7 @@ export default function ForBusinessesPage() {
           <p className="text-xs uppercase tracking-[0.24em] text-body">
             {t("forBusinesses.solutionBadge")}
           </p>
-          <h2 className="mt-3 max-w-2xl text-4xl font-semibold text-cream sm:text-5xl">
+          <h2 className="mt-3 max-w-2xl text-3xl font-semibold text-cream sm:text-5xl">
             {t("forBusinesses.solutionTitle")}
           </h2>
 
@@ -157,7 +157,7 @@ export default function ForBusinessesPage() {
           <p className="text-xs uppercase tracking-[0.24em] text-body">
             {t("forBusinesses.howBadge")}
           </p>
-          <h2 className="mt-3 max-w-2xl text-4xl font-semibold text-cream sm:text-5xl">
+          <h2 className="mt-3 max-w-2xl text-3xl font-semibold text-cream sm:text-5xl">
             {t("forBusinesses.howTitle")}
           </h2>
 

@@ -246,7 +246,7 @@ export default function Home() {
                 {homepageCopy.launchBadge}
               </p>
 
-              <h1 className="mt-7 text-balance text-[3rem] font-semibold leading-[1.2] text-cream sm:text-[3.5rem] lg:text-[3.75rem]">
+              <h1 className="mt-7 text-balance text-[2rem] font-semibold leading-[1.2] text-cream min-[420px]:text-[2.25rem] sm:text-[3.5rem] lg:text-[3.75rem]">
                 {heroTitleBefore}
                 <span className="text-mint">
                   {homepageCopy.heroAccentPhrase}

@@ -110,6 +110,9 @@ body {
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: 0;
+    /* Georgian headings are long single words; break inside a word only
+       when it would otherwise be clipped at the screen edge. */
+    overflow-wrap: anywhere;
   }
 }
 
