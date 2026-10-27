@@ -112,12 +112,12 @@ export default function SupportContent() {
             </p>
             <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
               {isGeorgian
-                ? "დახმარება ჯავშნებში, წაღებასა და ბიზნესებისთვის."
+                ? "დახმარება ჯავშნებში, წაღებაში და ბიზნესებისთვის."
                 : "Help for reservations, pickups and businesses."}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {isGeorgian
-                ? "მკაფიო პასუხები მომხმარებლებისა და ბიზნესებისთვის, რომლებიც ArGadaagdo-ს თბილისის პილოტის დროს იყენებენ."
+                ? "მკაფიო პასუხები მომხმარებლებისა და ბიზნესებისთვის, რომლებიც არ გადააგდოს თბილისის პილოტის დროს იყენებენ."
                 : "Clear answers for customers and businesses using ArGadaagdo during the Tbilisi pilot."}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">

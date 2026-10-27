@@ -502,7 +502,7 @@ export default function OffersPage() {
               </button>
             </div>
 
-            <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-center">
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-center">
               <select
                 value={selectedCategory}
                 onChange={(event) => {
@@ -514,7 +514,7 @@ export default function OffersPage() {
                     ? "შეთავაზებების ფილტრი კატეგორიით"
                     : "Filter offers by category"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">{t("offers.allCategories")}</option>
                 {categoryOptions.map((category) => (
@@ -535,7 +535,7 @@ export default function OffersPage() {
                     ? "შეთავაზებების ფილტრი ფასით"
                     : "Filter offers by price"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">
                   {isGeorgian ? "ყველა ფასი" : "All prices"}
@@ -562,7 +562,7 @@ export default function OffersPage() {
                     ? "შეთავაზებების ფილტრი წაღების თარიღით"
                     : "Filter offers by pickup date"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">
                   {isGeorgian ? "წაღების ნებისმიერი თარიღი" : "Any pickup date"}
@@ -585,7 +585,7 @@ export default function OffersPage() {
                 aria-label={
                   isGeorgian ? "შეთავაზებების დალაგება" : "Sort offers"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="recommended">
                   {isGeorgian ? "რეკომენდებული" : "Recommended"}

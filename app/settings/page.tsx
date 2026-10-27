@@ -411,7 +411,7 @@ export default function SettingsPage() {
             </h2>
             <p className="mt-2 leading-7 text-body">
               {isGeorgian
-                ? "ArGadaagdo ელფოსტით გატყობინებს ანგარიშის, ჯავშნების, წაღებისა და შეფასებების შესახებ."
+                ? "არ გადააგდო ელფოსტით გატყობინებს ანგარიშის, ჯავშნების, წაღებისა და შეფასებების შესახებ."
                 : "ArGadaagdo emails you about your account, reservations, pickups and ratings."}
             </p>
 
@@ -535,8 +535,8 @@ export default function SettingsPage() {
                     >
                       {deletingAccount
                         ? isGeorgian
-                          ? "იშლება…"
-                          : "Deleting…"
+                          ? "იშლება..."
+                          : "Deleting..."
                         : isGeorgian
                         ? "ანგარიშის სამუდამოდ წაშლა"
                         : "Permanently delete account"}

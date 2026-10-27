@@ -176,7 +176,7 @@ export default function BusinessProfilePage() {
                       />
                     ) : (
                       <div className="flex h-full min-h-72 items-center justify-center">
-                        <div className="ui-card flex h-28 w-28 items-center justify-center rounded-3xl bg-mint text-4xl font-semibold text-cream">
+                        <div className="ui-card flex h-28 w-28 items-center justify-center rounded-3xl bg-moss text-4xl font-semibold text-cream">
                           {getBusinessInitials(business.name)}
                         </div>
                       </div>
@@ -192,7 +192,7 @@ export default function BusinessProfilePage() {
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-mint text-2xl font-semibold text-cream">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-moss text-2xl font-semibold text-cream">
                         {getBusinessInitials(business.name)}
                       </div>
                       <div>
@@ -224,7 +224,7 @@ export default function BusinessProfilePage() {
                         </span>{" "}
                         {business.phone ||
                           (isGeorgian
-                            ? "დაგვიკავშირდი ArGadaagdo-ს მხარდაჭერის მეშვეობით"
+                            ? "დაგვიკავშირდი არ გადააგდოს მხარდაჭერის მეშვეობით"
                             : "Contact through ArGadaagdo support")}
                       </p>
                     </div>
@@ -315,7 +315,7 @@ export default function BusinessProfilePage() {
                         </p>
                         <p className="mt-1 text-sm text-body">
                           {isGeorgian
-                            ? "მხარდაჭერის მოთხოვნებს ArGadaagdo ამუშავებს"
+                            ? "მხარდაჭერის მოთხოვნებს არ გადააგდო ამუშავებს"
                             : "Support requests are handled by ArGadaagdo"}
                         </p>
                       </div>

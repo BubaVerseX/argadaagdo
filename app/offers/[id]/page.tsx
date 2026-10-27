@@ -304,14 +304,14 @@ export default function OfferDetailPage() {
             language === "ka" ? "როგორ მუშაობს წაღება?" : "How does pickup work?",
           answer:
             language === "ka"
-              ? "დადასტურების შემდეგ შეკვეთა გამოჩნდება Orders გვერდზე. ბიზნესში მისვლისას აჩვენე წაღების კოდი და თანამშრომელი კოდს გადაამოწმებს."
+              ? "დადასტურების შემდეგ შეკვეთა „შეკვეთების“ გვერდზე გამოჩნდება. ბიზნესში მისვლისას აჩვენე წაღების კოდი და თანამშრომელი კოდს გადაამოწმებს."
               : "After confirmation, your order appears in Orders. Visit the business during the pickup window and show your pickup code for verification.",
         },
         {
           question: language === "ka" ? "როდის ვიხდი?" : "When do I pay?",
           answer:
             language === "ka"
-              ? "Checkout-ზე გადახდა TBC Bank-ის მეშვეობით სრულდება. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
+              ? "გადახდის გვერდზე თანხას TBC Bank-ის მეშვეობით იხდი. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
               : "Payment is completed through TBC Bank checkout. Your reservation is confirmed only after payment succeeds.",
         },
         {
@@ -321,7 +321,7 @@ export default function OfferDetailPage() {
               : "What happens if I cannot collect?",
           answer:
             language === "ka"
-              ? "თუ გეგმები შეიცვალა, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე. თუ წაღების ფანჯარაში არ მიხვალ, შეკვეთა შეიძლება missed pickup-ად ჩაითვალოს."
+              ? "თუ გეგმები შეიცვალა, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე. თუ წაღების ფანჯარაში არ მიხვალ, შეკვეთა შეიძლება გამოტოვებულ წაღებად ჩაითვალოს."
               : "If plans change, cancel up to 2 hours before pickup. If you miss the pickup window, the order may be marked as a missed pickup.",
         },
       ]

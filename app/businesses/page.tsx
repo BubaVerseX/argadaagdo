@@ -193,7 +193,7 @@ export default function BusinessesPage() {
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-body md:text-lg">
               {isGeorgian
-                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც ArGadaagdo-ზე სიურპრიზის ყუთების გამოქვეყნების უფლება აქვთ."
+                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც არ გადააგდოზე სიურპრიზის ყუთების გამოქვეყნების უფლება აქვთ."
                 : "Search bakeries, cafes, restaurants and shops that are approved to publish surprise bags on ArGadaagdo."}
             </p>
           </div>
@@ -359,7 +359,7 @@ export default function BusinessesPage() {
                   className="premium-card rounded-3xl p-5 transition hover:-translate-y-1 sm:p-6"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-mint text-2xl font-semibold text-cream">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-moss text-2xl font-semibold text-cream">
                       {getBusinessInitials(business.name)}
                     </div>
                     <div className="min-w-0">

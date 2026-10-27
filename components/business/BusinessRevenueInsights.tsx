@@ -161,13 +161,13 @@ export function BusinessRevenueInsights({
     {
       label: isGeorgian
         ? "ყველაზე გაყიდვადი შეთავაზება"
-        : "Best selling offer",
+        : "Best-selling offer",
       value: analytics.performance.bestSellingOffer,
     },
     {
       label: isGeorgian
         ? "ყველაზე ნაკლებად გაყიდვადი შეთავაზება"
-        : "Worst selling offer",
+        : "Worst-selling offer",
       value: analytics.performance.worstSellingOffer,
     },
     {

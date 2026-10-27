@@ -117,7 +117,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   // payment API routes).
   [
     "Please verify your email before using ArGadaagdo.",
-    "ArGadaagdo-ს გამოსაყენებლად, გთხოვ, ჯერ დაადასტურე ელფოსტა.",
+    "არ გადააგდოს გამოსაყენებლად, გთხოვ, ჯერ დაადასტურე ელფოსტა.",
   ],
   [
     "Account created. Please verify your email before continuing. Check your inbox for the verification email, then sign in again.",
@@ -189,7 +189,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Your account could not be deleted. Please try again or contact support.",
-    "ანგარიშის წაშლა ვერ მოხერხდა. სცადე ხელახლა ან დაუკავშირდი მხარდაჭერას.",
+    "ანგარიშის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა ან დაუკავშირდი მხარდაჭერას.",
   ],
   [
     "Admin accounts can't be deleted from the app.",
@@ -197,7 +197,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Please sign in to delete your account.",
-    "ანგარიშის წასაშლელად შედი სისტემაში.",
+    "ანგარიშის წასაშლელად, გთხოვ, შეხვიდე ანგარიშში.",
   ],
   [
     "Your payment arrived after the reservation hold had expired, so we refunded it automatically. Please reserve again if the offer is still available.",
@@ -349,7 +349,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Password updated. You can continue using ArGadaagdo.",
-    "პაროლი განახლდა. შეგიძლია გააგრძელო ArGadaagdo-ს გამოყენება.",
+    "პაროლი განახლდა. შეგიძლია გააგრძელო არ გადააგდოს გამოყენება.",
   ],
 
   // Business registration page.
@@ -480,7 +480,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Offer published. It is now visible to customers.",
-    "შეთავაზება გამოქვეყნდა. ის ახლა მომხმარებლებს უჩანთ.",
+    "შეთავაზება გამოქვეყნდა. ის ახლა მომხმარებლებისთვის ხილულია.",
   ],
   [
     "You can only edit offers from your own business.",
@@ -589,7 +589,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Pickup code does not match.", "წაღების კოდი არ ემთხვევა."],
   [
     "This order is locked after 5 wrong pickup codes. Contact ArGadaagdo support to unlock it.",
-    "შეკვეთა დაიბლოკა 5 არასწორი წაღების კოდის შემდეგ. განსაბლოკად დაუკავშირდი ArGadaagdo-ს მხარდაჭერას.",
+    "შეკვეთა დაიბლოკა 5 არასწორი წაღების კოდის შემდეგ. განსაბლოკად დაუკავშირდი არ გადააგდოს მხარდაჭერას.",
   ],
   [
     "Pickup could not be completed. Check the code, or close this window to see the details.",

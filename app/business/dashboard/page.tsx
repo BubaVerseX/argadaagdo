@@ -1604,7 +1604,7 @@ export default function BusinessDashboardPage() {
     {
       label: isGeorgian ? "აქტიური შეთავაზებები" : "Active offers",
       helper: isGeorgian
-        ? "მომხმარებლებს მინიმუმ ერთი შეთავაზება უჩანთ."
+        ? "მომხმარებლებისთვის მინიმუმ ერთი შეთავაზება ხილულია."
         : "At least one offer is visible to customers.",
       complete: activeOffers.length > 0,
     },
@@ -1756,8 +1756,8 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "შეთავაზება დღეს სრულდება" : "Offer expires today",
             text: isGeorgian
               ? `${offersExpiringToday.length} აქტიური შეთავაზება დღეს სრულდება. გაუყიდავი რაოდენობა იმავე დღის მარაგად უნდა დარჩეს.`
-              : `${offersExpiringToday.length} active offer ${
-                  offersExpiringToday.length === 1 ? "ends" : "end"
+              : `${offersExpiringToday.length} active ${
+                  offersExpiringToday.length === 1 ? "offer ends" : "offers end"
                 } today. Unsold quantity should stay as same-day inventory.`,
             className: "border-warning-line bg-warning-soft text-warning",
           },
@@ -1769,8 +1769,10 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "წაღების ფანჯარა დაიწყო" : "Pickup window started",
             text: isGeorgian
               ? `${reservationsWithStartedPickupWindow.length} ჯავშანი ახლა წაღების ფანჯარაშია.`
-              : `${reservationsWithStartedPickupWindow.length} reservation ${
-                  reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
+              : `${reservationsWithStartedPickupWindow.length} ${
+                  reservationsWithStartedPickupWindow.length === 1
+                    ? "reservation is"
+                    : "reservations are"
                 } inside the pickup window now.`,
             className: "ui-card text-cream",
           },
@@ -1782,8 +1784,10 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "დღეს წასაღები" : "Pickup due today",
             text: isGeorgian
               ? `${todaysActiveReservations.length} ჯავშნის წაღება დღესაა დაგეგმილი.`
-              : `${todaysActiveReservations.length} reservation ${
-                  todaysActiveReservations.length === 1 ? "is" : "are"
+              : `${todaysActiveReservations.length} ${
+                  todaysActiveReservations.length === 1
+                    ? "reservation is"
+                    : "reservations are"
                 } scheduled for pickup today.`,
             className: "border-warning-line bg-warning-soft text-warning",
           },
@@ -1803,8 +1807,8 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "მცირე რაოდენობა" : "Low quantity",
             text: isGeorgian
               ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ყუთი დარჩა.`
-              : `${nearlySoldOutOffers.length} active offer ${
-                  nearlySoldOutOffers.length === 1 ? "has" : "have"
+              : `${nearlySoldOutOffers.length} active ${
+                  nearlySoldOutOffers.length === 1 ? "offer has" : "offers have"
                 } 2 or fewer boxes left.`,
             className: "border-warning-line bg-warning-soft text-warning",
           },
@@ -1816,8 +1820,8 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "არააქტიური შეთავაზებები" : "Inactive offers",
             text: isGeorgian
               ? `${inactiveOffers.length} შეთავაზება საჯარო დათვალიერებიდან დამალულია.`
-              : `${inactiveOffers.length} offer ${
-                  inactiveOffers.length === 1 ? "is" : "are"
+              : `${inactiveOffers.length} ${
+                  inactiveOffers.length === 1 ? "offer is" : "offers are"
                 } hidden from public browsing.`,
             className: "bg-well text-cream",
           },
@@ -1829,8 +1833,8 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "ვადაგასული შეთავაზება" : "Expired offer",
             text: isGeorgian
               ? `${expiredOffers.length} შეთავაზებას წაღების ფანჯარა გაუვიდა და ისტორიაში უნდა დარჩეს.`
-              : `${expiredOffers.length} offer ${
-                  expiredOffers.length === 1 ? "has" : "have"
+              : `${expiredOffers.length} ${
+                  expiredOffers.length === 1 ? "offer has" : "offers have"
                 } passed the pickup window and should stay in history.`,
             className: "border-danger-line bg-danger-soft text-danger",
           },

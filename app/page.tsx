@@ -104,7 +104,7 @@ export default function Home() {
       ? "გადაარჩინე კარგი საკვები თბილისის ადგილობრივი ბიზნესებიდან."
       : "Rescue great food from local Tbilisi businesses.",
     heroSubtitle: isGeorgian
-      ? "ArGadaagdo აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
+      ? "არ გადააგდო აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
       : "ArGadaagdo connects customers with cafes, bakeries and restaurants that have good food left at the end of the day.",
     categoriesLabel: isGeorgian ? "პოპულარული კატეგორიები" : "Popular categories",
     browseToday: isGeorgian ? "შეთავაზებების ნახვა" : "Browse offers",
@@ -152,18 +152,18 @@ export default function Home() {
     },
     {
       quote: isGeorgian
-        ? "დღის ბოლოს დარჩენილი გამოცხობილობის გაყიდვა ახლა ჩვენი ბიზნესის ჩვეულ ნაწილად იქცა."
+        ? "დღის ბოლოს დარჩენილი ცომეულის გაყიდვა ახლა ჩვენი ბიზნესის ჩვეულ ნაწილად იქცა."
         : "Selling our end-of-day bakes has become a normal, easy part of closing up each night.",
       name: isGeorgian ? "დავითი" : "Davit",
-      location: isGeorgian ? "საბურთალო, თბილისი" : "Saburtalo bakery owner",
+      location: isGeorgian ? "საცხობის მფლობელი, საბურთალო" : "Saburtalo bakery owner",
     },
   ];
   const marqueeItems = isGeorgian
     ? [
-        "შემოწმებული თბილისური ბიზნესები",
+        "დამოწმებული თბილისური ბიზნესები",
         "მხოლოდ ადგილზე წაღება",
         "დაცული ჯავშნები",
-        "ნამდვილი მომხმარებლის შეფასებები",
+        "ნამდვილი მომხმარებლების შეფასებები",
         "ყოველდღიური ახალი შეთავაზებები",
       ]
     : [
@@ -178,7 +178,7 @@ export default function Home() {
       value: "100%",
       label: isGeorgian ? "მხოლოდ ადგილზე წაღება" : "Pickup-only, always",
       text: isGeorgian
-        ? "არანაირი მიწოდების შეფუთვა და ზედმეტი ემისია — მხოლოდ საკვები, რომელიც ჭამენ ნაგვის ნაცვლად."
+        ? "არანაირი მიწოდების შეფუთვა და ზედმეტი ემისია — მხოლოდ საკვები, რომელსაც გადაყრის ნაცვლად ჭამენ."
         : "No delivery packaging, no extra emissions — just food that gets eaten instead of thrown away.",
     },
     {
@@ -520,7 +520,7 @@ export default function Home() {
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
               <figcaption className="mt-6 flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-mint text-base font-semibold text-cream">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-moss text-base font-semibold text-cream">
                   {testimonial.name.slice(0, 1).toUpperCase()}
                 </div>
                 <div className="text-sm font-semibold text-body">

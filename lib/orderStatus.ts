@@ -99,7 +99,7 @@ export function getOrderStatusLabel(status: OrderStatus, language: Language = "e
     return language === "ka" ? "ვადაგასული" : "Expired";
   }
   if (status === "no_show") {
-    return language === "ka" ? "არ გამოცხადდა" : "No show";
+    return language === "ka" ? "არ გამოცხადდა" : "No-show";
   }
   if (status === "refund_pending") {
     return language === "ka" ? "თანხა ბრუნდება" : "Refund in progress";

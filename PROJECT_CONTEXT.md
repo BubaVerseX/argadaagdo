@@ -4,6 +4,54 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-10-27 — green dark re-theme + leaf brand (PR from `claude/green-retheme`)
+
+The cream/amber neumorphic look is gone. The app (web + both native
+wrappers, same code) is now dark-green only, with the leaf icon as the brand.
+
+- **Tokens**: every colour lives in `app/globals.css` (`:root` variables,
+  exposed to Tailwind through `@theme inline` as `bg-page`, `bg-card`,
+  `bg-well`, `border-line`, `text-cream`/`text-body`/`text-muted`,
+  `text-mint`, `bg-moss`, `bg-amber`, `*-warning`, `*-danger`, …). Never
+  hard-code a hex in a component; add a token. Amber is reserved for the
+  discount badge. `--muted` is `#9DBFA8` (not the mock's `#8FB39B`) so
+  tertiary text stays ≥ 4.5:1 on the brightest corner of the card gradient.
+- **Shared classes** (in `@layer components`, so utilities can override):
+  `ui-card` (flat card: gradient + 1px border + one shadow), `ui-well`
+  (inputs/chips/inset), `hero-surface` (moss hero gradient), `photo-frame`
+  (offer photo container), `premium-button` (mint, dark text) + `cta-glow`
+  (only on a page's main action), `premium-button-secondary` (outlined),
+  `premium-button-danger`, `premium-input`, `premium-badge`,
+  `premium-discount-badge` (amber), `moss-pill`, `tab-bar`. The old
+  `soft-raised`/`soft-pressed`/`blob-mask*`/`photo-warm-overlay` are gone.
+- **Type**: self-hosted Noto Sans (Latin) + Noto Sans Georgian via
+  `@fontsource/*`, weights 400/500/600 only, imported in `app/layout.tsx`.
+  Headings are 600 / line-height 1.2 / no negative tracking; body is 400.
+- **Brand**: `components/BrandMark.tsx` (leaf tile + localized name —
+  `brand.name` is "ArGadaagdo" in English and "არ გადააგდო" in Georgian;
+  Georgian strings write the brand that way too). `LeafIcon` in
+  `components/icons.tsx` replaced the shopping bag. Assets: `public/icons/`
+  (SVG + PNG + maskable), `app/favicon.ico`, `app/apple-icon.png`,
+  `app/opengraph-image.png` (+ twitter), `assets/` (capacitor-assets
+  sources), `store-assets/` (full-bleed 1024/512 icons, EN + KA feature
+  graphics), iOS/Android icon + splash sets. Emails (`lib/email/templates.ts`)
+  use the dark layout and load the leaf from `/icons/icon-96.png`.
+  **Regenerate native icons/splash** after changing `assets/`:
+  `npx capacitor-assets generate --ios --android --iconBackgroundColor '#051F20'
+  --iconBackgroundColorDark '#051F20' --splashBackgroundColor '#051F20'
+  --splashBackgroundColorDark '#051F20'` (it also rewrites
+  `AndroidManifest.xml` formatting — revert that file afterwards).
+- **Dark only**: `themeColor`/`colorScheme` in `app/layout.tsx`, PWA status
+  bar `black-translucent`, Capacitor `backgroundColor` + `SystemBars: DARK`,
+  iOS `UIUserInterfaceStyle: Dark`, native-shell pages.
+- **Copy**: a full EN + KA proofread went with this (terminology: წაღება =
+  pickup, ჯავშანი = reservation, შეთავაზება = offer; informal "შენ"
+  register; English UI in sentence case; "surprise bag" not "rescue box").
+  The offers list card no longer prints "დღეს / Today" twice.
+- **Store screenshots** in `store-assets/screenshots/` and
+  `docs/app-store-submission.md` still show the old cream theme — recapture
+  before the next store submission.
+
 ## 🆕 2026-10-26 — iOS 1.0.0 App Store submission prep
 
 Branch `claude/app-store-review-prep`. The full submission pack (listing
@@ -629,9 +677,8 @@ Headline findings for a future session to know without re-checking:
   above).
 - iOS/Android icons and splash screens were still Capacitor's **default
   unbranded placeholder** (blue "X") until this session — now replaced with
-  the real logo. Regenerate via `npx capacitor-assets generate
-  --iconBackgroundColor '#5c7a5c' --splashBackgroundColor '#ece4d6'` if the
-  logo ever changes; source files are in `assets/`.
+  the real logo. (Superseded 2026-10-27 by the green re-theme — see the
+  top of this file for the current regeneration command.)
 - Permissions audit came back clean: Android requests only `INTERNET`, iOS
   has no usage-description keys, no camera/location/push code exists
   anywhere in the app. Nothing to justify to App Review.

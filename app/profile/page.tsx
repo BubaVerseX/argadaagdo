@@ -413,7 +413,7 @@ export default function ProfilePage() {
                     <p className="mt-1 font-semibold text-cream">{roleLabel}</p>
                     <p className="mt-1 text-sm text-body">
                       {isGeorgian
-                        ? "როლებს ArGadaagdo მართავს და აქ მათი შეცვლა შეუძლებელია."
+                        ? "როლებს არ გადააგდო მართავს და აქ მათი შეცვლა შეუძლებელია."
                         : "Roles are managed by ArGadaagdo and cannot be changed here."}
                     </p>
                   </div>

@@ -50,7 +50,7 @@ export function BusinessProfileSection({
 
         <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
           <div className="ui-card rounded-3xl p-5 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-mint text-2xl font-semibold text-cream">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-moss text-2xl font-semibold text-cream">
               {profileName.trim().slice(0, 2).toUpperCase() || "AG"}
             </div>
             <p className="mt-3 text-sm font-semibold text-mint">

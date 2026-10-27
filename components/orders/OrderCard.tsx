@@ -225,7 +225,7 @@ export function OrderCard({
                 </p>
                 <p>
                   {isGeorgian
-                    ? "გადახდის რეფერენსი: უსაფრთხოდ ინახება ArGadaagdo-ს მიერ"
+                    ? "გადახდის რეფერენსი: უსაფრთხოდ ინახება არ გადააგდოს მიერ"
                     : "Payment reference: managed securely by ArGadaagdo"}
                 </p>
               </div>
