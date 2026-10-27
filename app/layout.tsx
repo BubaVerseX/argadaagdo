@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     ],
     apple: [
       {
-        url: "/apple-icon",
+        url: "/apple-icon.png",
         type: "image/png",
         sizes: "180x180",
       },
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "ArGadaagdo | Rescue Good Food in Tbilisi",
     description: appDescription,
   },
