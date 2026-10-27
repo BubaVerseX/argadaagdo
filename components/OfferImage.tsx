@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBagIcon } from "@/components/icons";
+import { LeafIcon } from "@/components/icons";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -43,10 +43,10 @@ export default function OfferImage({
     return (
       <div
         role="img"
-        className="flex h-full w-full items-center justify-center bg-[#f4efe4]"
+        className="flex h-full w-full items-center justify-center bg-well"
         aria-label={`${alt} image unavailable`}
       >
-        <ShoppingBagIcon className="h-10 w-10 text-[#8a8072] sm:h-14 sm:w-14" strokeWidth={1.6} />
+        <LeafIcon className="h-10 w-10 text-muted sm:h-14 sm:w-14" strokeWidth={1.6} />
       </div>
     );
   }

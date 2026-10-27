@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { OfferCard } from "@/components/OfferCard";
 import OfferImage from "@/components/OfferImage";
-import { ShoppingBagIcon } from "@/components/icons";
+import { LeafIcon } from "@/components/icons";
 import { getUserErrorMessage } from "@/lib/errors";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { getOfferCategoryLabel } from "@/lib/offerCategories";
@@ -313,7 +313,7 @@ export default function Home() {
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-[#f4efe4]">
-                        <ShoppingBagIcon className="h-6 w-6 text-[#8a8072]" strokeWidth={1.6} />
+                        <LeafIcon className="h-6 w-6 text-[#8a8072]" strokeWidth={1.6} />
                       </div>
                     )}
                   </div>
@@ -497,7 +497,7 @@ export default function Home() {
             {!loading && offers.length === 0 && (
               <div className="ui-card rounded-[1.75rem] p-10 text-center md:col-span-3">
                 <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                  <ShoppingBagIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
+                  <LeafIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
                 </div>
                 <h3 className="mt-5 text-2xl font-extrabold tracking-[-0.02em] text-[#2e2a22]">
                   {t("home.noSurpriseBags")}

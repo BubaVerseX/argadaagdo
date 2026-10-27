@@ -17,34 +17,34 @@ export function BusinessReviews({
   businessNameById,
 }: BusinessReviewsProps) {
   return (
-    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
         {language === "ka" ? "მომხმარებლის გამოხმაურება" : "Customer Feedback"}
       </p>
-      <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
         {t("businessDashboard.businessReviews")}
       </h2>
 
-      <p className="mt-2 flex items-center gap-1.5 font-semibold text-[#6b6152]">
-        <CheckIcon className="h-4 w-4 shrink-0 text-[#a67c52]" strokeWidth={1.8} />
+      <p className="mt-2 flex items-center gap-1.5 font-semibold text-body">
+        <CheckIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
         {t("businessOnboarding.ratingsGuidanceText")}
       </p>
 
       <div className="mt-6 grid gap-4">
         {reviews.length === 0 && (
-          <div className="rounded-3xl bg-yellow-50/70 p-6 text-center sm:p-8">
+          <div className="rounded-3xl bg-warning-soft p-6 text-center sm:p-8">
             <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <StarIcon className="h-6 w-6 text-yellow-600" strokeWidth={1.6} />
+              <StarIcon className="h-6 w-6 text-warning" strokeWidth={1.6} />
             </div>
-            <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
+            <h3 className="mt-4 text-2xl font-semibold text-cream">
               {t("businessDashboard.noReviews")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
               {t("businessDashboard.noReviewsHint")}
             </p>
             <a
               href="#reservations"
-              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-yellow-100 px-6 py-3 font-black text-yellow-800 transition hover:bg-yellow-200"
+              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-warning-soft px-6 py-3 font-semibold text-warning transition hover:bg-warning-soft"
             >
               {t("businessDashboard.viewReservations")}
             </a>
@@ -54,26 +54,26 @@ export function BusinessReviews({
         {reviews.map((review) => (
           <div
             key={review.id}
-            className="rounded-2xl bg-[#f4efe4] p-5"
+            className="rounded-2xl bg-well p-5"
           >
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="flex items-center gap-1.5 text-xl font-black text-yellow-700">
+                <p className="flex items-center gap-1.5 text-xl font-semibold text-warning">
                   <StarIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
                   {review.rating}
                 </p>
-                <p className="mt-1 font-bold text-[#2e2a22]">
+                <p className="mt-1 font-semibold text-cream">
                   {businessNameById[Number(review.business_id)] ||
                     t("common.business")}
                 </p>
               </div>
 
-              <p className="text-sm font-bold text-[#6b6152]">
+              <p className="text-sm font-semibold text-body">
                 {formatDisplayDateTime(review.created_at, language)}
               </p>
             </div>
 
-            <p className="mt-4 font-semibold text-[#6b6152]">
+            <p className="mt-4 font-semibold text-body">
               {review.review?.trim() || t("common.noWrittenReview")}
             </p>
           </div>

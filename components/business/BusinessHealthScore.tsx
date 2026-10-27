@@ -33,31 +33,31 @@ export function BusinessHealthScore({
 
   return (
     <section className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
+      <div className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {isGeorgian ? "ბიზნესის მდგომარეობა" : "Business health"}
             </p>
-            <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
               {score}% {isGeorgian ? "მზადაა" : "ready"}
             </h2>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 font-semibold leading-7 text-body">
               {isGeorgian
                 ? "მარტივი ოპერაციული ქულა პროფილის ხარისხის, აქტიური შეთავაზებებისა და წაღების ისტორიის მიხედვით."
                 : "A simple operations score for profile quality, active offers and pickup history."}
             </p>
           </div>
 
-          <span className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
+          <span className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-mint">
             {completedChecks}/{checks.length}{" "}
             {isGeorgian ? "შესრულებულია" : "complete"}
           </span>
         </div>
 
-        <div className="mt-5 h-3 overflow-hidden rounded-full bg-[#f4efe4]">
+        <div className="mt-5 h-3 overflow-hidden rounded-full bg-well">
           <div
-            className="h-full rounded-full bg-[#a67c52] transition-all"
+            className="h-full rounded-full bg-mint transition-all"
             style={{ width: `${score}%` }}
           />
         </div>
@@ -66,19 +66,17 @@ export function BusinessHealthScore({
           {checks.map((check) => (
             <div
               key={check.label}
-              className={`rounded-2xl p-4 ${
-                check.complete
-                  ? "ui-card text-[#2e2a22]"
-                  : "bg-[#f4efe4] text-[#6b6152]"
+              className={`rounded-2xl p-4 ${ check.complete
+                  ? "ui-card text-cream"
+                  : "bg-well text-body"
               }`}
             >
               <div className="flex items-start gap-3">
                 <span
                   aria-hidden="true"
-                  className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
-                    check.complete
-                      ? "bg-[#a67c52] text-white"
-                      : "ui-well text-[#6b6152]"
+                  className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${ check.complete
+                      ? "bg-moss text-cream"
+                      : "ui-well text-body"
                   }`}
                 >
                   {check.complete ? (
@@ -88,7 +86,7 @@ export function BusinessHealthScore({
                   )}
                 </span>
                 <div>
-                  <p className="font-black">{check.label}</p>
+                  <p className="font-semibold">{check.label}</p>
                   <p className="mt-1 text-sm font-semibold leading-6 opacity-80">
                     {check.helper}
                   </p>
@@ -99,16 +97,16 @@ export function BusinessHealthScore({
         </div>
       </div>
 
-      <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+      <div className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
           {isGeorgian ? "ოპერაციების სია" : "Operations checklist"}
         </p>
-        <h2 className="mt-2 text-2xl font-black text-[#2e2a22] sm:text-3xl">
+        <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
           {isGeorgian
             ? "ბიზნესის პირველი ეტაპები"
             : "First business milestones"}
         </h2>
-        <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+        <p className="mt-2 font-semibold leading-7 text-body">
           {isGeorgian
             ? "პილოტი მარტივად წარმართე: გამოაქვეყნე ერთი ძლიერი შეთავაზება, შეამოწმე წაღებები და შეფასებებით მოიპოვე ნდობა."
             : "Keep the pilot simple: publish one strong offer, verify pickups and build trust through ratings."}
@@ -118,19 +116,17 @@ export function BusinessHealthScore({
           {checklist.map((item, index) => {
             const content = (
               <div
-                className={`rounded-2xl p-4 transition ${
-                  item.complete
-                    ? "ui-card text-[#2e2a22]"
-                    : "bg-[#f4efe4] text-[#6b6152] hover:bg-white/60"
+                className={`rounded-2xl p-4 transition ${ item.complete
+                    ? "ui-card text-cream"
+                    : "bg-well text-body hover:bg-well"
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <span
                     aria-hidden="true"
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
-                      item.complete
-                        ? "bg-[#a67c52] text-white"
-                        : "ui-well text-[#6b6152]"
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${ item.complete
+                        ? "bg-moss text-cream"
+                        : "ui-well text-body"
                     }`}
                   >
                     {item.complete ? (
@@ -140,7 +136,7 @@ export function BusinessHealthScore({
                     )}
                   </span>
                   <div>
-                    <p className="font-black">{item.label}</p>
+                    <p className="font-semibold">{item.label}</p>
                     <p className="mt-1 text-sm font-semibold leading-6 opacity-80">
                       {item.helper}
                     </p>

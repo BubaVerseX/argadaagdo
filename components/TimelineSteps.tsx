@@ -36,10 +36,10 @@ export function TimelineSteps({
           stopped: "stopped",
         };
   const stepStyles: Record<TimelineStepState, string> = {
-    done: "ui-well text-[#a67c52]",
-    current: "bg-yellow-100 text-yellow-950",
-    pending: "bg-white/60 text-[#6b6152]",
-    stopped: "bg-red-100 text-red-700",
+    done: "ui-well text-mint",
+    current: "bg-warning-soft text-warning",
+    pending: "bg-well text-body",
+    stopped: "bg-danger-soft text-danger",
   };
 
   return (
@@ -48,7 +48,7 @@ export function TimelineSteps({
         <li
           key={`${step.label}-${index}`}
           aria-current={step.state === "current" ? "step" : undefined}
-          className={`rounded-2xl px-3 py-3 text-center text-xs font-black sm:text-sm ${stepStyles[step.state]}`}
+          className={`rounded-2xl px-3 py-3 text-center text-xs font-semibold sm:text-sm ${stepStyles[step.state]}`}
         >
           {step.label}
           {/* The state is otherwise shown by color only. */}

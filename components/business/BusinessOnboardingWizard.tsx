@@ -228,10 +228,10 @@ export function BusinessOnboardingWizard({
   const currentStep = localizedSteps[step - 1];
 
   return (
-    <div className="rounded-3xl bg-[#f4efe4] p-5 sm:rounded-[2rem] sm:p-6">
+    <div className="rounded-3xl bg-well p-5 sm:rounded-3xl sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
+          <p className="text-xs font-semibold uppercase tracking-widest text-mint">
             {isGeorgian ? (
               <>
                 ნაბიჯი {step} / {steps.length}
@@ -242,22 +242,22 @@ export function BusinessOnboardingWizard({
               </>
             )}
           </p>
-          <h2 className="mt-2 text-2xl font-black text-[#2e2a22]">
+          <h2 className="mt-2 text-2xl font-semibold text-cream">
             {currentStep.title}
           </h2>
-          <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
+          <p className="mt-2 text-sm font-semibold leading-6 text-body">
             {currentStep.helper}
           </p>
         </div>
 
-        <span className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
+        <span className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-mint">
           {progress}% {isGeorgian ? "დასრულებულია" : "complete"}
         </span>
       </div>
 
-      <div className="mt-5 h-2 overflow-hidden rounded-full bg-white">
+      <div className="mt-5 h-2 overflow-hidden rounded-full bg-well">
         <div
-          className="h-full rounded-full bg-[#a67c52] transition-all"
+          className="h-full rounded-full bg-mint transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -268,10 +268,9 @@ export function BusinessOnboardingWizard({
             key={wizardStep.title}
             type="button"
             onClick={() => goToStep(index + 1)}
-            className={`min-h-11 rounded-2xl px-3 py-2 text-left text-xs font-black transition ${
-              step === index + 1
-                ? "ui-well text-[#a67c52]"
-                : "ui-card text-[#6b6152]"
+            className={`min-h-11 rounded-2xl px-3 py-2 text-left text-xs font-semibold transition ${ step === index + 1
+                ? "ui-well text-mint"
+                : "ui-card text-body"
             }`}
           >
             {index + 1}. {wizardStep.title}
@@ -282,7 +281,7 @@ export function BusinessOnboardingWizard({
       <div className="ui-card mt-6 rounded-3xl p-4 sm:p-5">
         {step === 1 && (
           <div className="grid gap-4">
-            <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid gap-2 text-sm font-semibold text-body">
               {isGeorgian ? "ბიზნესის სახელი *" : "Business name *"}
               <input
                 value={name}
@@ -297,7 +296,7 @@ export function BusinessOnboardingWizard({
               />
             </label>
 
-            <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid gap-2 text-sm font-semibold text-body">
               {isGeorgian ? "ბიზნესის ტიპი *" : "Business type *"}
               <select
                 value={businessType}
@@ -320,7 +319,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 2 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+          <label className="grid gap-2 text-sm font-semibold text-body">
             {isGeorgian ? "წაღების მისამართი *" : "Pickup address *"}
             <input
               value={address}
@@ -331,7 +330,7 @@ export function BusinessOnboardingWizard({
               maxLength={160}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6152]">
+            <span className="font-semibold leading-6 text-body">
               {isGeorgian
                 ? "მომხმარებლები ამ მისამართზე მოვლენ დაჯავშნილი სიურპრიზის ყუთების წასაღებად."
                 : "Customers will use this address to collect reserved surprise bags."}
@@ -340,7 +339,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 3 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+          <label className="grid gap-2 text-sm font-semibold text-body">
             {isGeorgian ? "ტელეფონის ნომერი *" : "Phone number *"}
             <input
               value={phone}
@@ -351,7 +350,7 @@ export function BusinessOnboardingWizard({
               maxLength={40}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6152]">
+            <span className="font-semibold leading-6 text-body">
               {isGeorgian
                 ? "ადმინმა შეიძლება ეს ნომერი გამოიყენოს, თუ დამტკიცებისას ბიზნესის დეტალების გადამოწმება დასჭირდება."
                 : "Admins may use this number if they need to verify business details during approval."}
@@ -360,7 +359,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 4 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+          <label className="grid gap-2 text-sm font-semibold text-body">
             {isGeorgian ? "მოკლე აღწერა" : "Short description"}
             <textarea
               value={description}
@@ -374,7 +373,7 @@ export function BusinessOnboardingWizard({
               rows={5}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6152]">
+            <span className="font-semibold leading-6 text-body">
               {isGeorgian
                 ? "ეს ამ ეტაპზე რეგისტრაციის პროგრესად ინახება. დამტკიცების შემდეგ პანელის პროფილის ინსტრუმენტებს გამოიყენებ."
                 : "This is saved as onboarding progress for now. You can use the dashboard profile tools after approval."}
@@ -383,7 +382,7 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 5 && (
-          <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+          <label className="grid gap-2 text-sm font-semibold text-body">
             {isGeorgian ? "სურათების გეგმა" : "Image plan"}
             <textarea
               value={imagePlan}
@@ -397,7 +396,7 @@ export function BusinessOnboardingWizard({
               rows={5}
               className="premium-input p-4 font-medium"
             />
-            <span className="font-semibold leading-6 text-[#6b6152]">
+            <span className="font-semibold leading-6 text-body">
               {isGeorgian
                 ? "ლოგო და შეთავაზებების სურათები დამტკიცების შემდეგ იმართება. ეს ნაბიჯი ბიზნესის პროფილის გაშვებამდე მომზადებაში გეხმარება."
                 : "Logo and offer images are managed after approval. This step helps prepare the business profile before launch."}
@@ -428,11 +427,11 @@ export function BusinessOnboardingWizard({
                   ["Images", imagePlan || "Not added yet"],
                 ]
             ).map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-[#f4efe4] p-4">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+              <div key={label} className="rounded-2xl bg-well p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-body">
                   {label}
                 </p>
-                <p className="mt-1 break-words font-semibold text-[#2e2a22]">
+                <p className="mt-1 break-words font-semibold text-cream">
                   {value}
                 </p>
               </div>
@@ -441,11 +440,11 @@ export function BusinessOnboardingWizard({
         )}
 
         {step === 7 && (
-          <div className="rounded-2xl bg-[#f4efe4] p-5">
-            <h3 className="text-xl font-black text-[#2e2a22]">
+          <div className="rounded-2xl bg-well p-5">
+            <h3 className="text-xl font-semibold text-cream">
               {isGeorgian ? "მზადაა განსახილველად" : "Ready for review"}
             </h3>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 font-semibold leading-7 text-body">
               {isGeorgian
                 ? "გაგზავნე ბიზნესი ადმინის დასამტკიცებლად. დამტკიცების შემდეგ პანელიდან შეძლებ შეთავაზებების შექმნას და ჯავშნების მართვას."
                 : "Submit your business for admin approval. After approval, your dashboard will let you create offers and manage reservations."}
@@ -455,7 +454,7 @@ export function BusinessOnboardingWizard({
       </div>
 
       {draftMessage && (
-        <p className="ui-card mt-4 rounded-2xl px-4 py-3 text-sm font-black text-[#a67c52]">
+        <p className="ui-card mt-4 rounded-2xl px-4 py-3 text-sm font-semibold text-mint">
           {draftMessage}
         </p>
       )}
@@ -474,7 +473,7 @@ export function BusinessOnboardingWizard({
             type="button"
             onClick={() => goToStep(step - 1)}
             disabled={step === 1}
-            className="ui-card min-h-12 rounded-full px-6 py-3 font-black text-[#6b6152] transition disabled:cursor-not-allowed disabled:opacity-50"
+            className="ui-card min-h-12 rounded-full px-6 py-3 font-semibold text-body transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isGeorgian ? "უკან" : "Back"}
           </button>

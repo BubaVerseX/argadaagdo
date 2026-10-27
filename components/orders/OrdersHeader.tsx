@@ -38,16 +38,16 @@ export function OrdersHeader({
       : reliabilityStatus;
 
   return (
-    <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-6 md:p-10">
-      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+    <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-6 md:p-10">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
         {t("orders.reserved")}
       </p>
 
-      <h1 className="mt-3 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-6xl">
+      <h1 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
         {t("orders.title")}
       </h1>
 
-      <p className="mt-4 max-w-2xl text-base font-semibold text-[#6b6152] md:text-lg">
+      <p className="mt-4 max-w-2xl text-base font-semibold text-body md:text-lg">
         {t("orders.subtitle")}
       </p>
 

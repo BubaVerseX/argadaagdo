@@ -1,17 +1,17 @@
 type Tone = "neutral" | "green" | "yellow" | "red";
 
 const tones: Record<Tone, string> = {
-  neutral: "ui-card text-[#2e2a22]",
-  green: "ui-card text-[#2e2a22]",
-  yellow: "bg-yellow-50 text-yellow-950",
-  red: "bg-red-50 text-red-900",
+  neutral: "ui-card text-cream",
+  green: "ui-card text-cream",
+  yellow: "border border-warning-line bg-warning-soft text-cream",
+  red: "border border-danger-line bg-danger-soft text-cream",
 };
 
 const labelTones: Record<Tone, string> = {
-  neutral: "text-[#6b6152]",
-  green: "text-[#a67c52]",
-  yellow: "text-yellow-700",
-  red: "text-red-700",
+  neutral: "text-body",
+  green: "text-mint",
+  yellow: "text-warning",
+  red: "text-danger",
 };
 
 type StatCardProps = {
@@ -30,7 +30,7 @@ export default function StatCard({
       className={`rounded-2xl p-4 sm:rounded-[1.25rem] sm:p-5 ${tones[tone]}`}
     >
       <p className={`text-sm font-semibold ${labelTones[tone]}`}>{title}</p>
-      <p className="mt-2 text-3xl font-bold tracking-[-0.02em] sm:text-4xl">
+      <p className="mt-2 text-3xl font-semibold sm:text-4xl">
         {value}
       </p>
     </div>

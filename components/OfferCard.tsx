@@ -27,6 +27,9 @@ type OfferCardProps = {
   priority?: boolean;
 };
 
+const overlayChipClass =
+  "pointer-events-none absolute rounded-full bg-ink/75 px-2.5 py-1.5 text-xs text-mint backdrop-blur-sm";
+
 export function OfferCard({
   offer,
   language,
@@ -39,12 +42,22 @@ export function OfferCard({
   const discountPercent = getDiscountPercent(offer);
   const originalPrice = getOriginalPrice(offer);
   const detailsHref = `/offers/${offer.id}`;
+  const quantityLeft = Number(offer.quantity ?? 0);
+  const quantityLabel =
+    quantityLeft > 0
+      ? language === "ka"
+        ? `დარჩა ${quantityLeft}`
+        : `${quantityLeft} left`
+      : null;
+  const heartClass = `absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-ink/75 backdrop-blur-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
+    cornerAction?.active ? "text-mint" : "text-cream hover:text-mint"
+  }`;
 
   return (
-    <article className="ui-card group flex min-w-0 flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1">
+    <article className="ui-card group flex min-w-0 flex-col overflow-hidden rounded-[22px] transition hover:-translate-y-0.5">
       <div className="relative">
         <Link href={detailsHref} className="block" tabIndex={-1} aria-hidden="true">
-          <div className="photo-frame relative isolate h-52 overflow-hidden">
+          <div className="photo-frame relative isolate h-44 rounded-none sm:h-48">
             <OfferImage
               src={offer.image_url}
               alt={offer.title}
@@ -56,9 +69,13 @@ export function OfferCard({
         </Link>
 
         {discountPercent !== null && (
-          <div className="premium-discount-badge pointer-events-none absolute left-2 top-2 px-3 py-1.5">
-            -{discountPercent}%
+          <div className="premium-discount-badge pointer-events-none absolute left-3 top-3 px-2.5 py-1.5">
+            −{discountPercent}%
           </div>
+        )}
+
+        {quantityLabel && (
+          <div className={`${overlayChipClass} bottom-3 left-3`}>{quantityLabel}</div>
         )}
 
         {cornerAction &&
@@ -67,9 +84,7 @@ export function OfferCard({
               href={cornerAction.href}
               aria-label={cornerAction.label}
               aria-pressed={cornerAction.active}
-              className={`ui-card absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-                cornerAction.active ? "text-[#a67c52]" : "text-[#6b6152]"
-              }`}
+              className={heartClass}
             >
               <HeartIcon className="h-[18px] w-[18px]" strokeWidth={1.8} filled={cornerAction.active} />
             </Link>
@@ -79,22 +94,20 @@ export function OfferCard({
               onClick={cornerAction.onClick}
               aria-label={cornerAction.label}
               aria-pressed={cornerAction.active}
-              className={`ui-card absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-                cornerAction.active ? "text-[#a67c52]" : "text-[#6b6152]"
-              }`}
+              className={heartClass}
             >
               <HeartIcon className="h-[18px] w-[18px]" strokeWidth={1.8} filled={cornerAction.active} />
             </button>
           ))}
       </div>
 
-      <div className="flex flex-1 flex-col pt-5">
+      <div className="flex flex-1 flex-col p-4">
         <Link href={detailsHref} className="block min-w-0">
-          <h3 className="truncate text-xl font-bold leading-tight tracking-[-0.02em] text-[#2e2a22]">
+          <h3 className="truncate text-base font-medium leading-snug text-cream">
             {offer.title}
           </h3>
-          <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-[#6b6152]">
-            <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+          <div className="mt-1 flex min-w-0 items-center gap-1.5 text-sm text-body">
+            <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-sage" strokeWidth={1.8} />
             <span className="truncate">
               {offer.businesses?.name}
               {offer.businesses?.address ? ` · ${offer.businesses.address}` : ""}
@@ -102,28 +115,29 @@ export function OfferCard({
           </div>
         </Link>
 
-        <div className="mt-4 flex items-end justify-between gap-4">
-          <div className="flex items-baseline gap-2">
-            <p className="text-2xl font-bold tracking-[-0.02em] text-[#a67c52]">
+        <div className="mt-3 flex items-end justify-between gap-3">
+          <div className="flex min-w-0 items-baseline gap-2">
+            <p className="text-[22px] font-semibold leading-none text-mint">
               {formatMoney(offer.price)}
             </p>
             {originalPrice !== null && (
-              <p className="text-sm font-medium text-[#8a8072] line-through">
+              <p className="text-sm text-muted line-through">
                 {formatMoney(originalPrice)}
               </p>
             )}
           </div>
-          <p className="flex items-center gap-1.5 text-right text-xs font-semibold leading-5 text-[#8a8072]">
+          <p className="moss-pill shrink-0">
             <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
             {formatPickupWindow(offer, language)}
           </p>
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3 pt-4">
-          <p className="truncate text-xs font-semibold text-[#8a8072]">
-            {ratingLabel}
-          </p>
-          <Link href={detailsHref} className="premium-button shrink-0 px-5 py-2 text-xs">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3">
+          <p className="truncate text-xs text-muted">{ratingLabel}</p>
+          <Link
+            href={detailsHref}
+            className="premium-button min-h-10 shrink-0 rounded-xl px-4 py-2 text-xs"
+          >
             {detailsLabel}
           </Link>
         </div>

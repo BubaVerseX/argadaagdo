@@ -39,16 +39,16 @@ export function RouteErrorState({
       <Navbar />
 
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-8 sm:px-6">
-        <div className="ui-card w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-700 sm:h-20 sm:w-20">
+        <div className="ui-card w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-3xl sm:p-10">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-danger-soft text-danger sm:h-20 sm:w-20">
             <AlertTriangleIcon className="h-7 w-7 sm:h-9 sm:w-9" strokeWidth={1.8} />
           </div>
 
-          <h1 className="mt-5 text-3xl font-black text-[#2e2a22] sm:mt-6 sm:text-4xl">
+          <h1 className="mt-5 text-3xl font-semibold text-cream sm:mt-6 sm:text-4xl">
             {resolveLocalizedText(title, language)}
           </h1>
 
-          <p className="mx-auto mt-4 max-w-md font-semibold leading-7 text-[#6b6152]">
+          <p className="mx-auto mt-4 max-w-md font-semibold leading-7 text-body">
             {resolveLocalizedText(description, language)}
           </p>
 

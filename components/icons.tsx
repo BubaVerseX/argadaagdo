@@ -5,7 +5,7 @@ import type { SVGProps } from "react";
  * Replaces all emoji/glyph icons across the app: 1.8px stroke, rounded
  * caps/joins, no fill (except where `filled` is explicitly toggled, e.g.
  * favorited heart / rated star). Color is inherited via `currentColor`, so
- * set text color on the wrapper (`text-[#a67c52]` for accent, muted grays
+ * set text color on the wrapper (`text-mint` for accent, muted grays
  * for inactive states).
  */
 
@@ -177,10 +177,11 @@ export const WifiOffIcon = base(
   </>
 );
 
-export const ShoppingBagIcon = base(
+// Brand leaf (line version) — empty states, image placeholders.
+export const LeafIcon = base(
   <>
-    <path d="M6.5 8.5h11l1 12h-13z" />
-    <path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" />
+    <path d="M4.5 19.5c0-8.2 5.6-14.3 15-15.1-.8 9.6-6.8 15.1-15 15.1Z" />
+    <path d="M5.5 18.5c3-5.2 7-9.3 12.2-12.6" />
   </>
 );
 

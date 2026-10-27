@@ -106,15 +106,15 @@ export default function InstallAppPrompt() {
   if (visibility === "hidden") return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 mx-auto max-w-md rounded-[1.5rem] bg-[#2e2a22] p-4 text-white shadow-[var(--shadow-hero)] sm:bottom-4 sm:p-5">
+    <div className="fixed inset-x-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 mx-auto max-w-md rounded-[1.5rem] hero-surface p-4 text-cream shadow-[var(--shadow-card)] sm:bottom-4 sm:p-5">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink/30">
           <SmartphoneIcon className="h-5 w-5" strokeWidth={1.8} />
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold">{t("installApp.title")}</p>
-          <p className="mt-1 text-xs leading-[1.5] text-white/70">
+          <p className="text-sm font-semibold">{t("installApp.title")}</p>
+          <p className="mt-1 text-xs leading-[1.5] text-body-light">
             {visibility === "native-prompt" ? t("installApp.text") : t("installApp.iosText")}
           </p>
 
@@ -123,7 +123,7 @@ export default function InstallAppPrompt() {
               <button
                 type="button"
                 onClick={install}
-                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-4 text-xs font-semibold text-[#2e2a22] transition hover:bg-[#ece4d6] focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-mint px-4 text-xs font-semibold text-ink transition hover:bg-mint-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
                 {t("installApp.install")}
               </button>
@@ -131,7 +131,7 @@ export default function InstallAppPrompt() {
             <button
               type="button"
               onClick={dismiss}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/30 px-4 text-xs font-semibold text-white transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-line-strong px-4 text-xs font-semibold text-cream transition hover:bg-ink/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
             >
               {t("installApp.dismiss")}
             </button>

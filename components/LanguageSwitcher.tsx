@@ -25,10 +25,9 @@ export default function LanguageSwitcher() {
             onClick={() => setLanguage(option)}
             aria-pressed={active}
             aria-label={languageNames[option]}
-            className={`flex min-h-11 items-center rounded-full px-3 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a67c52] ${
-              active
-                ? "ui-card text-[#a67c52]"
-                : "text-[#6b6152] hover:text-[#2e2a22]"
+            className={`flex min-h-11 items-center rounded-full px-3 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mint ${ active
+                ? "ui-card text-mint"
+                : "text-body hover:text-cream"
             }`}
           >
             {languageNames[option]}

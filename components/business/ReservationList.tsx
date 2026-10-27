@@ -74,17 +74,17 @@ export function ReservationList({
   return (
     <div
       id="reservations"
-      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
+      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8"
     >
-      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
         {isGeorgian ? "წაღების ოპერაციები" : "Pickup Operations"}
       </p>
-      <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
         {t("businessDashboard.reservations")}
       </h2>
 
       <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-        <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
+        <p className="text-sm font-semibold uppercase tracking-widest text-body">
           {t("businessOnboarding.reservationGuidanceTitle")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -96,7 +96,7 @@ export function ReservationList({
           ].map((step) => (
             <span
               key={step}
-              className="ui-card rounded-full px-4 py-2 text-sm font-black leading-6 text-[#2e2a22]"
+              className="ui-card rounded-full px-4 py-2 text-sm font-semibold leading-6 text-cream"
             >
               {step}
             </span>
@@ -105,13 +105,13 @@ export function ReservationList({
       </div>
 
       {orders.length > 0 && (
-        <div className="mt-6 rounded-3xl bg-[#f4efe4] p-5 sm:p-6">
+        <div className="mt-6 rounded-3xl bg-well p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-[#6b6152]">
+              <p className="text-xs font-semibold uppercase tracking-widest text-body">
                 {t("businessDashboard.reservationSummary")}
               </p>
-              <h3 className="mt-2 text-2xl font-black text-[#2e2a22]">
+              <h3 className="mt-2 text-2xl font-semibold text-cream">
                 {t("businessDashboard.totalReservationsMetric")}: {orders.length}
               </h3>
             </div>
@@ -123,8 +123,8 @@ export function ReservationList({
                 key={item.label}
                 className={`rounded-2xl p-4 ${item.className}`}
               >
-                <p className="text-sm font-black">{item.label}</p>
-                <p className="mt-2 text-3xl font-black">{item.value}</p>
+                <p className="text-sm font-semibold">{item.label}</p>
+                <p className="mt-2 text-3xl font-semibold">{item.value}</p>
               </div>
             ))}
           </div>
@@ -173,10 +173,9 @@ export function ReservationList({
               onClick={() =>
                 onReservationFilterChange(filter.value as ReservationFilter)
               }
-              className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
-                isActive
-                  ? "ui-well text-[#a67c52]"
-                  : "ui-card text-[#6b6152] hover:text-[#a67c52]"
+              className={`min-h-11 rounded-full px-5 py-2.5 font-semibold transition ${ isActive
+                  ? "ui-well text-mint"
+                  : "ui-card text-body hover:text-mint"
               }`}
             >
               {filter.label}
@@ -189,9 +188,9 @@ export function ReservationList({
         {filteredOrders.length === 0 && (
           <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
             <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <ReceiptIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.6} />
+              <ReceiptIcon className="h-6 w-6 text-mint" strokeWidth={1.6} />
             </div>
-            <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
+            <h3 className="mt-4 text-2xl font-semibold text-cream">
               {orders.length === 0
                 ? t("businessDashboard.noReservations")
                 : normalizedReservationSearch
@@ -204,7 +203,7 @@ export function ReservationList({
                   : "No active reservations"
                 : t("businessDashboard.noFilteredReservations")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-body">
               {orders.length === 0
                 ? t("businessDashboard.noReservationsHint")
                 : normalizedReservationSearch
@@ -229,29 +228,29 @@ export function ReservationList({
               className="ui-card flex flex-col gap-5 rounded-3xl p-5 lg:flex-row lg:items-center lg:justify-between"
             >
               <div>
-                <h3 className="text-xl font-black sm:text-2xl">
+                <h3 className="text-xl font-semibold sm:text-2xl">
                   {order.offers?.title || t("common.offerUnavailable")}
                 </h3>
 
-                <p className="mt-2 font-semibold text-[#6b6152]">
+                <p className="mt-2 font-semibold text-body">
                   {t("businessDashboard.customer")}:{" "}
                   {order.profiles?.email || t("common.unavailable")}
                 </p>
 
-                <p className="mt-1 font-semibold text-[#6b6152]">
+                <p className="mt-1 font-semibold text-body">
                   {t("businessDashboard.created")}:{" "}
                   {formatDisplayDateTime(order.created_at, language)}
                 </p>
 
-                <p className="mt-1 font-black text-[#a67c52]">
+                <p className="mt-1 font-semibold text-mint">
                   {order.offers
                     ? formatMoney(order.offers.price)
                     : t("common.unavailable")}
                 </p>
 
-                <div className="mt-3 grid gap-2 rounded-2xl bg-[#f4efe4] p-4 text-sm font-semibold text-[#6b6152] sm:grid-cols-2">
+                <div className="mt-3 grid gap-2 rounded-2xl bg-well p-4 text-sm font-semibold text-body sm:grid-cols-2">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-body">
                       {isGeorgian ? "ბიზნესის ქვითარი" : "Business receipt"}
                     </p>
                     <p className="mt-1">
@@ -267,7 +266,7 @@ export function ReservationList({
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-body">
                       {isGeorgian ? "ანაზღაურების შეფასება" : "Payout estimate"}
                     </p>
                     <p>
@@ -285,15 +284,15 @@ export function ReservationList({
                   </div>
                 </div>
 
-                <p className="mt-1 flex items-center gap-1.5 font-semibold text-[#6b6152]">
-                  <ClockIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+                <p className="mt-1 flex items-center gap-1.5 font-semibold text-body">
+                  <ClockIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
                   {t("common.pickup")}:{" "}
                   {order.offers
                     ? formatPickupWindow(order.offers, language)
                     : t("orders.pickupUnavailable")}
                 </p>
 
-                <p className="mt-1 text-sm font-bold text-[#6b6152]">
+                <p className="mt-1 text-sm font-semibold text-body">
                   {t("businessDashboard.reliability")}:{" "}
                   {order.profiles?.reliability_score ??
                     t("common.unavailable")}{" "}
@@ -309,13 +308,13 @@ export function ReservationList({
 
                 <div className="mt-3 flex flex-wrap gap-2">
                   <span
-                    className={`rounded-full px-4 py-2 text-sm font-black ${getOrderStatusClassName(order.status)}`}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold ${getOrderStatusClassName(order.status)}`}
                   >
                     {getOrderStatusLabel(order.status, language)}
                   </span>
 
                   {isConfirmedOrderStatus(order.status) && (
-                    <span className="rounded-full bg-[#f4efe4] px-4 py-2 text-sm font-black text-[#6b6152]">
+                    <span className="rounded-full bg-well px-4 py-2 text-sm font-semibold text-body">
                       {isGeorgian ? "წაღების კოდი" : "Pickup code"}:{" "}
                       {order.has_pickup_code
                         ? isGeorgian
@@ -329,15 +328,15 @@ export function ReservationList({
                 </div>
 
                 {isConfirmedOrderStatus(order.status) && (
-                  <p className="mt-3 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold leading-6 text-[#6b6152]">
+                  <p className="mt-3 rounded-2xl bg-well px-4 py-3 text-sm font-semibold leading-6 text-body">
                     {isGeorgian
                       ? "მომხმარებელს სრული კოდი ჰკითხე და შემდეგ გამოიყენე ღილაკი „შემოწმება და წაღების დასრულება“."
                       : "Ask the customer for the full code, then use Verify & Complete Pickup."}
                   </p>
                 )}
 
-                <div className="mt-4 rounded-3xl bg-[#f4efe4] p-4">
-                  <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6152]">
+                <div className="mt-4 rounded-3xl bg-well p-4">
+                  <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-body">
                     {isGeorgian ? "ჯავშნის ეტაპები" : "Reservation timeline"}
                   </p>
                   <TimelineSteps
@@ -356,7 +355,7 @@ export function ReservationList({
                     <button
                       onClick={() => onMarkNoShow(order)}
                       disabled={updatingOrderId !== null}
-                      className="min-h-12 w-full rounded-full bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="min-h-12 w-full rounded-full bg-danger-soft px-5 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
                     >
                       {updatingOrderId === order.id
                         ? isGeorgian

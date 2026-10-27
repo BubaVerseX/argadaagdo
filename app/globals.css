@@ -207,224 +207,226 @@ textarea {
   margin-inline: auto;
 }
 
-/* ---------------------------------------------------------------------
-   Surfaces. Flat cards: gradient fill, 1px border, one soft shadow.
-   --------------------------------------------------------------------- */
-.ui-card,
-.premium-surface,
-.premium-card {
-  background: linear-gradient(160deg, var(--card), var(--card-2));
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-card);
-}
+@layer components {
+  /* ---------------------------------------------------------------------
+     Surfaces. Flat cards: gradient fill, 1px border, one soft shadow.
+     --------------------------------------------------------------------- */
+  .ui-card,
+  .premium-surface,
+  .premium-card {
+    background: linear-gradient(160deg, var(--card), var(--card-2));
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-card);
+  }
 
-.premium-surface {
-  border-radius: 24px;
-}
+  .premium-surface {
+    border-radius: 24px;
+  }
 
-.premium-card {
-  border-radius: var(--radius-card);
-}
+  .premium-card {
+    border-radius: var(--radius-card);
+  }
 
-/* Inset areas: inputs, chips, active/pressed states. */
-.ui-well,
-.premium-muted-card {
-  background: var(--well);
-  border: 1px solid var(--line);
-}
+  /* Inset areas: inputs, chips, active/pressed states. */
+  .ui-well,
+  .premium-muted-card {
+    background: var(--well);
+    border: 1px solid var(--line);
+  }
 
-.premium-muted-card {
-  border-radius: 20px;
-}
+  .premium-muted-card {
+    border-radius: 20px;
+  }
 
-/* Moss hero block (homepage / for-businesses / dashboard header). */
-.hero-surface {
-  background: radial-gradient(120% 100% at 0% 0%, var(--moss-light), var(--well) 65%);
-  border: 1px solid var(--line-strong);
-  color: var(--cream);
-}
+  /* Moss hero block (homepage / for-businesses / dashboard header). */
+  .hero-surface {
+    background: radial-gradient(120% 100% at 0% 0%, var(--moss-light), var(--well) 65%);
+    border: 1px solid var(--line-strong);
+    color: var(--cream);
+  }
 
-/* Photo container (offer images). Replaces the old blob mask. */
-.photo-frame {
-  position: relative;
-  overflow: hidden;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #3c7a62, var(--card));
-}
+  /* Photo container (offer images). Replaces the old blob mask. */
+  .photo-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #3c7a62, var(--card));
+  }
 
-.photo-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(5, 31, 32, 0) 55%, rgba(5, 31, 32, 0.45));
-  pointer-events: none;
-}
+  .photo-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 31, 32, 0) 55%, rgba(5, 31, 32, 0.45));
+    pointer-events: none;
+  }
 
-/* ---------------------------------------------------------------------
-   Buttons
-   --------------------------------------------------------------------- */
-.premium-button {
-  display: inline-flex;
-  min-height: 3rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background: var(--mint);
-  color: var(--ink);
-  font-weight: 600;
-  border: 1px solid transparent;
-}
+  /* ---------------------------------------------------------------------
+     Buttons
+     --------------------------------------------------------------------- */
+  .premium-button {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--mint);
+    color: var(--ink);
+    font-weight: 600;
+    border: 1px solid transparent;
+  }
 
-.premium-button:hover {
-  background: var(--mint-strong);
-}
+  .premium-button:hover {
+    background: var(--mint-strong);
+  }
 
-.premium-button:active {
-  transform: scale(0.98);
-}
+  .premium-button:active {
+    transform: scale(0.98);
+  }
 
-.premium-button:disabled,
-.premium-button[aria-disabled="true"] {
-  background: var(--well);
-  color: var(--muted);
-  border-color: var(--line);
-  transform: none;
-  cursor: not-allowed;
-}
+  .premium-button:disabled,
+  .premium-button[aria-disabled="true"] {
+    background: var(--well);
+    color: var(--muted);
+    border-color: var(--line);
+    transform: none;
+    cursor: not-allowed;
+  }
 
-/* Subtle glow — only behind the page's main call to action. */
-.cta-glow {
-  background: linear-gradient(90deg, var(--mint), var(--mint-strong));
-  box-shadow: var(--glow-cta);
-}
+  /* Subtle glow — only behind the page's main call to action. */
+  .cta-glow {
+    background: linear-gradient(90deg, var(--mint), var(--mint-strong));
+    box-shadow: var(--glow-cta);
+  }
 
-.cta-glow:hover {
-  background: linear-gradient(90deg, var(--mint-strong), var(--mint));
-}
+  .cta-glow:hover {
+    background: linear-gradient(90deg, var(--mint-strong), var(--mint));
+  }
 
-.premium-button-secondary {
-  display: inline-flex;
-  min-height: 3rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background: transparent;
-  border: 1px solid var(--line-strong);
-  color: var(--cream);
-  font-weight: 600;
-}
+  .premium-button-secondary {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    color: var(--cream);
+    font-weight: 600;
+  }
 
-.premium-button-secondary:hover {
-  background: var(--well);
-}
+  .premium-button-secondary:hover {
+    background: var(--well);
+  }
 
-.premium-button-secondary:active {
-  transform: scale(0.98);
-}
+  .premium-button-secondary:active {
+    transform: scale(0.98);
+  }
 
-.premium-button-secondary:disabled,
-.premium-button-secondary[aria-disabled="true"] {
-  color: var(--muted);
-  border-color: var(--line);
-  cursor: not-allowed;
-}
+  .premium-button-secondary:disabled,
+  .premium-button-secondary[aria-disabled="true"] {
+    color: var(--muted);
+    border-color: var(--line);
+    cursor: not-allowed;
+  }
 
-/* Solid destructive action (delete account, etc.). */
-.premium-button-danger {
-  display: inline-flex;
-  min-height: 3rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background: var(--danger-solid);
-  color: var(--cream);
-  font-weight: 600;
-}
+  /* Solid destructive action (delete account, etc.). */
+  .premium-button-danger {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: var(--danger-solid);
+    color: var(--cream);
+    font-weight: 600;
+  }
 
-.premium-button-danger:hover {
-  filter: brightness(1.08);
-}
+  .premium-button-danger:hover {
+    filter: brightness(1.08);
+  }
 
-.premium-button-danger:disabled,
-.premium-button-danger[aria-disabled="true"] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+  .premium-button-danger:disabled,
+  .premium-button-danger[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 
-/* ---------------------------------------------------------------------
-   Badges, pills, inputs
-   --------------------------------------------------------------------- */
-.premium-badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 9999px;
-  background: var(--well);
-  border: 1px solid var(--line);
-  color: var(--body-2);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
+  /* ---------------------------------------------------------------------
+     Badges, pills, inputs
+     --------------------------------------------------------------------- */
+  .premium-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    background: var(--well);
+    border: 1px solid var(--line);
+    color: var(--body-2);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
 
-/* Amber is reserved for discount badges. */
-.premium-discount-badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 9999px;
-  background: var(--amber);
-  color: var(--amber-ink);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
+  /* Amber is reserved for discount badges. */
+  .premium-discount-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    background: var(--amber);
+    color: var(--amber-ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
 
-/* Moss pill, e.g. the pickup window on an offer card. */
-.moss-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border-radius: 9999px;
-  background: var(--moss);
-  color: var(--mint);
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.375rem 0.625rem;
-}
+  /* Moss pill, e.g. the pickup window on an offer card. */
+  .moss-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    background: var(--moss);
+    color: var(--mint);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.375rem 0.625rem;
+  }
 
-.premium-input {
-  min-height: 3rem;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: var(--well);
-  color: var(--cream);
-  font-weight: 400;
-  outline: none;
-}
+  .premium-input {
+    min-height: 3rem;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--well);
+    color: var(--cream);
+    font-weight: 400;
+    outline: none;
+  }
 
-.premium-input:focus {
-  border-color: var(--mint);
-  box-shadow: 0 0 0 3px rgba(218, 241, 222, 0.18);
-}
+  .premium-input:focus {
+    border-color: var(--mint);
+    box-shadow: 0 0 0 3px rgba(218, 241, 222, 0.18);
+  }
 
-.premium-input:disabled {
-  color: var(--muted);
-  opacity: 0.8;
-}
+  .premium-input:disabled {
+    color: var(--muted);
+    opacity: 0.8;
+  }
 
-/* Native dark pickers/selects in the WebView */
-select.premium-input option {
-  background: var(--well);
-  color: var(--cream);
-}
+  /* Native dark pickers/selects in the WebView */
+  select.premium-input option {
+    background: var(--well);
+    color: var(--cream);
+  }
 
-/* ---------------------------------------------------------------------
-   Bottom tab bar (mobile): translucent, blurred, active = mint.
-   --------------------------------------------------------------------- */
-.tab-bar {
-  background: rgba(5, 31, 32, 0.9);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border-top: 1px solid var(--line);
+  /* ---------------------------------------------------------------------
+     Bottom tab bar (mobile): translucent, blurred, active = mint.
+     --------------------------------------------------------------------- */
+  .tab-bar {
+    background: rgba(5, 31, 32, 0.9);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+  }
 }
 
 /* Trust/partner marquee strip: continuous left-scroll, pauses on hover,

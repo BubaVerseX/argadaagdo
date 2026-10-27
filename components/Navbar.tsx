@@ -1,5 +1,6 @@
 "use client";
 
+import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   getConfirmedProfile,
@@ -232,26 +233,15 @@ export default function Navbar() {
   })();
 
   return (
-    <nav className="sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-[#ece4d6] px-4 py-3 sm:px-5 md:px-10">
+    <nav className="sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-page px-4 py-3 sm:px-5 md:px-10">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
           href="/"
           onClick={closeAllMenus}
-          className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
-          aria-label={t("nav.home")}
+          className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+          aria-label={t("brand.name")}
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#a67c52] text-base font-bold text-white sm:h-10 sm:w-10">
-            A
-          </div>
-
-          <div>
-            <p className="text-lg font-extrabold leading-none tracking-[-0.02em] text-[#2e2a22] sm:text-xl">
-              ArGadaagdo
-            </p>
-            <p className="hidden text-xs font-medium text-[#6b6152] md:block">
-              {t("brand.tagline")}
-            </p>
-          </div>
+          <BrandMark tagline={t("brand.tagline")} />
         </Link>
 
         {/* Desktop horizontal nav — ui-card pill row, mobile relies on
@@ -266,10 +256,9 @@ export default function Navbar() {
                   key={tabItem.href}
                   href={tabItem.href}
                   aria-current={ariaCurrent(tabItem.href)}
-                  className={`inline-flex min-h-9 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-                    active
-                      ? "ui-well text-[#a67c52]"
-                      : "text-[#6b6152] hover:text-[#2e2a22]"
+                  className={`inline-flex min-h-9 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ active
+                      ? "ui-well text-mint"
+                      : "text-body hover:text-cream"
                   }`}
                 >
                   <tabItem.Icon className="h-4 w-4" strokeWidth={1.8} />
@@ -282,10 +271,9 @@ export default function Navbar() {
             <Link
               href="/for-businesses"
               aria-current={ariaCurrent("/for-businesses")}
-              className={`inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-                isActivePath("/for-businesses")
-                  ? "ui-well text-[#a67c52]"
-                  : "text-[#6b6152] hover:text-[#2e2a22]"
+              className={`inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ isActivePath("/for-businesses")
+                  ? "ui-well text-mint"
+                  : "text-body hover:text-cream"
               }`}
             >
               {t("nav.forBusiness")}
@@ -305,7 +293,7 @@ export default function Navbar() {
                 setNotifMenu((current) => !current);
                 setAccountMenu(false);
               }}
-              className="ui-card flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+              className="ui-card flex min-h-11 min-w-11 items-center justify-center rounded-full text-body transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               aria-haspopup="menu"
               aria-expanded={notifMenu}
               aria-label={t("nav.notifications")}
@@ -318,7 +306,7 @@ export default function Navbar() {
                 role="menu"
                 className="ui-card absolute right-0 mt-3 w-64 rounded-3xl p-4"
               >
-                <p className="text-sm font-semibold text-[#8a8072]">
+                <p className="text-sm font-semibold text-muted">
                   {t("nav.noNotifications")}
                 </p>
               </div>
@@ -335,8 +323,7 @@ export default function Navbar() {
                   setAccountMenu((current) => !current);
                   setNotifMenu(false);
                 }}
-                className={`flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-                  accountMenu ? "ui-well text-[#a67c52]" : "ui-card"
+                className={`flex min-h-11 min-w-11 items-center justify-center rounded-full text-body transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ accountMenu ? "ui-well text-mint" : "ui-card"
                 }`}
                 aria-haspopup="menu"
                 aria-expanded={accountMenu}
@@ -358,10 +345,10 @@ export default function Navbar() {
                 >
                   {user ? (
                     <div className="px-3 py-2">
-                      <p className="truncate text-sm font-semibold text-[#2e2a22]">
+                      <p className="truncate text-sm font-semibold text-cream">
                         {user.email}
                       </p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#8a8072]">
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
                         {role || t("nav.customerSection")}
                       </p>
                     </div>
@@ -387,7 +374,7 @@ export default function Navbar() {
                       <Link
                         href="/profile"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.profile")}
@@ -395,7 +382,7 @@ export default function Navbar() {
                       <Link
                         href="/settings"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.settings")}
@@ -404,7 +391,7 @@ export default function Navbar() {
                         <Link
                           href="/business/dashboard"
                           onClick={() => setAccountMenu(false)}
-                          className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22] lg:hidden"
+                          className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream lg:hidden"
                           role="menuitem"
                         >
                           {t("nav.dashboard")}
@@ -414,7 +401,7 @@ export default function Navbar() {
                         <Link
                           href="/admin"
                           onClick={() => setAccountMenu(false)}
-                          className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22] lg:hidden"
+                          className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream lg:hidden"
                           role="menuitem"
                         >
                           {t("nav.admin")}
@@ -427,7 +414,7 @@ export default function Navbar() {
                     <Link
                       href="/for-businesses"
                       onClick={() => setAccountMenu(false)}
-                      className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22] lg:hidden"
+                      className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream lg:hidden"
                       role="menuitem"
                     >
                       {t("nav.forBusiness")}
@@ -437,7 +424,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => setMoreExpanded((current) => !current)}
-                    className="mt-2 flex min-h-11 w-full items-center justify-between rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                    className="mt-2 flex min-h-11 w-full items-center justify-between rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                     aria-expanded={moreExpanded}
                     aria-controls="account-more-links"
                   >
@@ -453,7 +440,7 @@ export default function Navbar() {
                       <Link
                         href="/discover"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.discover")}
@@ -461,7 +448,7 @@ export default function Navbar() {
                       <Link
                         href="/businesses"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.businesses")}
@@ -469,7 +456,7 @@ export default function Navbar() {
                       <Link
                         href="/faq"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.faq")}
@@ -477,7 +464,7 @@ export default function Navbar() {
                       <Link
                         href="/about"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.about")}
@@ -485,7 +472,7 @@ export default function Navbar() {
                       <Link
                         href="/contact"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.contact")}
@@ -493,7 +480,7 @@ export default function Navbar() {
                       <Link
                         href="/support"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.support")}
@@ -501,7 +488,7 @@ export default function Navbar() {
                       <Link
                         href="/privacy"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.privacy")}
@@ -509,7 +496,7 @@ export default function Navbar() {
                       <Link
                         href="/terms"
                         onClick={() => setAccountMenu(false)}
-                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-[#6b6152] transition hover:text-[#2e2a22]"
+                        className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
                         role="menuitem"
                       >
                         {t("nav.terms")}
@@ -534,20 +521,25 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Fixed floating bottom tab bar — primary mobile navigation. */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-2 min-[360px]:px-4 pb-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] lg:hidden">
-        <div className="ui-card flex w-full max-w-md items-stretch justify-between gap-1 rounded-[28px] p-2">
+      {/* Fixed bottom tab bar — primary mobile navigation (translucent, blurred). */}
+      <div className="tab-bar fixed inset-x-0 bottom-0 z-50 pb-[var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))] lg:hidden">
+        <div className="mx-auto flex w-full max-w-md items-stretch justify-between gap-1 px-2 pb-1.5 pt-2 min-[360px]:px-3">
           {tabs.map((tabItem) => {
             const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;
             const active = tabItem.kind === "link" && isActivePath(tabItem.href);
-            const commonClass = `flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-0.5 py-1.5 text-[10px] min-[360px]:px-1 font-semibold min-[390px]:text-[11px] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-              active ? "ui-well text-[#a67c52]" : "text-[#8a8072]"
+            const commonClass = `flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-0.5 py-1.5 text-[10px] min-[360px]:px-1 font-medium min-[390px]:text-[11px] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
+              active ? "text-mint" : "text-body-2"
+            }`;
+            const iconClass = `flex h-7 w-12 items-center justify-center rounded-full transition ${
+              active ? "bg-mint text-ink" : ""
             }`;
 
             if (tabItem.kind === "action") {
               return (
                 <button key={key} type="button" onClick={tabItem.onClick} className={commonClass}>
-                  <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
+                  <span className={iconClass}>
+                    <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
                   <span>{tabItem.shortLabel ?? tabItem.label}</span>
                 </button>
               );
@@ -560,7 +552,9 @@ export default function Navbar() {
                 aria-current={ariaCurrent(tabItem.href)}
                 className={commonClass}
               >
-                <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
+                <span className={iconClass}>
+                    <tabItem.Icon className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
                 <span>{tabItem.shortLabel ?? tabItem.label}</span>
               </Link>
             );

@@ -33,7 +33,7 @@ export function Pagination({
     <div
       className={`ui-card flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
-      <p className="text-sm font-medium text-[#6b6152]">
+      <p className="text-sm font-medium text-body">
         {isGeorgian ? (
           <>
             {resolvedLabel}: {start}-{end}, სულ {totalItems}
@@ -54,7 +54,7 @@ export function Pagination({
         >
           {isGeorgian ? "წინა" : "Previous"}
         </button>
-        <span className="ui-well flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22]">
+        <span className="ui-well flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-cream">
           {safePage} / {totalPages}
         </span>
         <button

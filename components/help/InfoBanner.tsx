@@ -10,9 +10,9 @@ type InfoBannerProps = {
 };
 
 const toneClasses: Record<InfoBannerTone, string> = {
-  green: "ui-card text-[#2e2a22]",
-  yellow: "border border-yellow-100 bg-yellow-50 text-yellow-950",
-  white: "ui-card text-[#2e2a22]",
+  green: "ui-card text-cream",
+  yellow: "border border-warning-line bg-warning-soft text-warning",
+  white: "ui-card text-cream",
 };
 
 export function InfoBanner({
@@ -23,7 +23,7 @@ export function InfoBanner({
 }: InfoBannerProps) {
   return (
     <section className={`rounded-[1.5rem] p-5 ${toneClasses[tone]}`}>
-      <h2 className="text-lg font-bold">{title}</h2>
+      <h2 className="text-lg font-semibold">{title}</h2>
       <p className="mt-2 leading-[1.55] opacity-85">{text}</p>
       {children && <div className="mt-4">{children}</div>}
     </section>

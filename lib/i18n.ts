@@ -16,6 +16,7 @@ export const languageShortNames: Record<Language, string> = {
 
 const translations = {
   en: {
+    "brand.name": "ArGadaagdo",
     "brand.tagline": "Food rescue marketplace",
 
     "nav.home": "Home",
@@ -822,6 +823,7 @@ const translations = {
     "installApp.dismiss": "Not now",
   },
   ka: {
+    "brand.name": "არ გადააგდო",
     "brand.tagline": "საკვების გადარჩენის მარკეტი",
 
     "nav.home": "მთავარი",

@@ -111,11 +111,11 @@ export function getOrderStatusLabel(status: OrderStatus, language: Language = "e
 }
 
 export function getOrderStatusClassName(status: OrderStatus) {
-  if (isPendingPaymentOrderStatus(status)) return "bg-blue-100 text-blue-700";
-  if (isCollectedOrderStatus(status)) return "bg-[#f4efe4] text-[#a67c52]";
-  if (isExpiredOrderStatus(status)) return "bg-[#f4efe4] text-[#6b6152]";
-  if (isCancelledOrderStatus(status)) return "bg-red-100 text-red-700";
-  return "bg-yellow-100 text-yellow-700";
+  if (isPendingPaymentOrderStatus(status)) return "bg-well text-body-2";
+  if (isCollectedOrderStatus(status)) return "bg-well text-mint";
+  if (isExpiredOrderStatus(status)) return "bg-well text-body";
+  if (isCancelledOrderStatus(status)) return "bg-danger-soft text-danger";
+  return "bg-warning-soft text-warning";
 }
 
 export function getInactiveOrderMessage(status: OrderStatus, language: Language = "en") {

@@ -215,26 +215,26 @@ export function BusinessRevenueInsights({
   ];
 
   return (
-    <section className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <section className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
             {isGeorgian ? "შემოსავალი და ანალიტიკა" : "Revenue and insights"}
           </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
             {isGeorgian
               ? "ბიზნესის შედეგების მიმოხილვა"
               : "Business performance snapshot"}
           </h2>
-          <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
+          <p className="mt-3 max-w-3xl font-semibold leading-7 text-body">
             {isGeorgian
               ? "სავარაუდო შემოსავალი შეკვეთების გადახდის არსებულ მონაცემებს ეფუძნება. პილოტის პერიოდში ბიზნესის საბოლოო ანაზღაურება ჯერ კიდევ ხელით მოწმდება."
               : "Estimated revenue uses existing order payment fields. Final business payouts are still reviewed manually during the pilot."}
           </p>
         </div>
 
-        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
-          <p className="font-black">
+        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-cream lg:max-w-sm">
+          <p className="font-semibold">
             {isGeorgian ? "პილოტის საკომისიოს მოდელი" : "Pilot commission model"}
           </p>
           <p className="mt-1">
@@ -250,17 +250,17 @@ export function BusinessRevenueInsights({
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="rounded-3xl bg-[#f4efe4] p-5">
-          <h3 className="text-xl font-black text-[#2e2a22]">
+        <div className="rounded-3xl bg-well p-5">
+          <h3 className="text-xl font-semibold text-cream">
             {isGeorgian ? "შედეგების სიგნალები" : "Performance signals"}
           </h3>
           <div className="mt-4 grid gap-3">
             {performanceItems.map((item) => (
-              <div key={item.label} className="rounded-2xl bg-white/70 p-4">
-                <p className="text-sm font-black text-[#a67c52]">
+              <div key={item.label} className="rounded-2xl bg-well p-4">
+                <p className="text-sm font-semibold text-mint">
                   {item.label}
                 </p>
-                <p className="mt-1 font-black text-[#2e2a22]">
+                <p className="mt-1 font-semibold text-cream">
                   {localizeAnalyticsValue(item.value, isGeorgian)}
                 </p>
               </div>
@@ -305,22 +305,22 @@ export function BusinessRevenueInsights({
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-[#f4efe4] p-5">
-        <h3 className="text-xl font-black text-[#2e2a22]">
+      <div className="mt-6 rounded-3xl bg-well p-5">
+        <h3 className="text-xl font-semibold text-cream">
           {isGeorgian ? "მარკეტინგული ანალიტიკა" : "Marketing insights"}
         </h3>
-        <p className="mt-2 max-w-3xl font-semibold leading-7 text-[#6b6152]">
+        <p className="mt-2 max-w-3xl font-semibold leading-7 text-body">
           {isGeorgian
             ? "ეს სიგნალები პანელს ზრდის კამპანიებისთვის ამზადებს. ნახვებისა და კონვერსიის ზუსტი აღრიცხვისთვის ჯერ კიდევ ცალკე მოვლენებია საჭირო."
             : "These signals prepare the dashboard for growth campaigns. View and conversion tracking still need dedicated events before they become exact."}
         </p>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
           {marketingItems.map((item) => (
-            <div key={item.label} className="rounded-2xl bg-white/70 p-4">
-              <p className="text-xs font-black uppercase tracking-wide text-[#a67c52]">
+            <div key={item.label} className="rounded-2xl bg-well p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-mint">
                 {item.label}
               </p>
-              <p className="mt-2 font-black text-[#2e2a22]">
+              <p className="mt-2 font-semibold text-cream">
                 {localizeAnalyticsValue(item.value, isGeorgian)}
               </p>
             </div>
@@ -331,10 +331,10 @@ export function BusinessRevenueInsights({
       <div className="ui-card mt-6 rounded-3xl p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-xl font-black text-[#2e2a22]">
+            <h3 className="text-xl font-semibold text-cream">
               {isGeorgian ? "CSV ექსპორტი" : "CSV exports"}
             </h3>
-            <p className="mt-2 font-semibold leading-7 text-[#6b6152]">
+            <p className="mt-2 font-semibold leading-7 text-body">
               {isGeorgian
                 ? "ჩამოტვირთე მსუბუქი CSV ფაილები ჯავშნების, დასრულებული წაღებებისა და შეთავაზებების სტატისტიკისთვის."
                 : "Download lightweight CSV files for reservations, completed pickups and offer statistics."}

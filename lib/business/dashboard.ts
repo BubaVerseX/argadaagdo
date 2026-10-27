@@ -25,19 +25,19 @@ export const metricToneStyles: Record<
   { card: string; label: string; value: string }
 > = {
   neutral: {
-    card: "bg-[#f4efe4] text-[#2e2a22]",
-    label: "text-[#6b6152]",
-    value: "text-[#2e2a22]",
+    card: "bg-well text-cream",
+    label: "text-body",
+    value: "text-cream",
   },
   green: {
-    card: "ui-card text-[#2e2a22]",
-    label: "text-[#a67c52]",
-    value: "text-[#2e2a22]",
+    card: "ui-card text-cream",
+    label: "text-mint",
+    value: "text-cream",
   },
   yellow: {
-    card: "bg-yellow-50 text-yellow-950",
-    label: "text-yellow-800",
-    value: "text-yellow-800",
+    card: "bg-warning-soft text-warning",
+    label: "text-warning",
+    value: "text-warning",
   },
 };
 
