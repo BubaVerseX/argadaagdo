@@ -23,9 +23,9 @@ const config: CapacitorConfig = {
   appId: 'com.argadaagdo.app',
   appName: 'ArGadaagdo',
   webDir: 'native-shell',
-  // Same beige as the site, so launching doesn't flash white (or black in
-  // dark mode) before the remote page paints.
-  backgroundColor: '#ece4d6',
+  // Same deep green as the site, so launching doesn't flash white before
+  // the remote page paints.
+  backgroundColor: '#051f20',
   server: {
     url: 'https://argadaagdo-silk.vercel.app',
     androidScheme: 'https',
@@ -35,9 +35,9 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SystemBars: {
-      // Dark status-bar icons on the light beige app (Android; iOS follows
-      // UIUserInterfaceStyle=Light in Info.plist).
-      style: 'LIGHT',
+      // Light status-bar icons on the dark green app (Android; iOS follows
+      // UIUserInterfaceStyle=Dark in Info.plist).
+      style: 'DARK',
     },
   },
 };

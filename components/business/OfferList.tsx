@@ -107,7 +107,7 @@ export function OfferList({
     OfferIntelligence["recommendations"][number]["tone"],
     string
   > = {
-    green: "soft-raised text-[#2e2a22]",
+    green: "ui-card text-[#2e2a22]",
     yellow: "bg-yellow-50 text-yellow-950",
     red: "bg-red-50 text-red-800",
   };
@@ -123,8 +123,8 @@ export function OfferList({
 
       <div className="mt-6 grid gap-4">
         {offers.length === 0 && (
-          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
-            <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
+            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
               <PlusIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.8} />
             </div>
             <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
@@ -154,10 +154,10 @@ export function OfferList({
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
-            <div key={offer.id} className="soft-raised grid gap-5 rounded-3xl p-5">
+            <div key={offer.id} className="ui-card grid gap-5 rounded-3xl p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="soft-raised blob-mask-2 relative isolate h-20 w-20 shrink-0 overflow-hidden sm:h-24 sm:w-24">
+                  <div className="ui-card rounded-[18px] relative isolate h-20 w-20 shrink-0 overflow-hidden sm:h-24 sm:w-24">
                     <OfferImage src={offer.image_url} alt={offer.title} sizes="96px" />
                   </div>
 

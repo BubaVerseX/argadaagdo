@@ -357,9 +357,9 @@ export default function OfferDetailPage() {
           {!loading && offer && (
             <>
               <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                <div className="soft-raised rounded-[1.75rem] p-4">
+                <div className="ui-card rounded-[1.75rem] p-4">
                   <div className="relative">
-                    <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96">
+                    <div className="photo-frame relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96">
                       <OfferImage
                         src={offer.image_url}
                         alt={offer.title}
@@ -378,7 +378,7 @@ export default function OfferDetailPage() {
                           : `${t("offers.addFavorite")} - ${offer.title}`
                       }
                       aria-pressed={isFavorite}
-                      className={`soft-raised absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] disabled:cursor-not-allowed disabled:opacity-60 ${
+                      className={`ui-card absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] disabled:cursor-not-allowed disabled:opacity-60 ${
                         isFavorite ? "text-[#a67c52]" : "text-[#6b6152]"
                       }`}
                     >
@@ -414,7 +414,7 @@ export default function OfferDetailPage() {
                   </Link>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="soft-raised rounded-3xl p-5">
+                    <div className="ui-card rounded-3xl p-5">
                       <p className="text-sm font-black text-[#6b6152]">
                         {t("common.price")}
                       </p>
@@ -451,7 +451,7 @@ export default function OfferDetailPage() {
                       </p>
                     </div>
 
-                    <div className="soft-raised rounded-3xl p-5">
+                    <div className="ui-card rounded-3xl p-5">
                       <p className="text-sm font-black text-[#6b6152]">
                         {t("offerDetail.reviewSummary")}
                       </p>
@@ -465,7 +465,7 @@ export default function OfferDetailPage() {
                       </p>
                     </div>
 
-                    <div className="soft-raised rounded-3xl p-5">
+                    <div className="ui-card rounded-3xl p-5">
                       <p className="text-sm font-black text-[#6b6152]">
                         {t("common.quantity")}
                       </p>
@@ -479,7 +479,7 @@ export default function OfferDetailPage() {
                   </div>
 
                   {urgencyMessage && (
-                    <div className="soft-raised mt-4 rounded-3xl p-4">
+                    <div className="ui-card mt-4 rounded-3xl p-4">
                       <p className="font-black text-[#2e2a22]">
                         {urgencyMessage}
                       </p>
@@ -489,7 +489,7 @@ export default function OfferDetailPage() {
                     </div>
                   )}
 
-                  <div className="soft-raised mt-4 rounded-3xl p-4">
+                  <div className="ui-card mt-4 rounded-3xl p-4">
                     <p className="font-black text-[#2e2a22]">
                       {t("offerDetail.afterReservationTitle")}
                     </p>
@@ -624,7 +624,7 @@ export default function OfferDetailPage() {
                 </div>
 
                 <div className="grid gap-6">
-                  <div className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
+                  <div className="ui-card rounded-[1.75rem] p-5 sm:p-8">
                     <h2 className="text-2xl font-black">
                       {t("offerDetail.pickupInfoTitle")}
                     </h2>

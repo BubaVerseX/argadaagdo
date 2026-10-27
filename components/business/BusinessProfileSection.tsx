@@ -49,7 +49,7 @@ export function BusinessProfileSection({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
-          <div className="soft-raised rounded-3xl p-5 text-center">
+          <div className="ui-card rounded-3xl p-5 text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#a67c52] text-2xl font-black text-white">
               {profileName.trim().slice(0, 2).toUpperCase() || "AG"}
             </div>
@@ -58,7 +58,7 @@ export function BusinessProfileSection({
             </p>
           </div>
           <div className="rounded-3xl bg-[#f4efe4] p-5 text-center">
-            <div className="soft-pressed mx-auto h-16 rounded-2xl" />
+            <div className="ui-well mx-auto h-16 rounded-2xl" />
             <p className="mt-3 text-sm font-black text-[#6b6152]">
               {isGeorgian ? "ქავერის სურათის გადახედვა" : "Cover image preview"}
             </p>

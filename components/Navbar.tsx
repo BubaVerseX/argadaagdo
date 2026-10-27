@@ -254,9 +254,9 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop horizontal nav — soft-raised pill row, mobile relies on
+        {/* Desktop horizontal nav — ui-card pill row, mobile relies on
             the fixed bottom tab bar instead. */}
-        <div className="soft-raised hidden items-center gap-1 rounded-full p-1.5 lg:flex">
+        <div className="ui-card hidden items-center gap-1 rounded-full p-1.5 lg:flex">
           {tabs
             .filter((tabItem): tabItem is Extract<TabItem, { kind: "link" }> => tabItem.kind === "link")
             .map((tabItem) => {
@@ -268,7 +268,7 @@ export default function Navbar() {
                   aria-current={ariaCurrent(tabItem.href)}
                   className={`inline-flex min-h-9 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
                     active
-                      ? "soft-pressed text-[#a67c52]"
+                      ? "ui-well text-[#a67c52]"
                       : "text-[#6b6152] hover:text-[#2e2a22]"
                   }`}
                 >
@@ -284,7 +284,7 @@ export default function Navbar() {
               aria-current={ariaCurrent("/for-businesses")}
               className={`inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
                 isActivePath("/for-businesses")
-                  ? "soft-pressed text-[#a67c52]"
+                  ? "ui-well text-[#a67c52]"
                   : "text-[#6b6152] hover:text-[#2e2a22]"
               }`}
             >
@@ -305,7 +305,7 @@ export default function Navbar() {
                 setNotifMenu((current) => !current);
                 setAccountMenu(false);
               }}
-              className="soft-raised flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+              className="ui-card flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
               aria-haspopup="menu"
               aria-expanded={notifMenu}
               aria-label={t("nav.notifications")}
@@ -316,7 +316,7 @@ export default function Navbar() {
             {notifMenu && (
               <div
                 role="menu"
-                className="soft-raised absolute right-0 mt-3 w-64 rounded-3xl p-4"
+                className="ui-card absolute right-0 mt-3 w-64 rounded-3xl p-4"
               >
                 <p className="text-sm font-semibold text-[#8a8072]">
                   {t("nav.noNotifications")}
@@ -326,7 +326,7 @@ export default function Navbar() {
           </div>
 
           {!authReady ? (
-            <div className="soft-raised h-11 w-11 rounded-full" />
+            <div className="ui-card h-11 w-11 rounded-full" />
           ) : (
             <div className="relative">
               <button
@@ -336,7 +336,7 @@ export default function Navbar() {
                   setNotifMenu(false);
                 }}
                 className={`flex min-h-11 min-w-11 items-center justify-center rounded-full text-[#6b6152] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-                  accountMenu ? "soft-pressed text-[#a67c52]" : "soft-raised"
+                  accountMenu ? "ui-well text-[#a67c52]" : "ui-card"
                 }`}
                 aria-haspopup="menu"
                 aria-expanded={accountMenu}
@@ -354,7 +354,7 @@ export default function Navbar() {
                 <div
                   id="account-menu"
                   role="menu"
-                  className="soft-raised absolute right-0 mt-3 max-h-[calc(100dvh-6rem)] w-72 overflow-y-auto overscroll-contain rounded-3xl p-3"
+                  className="ui-card absolute right-0 mt-3 max-h-[calc(100dvh-6rem)] w-72 overflow-y-auto overscroll-contain rounded-3xl p-3"
                 >
                   {user ? (
                     <div className="px-3 py-2">
@@ -536,12 +536,12 @@ export default function Navbar() {
 
       {/* Fixed floating bottom tab bar — primary mobile navigation. */}
       <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-2 min-[360px]:px-4 pb-[calc(1rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] lg:hidden">
-        <div className="soft-raised flex w-full max-w-md items-stretch justify-between gap-1 rounded-[28px] p-2">
+        <div className="ui-card flex w-full max-w-md items-stretch justify-between gap-1 rounded-[28px] p-2">
           {tabs.map((tabItem) => {
             const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;
             const active = tabItem.kind === "link" && isActivePath(tabItem.href);
             const commonClass = `flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-0.5 py-1.5 text-[10px] min-[360px]:px-1 font-semibold min-[390px]:text-[11px] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
-              active ? "soft-pressed text-[#a67c52]" : "text-[#8a8072]"
+              active ? "ui-well text-[#a67c52]" : "text-[#8a8072]"
             }`;
 
             if (tabItem.kind === "action") {

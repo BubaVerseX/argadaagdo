@@ -242,7 +242,7 @@ export default function Home() {
         <div className="premium-container relative">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="min-w-0 max-w-2xl">
-              <p className="soft-raised inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
+              <p className="ui-card inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
                 {homepageCopy.launchBadge}
               </p>
 
@@ -279,7 +279,7 @@ export default function Home() {
                     <Link
                       key={category}
                       href={`/offers?category=${encodeURIComponent(category)}`}
-                      className="soft-raised flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                      className="ui-card flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                     >
                       {getOfferCategoryLabel(category, language)}
                     </Link>
@@ -289,7 +289,7 @@ export default function Home() {
             </div>
 
             <div className="relative mx-auto w-full min-w-0 max-w-lg lg:mx-0">
-              <div className="soft-raised photo-warm-overlay blob-mask relative isolate aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
+              <div className="photo-frame relative isolate aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
                 <OfferImage
                   src={previewOffer?.image_url}
                   alt={previewOffer?.title || homepageCopy.heroAccentPhrase}
@@ -301,10 +301,10 @@ export default function Home() {
               {/* Floating product card: a genuine miniature offer, not decoration */}
               <Link
                 href={previewOffer ? `/offers/${previewOffer.id}` : "/offers"}
-                className="soft-raised absolute -bottom-8 -left-4 w-[calc(100%-2rem)] max-w-xs rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] sm:-left-8"
+                className="ui-card absolute -bottom-8 -left-4 w-[calc(100%-2rem)] max-w-xs rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] sm:-left-8"
               >
                 <div className="flex items-center gap-3">
-                  <div className="soft-raised photo-warm-overlay blob-mask-2 h-16 w-16 shrink-0 overflow-hidden">
+                  <div className="photo-frame h-16 w-16 shrink-0 overflow-hidden">
                     {previewOffer ? (
                       <OfferImage
                         src={previewOffer.image_url}
@@ -349,7 +349,7 @@ export default function Home() {
             {stats.map((item, index) => (
               <div
                 key={item.label}
-                className={`soft-raised rounded-[1.75rem] p-7 ${
+                className={`ui-card rounded-[1.75rem] p-7 ${
                   index === 0 ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
                 }`}
               >
@@ -383,7 +383,7 @@ export default function Home() {
 
           <div className="mt-10 grid gap-6 md:grid-cols-3 md:gap-6">
             {steps.map((step) => (
-              <div key={step.label} className="soft-raised rounded-[1.5rem] p-6">
+              <div key={step.label} className="ui-card rounded-[1.5rem] p-6">
                 <p className="text-sm font-semibold tracking-[0.1em] text-[#a67c52]">
                   {step.label}
                 </p>
@@ -469,7 +469,7 @@ export default function Home() {
           </div>
 
           {errorMessage && (
-            <div className="soft-raised mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-[#6b6152]">
+            <div className="ui-card mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-[#6b6152]">
               {translateUserMessage(errorMessage, language)}
             </div>
           )}
@@ -495,8 +495,8 @@ export default function Home() {
             ))}
 
             {!loading && offers.length === 0 && (
-              <div className="soft-raised rounded-[1.75rem] p-10 text-center md:col-span-3">
-                <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+              <div className="ui-card rounded-[1.75rem] p-10 text-center md:col-span-3">
+                <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
                   <ShoppingBagIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
                 </div>
                 <h3 className="mt-5 text-2xl font-extrabold tracking-[-0.02em] text-[#2e2a22]">
@@ -517,7 +517,7 @@ export default function Home() {
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container grid gap-6 md:grid-cols-2 md:gap-6">
           {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="soft-raised rounded-[1.75rem] p-8">
+            <figure key={testimonial.name} className="ui-card rounded-[1.75rem] p-8">
               <blockquote className="text-2xl font-medium leading-[1.4] tracking-[-0.01em] text-[#2e2a22] sm:text-3xl">
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>

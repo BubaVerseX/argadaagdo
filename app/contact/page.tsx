@@ -60,7 +60,7 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <section className="rounded-[2rem] soft-raised p-5 sm:p-8">
+            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
               <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
                 {t("contact.supportEmailLabel")}
               </p>
@@ -79,7 +79,7 @@ export default function ContactPage() {
               </a>
             </section>
 
-            <section className="rounded-[2rem] soft-raised p-5 sm:p-8">
+            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
               <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
                 {t("contact.businessInquiriesLabel")}
               </p>
@@ -125,7 +125,7 @@ export default function ContactPage() {
             </section>
           </div>
 
-          <div className="mt-6 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
+          <div className="mt-6 rounded-[2rem] ui-card p-5 text-center sm:p-8">
             <h2 className="text-2xl font-black text-[#2e2a22]">
               {t("contact.footerTitle")}
             </h2>

@@ -123,7 +123,7 @@ export default function FAQPage() {
             {sections.map((section) => (
               <section
                 key={section.title}
-                className="rounded-[2rem] soft-raised p-5 sm:p-8"
+                className="rounded-[2rem] ui-card p-5 sm:p-8"
               >
                 <h2 className="text-2xl font-black text-[#2e2a22] sm:text-3xl">
                   {section.title}
@@ -154,7 +154,7 @@ export default function FAQPage() {
             ))}
           </div>
 
-          <div className="mt-8 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
+          <div className="mt-8 rounded-[2rem] ui-card p-5 text-center sm:p-8">
             <h2 className="text-2xl font-black text-[#2e2a22]">
               {t("faq.ctaTitle")}
             </h2>

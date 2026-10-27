@@ -33,7 +33,7 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="rounded-[2rem] soft-raised p-5 sm:p-8">
+            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
               <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
                 {t("about.whatLabel")}
               </p>
@@ -45,7 +45,7 @@ export default function AboutPage() {
               </p>
             </section>
 
-            <section className="rounded-[2rem] soft-raised p-5 sm:p-8">
+            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
               <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
                 {t("about.launchAreaLabel")}
               </p>
@@ -58,7 +58,7 @@ export default function AboutPage() {
             </section>
           </div>
 
-          <section className="mt-6 rounded-[2rem] soft-raised p-5 sm:p-8">
+          <section className="mt-6 rounded-[2rem] ui-card p-5 sm:p-8">
             <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
               {t("about.missionLabel")}
             </p>
@@ -70,7 +70,7 @@ export default function AboutPage() {
               {missionItems.map((item) => (
                 <div
                   key={item}
-                  className="rounded-3xl soft-raised p-5 text-center "
+                  className="rounded-3xl ui-card p-5 text-center "
                 >
                   <p className="text-2xl font-black text-[#a67c52]">{item}</p>
                 </div>

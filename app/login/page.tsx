@@ -512,7 +512,7 @@ export default function LoginPage() {
                 : t("login.signUpHint")}
             </p>
 
-            <div className="soft-pressed mt-6 grid gap-2 rounded-3xl p-2 sm:grid-cols-2">
+            <div className="ui-well mt-6 grid gap-2 rounded-3xl p-2 sm:grid-cols-2">
               {authModeOptions.map((option) => {
                 const isActive = authMode === option.value;
 
@@ -526,7 +526,7 @@ export default function LoginPage() {
                     }}
                     className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${
                       isActive
-                        ? "soft-raised text-[#a67c52]"
+                        ? "ui-card text-[#a67c52]"
                         : "text-[#6b6152] hover:text-[#2e2a22]"
                     }`}
                   >
@@ -601,7 +601,7 @@ export default function LoginPage() {
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "forgot" && (
-                <div className="soft-raised rounded-3xl p-4">
+                <div className="ui-card rounded-3xl p-4">
                   <h3 className="font-black text-[#2e2a22]">
                     {isGeorgian ? "პაროლის აღდგენა" : "Reset password"}
                   </h3>
@@ -628,7 +628,7 @@ export default function LoginPage() {
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "reset" && (
-                <div className="soft-raised grid gap-4 rounded-3xl p-4">
+                <div className="ui-card grid gap-4 rounded-3xl p-4">
                   <div>
                     <h3 className="font-black text-[#2e2a22]">
                       {isGeorgian
@@ -702,8 +702,8 @@ export default function LoginPage() {
                       onClick={() => setRole("customer")}
                       className={`rounded-2xl p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${
                         role === "customer"
-                          ? "soft-pressed text-[#2e2a22]"
-                          : "soft-raised text-[#6b6152]"
+                          ? "ui-well text-[#2e2a22]"
+                          : "ui-card text-[#6b6152]"
                       }`}
                     >
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#a67c52]">
@@ -721,8 +721,8 @@ export default function LoginPage() {
                       onClick={() => setRole("business")}
                       className={`rounded-2xl p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${
                         role === "business"
-                          ? "soft-pressed text-[#2e2a22]"
-                          : "soft-raised text-[#6b6152]"
+                          ? "ui-well text-[#2e2a22]"
+                          : "ui-card text-[#6b6152]"
                       }`}
                     >
                       <div className="inline-flex items-center gap-1.5 rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#a67c52]">
@@ -766,7 +766,7 @@ export default function LoginPage() {
               </div>
 
               {authMode === "login" && (
-                <div className="soft-raised rounded-2xl px-4 py-3 text-center text-sm font-bold text-[#2e2a22] sm:text-base">
+                <div className="ui-card rounded-2xl px-4 py-3 text-center text-sm font-bold text-[#2e2a22] sm:text-base">
                   {isGeorgian
                     ? "ელფოსტის დადასტურება გჭირდება?"
                     : "Need to verify your email?"}{" "}

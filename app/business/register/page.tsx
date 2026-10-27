@@ -250,7 +250,7 @@ export default function BusinessRegisterPage() {
               </p>
 
               <div className="mt-8 grid gap-4">
-                <div className="soft-raised rounded-3xl p-5">
+                <div className="ui-card rounded-3xl p-5">
                   <h3 className="text-xl font-black text-[#2e2a22]">
                     {t("businessRegister.step1")}
                   </h3>
@@ -268,7 +268,7 @@ export default function BusinessRegisterPage() {
                   </p>
                 </div>
 
-                <div className="soft-raised rounded-3xl p-5">
+                <div className="ui-card rounded-3xl p-5">
                   <h3 className="text-xl font-black text-[#2e2a22]">
                     {t("businessRegister.step3")}
                   </h3>

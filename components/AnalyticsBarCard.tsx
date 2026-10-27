@@ -5,7 +5,7 @@ const toneStyles: Record<
   { card: string; label: string; bar: string; track: string }
 > = {
   green: {
-    card: "soft-raised text-[#2e2a22]",
+    card: "ui-card text-[#2e2a22]",
     label: "text-[#a67c52]",
     bar: "bg-[#a67c52]",
     track: "bg-[#f4efe4]",

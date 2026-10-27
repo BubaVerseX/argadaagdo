@@ -401,7 +401,7 @@ export default function SettingsPage() {
 
           <div
             id="notifications"
-            className="soft-raised mt-6 rounded-3xl p-5 sm:mt-8 sm:p-8"
+            className="ui-card mt-6 rounded-3xl p-5 sm:mt-8 sm:p-8"
           >
             <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
               {isGeorgian ? "შეტყობინებები" : "Notifications"}
@@ -435,7 +435,7 @@ export default function SettingsPage() {
                           {georgianCopy?.trigger ?? placeholder.trigger}
                         </p>
                       </div>
-                      <span className="soft-raised w-fit rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
+                      <span className="ui-card w-fit rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
                         {isGeorgian
                           ? georgianEmailRecipientLabels[placeholder.recipient]
                           : englishEmailRecipientLabels[placeholder.recipient]}

@@ -109,7 +109,7 @@ export function OfferForm({
               {guidance.map((item) => (
                 <span
                   key={item.label}
-                  className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]"
+                  className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]"
                 >
                   {item.label}: {item.value}
                 </span>

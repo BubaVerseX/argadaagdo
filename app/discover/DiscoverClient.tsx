@@ -53,16 +53,16 @@ function DiscoverOfferCard({
   return (
     <Link
       href={`/offers/${offer.id}`}
-      className="soft-raised block rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+      className="ui-card block rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
     >
-      <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-44 overflow-hidden bg-[#f4efe4]">
+      <div className="photo-frame relative isolate h-44 overflow-hidden bg-[#f4efe4]">
         <OfferImage
           src={offer.image_url}
           alt={offer.title}
           sizes="(max-width: 768px) 100vw, 33vw"
           priority={priority}
         />
-        <span className="soft-raised pointer-events-none absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold text-[#2e2a22]">
+        <span className="ui-card pointer-events-none absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold text-[#2e2a22]">
           {language === "ka"
             ? getOfferCategoryLabel(offer.category, language)
             : offer.category || "Other"}
@@ -261,7 +261,7 @@ export default function DiscoverClient() {
                 language={language}
               />
 
-              <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
+              <section className="ui-card rounded-[1.75rem] p-5 sm:p-8">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
@@ -303,7 +303,7 @@ export default function DiscoverClient() {
                     <Link
                       key={business.id}
                       href={`/businesses/${business.id}`}
-                      className="soft-raised rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                      className="ui-card rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                     >
                       <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
                         {business.business_type ||
@@ -315,7 +315,7 @@ export default function DiscoverClient() {
                       <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
                         {business.address || (isGeorgian ? "თბილისი" : "Tbilisi")}
                       </p>
-                      <p className="soft-pressed mt-3 rounded-full px-3 py-1.5 text-sm font-black text-yellow-800">
+                      <p className="ui-well mt-3 rounded-full px-3 py-1.5 text-sm font-black text-yellow-800">
                         {getRatingLabel(ratingSummaries[business.id], language)}
                       </p>
                     </Link>
@@ -323,7 +323,7 @@ export default function DiscoverClient() {
                 </div>
               </section>
 
-              <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
+              <section className="ui-card rounded-[1.75rem] p-5 sm:p-8">
                 <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
                   {isGeorgian ? "მდებარეობა" : "Location"}
                 </p>
@@ -364,7 +364,7 @@ function DiscoverOfferSection({
   prioritizeFirst?: boolean;
 }) {
   return (
-    <section className="soft-raised rounded-[1.75rem] p-5 sm:p-8">
+    <section className="ui-card rounded-[1.75rem] p-5 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">

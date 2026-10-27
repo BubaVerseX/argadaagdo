@@ -49,7 +49,7 @@ export function BusinessHealthScore({
             </p>
           </div>
 
-          <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
+          <span className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
             {completedChecks}/{checks.length}{" "}
             {isGeorgian ? "შესრულებულია" : "complete"}
           </span>
@@ -68,7 +68,7 @@ export function BusinessHealthScore({
               key={check.label}
               className={`rounded-2xl p-4 ${
                 check.complete
-                  ? "soft-raised text-[#2e2a22]"
+                  ? "ui-card text-[#2e2a22]"
                   : "bg-[#f4efe4] text-[#6b6152]"
               }`}
             >
@@ -78,7 +78,7 @@ export function BusinessHealthScore({
                   className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
                     check.complete
                       ? "bg-[#a67c52] text-white"
-                      : "soft-pressed text-[#6b6152]"
+                      : "ui-well text-[#6b6152]"
                   }`}
                 >
                   {check.complete ? (
@@ -120,7 +120,7 @@ export function BusinessHealthScore({
               <div
                 className={`rounded-2xl p-4 transition ${
                   item.complete
-                    ? "soft-raised text-[#2e2a22]"
+                    ? "ui-card text-[#2e2a22]"
                     : "bg-[#f4efe4] text-[#6b6152] hover:bg-white/60"
                 }`}
               >
@@ -130,7 +130,7 @@ export function BusinessHealthScore({
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
                       item.complete
                         ? "bg-[#a67c52] text-white"
-                        : "soft-pressed text-[#6b6152]"
+                        : "ui-well text-[#6b6152]"
                     }`}
                   >
                     {item.complete ? (

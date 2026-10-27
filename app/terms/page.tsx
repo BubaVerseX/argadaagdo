@@ -53,10 +53,10 @@ export default function TermsPage() {
             {sections.map((section, index) => (
               <section
                 key={section.title}
-                className="rounded-[2rem] soft-raised p-5 sm:p-8"
+                className="rounded-[2rem] ui-card p-5 sm:p-8"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                  <div className="soft-pressed flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl font-black text-[#a67c52]">
+                  <div className="ui-well flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl font-black text-[#a67c52]">
                     {index + 1}
                   </div>
                   <div>
@@ -72,7 +72,7 @@ export default function TermsPage() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
+          <div className="mt-6 rounded-[2rem] ui-card p-5 text-center sm:p-8">
             <h2 className="text-2xl font-black text-[#2e2a22]">
               {t("terms.helpTitle")}
             </h2>

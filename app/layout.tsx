@@ -3,6 +3,14 @@ import InstallAppPrompt from "@/components/InstallAppPrompt";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { siteUrl } from "@/lib/site";
+// Self-hosted brand fonts: Noto Sans (Latin) + Noto Sans Georgian, weights
+// 400/500/600 only — headings are 600, body 400.
+import "@fontsource/noto-sans/latin-400.css";
+import "@fontsource/noto-sans/latin-500.css";
+import "@fontsource/noto-sans/latin-600.css";
+import "@fontsource/noto-sans-georgian/georgian-400.css";
+import "@fontsource/noto-sans-georgian/georgian-500.css";
+import "@fontsource/noto-sans-georgian/georgian-600.css";
 import "./globals.css";
 
 const appDescription =
@@ -36,12 +44,11 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "ArGadaagdo",
-    // "default" (not "black-translucent"): our theme is light beige with
-    // dark text, and black-translucent forces white status bar icons —
-    // that would be a real legibility regression on this background, not
-    // just a subtle color mismatch. "default" gives an opaque light bar
-    // with correctly-contrasted black icons.
-    statusBarStyle: "default",
+    // Dark green theme: "black-translucent" draws the page under the status
+    // bar with white icons; globals.css pads the body by the safe-area inset
+    // and paints an opaque strip behind the bar, so nothing scrolls under
+    // the clock.
+    statusBarStyle: "black-translucent",
   },
   formatDetection: {
     telephone: false,
@@ -74,8 +81,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ece4d6",
-  colorScheme: "light",
+  themeColor: "#051f20",
+  colorScheme: "dark",
   viewportFit: "cover",
 };
 

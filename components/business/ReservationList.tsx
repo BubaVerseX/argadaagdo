@@ -96,7 +96,7 @@ export function ReservationList({
           ].map((step) => (
             <span
               key={step}
-              className="soft-raised rounded-full px-4 py-2 text-sm font-black leading-6 text-[#2e2a22]"
+              className="ui-card rounded-full px-4 py-2 text-sm font-black leading-6 text-[#2e2a22]"
             >
               {step}
             </span>
@@ -175,8 +175,8 @@ export function ReservationList({
               }
               className={`min-h-11 rounded-full px-5 py-2.5 font-black transition ${
                 isActive
-                  ? "soft-pressed text-[#a67c52]"
-                  : "soft-raised text-[#6b6152] hover:text-[#a67c52]"
+                  ? "ui-well text-[#a67c52]"
+                  : "ui-card text-[#6b6152] hover:text-[#a67c52]"
               }`}
             >
               {filter.label}
@@ -187,8 +187,8 @@ export function ReservationList({
 
       <div className="mt-6 grid gap-4">
         {filteredOrders.length === 0 && (
-          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
-            <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
+            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
               <ReceiptIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.6} />
             </div>
             <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
@@ -226,7 +226,7 @@ export function ReservationList({
           return (
             <div
               key={order.id}
-              className="soft-raised flex flex-col gap-5 rounded-3xl p-5 lg:flex-row lg:items-center lg:justify-between"
+              className="ui-card flex flex-col gap-5 rounded-3xl p-5 lg:flex-row lg:items-center lg:justify-between"
             >
               <div>
                 <h3 className="text-xl font-black sm:text-2xl">

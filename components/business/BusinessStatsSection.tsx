@@ -38,7 +38,7 @@ export function BusinessStatsSection({
       </div>
 
       {!hasAnalyticsActivity && (
-        <div className="soft-raised mt-6 rounded-3xl p-5 text-center font-bold text-[#2e2a22] sm:p-6">
+        <div className="ui-card mt-6 rounded-3xl p-5 text-center font-bold text-[#2e2a22] sm:p-6">
           {t("businessDashboard.emptyAnalytics")}
         </div>
       )}

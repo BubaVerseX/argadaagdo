@@ -68,7 +68,7 @@ function getFavoriteAvailability(
   if (!offer) {
     return {
       label: t("common.unavailable"),
-      className: "soft-raised text-[#6b6152]",
+      className: "ui-card text-[#6b6152]",
     };
   }
 
@@ -77,7 +77,7 @@ function getFavoriteAvailability(
   if (status === "active") {
     return {
       label: t("common.available"),
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     };
   }
 
@@ -97,7 +97,7 @@ function getFavoriteAvailability(
 
   return {
     label: t("common.unavailable"),
-    className: "soft-raised text-[#6b6152]",
+    className: "ui-card text-[#6b6152]",
   };
 }
 
@@ -336,7 +336,7 @@ export default function FavoritesPage() {
 
         {!loading && favorites.length === 0 && !message && (
           <div className="mt-8 premium-card rounded-[1.75rem] p-10 text-center">
-            <div className="soft-pressed mx-auto flex h-20 w-20 items-center justify-center rounded-full">
+            <div className="ui-well mx-auto flex h-20 w-20 items-center justify-center rounded-full">
               <HeartIcon className="h-9 w-9 text-[#a67c52]" strokeWidth={1.6} />
             </div>
 
@@ -388,11 +388,11 @@ export default function FavoritesPage() {
             return (
               <div
                 key={favorite.id}
-                className="soft-raised rounded-[1.75rem] p-4"
+                className="ui-card rounded-[1.75rem] p-4"
               >
                 <div className="relative">
                   <div
-                    className={`soft-raised blob-mask relative isolate h-52 overflow-hidden bg-[#f4efe4] sm:h-56 ${offer ? "photo-warm-overlay" : ""}`}
+                    className="photo-frame relative isolate h-52 sm:h-56"
                   >
                     {offer ? (
                       <OfferImage
@@ -415,7 +415,7 @@ export default function FavoritesPage() {
                   </div>
 
                   {offer && (
-                    <div className="soft-raised absolute right-2 top-2 rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
+                    <div className="ui-card absolute right-2 top-2 rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
                       {getOfferCategoryLabel(offer.category, language)}
                     </div>
                   )}
@@ -471,7 +471,7 @@ export default function FavoritesPage() {
                             aria-label={`${t("common.openMap")} ${
                               offer.businesses?.name || offer.title
                             }`}
-                            className="soft-raised inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition hover:text-[#a67c52] sm:w-auto"
+                            className="ui-card inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition hover:text-[#a67c52] sm:w-auto"
                           >
                             {t("common.openMap")}
                           </a>
@@ -481,7 +481,7 @@ export default function FavoritesPage() {
                   </div>
 
                   <div className="mt-6 flex flex-col gap-4">
-                    <div className="soft-raised rounded-3xl p-4">
+                    <div className="ui-card rounded-3xl p-4">
                       {offer && (
                         <>
                           <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">

@@ -19,7 +19,7 @@ const toneStyles: Record<
   { wrapper: string; icon: string; role: "status" | "alert"; Icon: ComponentType<IconProps> }
 > = {
   success: {
-    wrapper: "soft-raised text-[#2e2a22]",
+    wrapper: "ui-card text-[#2e2a22]",
     icon: "bg-[#a67c52] text-white",
     role: "status",
     Icon: CheckIcon,

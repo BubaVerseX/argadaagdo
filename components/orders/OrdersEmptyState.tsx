@@ -9,7 +9,7 @@ type OrdersEmptyStateProps = {
 export function OrdersEmptyState({ t }: OrdersEmptyStateProps) {
   return (
     <div className="premium-card mt-8 rounded-[2rem] p-10 text-center">
-      <div className="soft-pressed mx-auto flex h-20 w-20 items-center justify-center rounded-full">
+      <div className="ui-well mx-auto flex h-20 w-20 items-center justify-center rounded-full">
         <ReceiptIcon className="h-9 w-9 text-[#a67c52]" strokeWidth={1.6} />
       </div>
 

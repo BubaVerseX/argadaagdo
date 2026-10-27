@@ -54,7 +54,7 @@ export default function ForBusinessesPage() {
         <div className="premium-container">
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="min-w-0 max-w-2xl">
-              <p className="soft-raised inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
+              <p className="ui-card inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
                 {t("forBusinesses.metaBadge")}
               </p>
 
@@ -111,7 +111,7 @@ export default function ForBusinessesPage() {
 
       <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-12">
         <div className="premium-container">
-          <div className="soft-raised rounded-[1.75rem] p-8 sm:p-10">
+          <div className="ui-card rounded-[1.75rem] p-8 sm:p-10">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#a67c52]">
               {t("forBusinesses.problemBadge")}
             </p>
@@ -138,7 +138,7 @@ export default function ForBusinessesPage() {
             {solutions.map((item) => (
               <div
                 key={item.title}
-                className="soft-raised rounded-[1.75rem] p-7"
+                className="ui-card rounded-[1.75rem] p-7"
               >
                 <h3 className="text-xl font-bold tracking-tight text-[#2e2a22]">
                   {item.title}
@@ -228,7 +228,7 @@ export default function ForBusinessesPage() {
 
       <section className="px-4 py-14 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <div className="soft-raised rounded-[1.75rem] p-10 text-center sm:p-14">
+          <div className="ui-card rounded-[1.75rem] p-10 text-center sm:p-14">
             <h2 className="mx-auto max-w-2xl text-4xl font-extrabold leading-tight tracking-[-0.03em] text-[#2e2a22] sm:text-5xl">
               {t("forBusinesses.ctaTitle")}
             </h2>

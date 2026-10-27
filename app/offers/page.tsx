@@ -469,7 +469,7 @@ export default function OffersPage() {
 
       <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="relative mx-auto max-w-7xl">
-          <div className="soft-raised rounded-[1.75rem] p-5 sm:p-6 md:rounded-[2rem] md:p-10">
+          <div className="ui-card rounded-[1.75rem] p-5 sm:p-6 md:rounded-[2rem] md:p-10">
             <p className="premium-badge px-4 py-2">
               {t("offers.badge")}
             </p>
@@ -602,7 +602,7 @@ export default function OffersPage() {
                 </option>
               </select>
 
-              <label className="soft-pressed flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-[#2e2a22] md:justify-start">
+              <label className="ui-well flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-[#2e2a22] md:justify-start">
                 <input
                   type="checkbox"
                   checked={availableOnly}
@@ -616,7 +616,7 @@ export default function OffersPage() {
               </label>
             </div>
 
-            <div className="soft-pressed mt-4 rounded-3xl p-5 text-sm leading-6 text-[#6b6152]">
+            <div className="ui-well mt-4 rounded-3xl p-5 text-sm leading-6 text-[#6b6152]">
               <span className="font-semibold text-[#2e2a22]">
                 {t("offers.surpriseBagTitle")}
               </span>{" "}
@@ -653,8 +653,8 @@ export default function OffersPage() {
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="soft-raised mt-8 rounded-[1.75rem] px-5 py-10 text-center sm:px-8 sm:py-12">
-              <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+            <div className="ui-card mt-8 rounded-[1.75rem] px-5 py-10 text-center sm:px-8 sm:py-12">
+              <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
                 <MapPinIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
               </div>
               <h3 className="mt-5 text-2xl font-extrabold text-[#2e2a22] sm:text-3xl">
@@ -731,10 +731,10 @@ export default function OffersPage() {
                       return (
                         <div
                           key={offer.id}
-                          className="soft-raised group flex flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1"
+                          className="ui-card group flex flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1"
                         >
                           <div className="relative">
-                            <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
+                            <div className="photo-frame relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
                               <OfferImage
                                 src={offer.image_url}
                                 alt={offer.title}
@@ -750,7 +750,7 @@ export default function OffersPage() {
                               </div>
                             )}
 
-                            <div className="soft-raised pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#2e2a22]">
+                            <div className="ui-card pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#2e2a22]">
                               {getOfferCategoryLabel(offer.category, language)}
                             </div>
                           </div>
@@ -769,7 +769,7 @@ export default function OffersPage() {
                                 </div>
                               </div>
 
-                              <div className="soft-pressed shrink-0 rounded-2xl px-3 py-2 text-center">
+                              <div className="ui-well shrink-0 rounded-2xl px-3 py-2 text-center">
                                 <p className="text-xl font-bold text-[#2e2a22]">
                                   {offer.quantity}
                                 </p>
@@ -809,7 +809,7 @@ export default function OffersPage() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="soft-raised mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                              className="ui-card mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                             >
                               {t("common.openMap")}
                             </a>

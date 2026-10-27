@@ -41,10 +41,10 @@ export function OfferCard({
   const detailsHref = `/offers/${offer.id}`;
 
   return (
-    <article className="soft-raised group flex min-w-0 flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1">
+    <article className="ui-card group flex min-w-0 flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1">
       <div className="relative">
         <Link href={detailsHref} className="block" tabIndex={-1} aria-hidden="true">
-          <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-52 overflow-hidden">
+          <div className="photo-frame relative isolate h-52 overflow-hidden">
             <OfferImage
               src={offer.image_url}
               alt={offer.title}
@@ -67,7 +67,7 @@ export function OfferCard({
               href={cornerAction.href}
               aria-label={cornerAction.label}
               aria-pressed={cornerAction.active}
-              className={`soft-raised absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+              className={`ui-card absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
                 cornerAction.active ? "text-[#a67c52]" : "text-[#6b6152]"
               }`}
             >
@@ -79,7 +79,7 @@ export function OfferCard({
               onClick={cornerAction.onClick}
               aria-label={cornerAction.label}
               aria-pressed={cornerAction.active}
-              className={`soft-raised absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
+              className={`ui-card absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] ${
                 cornerAction.active ? "text-[#a67c52]" : "text-[#6b6152]"
               }`}
             >

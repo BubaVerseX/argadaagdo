@@ -36,7 +36,7 @@ export function TimelineSteps({
           stopped: "stopped",
         };
   const stepStyles: Record<TimelineStepState, string> = {
-    done: "soft-pressed text-[#a67c52]",
+    done: "ui-well text-[#a67c52]",
     current: "bg-yellow-100 text-yellow-950",
     pending: "bg-white/60 text-[#6b6152]",
     stopped: "bg-red-100 text-red-700",

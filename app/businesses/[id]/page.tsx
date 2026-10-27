@@ -166,7 +166,7 @@ export default function BusinessProfilePage() {
             <>
               <div className="premium-card mt-6 overflow-hidden rounded-[2rem]">
                 <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
-                  <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96 lg:h-full">
+                  <div className="photo-frame relative isolate h-72 overflow-hidden bg-[#f4efe4] sm:h-96 lg:h-full">
                     {heroOffer ? (
                       <OfferImage
                         src={heroOffer.image_url}
@@ -176,7 +176,7 @@ export default function BusinessProfilePage() {
                       />
                     ) : (
                       <div className="flex h-full min-h-72 items-center justify-center">
-                        <div className="soft-raised flex h-28 w-28 items-center justify-center rounded-[2rem] bg-[#a67c52] text-4xl font-black text-white">
+                        <div className="ui-card flex h-28 w-28 items-center justify-center rounded-[2rem] bg-[#a67c52] text-4xl font-black text-white">
                           {getBusinessInitials(business.name)}
                         </div>
                       </div>
@@ -243,7 +243,7 @@ export default function BusinessProfilePage() {
                     </div>
 
                     <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {t("common.rating")}
                         </p>
@@ -256,7 +256,7 @@ export default function BusinessProfilePage() {
                             : t("common.noRatings")}
                         </p>
                       </div>
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {t("common.reviews")}
                         </p>
@@ -267,7 +267,7 @@ export default function BusinessProfilePage() {
                           {t("businessProfile.customerReviews")}
                         </p>
                       </div>
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {isGeorgian
                             ? "დასრულებული წაღებები"
@@ -282,7 +282,7 @@ export default function BusinessProfilePage() {
                             : "Public signal from completed rated pickups"}
                         </p>
                       </div>
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {t("businessProfile.activeOffers")}
                         </p>
@@ -293,7 +293,7 @@ export default function BusinessProfilePage() {
                           {t("businessProfile.activeOffersHint")}
                         </p>
                       </div>
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {isGeorgian ? "შემოგვიერთდა" : "Joined"}
                         </p>
@@ -306,7 +306,7 @@ export default function BusinessProfilePage() {
                             : "Approved local marketplace member"}
                         </p>
                       </div>
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {isGeorgian ? "პასუხის მაჩვენებელი" : "Response rate"}
                         </p>
@@ -319,7 +319,7 @@ export default function BusinessProfilePage() {
                             : "Support requests are handled by ArGadaagdo"}
                         </p>
                       </div>
-                      <div className="soft-raised rounded-3xl p-5">
+                      <div className="ui-card rounded-3xl p-5">
                         <p className="text-sm font-black text-[#6b6152]">
                           {isGeorgian ? "სამუშაო საათები" : "Opening hours"}
                         </p>
@@ -388,15 +388,15 @@ export default function BusinessProfilePage() {
                       <Link
                         key={offer.id}
                         href={`/offers/${offer.id}`}
-                        className="soft-raised block rounded-[1.75rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                        className="ui-card block rounded-[1.75rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
                       >
-                        <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-48 overflow-hidden bg-[#f4efe4]">
+                        <div className="photo-frame relative isolate h-48 overflow-hidden bg-[#f4efe4]">
                           <OfferImage
                             src={offer.image_url}
                             alt={offer.title}
                             sizes="(max-width: 768px) 100vw, 33vw"
                           />
-                          <span className="soft-raised absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-black text-[#a67c52]">
+                          <span className="ui-card absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-black text-[#a67c52]">
                             {getOfferCategoryLabel(offer.category, language)}
                           </span>
                           {discount !== null && (
@@ -447,7 +447,7 @@ export default function BusinessProfilePage() {
                 <div className="mt-5 grid gap-4">
                   {reviews.length === 0 && (
                     <div className="rounded-3xl bg-[#f4efe4] p-6 text-center">
-                      <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+                      <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
                         <StarIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.6} />
                       </div>
                       <p className="mt-4 text-lg font-black text-[#2e2a22]">

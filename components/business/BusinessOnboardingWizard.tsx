@@ -250,7 +250,7 @@ export function BusinessOnboardingWizard({
           </p>
         </div>
 
-        <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
+        <span className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#a67c52]">
           {progress}% {isGeorgian ? "დასრულებულია" : "complete"}
         </span>
       </div>
@@ -270,8 +270,8 @@ export function BusinessOnboardingWizard({
             onClick={() => goToStep(index + 1)}
             className={`min-h-11 rounded-2xl px-3 py-2 text-left text-xs font-black transition ${
               step === index + 1
-                ? "soft-pressed text-[#a67c52]"
-                : "soft-raised text-[#6b6152]"
+                ? "ui-well text-[#a67c52]"
+                : "ui-card text-[#6b6152]"
             }`}
           >
             {index + 1}. {wizardStep.title}
@@ -279,7 +279,7 @@ export function BusinessOnboardingWizard({
         ))}
       </div>
 
-      <div className="soft-raised mt-6 rounded-3xl p-4 sm:p-5">
+      <div className="ui-card mt-6 rounded-3xl p-4 sm:p-5">
         {step === 1 && (
           <div className="grid gap-4">
             <label className="grid gap-2 text-sm font-black text-[#6b6152]">
@@ -455,7 +455,7 @@ export function BusinessOnboardingWizard({
       </div>
 
       {draftMessage && (
-        <p className="soft-raised mt-4 rounded-2xl px-4 py-3 text-sm font-black text-[#a67c52]">
+        <p className="ui-card mt-4 rounded-2xl px-4 py-3 text-sm font-black text-[#a67c52]">
           {draftMessage}
         </p>
       )}
@@ -474,7 +474,7 @@ export function BusinessOnboardingWizard({
             type="button"
             onClick={() => goToStep(step - 1)}
             disabled={step === 1}
-            className="soft-raised min-h-12 rounded-full px-6 py-3 font-black text-[#6b6152] transition disabled:cursor-not-allowed disabled:opacity-50"
+            className="ui-card min-h-12 rounded-full px-6 py-3 font-black text-[#6b6152] transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isGeorgian ? "უკან" : "Back"}
           </button>

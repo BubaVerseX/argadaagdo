@@ -39,7 +39,7 @@ export function RouteErrorState({
       <Navbar />
 
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-8 sm:px-6">
-        <div className="soft-raised w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10">
+        <div className="ui-card w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-700 sm:h-20 sm:w-20">
             <AlertTriangleIcon className="h-7 w-7 sm:h-9 sm:w-9" strokeWidth={1.8} />
           </div>

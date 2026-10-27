@@ -164,7 +164,7 @@ export default function SupportContent() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-            <section className="rounded-[2rem] soft-raised p-5 sm:p-8">
+            <section className="rounded-[2rem] ui-card p-5 sm:p-8">
               <h2 className="text-2xl font-black sm:text-3xl">
                 {isGeorgian
                   ? "ხშირად დასმული კითხვები"

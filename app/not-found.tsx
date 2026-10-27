@@ -13,7 +13,7 @@ export default function NotFound() {
 
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-8 sm:px-6">
         <div className="premium-card w-full max-w-xl rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10">
-          <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-black text-[#a67c52] sm:h-20 sm:w-20">
+          <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full text-2xl font-black text-[#a67c52] sm:h-20 sm:w-20">
             404
           </div>
 

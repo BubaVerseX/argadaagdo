@@ -57,7 +57,7 @@ export function BusinessOnboardingSections({
               key={item.label}
               className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
                 item.completed
-                  ? "soft-raised text-[#2e2a22]"
+                  ? "ui-card text-[#2e2a22]"
                   : "bg-[#f4efe4] text-[#6b6152]"
               }`}
             >
@@ -66,7 +66,7 @@ export function BusinessOnboardingSections({
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
                   item.completed
                     ? "bg-[#a67c52] text-white"
-                    : "soft-pressed text-[#6b6152]"
+                    : "ui-well text-[#6b6152]"
                 }`}
               >
                 {item.completed ? <CheckIcon className="h-4 w-4" strokeWidth={2.2} /> : item.step}
@@ -84,7 +84,7 @@ export function BusinessOnboardingSections({
           ].map((tip) => (
             <span
               key={tip}
-              className="soft-raised flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-black text-[#a67c52]"
+              className="ui-card flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-black text-[#a67c52]"
             >
               <CheckIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
               {tip}

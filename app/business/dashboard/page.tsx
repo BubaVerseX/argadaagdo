@@ -1706,7 +1706,7 @@ export default function BusinessDashboardPage() {
     {
       label: t("orders.reserved"),
       value: reservedOrders.length,
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       label: t("orders.collected"),
@@ -1736,7 +1736,7 @@ export default function BusinessDashboardPage() {
                     ? "reservation needs"
                     : "reservations need"
                 } pickup attention.`,
-            className: "soft-raised text-[#2e2a22]",
+            className: "ui-card text-[#2e2a22]",
           },
         ]
       : [
@@ -1772,7 +1772,7 @@ export default function BusinessDashboardPage() {
               : `${reservationsWithStartedPickupWindow.length} reservation ${
                   reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
                 } inside the pickup window now.`,
-            className: "soft-raised text-[#2e2a22]",
+            className: "ui-card text-[#2e2a22]",
           },
         ]
       : []),

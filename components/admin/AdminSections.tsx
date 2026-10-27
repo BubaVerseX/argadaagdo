@@ -171,7 +171,7 @@ export function AdminRevenueInsights({
           </p>
         </div>
 
-        <div className="soft-raised rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
+        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
           <p className="font-black">Future commission model</p>
           <p className="mt-1">
             Current architecture prepares 10% platform revenue and 90% business
@@ -310,7 +310,7 @@ export function AdminHealthSections({
   applicationHealth: ApplicationHealthItem[];
 }) {
   const healthToneStyles = {
-    ok: "soft-raised text-[#2e2a22]",
+    ok: "ui-card text-[#2e2a22]",
     warning: "bg-yellow-50 text-yellow-950",
     error: "bg-red-50 text-red-800",
   };
@@ -492,7 +492,7 @@ export function AdminPaymentsOverview({
             {paymentStatuses.map((status) => (
               <span
                 key={status}
-                className="soft-raised rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]"
+                className="ui-card rounded-full px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]"
               >
                 {status}
               </span>
@@ -500,7 +500,7 @@ export function AdminPaymentsOverview({
           </div>
         </div>
 
-        <div className="soft-raised rounded-3xl p-5">
+        <div className="ui-card rounded-3xl p-5">
           <h3 className="text-xl font-black text-[#2e2a22]">
             Provider options
           </h3>
@@ -521,7 +521,7 @@ export function AdminPaymentsOverview({
         {adminPaymentPanelSections.map((section) => (
           <div
             key={section.title}
-            className="soft-raised rounded-2xl p-4"
+            className="ui-card rounded-2xl p-4"
           >
             <p className="font-black text-[#2e2a22]">{section.title}</p>
             <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
@@ -561,7 +561,7 @@ export function AdminAccountView({
 
       <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-4" />
 
-      <div className="soft-raised mt-6 overflow-hidden rounded-3xl">
+      <div className="ui-card mt-6 overflow-hidden rounded-3xl">
         <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-[#f4efe4] px-4 py-3 text-xs font-black uppercase tracking-wide text-[#6b6152]">
           <span>Email</span>
           <span>Role</span>
@@ -717,8 +717,8 @@ export function PendingBusinesses({
 
       <div className="mt-6 grid gap-4">
         {businesses.length === 0 && (
-          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
-            <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
+            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
               <CheckIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={2} />
             </div>
             <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
@@ -831,7 +831,7 @@ export function ApprovedBusinesses({
 
       <div className="mt-6 grid gap-4">
         {businesses.length === 0 && (
-          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
             <h3 className="text-2xl font-black text-[#2e2a22]">
               No approved businesses yet
             </h3>
@@ -845,7 +845,7 @@ export function ApprovedBusinesses({
         {businesses.map((business) => (
           <div
             key={business.id}
-            className="soft-raised flex flex-col gap-4 rounded-2xl p-5 md:flex-row md:items-center md:justify-between"
+            className="ui-card flex flex-col gap-4 rounded-2xl p-5 md:flex-row md:items-center md:justify-between"
           >
             <div>
               <h3 className="text-xl font-black">{business.name}</h3>

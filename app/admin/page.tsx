@@ -510,13 +510,13 @@ export default function AdminPage() {
       title: "Total Businesses",
       value: businesses.length,
       helper: "All submitted business profiles",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Approved Businesses",
       value: approvedBusinesses.length,
       helper: "Businesses allowed to publish offers",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Pending Businesses",
@@ -528,13 +528,13 @@ export default function AdminPage() {
       title: "Active Offers",
       value: activeOffers.length,
       helper: "Offers currently visible to customers",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Total Orders",
       value: orders.length,
       helper: "All reservations and pickup records",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Total Ratings",
@@ -546,19 +546,19 @@ export default function AdminPage() {
       title: "Customers",
       value: customerProfiles.length,
       helper: "Customer accounts in profiles",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Business Accounts",
       value: businessProfiles.length,
       helper: "Users with business account role",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Admins",
       value: adminProfiles.length,
       helper: "Admin accounts with approval access",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
   ];
   const accountOverview = [
@@ -566,13 +566,13 @@ export default function AdminPage() {
       title: "Customers",
       value: customerProfiles.length,
       helper: "Can browse, reserve, favorite and rate completed pickups",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Businesses",
       value: businessProfiles.length,
       helper: "Can register businesses and manage approved business offers",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Admins",
@@ -661,7 +661,7 @@ export default function AdminPage() {
       title: "Approved businesses",
       value: approvedBusinesses.length,
       helper: "Businesses allowed to publish offers",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Inactive offers",
@@ -887,7 +887,7 @@ export default function AdminPage() {
       title: "Paid reservations",
       value: paymentSummary.activePaidCount,
       helper: "Current reserved/completed orders with recorded amounts",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Refunded/cancelled",
@@ -901,19 +901,19 @@ export default function AdminPage() {
       title: "Platform revenue",
       value: formatMoney(paymentSummary.platformRevenue),
       helper: "Estimated 10% marketplace fee",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Business payout",
       value: formatMoney(paymentSummary.businessPayout),
       helper: "Estimated 90% business revenue",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Pending payouts",
       value: formatMoney(paymentSummary.pendingPayoutEstimate),
       helper: "Manual payout estimate from completed pickups",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Failed payments",
@@ -972,7 +972,7 @@ export default function AdminPage() {
       title: "Reservation lookup",
       value: filteredAdminOrders.length,
       helper: "Use search to find reservation/order records by id or status",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Customer lookup",
@@ -980,7 +980,7 @@ export default function AdminPage() {
         (profile) => profile.role === "customer"
       ).length,
       helper: "Customer accounts matching the current admin search",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Business lookup",
@@ -992,7 +992,7 @@ export default function AdminPage() {
       title: "Order lookup",
       value: filteredAdminOrders.length,
       helper: "Orders matching the selected status and search term",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
   ];
   const marketplaceIntelligenceMetrics = [
@@ -1004,7 +1004,7 @@ export default function AdminPage() {
       helper: mostActiveBusiness
         ? `${mostActiveBusiness.reservations} total reservations`
         : "Reservations will identify the strongest active partner.",
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-[#a67c52]",
     },
     {
       title: "Least active business",
@@ -1020,7 +1020,7 @@ export default function AdminPage() {
       title: "Offers created today",
       value: offersCreatedToday.length,
       helper: "New offers published in the current Tbilisi day",
-      className: "soft-raised text-[#2e2a22]",
+      className: "ui-card text-[#2e2a22]",
     },
     {
       title: "Offers expiring",
@@ -1221,25 +1221,25 @@ export default function AdminPage() {
         </FilterBar>
 
         <div className="mt-5 grid gap-3 md:grid-cols-4">
-          <div className="soft-raised rounded-2xl p-4">
+          <div className="ui-card rounded-2xl p-4">
             <p className="text-sm font-black text-[#6b6152]">Businesses found</p>
             <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredPendingBusinesses.length + filteredApprovedBusinesses.length}
             </p>
           </div>
-          <div className="soft-raised rounded-2xl p-4">
+          <div className="ui-card rounded-2xl p-4">
             <p className="text-sm font-black text-[#6b6152]">Offers found</p>
             <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredAdminOffers.length}
             </p>
           </div>
-          <div className="soft-raised rounded-2xl p-4">
+          <div className="ui-card rounded-2xl p-4">
             <p className="text-sm font-black text-[#6b6152]">Orders found</p>
             <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredAdminOrders.length}
             </p>
           </div>
-          <div className="soft-raised rounded-2xl p-4">
+          <div className="ui-card rounded-2xl p-4">
             <p className="text-sm font-black text-[#6b6152]">Accounts found</p>
             <p className="mt-2 text-3xl font-black text-[#2e2a22]">
               {filteredAdminProfiles.length}

@@ -12,10 +12,10 @@ type KpiCardGridProps = {
 };
 
 const toneClasses: Record<KpiTone, string> = {
-  green: "soft-raised text-[#2e2a22]",
+  green: "ui-card text-[#2e2a22]",
   yellow: "bg-yellow-50 text-yellow-950",
   red: "bg-red-50 text-red-950",
-  white: "soft-raised text-[#2e2a22]",
+  white: "ui-card text-[#2e2a22]",
 };
 
 export function KpiCardGrid({ cards }: KpiCardGridProps) {

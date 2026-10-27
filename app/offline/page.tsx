@@ -9,8 +9,8 @@ export default function OfflinePage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#ece4d6] px-4 text-[#2e2a22]">
-      <div className="soft-raised w-full max-w-md rounded-[1.75rem] p-8 text-center sm:p-10">
-        <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+      <div className="ui-card w-full max-w-md rounded-[1.75rem] p-8 text-center sm:p-10">
+        <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
           <WifiOffIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
         </div>
 

@@ -90,7 +90,7 @@ export function PickupVerificationModal({
                   ? "წაღების შემოწმების დახურვა"
                   : "Close pickup verification"
               }
-              className="soft-raised flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2e2a22] transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="ui-card flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2e2a22] transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               <XIcon className="h-4 w-4" strokeWidth={1.8} />
             </button>

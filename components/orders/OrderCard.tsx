@@ -95,12 +95,12 @@ export function OrderCard({
               {getCustomerStatusLabel(displayStatus, language)}
             </span>
 
-            <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#6b6152]">
+            <span className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#6b6152]">
               {order.offers?.businesses?.business_type || t("common.food")}
             </span>
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
-              <span className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
+              <span className="ui-card rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]">
                 {isGeorgian ? "შესაფასებლად მზადაა" : "Ready to rate"}
               </span>
             )}
@@ -114,7 +114,7 @@ export function OrderCard({
             {order.offers?.businesses?.name || t("common.businessUnavailable")}
           </p>
 
-          <div className="soft-raised mt-4 rounded-3xl p-4">
+          <div className="ui-card mt-4 rounded-3xl p-4">
             <p className="mb-3 text-sm font-black uppercase tracking-widest text-[#6b6152]">
               {isGeorgian ? "შეკვეთის ეტაპები" : "Order timeline"}
             </p>
@@ -125,7 +125,7 @@ export function OrderCard({
           </div>
 
           {pickupReminderMessage && (
-            <div className="soft-raised mt-4 rounded-3xl p-4">
+            <div className="ui-card mt-4 rounded-3xl p-4">
               <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
                 {t("orders.pickupReminder")}
               </p>
@@ -189,7 +189,7 @@ export function OrderCard({
                       order.offers?.title ||
                       (isGeorgian ? "წაღების ადგილი" : "pickup location")
                     }`}
-                    className="soft-raised mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition sm:w-auto"
+                    className="ui-card mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-black text-[#2e2a22] transition sm:w-auto"
                   >
                     {t("common.openMap")}
                   </a>
@@ -240,7 +240,7 @@ export function OrderCard({
 
           {isConfirmed ? (
             <>
-              <div className="soft-raised mt-3 rounded-2xl px-4 py-5 sm:rounded-3xl sm:px-6 sm:py-6">
+              <div className="ui-card mt-3 rounded-2xl px-4 py-5 sm:rounded-3xl sm:px-6 sm:py-6">
                 <p className="text-sm font-black text-[#6b6152]">
                   {t("orders.pickupCode")}:
                 </p>
@@ -253,13 +253,13 @@ export function OrderCard({
                 {t("orders.showCode")}
               </p>
 
-              <div className="soft-raised mt-4 rounded-2xl p-4 text-left">
+              <div className="ui-card mt-4 rounded-2xl p-4 text-left">
                 <p className="text-sm font-black leading-6 text-[#2e2a22]">
                   {t("orders.activePickupReminder")}
                 </p>
               </div>
 
-              <div className="soft-raised mt-4 rounded-2xl p-4 text-left">
+              <div className="ui-card mt-4 rounded-2xl p-4 text-left">
                 <p className="text-sm font-black text-[#2e2a22]">
                   {isCancellationAvailable
                     ? t("orders.cancelAvailable")
@@ -271,7 +271,7 @@ export function OrderCard({
               </div>
             </>
           ) : (
-            <div className="soft-raised mt-3 rounded-2xl px-5 py-5 font-bold text-[#6b6152]">
+            <div className="ui-card mt-3 rounded-2xl px-5 py-5 font-bold text-[#6b6152]">
               {inactiveOrderMessage}
             </div>
           )}
@@ -291,7 +291,7 @@ export function OrderCard({
           )}
 
           {isCollectedOrderStatus(displayStatus) && (
-            <div className="soft-raised mt-5 rounded-2xl p-4 text-left">
+            <div className="ui-card mt-5 rounded-2xl p-4 text-left">
               {order.rated_at ? (
                 <p className="text-center font-black text-[#a67c52]">
                   {t("orders.reviewThanks")}
@@ -319,8 +319,8 @@ export function OrderCard({
                         disabled={ratingOrderId !== null}
                     className={`min-h-10 rounded-full font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           selectedRating === rating
-                            ? "soft-pressed text-[#a67c52]"
-                            : "soft-raised text-[#6b6152]"
+                            ? "ui-well text-[#a67c52]"
+                            : "ui-card text-[#6b6152]"
                         }`}
                       >
                         {rating}

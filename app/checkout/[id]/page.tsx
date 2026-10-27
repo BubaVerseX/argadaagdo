@@ -362,7 +362,7 @@ export default function CheckoutPage() {
                 className="premium-card rounded-2xl p-4"
               >
                 <div className="flex items-center gap-3">
-                  <span className="soft-pressed flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black text-[#a67c52]">
+                  <span className="ui-well flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black text-[#a67c52]">
                     {item.number}
                   </span>
                   <h2 className="font-black text-[#2e2a22]">{item.title}</h2>
@@ -396,7 +396,7 @@ export default function CheckoutPage() {
           {!loading && offer && (
             <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
               <div className="premium-card rounded-3xl p-3 sm:rounded-[2rem]">
-                <div className="photo-warm-overlay blob-mask relative isolate h-64 overflow-hidden bg-[#f4efe4] sm:h-80">
+                <div className="photo-frame relative isolate h-64 overflow-hidden bg-[#f4efe4] sm:h-80">
                   <OfferImage
                     src={offer.image_url}
                     alt={offer.title}
@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                       </p>
                     </div>
 
-                    <div className="soft-pressed rounded-2xl px-5 py-4 text-center">
+                    <div className="ui-well rounded-2xl px-5 py-4 text-center">
                       <p className="text-xs font-black text-[#6b6152]">
                         {t("offers.boxesLeft")}
                       </p>
@@ -502,7 +502,7 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
-                  <div className="soft-raised rounded-2xl p-4">
+                  <div className="ui-card rounded-2xl p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
                       {t("checkout.cancellationPolicy")}
                     </p>
@@ -511,7 +511,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  <div className="soft-raised rounded-2xl p-4">
+                  <div className="ui-card rounded-2xl p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
                       {t("checkout.trustTitle")}
                     </p>
@@ -548,14 +548,14 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  <div className="soft-raised rounded-2xl p-4">
+                  <div className="ui-card rounded-2xl p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
                       {t("checkout.paymentPreparationTitle")}
                     </p>
                     <p className="mt-2 text-sm font-bold leading-6 text-[#6b6152]">
                       {t("checkout.paymentPreparationText")}
                     </p>
-                    <div className="soft-pressed mt-4 rounded-2xl px-3 py-2 text-sm font-black text-[#2e2a22]">
+                    <div className="ui-well mt-4 rounded-2xl px-3 py-2 text-sm font-black text-[#2e2a22]">
                       TBC Bank
                     </div>
                   </div>
@@ -569,7 +569,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  <div className="soft-raised rounded-2xl p-4">
+                  <div className="ui-card rounded-2xl p-4">
                     <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
                       {t("checkout.receiptTitle")}
                     </p>
@@ -593,7 +593,7 @@ export default function CheckoutPage() {
                     </Notice>
                   )}
 
-                  <label className="soft-raised flex items-start gap-3 rounded-2xl p-4 font-bold text-[#2e2a22]">
+                  <label className="ui-card flex items-start gap-3 rounded-2xl p-4 font-bold text-[#2e2a22]">
                     <input
                       type="checkbox"
                       checked={rulesAccepted}

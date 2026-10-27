@@ -30,7 +30,7 @@ export const metricToneStyles: Record<
     value: "text-[#2e2a22]",
   },
   green: {
-    card: "soft-raised text-[#2e2a22]",
+    card: "ui-card text-[#2e2a22]",
     label: "text-[#a67c52]",
     value: "text-[#2e2a22]",
   },

@@ -49,7 +49,7 @@ export default function Footer() {
 
   return (
     <footer className="mt-20 px-4 pb-8 sm:px-6 md:px-12">
-      <div className="soft-raised mx-auto grid max-w-7xl gap-8 rounded-[1.75rem] px-6 py-8 sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
+      <div className="ui-card mx-auto grid max-w-7xl gap-8 rounded-[1.75rem] px-6 py-8 sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
         <div>
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#a67c52] text-lg font-bold text-white">
@@ -86,7 +86,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={social.name}
                 title={social.name}
-                className="soft-raised flex h-11 w-11 items-center justify-center rounded-full text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                className="ui-card flex h-11 w-11 items-center justify-center rounded-full text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
               >
                 {social.icon}
               </a>

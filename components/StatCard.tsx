@@ -1,8 +1,8 @@
 type Tone = "neutral" | "green" | "yellow" | "red";
 
 const tones: Record<Tone, string> = {
-  neutral: "soft-raised text-[#2e2a22]",
-  green: "soft-raised text-[#2e2a22]",
+  neutral: "ui-card text-[#2e2a22]",
+  green: "ui-card text-[#2e2a22]",
   yellow: "bg-yellow-50 text-yellow-950",
   red: "bg-red-50 text-red-900",
 };

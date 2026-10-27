@@ -233,7 +233,7 @@ export function BusinessRevenueInsights({
           </p>
         </div>
 
-        <div className="soft-raised rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
+        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
           <p className="font-black">
             {isGeorgian ? "პილოტის საკომისიოს მოდელი" : "Pilot commission model"}
           </p>
@@ -328,7 +328,7 @@ export function BusinessRevenueInsights({
         </div>
       </div>
 
-      <div className="soft-raised mt-6 rounded-3xl p-5">
+      <div className="ui-card mt-6 rounded-3xl p-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h3 className="text-xl font-black text-[#2e2a22]">

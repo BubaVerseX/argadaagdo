@@ -1,36 +1,116 @@
 @import "tailwindcss";
 
+/* ArGadaagdo green theme — dark only. Every colour in the app comes from
+   these tokens (used as Tailwind utilities via @theme below, e.g.
+   `bg-card`, `text-body`, `border-line`). Never hard-code a hex in a
+   component; add a token here instead. */
 :root {
-  --background: #ece4d6;
-  --foreground: #2e2a22;
-  --surface: #ece4d6;
-  --surface-alt: #f4efe4;
-  --surface-muted: #f4efe4;
-  --text-secondary: #6b6152;
-  --text-tertiary: #8a8072;
-  --accent: #a67c52;
-  --accent-soft: rgba(166, 124, 82, 0.14);
-  --dark: #2e2a22;
-  --dark-strong: #1f1c16;
-  --shadow-dark: #d1c6b0;
-  --shadow-light: #ffffff;
-  --shadow-soft: 0 3px 16px rgba(90, 70, 45, 0.1);
-  --shadow-hero: 0 30px 80px rgba(90, 70, 45, 0.22);
+  /* Surfaces */
+  --page: #07241f;
+  --page-deep: #051f20;
+  --card: #1c4a40; /* card gradient start */
+  --card-2: #123630; /* card gradient end */
+  --well: #133832; /* inputs, chips, inset areas */
+  --line: #2e5a4c;
+  --line-strong: #3b7560;
+
+  /* Text */
+  --cream: #f4efe4; /* headings, primary text */
+  --body: #c3ddcb; /* body / secondary */
+  --body-2: #b3d1bc; /* small labels on dark surfaces */
+  --body-light: #d2e8d8; /* body text on the brighter hero gradient */
+  --muted: #9dbfa8; /* placeholder, tertiary (≥4.5:1 on every card corner) */
+
+  /* Accents */
+  --mint: #daf1de; /* primary buttons, prices, active tab, links */
+  --mint-strong: #b9dec4;
+  --sage: #8eb69b; /* icons, decorative labels on dark surfaces */
+  --moss: #235347; /* pills (pickup time) */
+  --moss-light: #2e6b55; /* hero gradient start */
+  --ink: #051f20; /* text on mint / amber */
+  --amber: #e6b566; /* discount badges ONLY */
+  --amber-ink: #2b1d05;
+
+  /* Status */
+  --warning: #f3d98c;
+  --warning-soft: rgba(243, 217, 140, 0.12);
+  --warning-line: rgba(243, 217, 140, 0.32);
+  --danger: #f4a9a9;
+  --danger-soft: rgba(244, 120, 120, 0.14);
+  --danger-line: rgba(244, 120, 120, 0.38);
+  --danger-solid: #b83232;
+
+  /* Effects */
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --glow-cta: 0 10px 30px rgba(142, 182, 155, 0.25);
+  --radius-card: 22px;
+
+  /* Kept for the few components that still reference them by name. */
+  --background: var(--page);
+  --foreground: var(--cream);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-page: var(--page);
+  --color-page-deep: var(--page-deep);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-well: var(--well);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-cream: var(--cream);
+  --color-body: var(--body);
+  --color-body-2: var(--body-2);
+  --color-body-light: var(--body-light);
+  --color-muted: var(--muted);
+  --color-mint: var(--mint);
+  --color-mint-strong: var(--mint-strong);
+  --color-sage: var(--sage);
+  --color-moss: var(--moss);
+  --color-moss-light: var(--moss-light);
+  --color-ink: var(--ink);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-line: var(--warning-line);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
+  --color-danger-solid: var(--danger-solid);
+  --color-background: var(--page);
+  --color-foreground: var(--cream);
+
+  --font-sans:
+    "Noto Sans", "Noto Sans Georgian", system-ui, -apple-system, "Segoe UI",
+    sans-serif;
   --font-mono: ui-monospace, monospace;
 }
 
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--page);
+  color: var(--cream);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
 }
 
 /* Only applies once installed/added to the home screen — a regular browser
@@ -64,13 +144,9 @@ body::before {
   position: fixed;
   inset: 0 0 auto 0;
   height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
-  background: var(--background);
+  background: var(--page);
   z-index: 60;
   pointer-events: none;
-}
-
-html {
-  scroll-behavior: smooth;
 }
 
 button,
@@ -79,7 +155,7 @@ input,
 select,
 textarea {
   transition-property: color, background-color, border-color, box-shadow,
-    transform;
+    transform, opacity;
   transition-duration: 150ms;
 }
 
@@ -88,22 +164,12 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #a67c52;
+  outline: 2px solid var(--mint);
   outline-offset: 2px;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
-}
-
-.premium-button:active {
-  box-shadow: inset 4px 4px 9px #d1c6b0, inset -4px -4px 9px #ffffff;
-  transform: scale(0.98);
-}
-
-.premium-button-secondary:active {
-  background: rgba(46, 42, 34, 0.06);
-  transform: scale(0.98);
 }
 
 input,
@@ -112,15 +178,20 @@ textarea {
   font-size: 16px;
 }
 
+::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
 ::selection {
-  background: rgba(166, 124, 82, 0.22);
+  background: rgba(218, 241, 222, 0.28);
 }
 
 .app-shell {
   min-height: 100vh;
-  background: var(--background);
-  color: var(--foreground);
-  /* Clears the fixed floating bottom tab bar (mobile only — the tab bar is
+  background: var(--page);
+  color: var(--cream);
+  /* Clears the fixed bottom tab bar (mobile only — the tab bar is
      lg:hidden, so no reservation is needed at the lg breakpoint). */
   padding-bottom: calc(6rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
@@ -136,74 +207,99 @@ textarea {
   margin-inline: auto;
 }
 
-/* Core neumorphic shadow system — the signature visual language of this
-   design. Warm brown-tinted shadow tones only, never plain gray. */
-.soft-raised {
-  background: var(--background);
-  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
-}
-
-.soft-pressed {
-  background: var(--background);
-  box-shadow: inset 5px 5px 10px var(--shadow-dark),
-    inset -5px -5px 10px var(--shadow-light);
-}
-
-/* Organic "blob" photo mask — vary the percentages per instance (see
-   .blob-mask-2 / .blob-mask-3) for organic variety, always paired with
-   .soft-raised and overflow:hidden on the same element. */
-.blob-mask {
-  border-radius: 62% 38% 55% 45% / 45% 55% 45% 55%;
-}
-
-.blob-mask-2 {
-  border-radius: 42% 58% 65% 35% / 55% 45% 55% 45%;
-}
-
-.blob-mask-3 {
-  border-radius: 55% 45% 40% 60% / 40% 40% 60% 60%;
+/* ---------------------------------------------------------------------
+   Surfaces. Flat cards: gradient fill, 1px border, one soft shadow.
+   --------------------------------------------------------------------- */
+.ui-card,
+.premium-surface,
+.premium-card {
+  background: linear-gradient(160deg, var(--card), var(--card-2));
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
 }
 
 .premium-surface {
-  border-radius: 2rem;
-  background: var(--surface);
-  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+  border-radius: 24px;
 }
 
 .premium-card {
-  border-radius: 1.75rem;
-  background: var(--surface);
-  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+  border-radius: var(--radius-card);
+}
+
+/* Inset areas: inputs, chips, active/pressed states. */
+.ui-well,
+.premium-muted-card {
+  background: var(--well);
+  border: 1px solid var(--line);
 }
 
 .premium-muted-card {
-  border-radius: 1.5rem;
-  background: var(--surface-alt);
+  border-radius: 20px;
 }
 
+/* Moss hero block (homepage / for-businesses / dashboard header). */
+.hero-surface {
+  background: radial-gradient(120% 100% at 0% 0%, var(--moss-light), var(--well) 65%);
+  border: 1px solid var(--line-strong);
+  color: var(--cream);
+}
+
+/* Photo container (offer images). Replaces the old blob mask. */
+.photo-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #3c7a62, var(--card));
+}
+
+.photo-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5, 31, 32, 0) 55%, rgba(5, 31, 32, 0.45));
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------- */
 .premium-button {
   display: inline-flex;
   min-height: 3rem;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
-  background: var(--background);
-  color: var(--foreground);
-  font-weight: 700;
-  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+  border-radius: 14px;
+  background: var(--mint);
+  color: var(--ink);
+  font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .premium-button:hover {
-  transform: translateY(-1px);
+  background: var(--mint-strong);
+}
+
+.premium-button:active {
+  transform: scale(0.98);
 }
 
 .premium-button:disabled,
 .premium-button[aria-disabled="true"] {
-  background: var(--background);
-  color: var(--text-tertiary);
-  box-shadow: none;
+  background: var(--well);
+  color: var(--muted);
+  border-color: var(--line);
   transform: none;
   cursor: not-allowed;
+}
+
+/* Subtle glow — only behind the page's main call to action. */
+.cta-glow {
+  background: linear-gradient(90deg, var(--mint), var(--mint-strong));
+  box-shadow: var(--glow-cta);
+}
+
+.cta-glow:hover {
+  background: linear-gradient(90deg, var(--mint-strong), var(--mint));
 }
 
 .premium-button-secondary {
@@ -211,97 +307,124 @@ textarea {
   min-height: 3rem;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
+  border-radius: 14px;
   background: transparent;
-  color: var(--text-secondary);
-  font-weight: 700;
+  border: 1px solid var(--line-strong);
+  color: var(--cream);
+  font-weight: 600;
 }
 
 .premium-button-secondary:hover {
-  background: rgba(46, 42, 34, 0.04);
+  background: var(--well);
+}
+
+.premium-button-secondary:active {
+  transform: scale(0.98);
 }
 
 .premium-button-secondary:disabled,
 .premium-button-secondary[aria-disabled="true"] {
-  color: var(--text-tertiary);
+  color: var(--muted);
+  border-color: var(--line);
   cursor: not-allowed;
 }
 
-.premium-icon {
+/* Solid destructive action (delete account, etc.). */
+.premium-button-danger {
   display: inline-flex;
-  min-height: 2.75rem;
-  min-width: 2.75rem;
+  min-height: 3rem;
   align-items: center;
   justify-content: center;
-  border-radius: 9999px;
-  background: var(--background);
-  color: var(--foreground);
-  font-weight: 700;
-  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+  border-radius: 14px;
+  background: var(--danger-solid);
+  color: var(--cream);
+  font-weight: 600;
 }
 
+.premium-button-danger:hover {
+  filter: brightness(1.08);
+}
+
+.premium-button-danger:disabled,
+.premium-button-danger[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------------
+   Badges, pills, inputs
+   --------------------------------------------------------------------- */
 .premium-badge {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  background: var(--surface-alt);
-  color: var(--text-secondary);
+  background: var(--well);
+  border: 1px solid var(--line);
+  color: var(--body-2);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+/* Amber is reserved for discount badges. */
 .premium-discount-badge {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  background: var(--background);
-  color: var(--accent);
+  background: var(--amber);
+  color: var(--amber-ink);
   font-size: 0.75rem;
-  font-weight: 700;
-  box-shadow: 5px 5px 12px var(--shadow-dark), -5px -5px 12px var(--shadow-light);
+  font-weight: 600;
+}
+
+/* Moss pill, e.g. the pickup window on an offer card. */
+.moss-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  background: var(--moss);
+  color: var(--mint);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.375rem 0.625rem;
 }
 
 .premium-input {
   min-height: 3rem;
-  border-radius: 1rem;
-  border: none;
-  background: var(--background);
-  color: var(--foreground);
-  font-weight: 500;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--well);
+  color: var(--cream);
+  font-weight: 400;
   outline: none;
-  box-shadow: inset 5px 5px 10px var(--shadow-dark),
-    inset -5px -5px 10px var(--shadow-light);
 }
 
 .premium-input:focus {
-  box-shadow: inset 4px 4px 8px var(--shadow-dark),
-    inset -4px -4px 8px var(--shadow-light), 0 0 0 3px var(--accent-soft);
+  border-color: var(--mint);
+  box-shadow: 0 0 0 3px rgba(218, 241, 222, 0.18);
 }
 
-.subtle-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hero);
+.premium-input:disabled {
+  color: var(--muted);
+  opacity: 0.8;
 }
 
-/* Warm color-graded photo overlay — applied over every real photo in the
-   app so photography reads as one consistent, warm-toned system. */
-.photo-warm-overlay {
-  position: relative;
+/* Native dark pickers/selects in the WebView */
+select.premium-input option {
+  background: var(--well);
+  color: var(--cream);
 }
 
-.photo-warm-overlay::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    160deg,
-    rgba(120, 90, 50, 0.28),
-    rgba(60, 45, 25, 0.08)
-  );
-  mix-blend-mode: multiply;
-  pointer-events: none;
+/* ---------------------------------------------------------------------
+   Bottom tab bar (mobile): translucent, blurred, active = mint.
+   --------------------------------------------------------------------- */
+.tab-bar {
+  background: rgba(5, 31, 32, 0.9);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--line);
 }
 
 /* Trust/partner marquee strip: continuous left-scroll, pauses on hover,

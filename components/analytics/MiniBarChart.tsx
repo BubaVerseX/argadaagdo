@@ -18,7 +18,7 @@ export function MiniBarChart({
   const maxValue = Math.max(...data.map((item) => item.value), 0);
 
   return (
-    <section className="soft-raised rounded-3xl p-5">
+    <section className="ui-card rounded-3xl p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className="text-lg font-black text-[#2e2a22]">{title}</h3>

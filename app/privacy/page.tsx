@@ -61,7 +61,7 @@ export default function PrivacyPage() {
             {sections.map((section) => (
               <section
                 key={section.title}
-                className="rounded-[2rem] soft-raised p-5 sm:p-8"
+                className="rounded-[2rem] ui-card p-5 sm:p-8"
               >
                 <h2 className="text-2xl font-black text-[#2e2a22]">
                   {section.title}
@@ -73,7 +73,7 @@ export default function PrivacyPage() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
+          <div className="mt-6 rounded-[2rem] ui-card p-5 text-center sm:p-8">
             <h2 className="break-words text-2xl font-black text-[#2e2a22]">
               {t("privacy.helpTitle")}
             </h2>

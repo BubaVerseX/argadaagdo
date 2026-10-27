@@ -14,7 +14,7 @@ export function FilterBar({
   className = "",
 }: FilterBarProps) {
   return (
-    <div className={`soft-raised rounded-3xl p-4 sm:p-5 ${className}`}>
+    <div className={`ui-card rounded-3xl p-4 sm:p-5 ${className}`}>
       {(title || description) && (
         <div className="mb-4">
           {title && <p className="text-sm font-black text-[#2e2a22]">{title}</p>}

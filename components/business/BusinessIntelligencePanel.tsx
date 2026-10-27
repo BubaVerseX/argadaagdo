@@ -14,7 +14,7 @@ type BusinessIntelligencePanelProps = {
 };
 
 const recommendationStyles: Record<RecommendationCard["tone"], string> = {
-  green: "soft-raised text-[#2e2a22]",
+  green: "ui-card text-[#2e2a22]",
   yellow: "bg-yellow-50 text-yellow-950",
   red: "bg-red-50 text-red-950",
 };
@@ -53,7 +53,7 @@ export function BusinessIntelligencePanel({
           </p>
         </div>
 
-        <div className="soft-raised rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
+        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-[#2e2a22] lg:max-w-sm">
           <p className="font-black">
             {isGeorgian ? "AI ავტომატიზაციის გარეშე" : "No AI automation"}
           </p>
@@ -104,7 +104,7 @@ export function BusinessIntelligencePanel({
 
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {recommendations.length === 0 && (
-              <div className="soft-raised rounded-2xl p-4 font-semibold text-[#6b6152]">
+              <div className="ui-card rounded-2xl p-4 font-semibold text-[#6b6152]">
                 {isGeorgian
                   ? "სასწრაფო რეკომენდაციები ჯერ არ არის. მეტი რჩევისთვის შექმენი ან გაააქტიურე შეთავაზებები."
                   : "No urgent recommendations yet. Create or activate offers to unlock more guidance."}

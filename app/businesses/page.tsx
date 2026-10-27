@@ -328,7 +328,7 @@ export default function BusinessesPage() {
           )}
 
           {!loading && filteredBusinesses.length === 0 && (
-            <div className="soft-raised mt-6 rounded-3xl p-8 text-center">
+            <div className="ui-card mt-6 rounded-3xl p-8 text-center">
               <h2 className="text-2xl font-black text-[#2e2a22]">
                 {isGeorgian ? "ბიზნესები ვერ მოიძებნა" : "No businesses found"}
               </h2>
