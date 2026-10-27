@@ -1,7 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="title description">
   <title id="title">ArGadaagdo app icon</title>
-  <desc id="description">Warm amber rounded square icon with the letters AG in cream.</desc>
-  <rect width="512" height="512" rx="112" fill="#a67c52"/>
-  <circle cx="256" cy="256" r="176" fill="#ece4d6"/>
-  <text x="256" y="298" fill="#2e2a22" font-family="Arial, Helvetica, sans-serif" font-size="184" font-weight="900" text-anchor="middle">AG</text>
+  <desc id="description">Pale green leaf on a dark green rounded square.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E312B"/><stop offset="1" stop-color="#051F20"/></linearGradient>
+    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7FAB8E"/><stop offset=".6" stop-color="#A9CDB4"/><stop offset="1" stop-color="#E6F7EA"/></linearGradient>
+    <radialGradient id="glow" cx=".55" cy=".5" r=".55"><stop offset="0" stop-color="#8EB69B" stop-opacity=".35"/><stop offset="1" stop-color="#8EB69B" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="200" height="200" rx="46" fill="url(#bg)"/>
+  <rect width="200" height="200" rx="46" fill="url(#glow)"/>
+    <path d="M44 156 C44 96, 88 50, 158 42 C162 112, 118 158, 50 160 Z" fill="url(#g)"/>
+    <g stroke="#DAF1DE" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".45">
+      <path d="M78 124 C90 118, 100 118, 112 124"/><path d="M78 124 C84 112, 86 104, 86 94"/>
+      <path d="M98 102 C110 96, 120 96, 132 100"/><path d="M98 102 C104 90, 106 82, 106 72"/>
+      <path d="M118 80 C128 76, 134 76, 142 78"/><path d="M118 80 C122 72, 124 66, 124 58"/>
+      <path d="M62 144 C72 140, 82 140, 92 144"/><path d="M62 144 C66 134, 66 126, 66 118"/>
+    </g>
+    <path d="M52 152 C74 118, 104 86, 150 50" stroke="#DAF1DE" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".6"/>
 </svg>

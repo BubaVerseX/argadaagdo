@@ -534,7 +534,10 @@ test with artificially long content. See `PROJECT_CONTEXT.md`'s
 screenshots in this doc/`store-assets/` predate the fix and would need
 recapturing (`node scripts/capture-store-screenshots.mjs`) to show the
 corrected layout — not done automatically here since that also re-touches
-the seeded test data flow.
+the seeded test data flow. **2026-10-27: they also predate the green
+re-theme** (dark green UI, leaf icon) — recapture every screenshot before
+the next submission; the store icons and feature graphics in
+`store-assets/` are already the new brand.
 
 <details>
 <summary>Original finding (kept for history)</summary>

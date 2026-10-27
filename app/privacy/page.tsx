@@ -45,14 +45,14 @@ export default function PrivacyPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {t("privacy.badge")}
             </p>
-            <h1 className="mt-3 text-3xl font-black break-words sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-semibold break-words sm:text-4xl md:text-6xl">
               {t("privacy.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {t("privacy.subtitle")}
             </p>
           </div>
@@ -61,23 +61,23 @@ export default function PrivacyPage() {
             {sections.map((section) => (
               <section
                 key={section.title}
-                className="rounded-[2rem] soft-raised p-5 sm:p-8"
+                className="rounded-3xl ui-card p-5 sm:p-8"
               >
-                <h2 className="text-2xl font-black text-[#2e2a22]">
+                <h2 className="text-2xl font-semibold text-cream">
                   {section.title}
                 </h2>
-                <p className="mt-4 font-semibold leading-8 text-[#6b6152]">
+                <p className="mt-4 leading-8 text-body">
                   {section.text}
                 </p>
               </section>
             ))}
           </div>
 
-          <div className="mt-6 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
-            <h2 className="break-words text-2xl font-black text-[#2e2a22]">
+          <div className="mt-6 rounded-3xl ui-card p-5 text-center sm:p-8">
+            <h2 className="break-words text-2xl font-semibold text-cream">
               {t("privacy.helpTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-3 max-w-2xl leading-7 text-body">
               {t("privacy.helpText")}
             </p>
             <Link

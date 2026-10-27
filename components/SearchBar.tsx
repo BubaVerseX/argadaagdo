@@ -19,7 +19,7 @@ export function SearchBar({
     <label className={`relative block ${className}`}>
       <span className="sr-only">{label}</span>
       <SearchIcon
-        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a8072]"
+        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
         strokeWidth={1.8}
       />
       <input

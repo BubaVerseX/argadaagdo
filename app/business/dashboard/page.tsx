@@ -1604,7 +1604,7 @@ export default function BusinessDashboardPage() {
     {
       label: isGeorgian ? "აქტიური შეთავაზებები" : "Active offers",
       helper: isGeorgian
-        ? "მომხმარებლებს მინიმუმ ერთი შეთავაზება უჩანთ."
+        ? "მომხმარებლებისთვის მინიმუმ ერთი შეთავაზება ხილულია."
         : "At least one offer is visible to customers.",
       complete: activeOffers.length > 0,
     },
@@ -1706,22 +1706,22 @@ export default function BusinessDashboardPage() {
     {
       label: t("orders.reserved"),
       value: reservedOrders.length,
-      className: "soft-raised text-[#a67c52]",
+      className: "ui-card text-mint",
     },
     {
       label: t("orders.collected"),
       value: collectedOrders.length,
-      className: "bg-yellow-50 text-yellow-800",
+      className: "border border-warning-line bg-warning-soft text-cream",
     },
     {
       label: t("orders.cancelled"),
       value: cancelledOrders.length,
-      className: "bg-red-50 text-red-700",
+      className: "border border-danger-line bg-danger-soft text-cream",
     },
     {
       label: t("businessDashboard.noShow"),
       value: noShowOrders.length,
-      className: "bg-[#f4efe4] text-[#2e2a22]",
+      className: "bg-well text-cream",
     },
   ];
   const businessAlerts = [
@@ -1736,7 +1736,7 @@ export default function BusinessDashboardPage() {
                     ? "reservation needs"
                     : "reservations need"
                 } pickup attention.`,
-            className: "soft-raised text-[#2e2a22]",
+            className: "ui-card text-cream",
           },
         ]
       : [
@@ -1747,7 +1747,7 @@ export default function BusinessDashboardPage() {
             text: isGeorgian
               ? "ახალი ჯავშნები აქ გამოჩნდება, როცა მომხმარებლები შენს შეთავაზებებს დაჯავშნიან."
               : "New reservations will appear here when customers reserve your offers.",
-            className: "bg-[#f4efe4] text-[#2e2a22]",
+            className: "bg-well text-cream",
           },
         ]),
     ...(offersExpiringToday.length > 0
@@ -1756,10 +1756,10 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "შეთავაზება დღეს სრულდება" : "Offer expires today",
             text: isGeorgian
               ? `${offersExpiringToday.length} აქტიური შეთავაზება დღეს სრულდება. გაუყიდავი რაოდენობა იმავე დღის მარაგად უნდა დარჩეს.`
-              : `${offersExpiringToday.length} active offer ${
-                  offersExpiringToday.length === 1 ? "ends" : "end"
+              : `${offersExpiringToday.length} active ${
+                  offersExpiringToday.length === 1 ? "offer ends" : "offers end"
                 } today. Unsold quantity should stay as same-day inventory.`,
-            className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+            className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
       : []),
@@ -1769,10 +1769,12 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "წაღების ფანჯარა დაიწყო" : "Pickup window started",
             text: isGeorgian
               ? `${reservationsWithStartedPickupWindow.length} ჯავშანი ახლა წაღების ფანჯარაშია.`
-              : `${reservationsWithStartedPickupWindow.length} reservation ${
-                  reservationsWithStartedPickupWindow.length === 1 ? "is" : "are"
+              : `${reservationsWithStartedPickupWindow.length} ${
+                  reservationsWithStartedPickupWindow.length === 1
+                    ? "reservation is"
+                    : "reservations are"
                 } inside the pickup window now.`,
-            className: "soft-raised text-[#2e2a22]",
+            className: "ui-card text-cream",
           },
         ]
       : []),
@@ -1782,10 +1784,12 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "დღეს წასაღები" : "Pickup due today",
             text: isGeorgian
               ? `${todaysActiveReservations.length} ჯავშნის წაღება დღესაა დაგეგმილი.`
-              : `${todaysActiveReservations.length} reservation ${
-                  todaysActiveReservations.length === 1 ? "is" : "are"
+              : `${todaysActiveReservations.length} ${
+                  todaysActiveReservations.length === 1
+                    ? "reservation is"
+                    : "reservations are"
                 } scheduled for pickup today.`,
-            className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+            className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
       : [
@@ -1794,7 +1798,7 @@ export default function BusinessDashboardPage() {
             text: isGeorgian
               ? "დღეს წაღებასთან დაკავშირებული მოქმედება საჭირო არ არის. ახალი ჯავშნები აქ ავტომატურად გამოჩნდება."
               : "Nothing needs pickup action today. New reservations will appear here automatically.",
-            className: "bg-[#f4efe4] text-[#2e2a22]",
+            className: "bg-well text-cream",
           },
         ]),
     ...(nearlySoldOutOffers.length > 0
@@ -1803,10 +1807,10 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "მცირე რაოდენობა" : "Low quantity",
             text: isGeorgian
               ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ყუთი დარჩა.`
-              : `${nearlySoldOutOffers.length} active offer ${
-                  nearlySoldOutOffers.length === 1 ? "has" : "have"
+              : `${nearlySoldOutOffers.length} active ${
+                  nearlySoldOutOffers.length === 1 ? "offer has" : "offers have"
                 } 2 or fewer boxes left.`,
-            className: "border-yellow-100 bg-yellow-50 text-yellow-950",
+            className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
       : []),
@@ -1816,10 +1820,10 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "არააქტიური შეთავაზებები" : "Inactive offers",
             text: isGeorgian
               ? `${inactiveOffers.length} შეთავაზება საჯარო დათვალიერებიდან დამალულია.`
-              : `${inactiveOffers.length} offer ${
-                  inactiveOffers.length === 1 ? "is" : "are"
+              : `${inactiveOffers.length} ${
+                  inactiveOffers.length === 1 ? "offer is" : "offers are"
                 } hidden from public browsing.`,
-            className: "bg-[#f4efe4] text-[#2e2a22]",
+            className: "bg-well text-cream",
           },
         ]
       : []),
@@ -1829,10 +1833,10 @@ export default function BusinessDashboardPage() {
             title: isGeorgian ? "ვადაგასული შეთავაზება" : "Expired offer",
             text: isGeorgian
               ? `${expiredOffers.length} შეთავაზებას წაღების ფანჯარა გაუვიდა და ისტორიაში უნდა დარჩეს.`
-              : `${expiredOffers.length} offer ${
-                  expiredOffers.length === 1 ? "has" : "have"
+              : `${expiredOffers.length} ${
+                  expiredOffers.length === 1 ? "offer has" : "offers have"
                 } passed the pickup window and should stay in history.`,
-            className: "border-red-100 bg-red-50 text-red-800",
+            className: "border border-danger-line bg-danger-soft text-cream",
           },
         ]
       : []),
@@ -2036,11 +2040,11 @@ export default function BusinessDashboardPage() {
         />
 
         {!canCreateOffers && (
-          <div className="mt-6 rounded-3xl bg-yellow-100 p-5 sm:mt-8 sm:p-8">
-            <h2 className="text-xl font-black text-yellow-800 sm:text-2xl">
+          <div className="mt-6 rounded-3xl bg-warning-soft p-5 sm:mt-8 sm:p-8">
+            <h2 className="text-xl font-semibold text-warning sm:text-2xl">
               {businessStatusMessage}
             </h2>
-            <p className="mt-3 font-medium text-yellow-700">
+            <p className="mt-3 font-medium text-warning">
               {businesses.length === 0
                 ? isGeorgian
                   ? "საკვების გადარჩენის შეთავაზებების გამოქვეყნებამდე შექმენი ბიზნესის პროფილი."

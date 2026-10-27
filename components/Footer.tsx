@@ -1,5 +1,6 @@
 "use client";
 
+import BrandMark from "@/components/BrandMark";
 import Link from "next/link";
 import { useLanguage } from "@/lib/useLanguage";
 
@@ -49,24 +50,16 @@ export default function Footer() {
 
   return (
     <footer className="mt-20 px-4 pb-8 sm:px-6 md:px-12">
-      <div className="soft-raised mx-auto grid max-w-7xl gap-8 rounded-[1.75rem] px-6 py-8 sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
+      <div className="ui-card mx-auto grid max-w-7xl gap-8 rounded-[22px] px-6 py-8 sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
         <div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#a67c52] text-lg font-bold text-white">
-              A
-            </div>
+          <BrandMark
+            tileClassName="h-11 w-11"
+            nameClassName="text-xl font-semibold leading-none text-cream sm:text-2xl"
+            tagline={t("brand.tagline")}
+            taglineClassName="text-sm text-body"
+          />
 
-            <div>
-              <h2 className="text-xl font-extrabold tracking-[-0.02em] text-[#2e2a22] sm:text-2xl">
-                ArGadaagdo
-              </h2>
-              <p className="font-medium text-[#6b6152]">
-                {t("brand.tagline")}
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-5 max-w-md text-sm font-medium leading-6 text-[#6b6152]">
+          <p className="mt-5 max-w-md text-sm leading-6 text-body">
             {t("footer.reduceWasteGeorgia")}
           </p>
 
@@ -86,7 +79,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 aria-label={social.name}
                 title={social.name}
-                className="soft-raised flex h-11 w-11 items-center justify-center rounded-full text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                className="ui-card flex h-11 w-11 items-center justify-center rounded-full text-body transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
                 {social.icon}
               </a>
@@ -95,16 +88,16 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8a8072]">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
             {t("footer.platform")}
           </h3>
 
-          <div className="mt-2 grid text-sm font-semibold text-[#6b6152]">
+          <div className="mt-2 grid text-sm font-semibold text-body">
             {platformLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex min-h-11 items-center rounded-lg transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                className="flex min-h-11 items-center rounded-lg transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
                 {link.label}
               </Link>
@@ -113,16 +106,16 @@ export default function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8a8072]">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted">
             {t("nav.support")}
           </h3>
 
-          <div className="mt-2 grid text-sm font-semibold text-[#6b6152]">
+          <div className="mt-2 grid text-sm font-semibold text-body">
             {companyLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex min-h-11 items-center rounded-lg transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                className="flex min-h-11 items-center rounded-lg transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
                 {link.label}
               </Link>
@@ -131,7 +124,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-2 py-5 text-sm font-medium text-[#8a8072] sm:px-4 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-2 py-5 text-sm font-medium text-muted sm:px-4 md:flex-row md:items-center md:justify-between">
         {/* Pages are prerendered at build time, so the year can differ from
             the visitor's clock (e.g. a December build viewed in January). */}
         <p suppressHydrationWarning>© ArGadaagdo {currentYear}</p>

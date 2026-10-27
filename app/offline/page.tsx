@@ -8,21 +8,21 @@ export default function OfflinePage() {
   const { t } = useLanguage();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#ece4d6] px-4 text-[#2e2a22]">
-      <div className="soft-raised w-full max-w-md rounded-[1.75rem] p-8 text-center sm:p-10">
-        <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-          <WifiOffIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
+    <main className="flex min-h-screen items-center justify-center bg-page px-4 text-cream">
+      <div className="ui-card w-full max-w-md rounded-[22px] p-8 text-center sm:p-10">
+        <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+          <WifiOffIcon className="h-7 w-7 text-mint" strokeWidth={1.6} />
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6152]">
+        <p className="mt-6 text-xs uppercase tracking-[0.22em] text-body">
           {t("offline.badge")}
         </p>
 
-        <h1 className="mt-3 text-3xl font-extrabold tracking-[-0.03em] text-[#2e2a22]">
+        <h1 className="mt-3 text-3xl font-semibold text-cream">
           {t("offline.title")}
         </h1>
 
-        <p className="mt-4 leading-[1.55] text-[#6b6152]">
+        <p className="mt-4 leading-[1.55] text-body">
           {t("offline.text")}
         </p>
 

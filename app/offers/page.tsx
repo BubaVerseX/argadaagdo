@@ -24,7 +24,7 @@ import {
   formatMoney,
   getDiscountPercent,
   getOriginalPrice,
-  formatPickupWindow,
+  formatPickupTimeRange,
   getOfferDateLabel,
   getOfferGroup,
   getRatingLabel,
@@ -469,16 +469,16 @@ export default function OffersPage() {
 
       <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
         <div className="relative mx-auto max-w-7xl">
-          <div className="soft-raised rounded-[1.75rem] p-5 sm:p-6 md:rounded-[2rem] md:p-10">
+          <div className="ui-card rounded-[22px] p-5 sm:p-6 md:rounded-3xl md:p-10">
             <p className="premium-badge px-4 py-2">
               {t("offers.badge")}
             </p>
 
-            <h1 className="mt-4 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#2e2a22] sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
               {t("offers.title")}
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base leading-[1.55] text-[#6b6152] md:text-lg">
+            <p className="mt-3 max-w-2xl text-base leading-[1.55] text-body md:text-lg">
               {t("offers.subtitle")}
             </p>
 
@@ -502,7 +502,7 @@ export default function OffersPage() {
               </button>
             </div>
 
-            <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-center">
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-center">
               <select
                 value={selectedCategory}
                 onChange={(event) => {
@@ -514,7 +514,7 @@ export default function OffersPage() {
                     ? "შეთავაზებების ფილტრი კატეგორიით"
                     : "Filter offers by category"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">{t("offers.allCategories")}</option>
                 {categoryOptions.map((category) => (
@@ -535,7 +535,7 @@ export default function OffersPage() {
                     ? "შეთავაზებების ფილტრი ფასით"
                     : "Filter offers by price"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">
                   {isGeorgian ? "ყველა ფასი" : "All prices"}
@@ -562,7 +562,7 @@ export default function OffersPage() {
                     ? "შეთავაზებების ფილტრი წაღების თარიღით"
                     : "Filter offers by pickup date"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">
                   {isGeorgian ? "წაღების ნებისმიერი თარიღი" : "Any pickup date"}
@@ -585,7 +585,7 @@ export default function OffersPage() {
                 aria-label={
                   isGeorgian ? "შეთავაზებების დალაგება" : "Sort offers"
                 }
-                className="premium-input px-4 py-3"
+                className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="recommended">
                   {isGeorgian ? "რეკომენდებული" : "Recommended"}
@@ -602,7 +602,7 @@ export default function OffersPage() {
                 </option>
               </select>
 
-              <label className="soft-pressed flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-[#2e2a22] md:justify-start">
+              <label className="ui-well flex min-h-12 items-center justify-center gap-3 rounded-2xl px-5 py-3 font-semibold text-cream md:justify-start">
                 <input
                   type="checkbox"
                   checked={availableOnly}
@@ -610,14 +610,14 @@ export default function OffersPage() {
                     setAvailableOnly(event.target.checked);
                     setPage(1);
                   }}
-                  className="h-5 w-5 accent-[#a67c52]"
+                  className="h-5 w-5 accent-mint"
                 />
                 {t("offers.availableOnly")}
               </label>
             </div>
 
-            <div className="soft-pressed mt-4 rounded-3xl p-5 text-sm leading-6 text-[#6b6152]">
-              <span className="font-semibold text-[#2e2a22]">
+            <div className="ui-well mt-4 rounded-3xl p-5 text-sm leading-6 text-body">
+              <span className="font-semibold text-cream">
                 {t("offers.surpriseBagTitle")}
               </span>{" "}
               {t("offers.surpriseBagText")}
@@ -633,10 +633,10 @@ export default function OffersPage() {
           )}
 
           <div className="mt-8 sm:mt-10">
-            <h2 className="text-2xl font-extrabold tracking-[-0.02em] text-[#2e2a22] sm:text-3xl md:text-4xl">
+            <h2 className="text-2xl font-semibold text-cream sm:text-3xl md:text-4xl">
               {t("offers.heading")}
             </h2>
-            <p className="mt-2 text-sm font-semibold text-[#6b6152]">
+            <p className="mt-2 text-sm text-body">
               {formatAvailableOfferCount(filteredOffers.length, language)}
             </p>
           </div>
@@ -646,31 +646,31 @@ export default function OffersPage() {
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="h-[430px] animate-pulse rounded-[1.75rem] bg-[#f4efe4]"
+                  className="h-[430px] animate-pulse rounded-[22px] bg-well"
                 />
               ))}
             </div>
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="soft-raised mt-8 rounded-[1.75rem] px-5 py-10 text-center sm:px-8 sm:py-12">
-              <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                <MapPinIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
+            <div className="ui-card mt-8 rounded-[22px] px-5 py-10 text-center sm:px-8 sm:py-12">
+              <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                <MapPinIcon className="h-7 w-7 text-mint" strokeWidth={1.6} />
               </div>
-              <h3 className="mt-5 text-2xl font-extrabold text-[#2e2a22] sm:text-3xl">
+              <h3 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
                 {offers.length === 0
                   ? t("offers.noOffers")
                   : t("offers.noMatching")}
               </h3>
 
-              <p className="mx-auto mt-3 max-w-xl text-base leading-[1.55] text-[#6b6152] sm:text-lg">
+              <p className="mx-auto mt-3 max-w-xl text-base leading-[1.55] text-body sm:text-lg">
                 {offers.length === 0
                   ? t("offers.noOffersHint")
                   : t("offers.noMatchingHint")}
               </p>
 
               {offers.length === 0 && (
-                <p className="mx-auto mt-3 max-w-xl text-sm font-semibold leading-6 text-[#a67c52] sm:text-base">
+                <p className="mx-auto mt-3 max-w-xl text-sm font-semibold leading-6 text-mint sm:text-base">
                   {t("offers.checkBackSoon")}
                 </p>
               )}
@@ -704,10 +704,10 @@ export default function OffersPage() {
                 <section key={section.key}>
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <h3 className="text-xl font-bold tracking-[-0.02em] text-[#2e2a22] sm:text-2xl">
+                      <h3 className="text-xl font-semibold text-cream sm:text-2xl">
                         {section.title}
                       </h3>
-                      <p className="mt-1 text-sm font-medium text-[#6b6152]">
+                      <p className="mt-1 text-sm text-body">
                         {formatAvailableOfferCount(section.offers.length, language)}
                       </p>
                     </div>
@@ -731,10 +731,10 @@ export default function OffersPage() {
                       return (
                         <div
                           key={offer.id}
-                          className="soft-raised group flex flex-col rounded-[1.75rem] p-4 transition hover:-translate-y-1"
+                          className="ui-card group flex flex-col rounded-[22px] p-4 transition hover:-translate-y-1"
                         >
                           <div className="relative">
-                            <div className="soft-raised photo-warm-overlay blob-mask relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
+                            <div className="photo-frame relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
                               <OfferImage
                                 src={offer.image_url}
                                 alt={offer.title}
@@ -750,7 +750,7 @@ export default function OffersPage() {
                               </div>
                             )}
 
-                            <div className="soft-raised pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-[#2e2a22]">
+                            <div className="ui-card pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-cream">
                               {getOfferCategoryLabel(offer.category, language)}
                             </div>
                           </div>
@@ -758,22 +758,22 @@ export default function OffersPage() {
                           <div className="flex flex-1 flex-col pt-5">
                             <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0">
-                                <h4 className="text-xl font-bold leading-tight tracking-[-0.02em] text-[#2e2a22]">
+                                <h4 className="text-xl font-semibold leading-tight text-cream">
                                   {offer.title}
                                 </h4>
-                                <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-[#6b6152]">
-                                  <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+                                <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-body">
+                                  <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-muted" strokeWidth={1.8} />
                                   <span className="truncate">
                                     {offer.businesses?.name} · {businessAddress}
                                   </span>
                                 </div>
                               </div>
 
-                              <div className="soft-pressed shrink-0 rounded-2xl px-3 py-2 text-center">
-                                <p className="text-xl font-bold text-[#2e2a22]">
+                              <div className="ui-well shrink-0 rounded-2xl px-3 py-2 text-center">
+                                <p className="text-xl font-semibold text-cream">
                                   {offer.quantity}
                                 </p>
-                                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-[#8a8072]">
+                                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
                                   {t("offers.boxesLeft")}
                                 </p>
                               </div>
@@ -781,26 +781,26 @@ export default function OffersPage() {
 
                             <div className="mt-4 flex items-end justify-between gap-4">
                               <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold tracking-[-0.02em] text-[#a67c52]">
+                                <span className="text-2xl font-semibold text-mint">
                                   {formatMoney(offer.price)}
                                 </span>
                                 {originalPrice !== null && (
-                                  <span className="text-sm font-medium text-[#8a8072] line-through">
+                                  <span className="text-sm font-medium text-muted line-through">
                                     {formatMoney(originalPrice)}
                                   </span>
                                 )}
                               </div>
-                              <p className="flex items-center gap-1.5 text-right text-xs font-semibold leading-5 text-[#8a8072]">
+                              <p className="flex items-center gap-1.5 text-right text-xs font-semibold leading-5 text-muted">
                                 <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
                                 <span>
                                   {getOfferDateLabel(offer, language)}
                                   <br />
-                                  {formatPickupWindow(offer, language)}
+                                  {formatPickupTimeRange(offer, language)}
                                 </span>
                               </p>
                             </div>
 
-                            <p className="mt-4 truncate text-xs font-semibold text-[#8a8072]">
+                            <p className="mt-4 truncate text-xs font-semibold text-muted">
                               {getRatingLabel(rating, language)}
                             </p>
 
@@ -809,7 +809,7 @@ export default function OffersPage() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="soft-raised mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-[#2e2a22] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                              className="ui-card mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                             >
                               {t("common.openMap")}
                             </a>
@@ -828,8 +828,7 @@ export default function OffersPage() {
                                     : `Add ${offer.title} to favorites`
                                 }
                                 aria-pressed={isFavorite}
-                                className={`premium-button-secondary flex min-h-12 w-full items-center justify-center gap-2 px-6 py-3 ${
-                                  isFavorite ? "text-[#a67c52]" : ""
+                                className={`premium-button-secondary flex min-h-12 w-full items-center justify-center gap-2 px-6 py-3 ${ isFavorite ? "text-mint" : ""
                                 }`}
                               >
                                 <HeartIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled={isFavorite} />

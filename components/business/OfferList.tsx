@@ -98,39 +98,39 @@ export function OfferList({
     OfferIntelligence["badges"][number]["tone"],
     string
   > = {
-    green: "bg-[#f4efe4] text-[#a67c52]",
-    yellow: "bg-yellow-100 text-yellow-900",
-    red: "bg-red-100 text-red-800",
-    gray: "bg-[#f4efe4] text-[#6b6152]",
+    green: "bg-well text-mint",
+    yellow: "bg-warning-soft text-warning",
+    red: "bg-danger-soft text-danger",
+    gray: "bg-well text-body",
   };
   const recommendationToneStyles: Record<
     OfferIntelligence["recommendations"][number]["tone"],
     string
   > = {
-    green: "soft-raised text-[#2e2a22]",
-    yellow: "bg-yellow-50 text-yellow-950",
-    red: "bg-red-50 text-red-800",
+    green: "ui-card text-cream",
+    yellow: "bg-warning-soft text-warning",
+    red: "bg-danger-soft text-danger",
   };
 
   return (
-    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
         {isGeorgian ? "შეთავაზებების ისტორია" : "Offer History"}
       </p>
-      <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
         {t("businessDashboard.myOffers")}
       </h2>
 
       <div className="mt-6 grid gap-4">
         {offers.length === 0 && (
-          <div className="soft-raised rounded-3xl p-6 text-center sm:p-8">
-            <div className="soft-pressed mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <PlusIcon className="h-6 w-6 text-[#a67c52]" strokeWidth={1.8} />
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
+            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+              <PlusIcon className="h-6 w-6 text-mint" strokeWidth={1.8} />
             </div>
-            <h3 className="mt-4 text-2xl font-black text-[#2e2a22]">
+            <h3 className="mt-4 text-2xl font-semibold text-cream">
               {emptyTitle || t("businessDashboard.noOffers")}
             </h3>
-            <p className="mx-auto mt-2 max-w-md font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
               {emptyText || t("businessDashboard.noOffersHint")}
             </p>
             {!emptyTitle && (
@@ -154,40 +154,40 @@ export function OfferList({
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
-            <div key={offer.id} className="soft-raised grid gap-5 rounded-3xl p-5">
+            <div key={offer.id} className="ui-card grid gap-5 rounded-3xl p-5">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="soft-raised blob-mask-2 relative isolate h-20 w-20 shrink-0 overflow-hidden sm:h-24 sm:w-24">
+                  <div className="ui-card rounded-[18px] relative isolate h-20 w-20 shrink-0 overflow-hidden sm:h-24 sm:w-24">
                     <OfferImage src={offer.image_url} alt={offer.title} sizes="96px" />
                   </div>
 
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-xl font-black">{offer.title}</h3>
-                      <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black text-[#a67c52]">
+                      <h3 className="text-xl font-semibold">{offer.title}</h3>
+                      <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold text-mint">
                         {isGeorgian
                           ? getOfferCategoryLabel(offer.category, language)
                           : normalizeOfferCategory(offer.category)}
                       </span>
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
                       >
                         {statusLabel}
                       </span>
                     </div>
 
-                    <p className="font-medium text-[#6b6152]">
+                    <p className="text-body">
                       {formatMoney(offer.price)} · {t("common.quantity")}:{" "}
                       {offer.quantity}
                     </p>
-                    <p className="text-[#6b6152]">
+                    <p className="text-body">
                       {t("common.pickup")}: {formatPickupWindow(offer, language)}
                     </p>
-                    <p className="flex items-center gap-1.5 text-sm font-bold text-yellow-700">
+                    <p className="flex items-center gap-1.5 text-sm font-semibold text-warning">
                       <StarIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
                       {getRatingLabel(rating, language)}
                     </p>
-                    <p className="mt-1 text-xs font-bold text-[#6b6152]">
+                    <p className="mt-1 text-xs text-body">
                       {t("businessDashboard.created")}:{" "}
                       {formatDisplayDateTime(offer.created_at, language)}
                     </p>
@@ -196,7 +196,7 @@ export function OfferList({
                         {intelligence.badges.map((badge) => (
                           <span
                             key={badge.label}
-                            className={`rounded-full px-3 py-1 text-xs font-black ${badgeToneStyles[badge.tone]}`}
+                            className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeToneStyles[badge.tone]}`}
                           >
                             {badge.label}
                           </span>
@@ -231,10 +231,9 @@ export function OfferList({
                         ? `აქტიური სტატუსის გადართვა: ${offer.title}`
                         : `Toggle ${offer.title} active status`
                     }
-                    className={`min-h-12 rounded-full px-5 py-3 font-black transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                      offer.active
-                        ? "bg-[#f4efe4] text-[#a67c52] hover:bg-[#ece4d6]"
-                        : "bg-[#f4efe4] text-[#6b6152] hover:bg-[#ece4d6]"
+                    className={`min-h-12 rounded-full px-5 py-3 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${ offer.active
+                        ? "bg-well text-mint hover:bg-mint-strong"
+                        : "bg-well text-body hover:bg-mint-strong"
                     }`}
                   >
                     {updatingOfferId === offer.id
@@ -272,7 +271,7 @@ export function OfferList({
                     <button
                       onClick={() => onArchiveExpired(offer)}
                       disabled={updatingOfferId !== null}
-                      className="min-h-12 rounded-full bg-yellow-50 px-5 py-3 font-black text-yellow-800 transition hover:bg-yellow-100 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="min-h-12 rounded-full bg-warning-soft px-5 py-3 font-semibold text-warning transition hover:bg-warning-soft disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {updatingOfferId === offer.id
                         ? isGeorgian
@@ -287,7 +286,7 @@ export function OfferList({
                   <button
                     onClick={() => onDelete(offer)}
                     disabled={updatingOfferId !== null}
-                    className="min-h-12 rounded-full bg-red-50 px-5 py-3 font-black text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="min-h-12 rounded-full bg-danger-soft px-5 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {updatingOfferId === offer.id
                       ? isGeorgian
@@ -301,7 +300,7 @@ export function OfferList({
               </div>
 
               {analytics && (
-                <div className="grid gap-3 rounded-2xl bg-[#f4efe4] p-4 sm:grid-cols-2 xl:grid-cols-6">
+                <div className="grid gap-3 rounded-2xl bg-well p-4 sm:grid-cols-2 xl:grid-cols-6">
                   {[
                     {
                       label: isGeorgian ? "ჯავშნები" : "Reservations",
@@ -332,11 +331,11 @@ export function OfferList({
                       value: `${analytics.pickupSuccessRate}%`,
                     },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-2xl bg-white/60 p-4">
-                      <p className="text-xs font-black uppercase tracking-wide text-[#6b6152]">
+                    <div key={item.label} className="rounded-2xl bg-well p-4">
+                      <p className="text-xs uppercase tracking-wide text-body">
                         {item.label}
                       </p>
-                      <p className="mt-1 text-xl font-black text-[#2e2a22]">
+                      <p className="mt-1 text-xl font-semibold text-cream">
                         {item.value}
                       </p>
                     </div>
@@ -345,7 +344,7 @@ export function OfferList({
               )}
 
               {intelligence && (
-                <div className="grid gap-3 rounded-2xl bg-[#f4efe4] p-4 lg:grid-cols-[0.9fr_1.1fr]">
+                <div className="grid gap-3 rounded-2xl bg-well p-4 lg:grid-cols-[0.9fr_1.1fr]">
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     {[
                       {
@@ -367,11 +366,11 @@ export function OfferList({
                         value: intelligence.reservationSpeed,
                       },
                     ].map((item) => (
-                      <div key={item.label} className="rounded-2xl bg-white/60 p-4">
-                        <p className="text-xs font-black uppercase tracking-wide text-[#a67c52]">
+                      <div key={item.label} className="rounded-2xl bg-well p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-mint">
                           {item.label}
                         </p>
-                        <p className="mt-1 text-sm font-black text-[#2e2a22]">
+                        <p className="mt-1 text-sm font-semibold text-cream">
                           {item.value}
                         </p>
                       </div>
@@ -384,7 +383,7 @@ export function OfferList({
                         key={`${offer.id}-${recommendation.title}`}
                         className={`rounded-2xl p-4 ${recommendationToneStyles[recommendation.tone]}`}
                       >
-                        <p className="font-black">{recommendation.title}</p>
+                        <p className="font-semibold">{recommendation.title}</p>
                         <p className="mt-1 text-sm font-semibold leading-6 opacity-80">
                           {recommendation.text}
                         </p>
@@ -395,7 +394,7 @@ export function OfferList({
               )}
 
               {isEditing && (
-                <div className="rounded-2xl bg-[#f4efe4] p-4">
+                <div className="rounded-2xl bg-well p-4">
                   <div className="grid gap-3 md:grid-cols-2">
                     <input
                       value={editTitle}

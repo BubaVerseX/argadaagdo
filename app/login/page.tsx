@@ -465,54 +465,54 @@ export default function LoginPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
-          <div className="premium-surface rounded-3xl p-6 sm:rounded-[2rem] sm:p-8 md:p-12">
+          <div className="premium-surface rounded-3xl p-6 sm:rounded-3xl sm:p-8 md:p-12">
             <p className="premium-badge px-4 py-2">
               {t("login.title")}
             </p>
 
-            <h1 className="mt-4 text-3xl font-black leading-tight text-[#2e2a22] sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
               {t("login.signIn")} · ArGadaagdo
             </h1>
 
-            <p className="mt-4 text-base font-semibold leading-7 text-[#6b6152] sm:mt-5 sm:text-lg sm:leading-8">
+            <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
               {t("home.subtitle")}
             </p>
 
             <div className="mt-8 grid gap-4">
               <div className="premium-card rounded-3xl p-5">
-                <h3 className="text-xl font-black text-[#2e2a22]">
+                <h3 className="text-xl font-semibold text-cream">
                   {t("login.forCustomers")}
                 </h3>
-                <p className="mt-2 font-semibold text-[#6b6152]">
+                <p className="mt-2 text-body">
                   {t("login.forCustomersText")}
                 </p>
               </div>
 
               <div className="premium-card rounded-3xl p-5">
-                <h3 className="text-xl font-black text-[#2e2a22]">
+                <h3 className="text-xl font-semibold text-cream">
                   {t("login.forBusinesses")}
                 </h3>
-                <p className="mt-2 font-semibold text-[#6b6152]">
+                <p className="mt-2 text-body">
                   {t("login.forBusinessesText")}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="premium-card rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:p-10">
-            <h2 className="text-2xl font-black text-[#2e2a22] sm:text-3xl">
+          <div className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:p-10">
+            <h2 className="text-2xl font-semibold text-cream sm:text-3xl">
               {authMode === "login"
                 ? t("login.signInTitle")
                 : t("login.signUpTitle")}
             </h2>
 
-            <p className="mt-2 text-sm font-medium leading-6 text-[#6b6152] sm:text-base">
+            <p className="mt-2 text-sm leading-6 text-body sm:text-base">
               {authMode === "login"
                 ? t("login.signInHint")
                 : t("login.signUpHint")}
             </p>
 
-            <div className="soft-pressed mt-6 grid gap-2 rounded-3xl p-2 sm:grid-cols-2">
+            <div className="ui-well mt-6 grid gap-2 rounded-3xl p-2 sm:grid-cols-2">
               {authModeOptions.map((option) => {
                 const isActive = authMode === option.value;
 
@@ -524,16 +524,14 @@ export default function LoginPage() {
                       setMessage("");
                       setAuthMode(option.value);
                     }}
-                    className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${
-                      isActive
-                        ? "soft-raised text-[#a67c52]"
-                        : "text-[#6b6152] hover:text-[#2e2a22]"
+                    className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-mint ${ isActive
+                        ? "ui-card text-mint"
+                        : "text-body hover:text-cream"
                     }`}
                   >
-                    <span className="block font-black">{option.label}</span>
+                    <span className="block font-semibold">{option.label}</span>
                     <span
-                      className={`mt-1 block text-sm font-semibold ${
-                        isActive ? "text-[#a67c52]/80" : "text-[#6b6152]"
+                      className={`mt-1 block text-sm font-semibold ${ isActive ? "text-mint/80" : "text-body"
                       }`}
                     >
                       {option.helper}
@@ -577,7 +575,7 @@ export default function LoginPage() {
               />
 
               {authMode === "login" && (
-                <div className="flex flex-col gap-2 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold text-[#6b6152] sm:flex-row sm:items-center sm:justify-between sm:text-base">
+                <div className="flex flex-col gap-2 rounded-2xl bg-well px-4 py-3 text-sm font-semibold text-body sm:flex-row sm:items-center sm:justify-between sm:text-base">
                   <span>
                     {isGeorgian
                       ? "შესვლასთან დაკავშირებით დახმარება გჭირდება?"
@@ -593,7 +591,7 @@ export default function LoginPage() {
                           : "forgot"
                       );
                     }}
-                    className="flex min-h-11 items-center text-left font-black text-[#a67c52] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#a67c52] sm:justify-end sm:text-right"
+                    className="flex min-h-11 items-center text-left font-semibold text-mint underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-mint sm:justify-end sm:text-right"
                   >
                     {isGeorgian ? "დაგავიწყდა პაროლი?" : "Forgot password?"}
                   </button>
@@ -601,11 +599,11 @@ export default function LoginPage() {
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "forgot" && (
-                <div className="soft-raised rounded-3xl p-4">
-                  <h3 className="font-black text-[#2e2a22]">
+                <div className="ui-card rounded-3xl p-4">
+                  <h3 className="font-semibold text-cream">
                     {isGeorgian ? "პაროლის აღდგენა" : "Reset password"}
                   </h3>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
+                  <p className="mt-2 text-sm leading-6 text-body">
                     {isGeorgian
                       ? "ზემოთ შეიყვანე ანგარიშის ელფოსტა. თუ ანგარიში არსებობს, უსაფრთხო აღდგენის ბმულს გამოგიგზავნით."
                       : "Enter your account email above. We will send a secure reset link if the account exists."}
@@ -628,14 +626,14 @@ export default function LoginPage() {
               )}
 
               {authMode === "login" && effectivePasswordHelpMode === "reset" && (
-                <div className="soft-raised grid gap-4 rounded-3xl p-4">
+                <div className="ui-card grid gap-4 rounded-3xl p-4">
                   <div>
-                    <h3 className="font-black text-[#2e2a22]">
+                    <h3 className="font-semibold text-cream">
                       {isGeorgian
                         ? "აირჩიე ახალი პაროლი"
                         : "Choose a new password"}
                     </h3>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-[#6b6152]">
+                    <p className="mt-2 text-sm leading-6 text-body">
                       {isGeorgian
                         ? "გამოიყენე მინიმუმ 6 სიმბოლო. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
                         : "Use at least 6 characters. Avoid passwords you use on other websites."}
@@ -689,10 +687,10 @@ export default function LoginPage() {
 
               {authMode === "signup" && (
                 <div>
-                  <p className="mb-3 font-black text-[#2e2a22]">
+                  <p className="mb-3 font-semibold text-cream">
                     {t("login.accountType")}
                   </p>
-                  <p className="mb-4 text-sm font-semibold leading-6 text-[#6b6152]">
+                  <p className="mb-4 text-sm leading-6 text-body">
                     {t("login.accountTypeHint")}
                   </p>
 
@@ -700,18 +698,17 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setRole("customer")}
-                      className={`rounded-2xl p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${
-                        role === "customer"
-                          ? "soft-pressed text-[#2e2a22]"
-                          : "soft-raised text-[#6b6152]"
+                      className={`rounded-2xl p-4 text-left font-semibold transition focus:outline-none focus:ring-2 focus:ring-mint ${ role === "customer"
+                          ? "ui-well text-cream"
+                          : "ui-card text-body"
                       }`}
                     >
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#a67c52]">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-widest text-mint">
                         <UserIcon className="h-3 w-3" strokeWidth={2} />
                         {t("login.customer")}
                       </div>
                       <p className="mt-2">{t("login.customer")}</p>
-                      <p className="mt-1 text-sm font-medium leading-5 text-[#6b6152]">
+                      <p className="mt-1 text-sm leading-5 text-body">
                         {t("login.customerHint")}
                       </p>
                     </button>
@@ -719,18 +716,17 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setRole("business")}
-                      className={`rounded-2xl p-4 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-[#a67c52] ${
-                        role === "business"
-                          ? "soft-pressed text-[#2e2a22]"
-                          : "soft-raised text-[#6b6152]"
+                      className={`rounded-2xl p-4 text-left font-semibold transition focus:outline-none focus:ring-2 focus:ring-mint ${ role === "business"
+                          ? "ui-well text-cream"
+                          : "ui-card text-body"
                       }`}
                     >
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-widest text-[#a67c52]">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-widest text-mint">
                         <StoreIcon className="h-3 w-3" strokeWidth={2} />
                         {t("login.business")}
                       </div>
                       <p className="mt-2">{t("login.business")}</p>
-                      <p className="mt-1 text-sm font-medium leading-5 text-[#6b6152]">
+                      <p className="mt-1 text-sm leading-5 text-body">
                         {t("login.businessHint")}
                       </p>
                     </button>
@@ -742,12 +738,12 @@ export default function LoginPage() {
                 type="button"
                 onClick={authMode === "login" ? signIn : createAccount}
                 disabled={submitting}
-                className="premium-button w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
+                className="premium-button cta-glow w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
                 {authMode === "login" ? t("login.signIn") : t("login.signUp")}
               </button>
 
-              <div className="rounded-2xl bg-[#f4efe4] px-4 py-3 text-center text-sm font-bold text-[#6b6152] sm:text-base">
+              <div className="rounded-2xl bg-well px-4 py-3 text-center text-sm font-semibold text-body sm:text-base">
                 {authMode === "login"
                   ? t("login.dontHaveAccount")
                   : t("login.alreadyHaveAccount")}{" "}
@@ -757,7 +753,7 @@ export default function LoginPage() {
                     setMessage("");
                     setAuthMode(authMode === "login" ? "signup" : "login");
                   }}
-                  className="inline-flex min-h-11 items-center font-black text-[#a67c52] underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-[#a67c52]"
+                  className="inline-flex min-h-11 items-center font-semibold text-mint underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-mint"
                 >
                   {authMode === "login"
                     ? t("login.signUp")
@@ -766,7 +762,7 @@ export default function LoginPage() {
               </div>
 
               {authMode === "login" && (
-                <div className="soft-raised rounded-2xl px-4 py-3 text-center text-sm font-bold text-[#2e2a22] sm:text-base">
+                <div className="ui-card rounded-2xl px-4 py-3 text-center text-sm font-semibold text-cream sm:text-base">
                   {isGeorgian
                     ? "ელფოსტის დადასტურება გჭირდება?"
                     : "Need to verify your email?"}{" "}
@@ -774,7 +770,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={resendVerificationEmail}
                     disabled={resendingVerification || submitting}
-                    className="inline-flex min-h-11 items-center font-black text-[#a67c52] underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#a67c52]"
+                    className="inline-flex min-h-11 items-center font-semibold text-mint underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-mint"
                   >
                     {resendingVerification
                       ? isGeorgian

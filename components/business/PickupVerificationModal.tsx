@@ -58,22 +58,22 @@ export function PickupVerificationModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#2e2a22]/60 px-4 py-6 sm:py-10">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-ink/70 px-4 py-6 sm:py-10">
       <div className="mx-auto flex min-h-full max-w-lg items-center">
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="pickup-verification-title"
-          className="w-full rounded-[2rem] bg-[#ece4d6] p-5 shadow-[16px_16px_32px_#d1c6b0,-16px_-16px_32px_#ffffff] sm:p-7"
+          className="ui-card w-full rounded-3xl p-5 sm:p-7"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-[#a67c52]">
+              <p className="text-xs font-semibold uppercase tracking-widest text-mint">
                 {isGeorgian ? "წაღების ოპერაციები" : "Pickup Operations"}
               </p>
               <h3
                 id="pickup-verification-title"
-                className="mt-2 text-2xl font-black text-[#2e2a22]"
+                className="mt-2 text-2xl font-semibold text-cream"
               >
                 {isGeorgian
                   ? "შეამოწმე მომხმარებლის წაღების კოდი"
@@ -90,22 +90,22 @@ export function PickupVerificationModal({
                   ? "წაღების შემოწმების დახურვა"
                   : "Close pickup verification"
               }
-              className="soft-raised flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#2e2a22] transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="ui-card flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-cream transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               <XIcon className="h-4 w-4" strokeWidth={1.8} />
             </button>
           </div>
 
-          <div className="mt-5 rounded-3xl bg-[#f4efe4] p-4">
-            <p className="text-lg font-black text-[#2e2a22]">
+          <div className="mt-5 rounded-3xl bg-well p-4">
+            <p className="text-lg font-semibold text-cream">
               {order.offers?.title || t("common.offerUnavailable")}
             </p>
-            <p className="mt-2 font-semibold text-[#6b6152]">
+            <p className="mt-2 text-body">
               {t("businessDashboard.customer")}:{" "}
               {order.profiles?.email || t("common.unavailable")}
             </p>
-            <p className="mt-1 flex items-center gap-1.5 font-semibold text-[#6b6152]">
-              <ClockIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+            <p className="mt-1 flex items-center gap-1.5 text-body">
+              <ClockIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
               {t("common.pickup")}:{" "}
               {order.offers
                 ? formatPickupWindow(order.offers, language)
@@ -113,7 +113,7 @@ export function PickupVerificationModal({
             </p>
           </div>
 
-          <p className="mt-5 font-semibold leading-7 text-[#6b6152]">
+          <p className="mt-5 leading-7 text-body">
             {isGeorgian
               ? "სთხოვე მომხმარებელს, შეკვეთების გვერდიდან წაღების კოდი გაჩვენოს. შეკვეთის გადაცემამდე კოდი აქ შეიყვანე."
               : "Ask the customer to show the pickup code from their Orders page. Enter it here before handing over the order."}
@@ -121,7 +121,7 @@ export function PickupVerificationModal({
 
           <label
             htmlFor="pickup-verification-code"
-            className="mt-5 block text-sm font-black uppercase tracking-wide text-[#6b6152]"
+            className="mt-5 block text-sm font-semibold uppercase tracking-wide text-body"
           >
             {t("orders.pickupCode")}
           </label>
@@ -146,7 +146,7 @@ export function PickupVerificationModal({
           {error && (
             <p
               role="alert"
-              className="mt-3 rounded-2xl bg-red-50 px-4 py-3 font-bold text-red-700"
+              className="mt-3 rounded-2xl bg-danger-soft px-4 py-3 font-semibold text-danger"
             >
               {error}
             </p>

@@ -25,14 +25,14 @@ export function BusinessOnboardingSections({
 
   return (
     <>
-      <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+      <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
           {t("businessOnboarding.badge")}
         </p>
-        <h2 className="mt-3 text-3xl font-black text-[#2e2a22] sm:text-4xl">
+        <h2 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl">
           {t("businessOnboarding.welcomeTitle")}
         </h2>
-        <p className="mt-3 max-w-3xl font-semibold leading-7 text-[#6b6152]">
+        <p className="mt-3 max-w-3xl leading-7 text-body">
           {t("businessOnboarding.welcomeText")}
         </p>
         <a
@@ -43,11 +43,11 @@ export function BusinessOnboardingSections({
         </a>
       </div>
 
-      <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
-        <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+      <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
           {t("businessOnboarding.checklistBadge")}
         </p>
-        <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+        <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
           {t("businessOnboarding.checklistTitle")}
         </h2>
 
@@ -55,18 +55,16 @@ export function BusinessOnboardingSections({
           {checklist.map((item) => (
             <div
               key={item.label}
-              className={`flex items-center gap-3 rounded-2xl p-4 font-bold ${
-                item.completed
-                  ? "soft-raised text-[#2e2a22]"
-                  : "bg-[#f4efe4] text-[#6b6152]"
+              className={`flex items-center gap-3 rounded-2xl p-4 font-semibold ${ item.completed
+                  ? "ui-card text-cream"
+                  : "bg-well text-body"
               }`}
             >
               <span
                 aria-hidden="true"
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-black ${
-                  item.completed
-                    ? "bg-[#a67c52] text-white"
-                    : "soft-pressed text-[#6b6152]"
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg font-semibold ${ item.completed
+                    ? "bg-moss text-cream"
+                    : "ui-well text-body"
                 }`}
               >
                 {item.completed ? <CheckIcon className="h-4 w-4" strokeWidth={2.2} /> : item.step}
@@ -84,7 +82,7 @@ export function BusinessOnboardingSections({
           ].map((tip) => (
             <span
               key={tip}
-              className="soft-raised flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-black text-[#a67c52]"
+              className="ui-card flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-mint"
             >
               <CheckIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
               {tip}

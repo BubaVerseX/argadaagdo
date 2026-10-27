@@ -51,10 +51,10 @@ function renderDetail(label: string, value: string | number | null | undefined) 
 
   return `
     <tr>
-      <td style="padding:10px 0;color:#64746b;font-size:14px;font-weight:700;">${escapeHtml(
+      <td style="padding:10px 0;color:#9dbfa8;font-size:14px;font-weight:500;">${escapeHtml(
         label
       )}</td>
-      <td style="padding:10px 0;color:#17251d;font-size:14px;font-weight:800;text-align:right;">${escapeHtml(
+      <td style="padding:10px 0;color:#f4efe4;font-size:14px;font-weight:600;text-align:right;">${escapeHtml(
         normalized
       )}</td>
     </tr>
@@ -70,7 +70,7 @@ function renderAction(actionUrl?: string | null, actionLabel?: string | null) {
   return `
     <a
       href="${escapeHtml(normalizedUrl)}"
-      style="display:inline-block;margin-top:24px;border-radius:999px;background:#15803d;color:#ffffff;font-size:15px;font-weight:900;text-decoration:none;padding:14px 22px;"
+      style="display:inline-block;margin-top:24px;border-radius:14px;background:#daf1de;color:#051f20;font-size:15px;font-weight:600;text-decoration:none;padding:14px 22px;"
     >
       ${escapeHtml(normalizedLabel)}
     </a>
@@ -103,34 +103,41 @@ function renderLayout({
         <meta name="x-apple-disable-message-reformatting" />
         <title>${escapeHtml(title)}</title>
       </head>
-      <body style="margin:0;background:#f7f6ef;font-family:Arial,Helvetica,sans-serif;color:#17251d;">
+      <body style="margin:0;background:#051f20;font-family:'Noto Sans','Noto Sans Georgian',Arial,Helvetica,sans-serif;color:#f4efe4;" bgcolor="#051f20">
         <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${escapeHtml(
           preview
         )}</div>
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7f6ef;padding:28px 12px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#051f20;padding:28px 12px;" bgcolor="#051f20">
           <tr>
             <td align="center">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#ffffff;border-radius:28px;overflow:hidden;border:1px solid #e2eadf;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#123630;border-radius:24px;overflow:hidden;border:1px solid #2e5a4c;" bgcolor="#123630">
                 <tr>
-                  <td style="background:#166534;padding:28px 28px 24px;color:#ffffff;">
-                    <p style="margin:0;font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#dcfce7;">ArGadaagdo</p>
-                    <h1 style="margin:10px 0 0;font-size:28px;line-height:1.15;font-weight:900;">${escapeHtml(
+                  <td style="background:#0b2b26;padding:28px 28px 24px;color:#f4efe4;" bgcolor="#0b2b26">
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding-right:12px;"><img src="${escapeHtml(
+                          absoluteSiteUrl("/icons/icon-96.png")
+                        )}" width="40" height="40" alt="" style="display:block;width:40px;height:40px;border:0;" /></td>
+                        <td style="font-size:15px;font-weight:600;letter-spacing:.02em;color:#daf1de;">ArGadaagdo</td>
+                      </tr>
+                    </table>
+                    <h1 style="margin:16px 0 0;font-size:26px;line-height:1.2;font-weight:600;color:#f4efe4;">${escapeHtml(
                       title
                     )}</h1>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding:28px;">
-                    <p style="margin:0;color:#334239;font-size:16px;line-height:1.7;font-weight:600;">${escapeHtml(
+                    <p style="margin:0;color:#c3ddcb;font-size:16px;line-height:1.6;font-weight:400;">${escapeHtml(
                       intro
                     )}</p>
                     ${
                       details
-                        ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border-top:1px solid #e8eee6;border-bottom:1px solid #e8eee6;">${details}</table>`
+                        ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border-top:1px solid #2e5a4c;border-bottom:1px solid #2e5a4c;">${details}</table>`
                         : ""
                     }
                     ${renderAction(actionUrl, actionLabel)}
-                    <p style="margin:26px 0 0;color:#64746b;font-size:13px;line-height:1.6;font-weight:600;">${escapeHtml(
+                    <p style="margin:26px 0 0;color:#9dbfa8;font-size:13px;line-height:1.6;font-weight:400;">${escapeHtml(
                       footer ||
                         "Questions? Contact ArGadaagdo support. We are here to help customers and local businesses reduce food waste in Tbilisi."
                     )}</p>

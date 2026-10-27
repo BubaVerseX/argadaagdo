@@ -19,7 +19,7 @@ const defaultCopy: Record<Language, { title: string; description: string }> = {
     description: "Preparing your marketplace view.",
   },
   ka: {
-    title: "ArGadaagdo იტვირთება...",
+    title: "არ გადააგდო იტვირთება...",
     description: "მარკეტის ხედი მზადდება.",
   },
 };
@@ -41,13 +41,13 @@ export function LoadingState({
 
   return (
     <div
-      className={`premium-card w-full rounded-3xl p-6 text-center sm:rounded-[2rem] sm:p-10 ${className}`}
+      className={`premium-card w-full rounded-3xl p-6 text-center sm:rounded-3xl sm:p-10 ${className}`}
     >
-      <div className="mx-auto h-12 w-12 animate-pulse rounded-full bg-[#f4efe4] sm:h-16 sm:w-16" />
-      <h1 className="mt-5 text-2xl font-black text-[#2e2a22] sm:text-3xl">
+      <div className="mx-auto h-12 w-12 animate-pulse rounded-full bg-well sm:h-16 sm:w-16" />
+      <h1 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
         {resolvedTitle}
       </h1>
-      <p className="mx-auto mt-3 max-w-md font-semibold leading-7 text-[#6b6152]">
+      <p className="mx-auto mt-3 max-w-md leading-7 text-body">
         {resolvedDescription}
       </p>
     </div>

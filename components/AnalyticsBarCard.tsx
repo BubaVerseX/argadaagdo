@@ -5,28 +5,28 @@ const toneStyles: Record<
   { card: string; label: string; bar: string; track: string }
 > = {
   green: {
-    card: "soft-raised text-[#2e2a22]",
-    label: "text-[#a67c52]",
-    bar: "bg-[#a67c52]",
-    track: "bg-[#f4efe4]",
+    card: "ui-card text-cream",
+    label: "text-mint",
+    bar: "bg-mint",
+    track: "bg-well",
   },
   yellow: {
-    card: "bg-yellow-50 text-yellow-950",
-    label: "text-yellow-800",
-    bar: "bg-yellow-500",
-    track: "bg-yellow-100",
+    card: "border border-warning-line bg-warning-soft text-cream",
+    label: "text-warning",
+    bar: "bg-warning",
+    track: "bg-well",
   },
   red: {
-    card: "bg-red-50 text-red-950",
-    label: "text-red-700",
-    bar: "bg-red-600",
-    track: "bg-red-100",
+    card: "border border-danger-line bg-danger-soft text-cream",
+    label: "text-danger",
+    bar: "bg-danger",
+    track: "bg-well",
   },
   neutral: {
-    card: "bg-[#f4efe4] text-[#2e2a22]",
-    label: "text-[#6b6152]",
-    bar: "bg-[#8a8072]",
-    track: "bg-white",
+    card: "border border-line bg-well text-cream",
+    label: "text-body",
+    bar: "bg-muted",
+    track: "bg-well",
   },
 };
 
@@ -54,11 +54,11 @@ export default function AnalyticsBarCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className={`text-sm font-black ${styles.label}`}>{title}</p>
-          <p className="mt-2 text-3xl font-black sm:text-4xl">{value}</p>
+          <p className={`text-sm font-semibold ${styles.label}`}>{title}</p>
+          <p className="mt-2 text-3xl font-semibold sm:text-4xl">{value}</p>
         </div>
 
-        <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-black">
+        <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold">
           {safePercentage}%
         </span>
       </div>
@@ -74,7 +74,7 @@ export default function AnalyticsBarCard({
         />
       </div>
 
-      <p className="mt-3 text-sm font-semibold opacity-75">{caption}</p>
+      <p className="mt-3 text-sm text-body">{caption}</p>
     </div>
   );
 }

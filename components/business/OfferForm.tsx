@@ -90,26 +90,26 @@ export function OfferForm({
   return (
     <div
       id="create-offer"
-      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8"
+      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8"
     >
-      <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
         {isGeorgian ? "შეთავაზებების მართვა" : "Offer Management"}
       </p>
-      <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
         {t("businessDashboard.createOffer")}
       </h2>
 
       {canCreateOffers ? (
         <>
           <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-            <p className="text-sm font-black uppercase tracking-widest text-[#6b6152]">
+            <p className="text-sm uppercase tracking-widest text-body">
               {t("businessOnboarding.firstOfferGuidanceTitle")}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {guidance.map((item) => (
                 <span
                   key={item.label}
-                  className="soft-raised rounded-full px-4 py-2 text-sm font-black text-[#2e2a22]"
+                  className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-cream"
                 >
                   {item.label}: {item.value}
                 </span>
@@ -118,7 +118,7 @@ export function OfferForm({
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {t("common.business")} <RequiredMark />
               </span>
@@ -135,7 +135,7 @@ export function OfferForm({
               </select>
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {isGeorgian ? "სათაური" : "Title"} <RequiredMark />
               </span>
@@ -148,7 +148,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152] md:col-span-2">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body md:col-span-2">
               {isGeorgian ? "აღწერა" : "Description"}
               <textarea
                 value={description}
@@ -163,7 +163,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {t("common.category")} <RequiredMark />
               </span>
@@ -185,7 +185,7 @@ export function OfferForm({
               </select>
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {t("common.price")} <RequiredMark />
               </span>
@@ -201,7 +201,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               {isGeorgian ? "საწყისი ფასი" : "Original price"}
               <input
                 value={oldPrice}
@@ -215,7 +215,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {t("common.quantity")} <RequiredMark />
               </span>
@@ -231,7 +231,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {t("offerDetail.pickupDate")} <RequiredMark />
               </span>
@@ -244,7 +244,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {isGeorgian ? "წაღების დაწყება" : "Pickup start"} <RequiredMark />
               </span>
@@ -256,7 +256,7 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
                 {isGeorgian ? "წაღების დასრულება" : "Pickup end"} <RequiredMark />
               </span>
@@ -268,14 +268,14 @@ export function OfferForm({
               />
             </label>
 
-            <label className="grid min-w-0 gap-2 text-sm font-black text-[#6b6152] md:col-span-2">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body md:col-span-2">
               {isGeorgian ? "შეთავაზების სურათი" : "Offer image"}
               <input
                 key={imageInputKey}
                 type="file"
                 accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
                 onChange={onImageFileChange}
-              className="premium-input w-full min-w-0 p-4 font-semibold file:mr-4 file:rounded-full file:border-0 file:bg-[#ece4d6] file:px-4 file:py-2 file:font-black file:text-[#2e2a22] focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+              className="premium-input w-full min-w-0 p-4 font-semibold file:mr-4 file:rounded-full file:border-0 file:bg-page file:px-4 file:py-2 file:font-semibold file:text-cream focus-visible:ring-2 focus-visible:ring-mint"
             />
           </label>
           </div>
@@ -288,19 +288,19 @@ export function OfferForm({
             ].map((helper) => (
               <p
                 key={helper}
-                className="rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-semibold leading-6 text-[#6b6152]"
+                className="rounded-2xl bg-well px-4 py-3 text-sm font-semibold leading-6 text-body"
               >
                 {helper}
               </p>
             ))}
           </div>
 
-          <p className="mt-4 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold leading-6 text-[#6b6152]">
+          <p className="mt-4 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
             {t("businessOnboarding.offerValidationHint")}
           </p>
 
           {imageFile && (
-            <p className="mt-4 rounded-2xl bg-[#f4efe4] px-4 py-3 text-sm font-bold text-[#2e2a22]">
+            <p className="mt-4 rounded-2xl bg-well px-4 py-3 text-sm font-semibold text-cream">
               {t("businessDashboard.selectedImage")}: {imageFile.name}
             </p>
           )}
@@ -316,7 +316,7 @@ export function OfferForm({
           </button>
         </>
       ) : (
-        <div className="mt-6 rounded-2xl bg-[#f4efe4] p-5 font-bold text-[#2e2a22]">
+        <div className="mt-6 rounded-2xl bg-well p-5 font-semibold text-cream">
           {businessStatusMessage}
         </div>
       )}

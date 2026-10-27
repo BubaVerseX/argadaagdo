@@ -20,14 +20,14 @@ export function HelpCard({
   children,
 }: HelpCardProps) {
   return (
-    <article className="soft-raised rounded-[1.75rem] p-5">
+    <article className="ui-card rounded-[22px] p-5">
       <div className="flex items-start gap-3">
-        <span className="soft-pressed flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-[#a67c52]">
+        <span className="ui-well flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-mint">
           {icon}
         </span>
         <div>
-          <h3 className="text-lg font-bold text-[#2e2a22]">{title}</h3>
-          <p className="mt-2 leading-[1.55] text-[#6b6152]">{text}</p>
+          <h3 className="text-lg font-semibold text-cream">{title}</h3>
+          <p className="mt-2 leading-[1.55] text-body">{text}</p>
         </div>
       </div>
       {children && <div className="mt-4">{children}</div>}

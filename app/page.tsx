@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { OfferCard } from "@/components/OfferCard";
 import OfferImage from "@/components/OfferImage";
-import { ShoppingBagIcon } from "@/components/icons";
+import { LeafIcon } from "@/components/icons";
 import { getUserErrorMessage } from "@/lib/errors";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { getOfferCategoryLabel } from "@/lib/offerCategories";
@@ -104,7 +104,7 @@ export default function Home() {
       ? "გადაარჩინე კარგი საკვები თბილისის ადგილობრივი ბიზნესებიდან."
       : "Rescue great food from local Tbilisi businesses.",
     heroSubtitle: isGeorgian
-      ? "ArGadaagdo აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
+      ? "არ გადააგდო აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
       : "ArGadaagdo connects customers with cafes, bakeries and restaurants that have good food left at the end of the day.",
     categoriesLabel: isGeorgian ? "პოპულარული კატეგორიები" : "Popular categories",
     browseToday: isGeorgian ? "შეთავაზებების ნახვა" : "Browse offers",
@@ -152,18 +152,18 @@ export default function Home() {
     },
     {
       quote: isGeorgian
-        ? "დღის ბოლოს დარჩენილი გამოცხობილობის გაყიდვა ახლა ჩვენი ბიზნესის ჩვეულ ნაწილად იქცა."
+        ? "დღის ბოლოს დარჩენილი ცომეულის გაყიდვა ახლა ჩვენი ბიზნესის ჩვეულ ნაწილად იქცა."
         : "Selling our end-of-day bakes has become a normal, easy part of closing up each night.",
       name: isGeorgian ? "დავითი" : "Davit",
-      location: isGeorgian ? "საბურთალო, თბილისი" : "Saburtalo bakery owner",
+      location: isGeorgian ? "საცხობის მფლობელი, საბურთალო" : "Saburtalo bakery owner",
     },
   ];
   const marqueeItems = isGeorgian
     ? [
-        "შემოწმებული თბილისური ბიზნესები",
+        "დამოწმებული თბილისური ბიზნესები",
         "მხოლოდ ადგილზე წაღება",
         "დაცული ჯავშნები",
-        "ნამდვილი მომხმარებლის შეფასებები",
+        "ნამდვილი მომხმარებლების შეფასებები",
         "ყოველდღიური ახალი შეთავაზებები",
       ]
     : [
@@ -178,7 +178,7 @@ export default function Home() {
       value: "100%",
       label: isGeorgian ? "მხოლოდ ადგილზე წაღება" : "Pickup-only, always",
       text: isGeorgian
-        ? "არანაირი მიწოდების შეფუთვა და ზედმეტი ემისია — მხოლოდ საკვები, რომელიც ჭამენ ნაგვის ნაცვლად."
+        ? "არანაირი მიწოდების შეფუთვა და ზედმეტი ემისია — მხოლოდ საკვები, რომელსაც გადაყრის ნაცვლად ჭამენ."
         : "No delivery packaging, no extra emissions — just food that gets eaten instead of thrown away.",
     },
     {
@@ -242,24 +242,24 @@ export default function Home() {
         <div className="premium-container relative">
           <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="min-w-0 max-w-2xl">
-              <p className="soft-raised inline-flex rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152]">
+              <p className="ui-card inline-flex rounded-full px-4 py-2 text-sm text-body">
                 {homepageCopy.launchBadge}
               </p>
 
-              <h1 className="mt-7 text-balance text-[3rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#2e2a22] sm:text-[3.5rem] lg:text-[3.75rem]">
+              <h1 className="mt-7 text-balance text-[3rem] font-semibold leading-[1.2] text-cream sm:text-[3.5rem] lg:text-[3.75rem]">
                 {heroTitleBefore}
-                <span className="text-[#a67c52]">
+                <span className="text-mint">
                   {homepageCopy.heroAccentPhrase}
                 </span>
                 {heroTitleAfter}
               </h1>
 
-              <p className="mt-6 max-w-xl text-pretty text-base leading-[1.55] text-[#6b6152] sm:text-lg">
+              <p className="mt-6 max-w-xl text-pretty text-base leading-[1.55] text-body sm:text-lg">
                 {homepageCopy.heroSubtitle}
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link href="/offers" className="premium-button px-8 py-3.5">
+                <Link href="/offers" className="premium-button cta-glow px-8 py-3.5">
                   {homepageCopy.browseToday}
                 </Link>
                 <Link
@@ -271,7 +271,7 @@ export default function Home() {
               </div>
 
               <div className="mt-10" aria-label={homepageCopy.categoriesLabel}>
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6152]">
+                <p className="mb-3 text-xs uppercase tracking-[0.22em] text-body">
                   {homepageCopy.categoriesLabel}
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -279,7 +279,7 @@ export default function Home() {
                     <Link
                       key={category}
                       href={`/offers?category=${encodeURIComponent(category)}`}
-                      className="soft-raised flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-[#6b6152] transition hover:text-[#a67c52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                      className="ui-card flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold text-body transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                     >
                       {getOfferCategoryLabel(category, language)}
                     </Link>
@@ -289,7 +289,7 @@ export default function Home() {
             </div>
 
             <div className="relative mx-auto w-full min-w-0 max-w-lg lg:mx-0">
-              <div className="soft-raised photo-warm-overlay blob-mask relative isolate aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
+              <div className="photo-frame relative isolate aspect-[4/5] overflow-hidden sm:aspect-[5/6]">
                 <OfferImage
                   src={previewOffer?.image_url}
                   alt={previewOffer?.title || homepageCopy.heroAccentPhrase}
@@ -301,10 +301,10 @@ export default function Home() {
               {/* Floating product card: a genuine miniature offer, not decoration */}
               <Link
                 href={previewOffer ? `/offers/${previewOffer.id}` : "/offers"}
-                className="soft-raised absolute -bottom-8 -left-4 w-[calc(100%-2rem)] max-w-xs rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52] sm:-left-8"
+                className="ui-card absolute -bottom-8 -left-4 w-[calc(100%-2rem)] max-w-xs rounded-[1.5rem] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint sm:-left-8"
               >
                 <div className="flex items-center gap-3">
-                  <div className="soft-raised photo-warm-overlay blob-mask-2 h-16 w-16 shrink-0 overflow-hidden">
+                  <div className="photo-frame h-16 w-16 shrink-0 overflow-hidden">
                     {previewOffer ? (
                       <OfferImage
                         src={previewOffer.image_url}
@@ -312,20 +312,20 @@ export default function Home() {
                         sizes="64px"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-[#f4efe4]">
-                        <ShoppingBagIcon className="h-6 w-6 text-[#8a8072]" strokeWidth={1.6} />
+                      <div className="flex h-full w-full items-center justify-center bg-well">
+                        <LeafIcon className="h-6 w-6 text-muted" strokeWidth={1.6} />
                       </div>
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-[#2e2a22]">
+                    <p className="truncate text-sm font-semibold text-cream">
                       {previewOffer?.title || t("home.noSurpriseBags")}
                     </p>
-                    <p className="truncate text-xs font-medium text-[#6b6152]">
+                    <p className="truncate text-xs text-body">
                       {previewOffer?.businesses?.name || homepageCopy.localLabel}
                     </p>
-                    <p className="mt-0.5 text-base font-bold text-[#a67c52]">
+                    <p className="mt-0.5 text-base font-semibold text-mint">
                       {previewOffer ? formatMoney(previewOffer.price) : "₾"}
                     </p>
                   </div>
@@ -342,28 +342,26 @@ export default function Home() {
 
       <section className="px-4 pb-8 pt-16 sm:px-6 sm:pb-10 sm:pt-20 lg:px-12">
         <div className="premium-container">
-          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6152]">
+          <p className="mb-5 text-xs uppercase tracking-[0.22em] text-body">
             {homepageCopy.statsBadge}
           </p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
             {stats.map((item, index) => (
               <div
                 key={item.label}
-                className={`soft-raised rounded-[1.75rem] p-7 ${
-                  index === 0 ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
+                className={`ui-card rounded-[22px] p-7 ${ index === 0 ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
                 }`}
               >
                 <p
-                  className={`font-extrabold tracking-[-0.03em] text-[#2e2a22] ${
-                    index === 0 ? "text-6xl" : "text-3xl"
+                  className={`font-semibold text-cream ${ index === 0 ? "text-6xl" : "text-3xl"
                   }`}
                 >
                   {item.value}
                 </p>
-                <p className="mt-3 text-sm font-semibold text-[#2e2a22]">
+                <p className="mt-3 text-sm font-semibold text-cream">
                   {item.label}
                 </p>
-                <p className="mt-1 max-w-xs text-sm leading-[1.55] text-[#6b6152]">
+                <p className="mt-1 max-w-xs text-sm leading-[1.55] text-body">
                   {item.text}
                 </p>
               </div>
@@ -374,23 +372,23 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6152]">
+          <p className="text-xs uppercase tracking-[0.24em] text-body">
             {homepageCopy.howItWorksBadge}
           </p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#2e2a22] sm:text-5xl">
+          <h2 className="mt-3 text-4xl font-semibold text-cream sm:text-5xl">
             {homepageCopy.howItWorksTitle}
           </h2>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3 md:gap-6">
             {steps.map((step) => (
-              <div key={step.label} className="soft-raised rounded-[1.5rem] p-6">
-                <p className="text-sm font-semibold tracking-[0.1em] text-[#a67c52]">
+              <div key={step.label} className="ui-card rounded-[1.5rem] p-6">
+                <p className="text-sm font-semibold tracking-[0.1em] text-mint">
                   {step.label}
                 </p>
-                <h3 className="mt-4 text-2xl font-bold tracking-[-0.02em] text-[#2e2a22]">
+                <h3 className="mt-4 text-2xl font-semibold text-cream">
                   {step.title}
                 </h3>
-                <p className="mt-3 leading-[1.55] text-[#6b6152]">
+                <p className="mt-3 leading-[1.55] text-body">
                   {step.text}
                 </p>
               </div>
@@ -401,29 +399,29 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <div className="rounded-[1.75rem] bg-[#2e2a22] p-8 text-white shadow-[var(--shadow-soft)] sm:p-10 lg:p-14">
+          <div className="rounded-[22px] hero-surface p-8 text-cream shadow-[var(--shadow-card)] sm:p-10 lg:p-14">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a880]">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
                   {t("forBusinesses.problemBadge")}
                 </p>
-                <h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
+                <h2 className="mt-4 text-4xl font-semibold leading-tight sm:text-5xl">
                   {t("forBusinesses.heroTitle")}
                 </h2>
-                <p className="mt-5 max-w-lg leading-[1.55] text-white/70">
+                <p className="mt-5 max-w-lg leading-[1.55] text-body-light">
                   {t("forBusinesses.problemText")}
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link
                     href="/for-businesses"
-                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3 font-semibold text-[#2e2a22] transition hover:bg-[#ece4d6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full bg-mint px-8 py-3 font-semibold text-ink transition hover:bg-mint-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                   >
                     {homepageCopy.businessLearnMore}
                   </Link>
                   <Link
                     href="/business/register"
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 px-8 py-3 font-semibold text-white transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-line-strong px-8 py-3 font-semibold text-cream transition hover:bg-ink/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                   >
                     {t("home.registerBusiness")}
                   </Link>
@@ -434,10 +432,10 @@ export default function Home() {
                 {businessSolutions.map((item) => (
                   <div
                     key={item.title}
-                    className="rounded-[1.5rem] bg-white/10 p-6"
+                    className="rounded-[1.5rem] bg-ink/30 p-6"
                   >
-                    <h3 className="text-lg font-bold">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-[1.55] text-white/70">
+                    <h3 className="text-lg font-semibold">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-[1.55] text-body-light">
                       {item.text}
                     </p>
                   </div>
@@ -452,13 +450,13 @@ export default function Home() {
         <div className="premium-container">
           <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6b6152]">
+              <p className="text-xs uppercase tracking-[0.24em] text-body">
                 {t("home.featuredOffers")}
               </p>
-              <h2 className="mt-3 text-4xl font-extrabold tracking-[-0.03em] text-[#2e2a22] sm:text-5xl">
+              <h2 className="mt-3 text-4xl font-semibold text-cream sm:text-5xl">
                 {t("offers.title")}
               </h2>
-              <p className="mt-3 max-w-xl leading-[1.55] text-[#6b6152]">
+              <p className="mt-3 max-w-xl leading-[1.55] text-body">
                 {t("offers.subtitle")}
               </p>
             </div>
@@ -469,7 +467,7 @@ export default function Home() {
           </div>
 
           {errorMessage && (
-            <div className="soft-raised mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-[#6b6152]">
+            <div className="ui-card mb-5 rounded-3xl px-5 py-4 text-sm font-medium text-body">
               {translateUserMessage(errorMessage, language)}
             </div>
           )}
@@ -477,9 +475,9 @@ export default function Home() {
           <div className="grid gap-5 md:grid-cols-3">
             {loading && (
               <>
-                <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f4efe4]" />
-                <div className="hidden h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f4efe4] md:block" />
-                <div className="hidden h-[26rem] animate-pulse rounded-[1.75rem] bg-[#f4efe4] md:block" />
+                <div className="h-[26rem] animate-pulse rounded-[22px] bg-well" />
+                <div className="hidden h-[26rem] animate-pulse rounded-[22px] bg-well md:block" />
+                <div className="hidden h-[26rem] animate-pulse rounded-[22px] bg-well md:block" />
               </>
             )}
 
@@ -495,14 +493,14 @@ export default function Home() {
             ))}
 
             {!loading && offers.length === 0 && (
-              <div className="soft-raised rounded-[1.75rem] p-10 text-center md:col-span-3">
-                <div className="soft-pressed mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                  <ShoppingBagIcon className="h-7 w-7 text-[#a67c52]" strokeWidth={1.6} />
+              <div className="ui-card rounded-[22px] p-10 text-center md:col-span-3">
+                <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+                  <LeafIcon className="h-7 w-7 text-mint" strokeWidth={1.6} />
                 </div>
-                <h3 className="mt-5 text-2xl font-extrabold tracking-[-0.02em] text-[#2e2a22]">
+                <h3 className="mt-5 text-2xl font-semibold text-cream">
                   {t("home.noSurpriseBags")}
                 </h3>
-                <p className="mx-auto mt-3 max-w-lg leading-[1.55] text-[#6b6152]">
+                <p className="mx-auto mt-3 max-w-lg leading-[1.55] text-body">
                   {t("home.publishLater")}
                 </p>
                 <Link href="/offers" className="mt-6 inline-flex premium-button px-7 py-3">
@@ -517,16 +515,16 @@ export default function Home() {
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container grid gap-6 md:grid-cols-2 md:gap-6">
           {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="soft-raised rounded-[1.75rem] p-8">
-              <blockquote className="text-2xl font-medium leading-[1.4] tracking-[-0.01em] text-[#2e2a22] sm:text-3xl">
+            <figure key={testimonial.name} className="ui-card rounded-[22px] p-8">
+              <blockquote className="text-2xl font-medium leading-[1.4] text-cream sm:text-3xl">
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
               <figcaption className="mt-6 flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#a67c52] text-base font-bold text-white">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-moss text-base font-semibold text-cream">
                   {testimonial.name.slice(0, 1).toUpperCase()}
                 </div>
-                <div className="text-sm font-semibold text-[#6b6152]">
-                  <p className="text-[#2e2a22]">{testimonial.name}</p>
+                <div className="text-sm font-semibold text-body">
+                  <p className="text-cream">{testimonial.name}</p>
                   <p>{testimonial.location}</p>
                 </div>
               </figcaption>
@@ -541,11 +539,11 @@ export default function Home() {
             {[...marqueeItems, ...marqueeItems].map((item, index) => (
               <span
                 key={`${item}-${index}`}
-                className="mx-4 inline-flex items-center whitespace-nowrap text-lg font-semibold text-[#6b6152]"
+                className="mx-4 inline-flex items-center whitespace-nowrap text-lg font-semibold text-body"
               >
                 {item}
                 <span
-                  className="mx-4 h-1.5 w-1.5 rounded-full bg-[#a67c52]"
+                  className="mx-4 h-1.5 w-1.5 rounded-full bg-mint"
                   aria-hidden="true"
                 />
               </span>
@@ -556,27 +554,27 @@ export default function Home() {
 
       <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-12">
         <div className="premium-container">
-          <div className="rounded-[1.75rem] bg-[#2e2a22] p-10 text-center text-white shadow-[var(--shadow-soft)] sm:p-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a880]">
+          <div className="rounded-[22px] hero-surface p-10 text-center text-cream shadow-[var(--shadow-card)] sm:p-14">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
               {homepageCopy.finalCtaBadge}
             </p>
-            <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold leading-tight tracking-[-0.03em] sm:text-5xl">
+            <h2 className="mx-auto mt-5 max-w-2xl text-4xl font-semibold leading-tight sm:text-5xl">
               {homepageCopy.finalCtaTitle}
             </h2>
-            <p className="mx-auto mt-5 max-w-xl leading-[1.55] text-white/70">
+            <p className="mx-auto mt-5 max-w-xl leading-[1.55] text-body-light">
               {homepageCopy.finalCtaText}
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/offers"
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-white px-8 py-3.5 font-semibold text-[#2e2a22] transition hover:bg-[#ece4d6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-mint px-8 py-3.5 font-semibold text-ink transition hover:bg-mint-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
                 {homepageCopy.browseToday}
               </Link>
               <Link
                 href="/for-businesses"
-                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 px-8 py-3.5 font-semibold text-white transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-line-strong px-8 py-3.5 font-semibold text-cream transition hover:bg-ink/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
                 {homepageCopy.finalCtaSecondary}
               </Link>

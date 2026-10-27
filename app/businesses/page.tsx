@@ -182,18 +182,18 @@ export default function BusinessesPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-7xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-10">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] md:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-10">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint md:text-sm">
               {t("home.trustLocalBusinesses")}
             </p>
-            <h1 className="mt-3 text-3xl font-black leading-tight text-[#2e2a22] sm:text-4xl md:text-5xl">
+            <h1 className="mt-3 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-5xl">
               {isGeorgian
                 ? "აღმოაჩინე თბილისის დამოწმებული ბიზნესები"
                 : "Discover verified Tbilisi businesses"}
             </h1>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-[#6b6152] md:text-lg">
+            <p className="mt-3 max-w-2xl text-base leading-7 text-body md:text-lg">
               {isGeorgian
-                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც ArGadaagdo-ზე სიურპრიზის ყუთების გამოქვეყნების უფლება აქვთ."
+                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც არ გადააგდოზე სიურპრიზის ყუთების გამოქვეყნების უფლება აქვთ."
                 : "Search bakeries, cafes, restaurants and shops that are approved to publish surprise bags on ArGadaagdo."}
             </p>
           </div>
@@ -296,7 +296,7 @@ export default function BusinessesPage() {
           </FilterBar>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-black text-[#6b6152]">
+            <p className="text-body">
               {filteredBusinesses.length}{" "}
               {isGeorgian
                 ? "ბიზნესი"
@@ -328,11 +328,11 @@ export default function BusinessesPage() {
           )}
 
           {!loading && filteredBusinesses.length === 0 && (
-            <div className="soft-raised mt-6 rounded-3xl p-8 text-center">
-              <h2 className="text-2xl font-black text-[#2e2a22]">
+            <div className="ui-card mt-6 rounded-3xl p-8 text-center">
+              <h2 className="text-2xl font-semibold text-cream">
                 {isGeorgian ? "ბიზნესები ვერ მოიძებნა" : "No businesses found"}
               </h2>
-              <p className="mx-auto mt-2 max-w-lg font-semibold leading-7 text-[#6b6152]">
+              <p className="mx-auto mt-2 max-w-lg leading-7 text-body">
                 {isGeorgian
                   ? "სცადე ფილტრების გასუფთავება ან პირდაპირ შეთავაზებების დათვალიერება. ახალი დამოწმებული ბიზნესები აქ პილოტის ზრდასთან ერთად გამოჩნდება."
                   : "Try clearing filters or browsing offers directly. New verified businesses will appear here as the pilot grows."}
@@ -359,19 +359,19 @@ export default function BusinessesPage() {
                   className="premium-card rounded-3xl p-5 transition hover:-translate-y-1 sm:p-6"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#a67c52] text-2xl font-black text-white">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-moss text-2xl font-semibold text-cream">
                       {getBusinessInitials(business.name)}
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="break-words text-2xl font-black text-[#2e2a22]">
+                        <h2 className="break-words text-2xl font-semibold text-cream">
                           {business.name}
                         </h2>
-                        <span className="rounded-full bg-[#f4efe4] px-3 py-1 text-xs font-black uppercase tracking-wide text-[#a67c52]">
+                        <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide text-mint">
                           {isGeorgian ? "დამოწმებული" : "Verified"}
                         </span>
                       </div>
-                      <p className="mt-2 font-semibold text-[#6b6152]">
+                      <p className="mt-2 text-body">
                         {business.business_type ||
                           (isGeorgian ? "კვების ბიზნესი" : "Food business")}
                       </p>
@@ -379,34 +379,34 @@ export default function BusinessesPage() {
                   </div>
 
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-2xl bg-yellow-50 p-4">
-                      <p className="text-xs font-black text-yellow-800">
+                    <div className="rounded-2xl bg-warning-soft p-4">
+                      <p className="text-xs font-semibold text-warning">
                         {t("common.rating")}
                       </p>
-                      <p className="mt-1 text-sm font-black text-[#2e2a22]">
+                      <p className="mt-1 text-sm font-semibold text-cream">
                         {getRatingLabel(rating, language)}
                       </p>
                     </div>
-                    <div className="rounded-2xl bg-[#f4efe4] p-4">
-                      <p className="text-xs font-black text-[#a67c52]">
+                    <div className="rounded-2xl bg-well p-4">
+                      <p className="text-xs font-semibold text-mint">
                         {t("nav.offers")}
                       </p>
-                      <p className="mt-1 text-2xl font-black text-[#2e2a22]">
+                      <p className="mt-1 text-2xl font-semibold text-cream">
                         {activeOfferCount}
                       </p>
                     </div>
-                    <div className="rounded-2xl bg-[#f4efe4] p-4">
-                      <p className="text-xs font-black text-[#6b6152]">
+                    <div className="rounded-2xl bg-well p-4">
+                      <p className="text-xs text-body">
                         {isGeorgian ? "რიგითი ID" : "Sort ID"}
                       </p>
-                      <p className="mt-1 text-2xl font-black text-[#2e2a22]">
+                      <p className="mt-1 text-2xl font-semibold text-cream">
                         #{business.id}
                       </p>
                     </div>
                   </div>
 
-                  <p className="mt-4 flex items-center gap-1.5 font-semibold leading-7 text-[#6b6152]">
-                    <MapPinIcon className="h-4 w-4 shrink-0 text-[#8a8072]" strokeWidth={1.8} />
+                  <p className="mt-4 flex items-center gap-1.5 leading-7 text-body">
+                    <MapPinIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
                     {business.address || t("common.addressUnavailable")}
                   </p>
 

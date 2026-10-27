@@ -78,42 +78,42 @@ export default function FAQPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-[2rem] sm:p-8 md:rounded-[2.5rem] md:p-12">
-            <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
               {t("faq.badge")}
             </p>
-            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
               {t("faq.title")}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#6b6152] sm:text-lg sm:leading-8">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {t("faq.subtitle")}
             </p>
           </div>
 
           <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-3">
             <div className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("faq.trustLabel")}
               </p>
-              <p className="mt-3 font-bold leading-7 text-[#6b6152]">
+              <p className="mt-3 leading-7 text-body">
                 {t("faq.trustText")}
               </p>
             </div>
 
             <div className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("common.pickup")}
               </p>
-              <p className="mt-3 font-bold leading-7 text-[#6b6152]">
+              <p className="mt-3 leading-7 text-body">
                 {t("faq.pickupText")}
               </p>
             </div>
 
             <div className="premium-card rounded-3xl p-5 sm:p-6">
-              <p className="text-sm font-black uppercase tracking-widest text-[#a67c52]">
+              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                 {t("common.rating")}
               </p>
-              <p className="mt-3 font-bold leading-7 text-[#6b6152]">
+              <p className="mt-3 leading-7 text-body">
                 {t("faq.ratingText")}
               </p>
             </div>
@@ -123,9 +123,9 @@ export default function FAQPage() {
             {sections.map((section) => (
               <section
                 key={section.title}
-                className="rounded-[2rem] soft-raised p-5 sm:p-8"
+                className="rounded-3xl ui-card p-5 sm:p-8"
               >
-                <h2 className="text-2xl font-black text-[#2e2a22] sm:text-3xl">
+                <h2 className="text-2xl font-semibold text-cream sm:text-3xl">
                   {section.title}
                 </h2>
 
@@ -133,18 +133,18 @@ export default function FAQPage() {
                   {section.questions.map((item) => (
                     <details
                       key={item.question}
-                      className="group rounded-3xl bg-[#f4efe4] p-5"
+                      className="group rounded-3xl bg-well p-5"
                     >
-                      <summary className="cursor-pointer list-none text-lg font-black text-[#2e2a22] outline-none transition hover:text-[#a67c52] focus-visible:ring-2 focus-visible:ring-[#a67c52]">
+                      <summary className="cursor-pointer list-none text-lg font-semibold text-cream outline-none transition hover:text-mint focus-visible:ring-2 focus-visible:ring-mint">
                         <span className="flex items-start justify-between gap-4">
                           <span>{item.question}</span>
                           <PlusIcon
-                            className="h-5 w-5 shrink-0 text-[#a67c52] transition group-open:rotate-45"
+                            className="h-5 w-5 shrink-0 text-mint transition group-open:rotate-45"
                             strokeWidth={1.8}
                           />
                         </span>
                       </summary>
-                      <p className="mt-4 font-semibold leading-7 text-[#6b6152]">
+                      <p className="mt-4 leading-7 text-body">
                         {item.answer}
                       </p>
                     </details>
@@ -154,11 +154,11 @@ export default function FAQPage() {
             ))}
           </div>
 
-          <div className="mt-8 rounded-[2rem] soft-raised p-5 text-center sm:p-8">
-            <h2 className="text-2xl font-black text-[#2e2a22]">
+          <div className="mt-8 rounded-3xl ui-card p-5 text-center sm:p-8">
+            <h2 className="text-2xl font-semibold text-cream">
               {t("faq.ctaTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl font-semibold leading-7 text-[#6b6152]">
+            <p className="mx-auto mt-3 max-w-2xl leading-7 text-body">
               {t("faq.ctaText")}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">

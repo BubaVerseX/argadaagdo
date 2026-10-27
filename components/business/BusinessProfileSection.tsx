@@ -32,16 +32,16 @@ export function BusinessProfileSection({
   const isGeorgian = language === "ka";
 
   return (
-    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-[2rem] sm:p-8">
+    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-[#a67c52] sm:text-sm">
+          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
             {isGeorgian ? "ბიზნესის პროფილი" : "Business Profile"}
           </p>
-          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
             {isGeorgian ? "მართე საჯარო ინფორმაცია" : "Manage public details"}
           </h2>
-          <p className="mt-2 max-w-2xl font-semibold leading-7 text-[#6b6152]">
+          <p className="mt-2 max-w-2xl leading-7 text-body">
             {isGeorgian
               ? "ბიზნესის საჯარო ინფორმაცია მკაფიო გქონდეს, რომ მომხმარებლებმა იცოდნენ, სად წაიღონ სიურპრიზის ყუთი."
               : "Keep your public business information clear so customers know where to collect their surprise bag."}
@@ -49,17 +49,17 @@ export function BusinessProfileSection({
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
-          <div className="soft-raised rounded-3xl p-5 text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#a67c52] text-2xl font-black text-white">
+          <div className="ui-card rounded-3xl p-5 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-moss text-2xl font-semibold text-cream">
               {profileName.trim().slice(0, 2).toUpperCase() || "AG"}
             </div>
-            <p className="mt-3 text-sm font-black text-[#a67c52]">
+            <p className="mt-3 text-sm font-semibold text-mint">
               {isGeorgian ? "ლოგოს გადახედვა" : "Logo preview"}
             </p>
           </div>
-          <div className="rounded-3xl bg-[#f4efe4] p-5 text-center">
-            <div className="soft-pressed mx-auto h-16 rounded-2xl" />
-            <p className="mt-3 text-sm font-black text-[#6b6152]">
+          <div className="rounded-3xl bg-well p-5 text-center">
+            <div className="ui-well mx-auto h-16 rounded-2xl" />
+            <p className="mt-3 text-sm text-body">
               {isGeorgian ? "ქავერის სურათის გადახედვა" : "Cover image preview"}
             </p>
           </div>
@@ -67,7 +67,7 @@ export function BusinessProfileSection({
       </div>
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+        <label className="grid gap-2 text-sm font-semibold text-body">
           <span>
             {isGeorgian ? "ბიზნესის სახელი" : "Business name"} <RequiredMark />
           </span>
@@ -78,12 +78,12 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder="GMBH1 Bakery"
           />
-          <span className="text-xs font-bold text-[#6b6152]">
+          <span className="text-xs font-semibold text-body">
             {profileName.length}/80
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+        <label className="grid gap-2 text-sm font-semibold text-body">
           <span>
             {isGeorgian ? "ბიზნესის ტიპი" : "Business type"} <RequiredMark />
           </span>
@@ -94,12 +94,12 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder={isGeorgian ? "საცხობი" : "Bakery"}
           />
-          <span className="text-xs font-bold text-[#6b6152]">
+          <span className="text-xs font-semibold text-body">
             {profileType.length}/60
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+        <label className="grid gap-2 text-sm font-semibold text-body">
           <span>
             {isGeorgian ? "მისამართი" : "Address"} <RequiredMark />
           </span>
@@ -114,12 +114,12 @@ export function BusinessProfileSection({
                 : "Rustaveli Avenue, Tbilisi"
             }
           />
-          <span className="text-xs font-bold text-[#6b6152]">
+          <span className="text-xs font-semibold text-body">
             {profileAddress.length}/160
           </span>
         </label>
 
-        <label className="grid gap-2 text-sm font-black text-[#6b6152]">
+        <label className="grid gap-2 text-sm font-semibold text-body">
           {isGeorgian ? "ტელეფონი" : "Phone"}
           <input
             value={profilePhone}
@@ -130,7 +130,7 @@ export function BusinessProfileSection({
             className="premium-input p-4 font-semibold"
             placeholder="+995 555 123 456"
           />
-          <span className="text-xs font-bold text-[#6b6152]">
+          <span className="text-xs font-semibold text-body">
             {profilePhone.length}/40
           </span>
         </label>

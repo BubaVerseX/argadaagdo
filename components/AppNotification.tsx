@@ -19,26 +19,26 @@ const toneStyles: Record<
   { wrapper: string; icon: string; role: "status" | "alert"; Icon: ComponentType<IconProps> }
 > = {
   success: {
-    wrapper: "soft-raised text-[#2e2a22]",
-    icon: "bg-[#a67c52] text-white",
+    wrapper: "ui-card text-cream",
+    icon: "bg-mint text-ink",
     role: "status",
     Icon: CheckIcon,
   },
   info: {
-    wrapper: "bg-blue-50 text-blue-950",
-    icon: "bg-blue-600 text-white",
+    wrapper: "border border-line bg-well text-cream",
+    icon: "bg-sage text-ink",
     role: "status",
     Icon: InfoIcon,
   },
   warning: {
-    wrapper: "bg-yellow-50 text-yellow-950",
-    icon: "bg-yellow-500 text-yellow-950",
+    wrapper: "border border-warning-line bg-warning-soft text-cream",
+    icon: "bg-warning text-ink",
     role: "status",
     Icon: AlertTriangleIcon,
   },
   error: {
-    wrapper: "bg-red-50 text-red-900",
-    icon: "bg-red-600 text-white",
+    wrapper: "border border-danger-line bg-danger-soft text-cream",
+    icon: "bg-danger-solid text-cream",
     role: "alert",
     Icon: XCircleIcon,
   },
@@ -76,7 +76,7 @@ export default function AppNotification({
         </span>
 
         <div className="min-w-0 flex-1">
-          {title && <p className="font-black">{title}</p>}
+          {title && <p className="font-semibold">{title}</p>}
           <div className="text-sm font-semibold leading-6 sm:text-base">
             {children}
           </div>
@@ -92,7 +92,7 @@ export default function AppNotification({
                 ? "შეტყობინების დახურვა"
                 : "Dismiss notification"
             }
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/70 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a67c52]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-well transition hover:bg-line focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
           >
             <XIcon className="h-4 w-4" strokeWidth={2} />
           </button>

@@ -21,43 +21,43 @@ export function BusinessDashboardHero({
   const { language } = useLanguage();
 
   return (
-    <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-[2.5rem] md:p-12">
+    <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-3xl md:p-12">
       <p className="premium-badge px-4 py-2">
         {language === "ka" ? "ბიზნესის მართვის ცენტრი" : "Business control center"}
       </p>
 
-      <h1 className="mt-4 text-3xl font-black text-[#2e2a22] sm:text-4xl md:text-5xl">
+      <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-5xl">
         {t("businessDashboard.welcome")}, {businessName}
       </h1>
 
-      <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[#6b6152] sm:mt-4 sm:text-lg">
+      <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:mt-4 sm:text-lg">
         {t("businessDashboard.welcomeText")}
       </p>
 
       <div className="mt-6 grid gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-4">
         <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-[#a67c52]">
+          <p className="text-sm font-semibold text-mint">
             {t("businessDashboard.myOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-black text-[#2e2a22] sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-semibold text-cream sm:text-4xl">
             {totalOffers}
           </h2>
         </div>
 
         <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-[#a67c52]">
+          <p className="text-sm font-semibold text-mint">
             {t("businessProfile.activeOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-black text-[#2e2a22] sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-semibold text-cream sm:text-4xl">
             {activeOffers}
           </h2>
         </div>
 
         <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-black text-[#a67c52]">
+          <p className="text-sm font-semibold text-mint">
             {t("orders.reserved")}
           </p>
-          <h2 className="mt-1 text-3xl font-black text-[#2e2a22] sm:text-4xl">
+          <h2 className="mt-1 text-3xl font-semibold text-cream sm:text-4xl">
             {reservedOrders}
           </h2>
         </div>
