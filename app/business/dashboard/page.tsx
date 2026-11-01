@@ -15,6 +15,11 @@ import { BusinessProfileSection } from "@/components/business/BusinessProfileSec
 import { BusinessRevenueInsights } from "@/components/business/BusinessRevenueInsights";
 import { BusinessReviews } from "@/components/business/BusinessReviews";
 import { BusinessStatsSection } from "@/components/business/BusinessStatsSection";
+import {
+  BagTemplatesPanel,
+  type BagTemplateInput,
+} from "@/components/business/BagTemplatesPanel";
+import { DepartmentsPanel } from "@/components/business/DepartmentsPanel";
 import { OfferForm } from "@/components/business/OfferForm";
 import { OfferList } from "@/components/business/OfferList";
 import { PickupVerificationModal } from "@/components/business/PickupVerificationModal";
@@ -67,6 +72,7 @@ import {
 import {
   getEffectiveOfferStatus,
   getTbilisiDateKey,
+  getTomorrowDateKey,
   hasPickupWindowStarted,
   isOrderPastPickupEnd,
   type RatingSummary,
@@ -75,7 +81,14 @@ import { logAppError } from "@/lib/errors";
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { paginateItems } from "@/lib/pagination";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
-import type { Business, Offer, Order, Rating } from "@/lib/types";
+import type {
+  BagTemplate,
+  Business,
+  Department,
+  Offer,
+  Order,
+  Rating,
+} from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { isWithinCooldown, validateTextField } from "@/lib/validation";
 import { ORDER_COLUMNS } from "@/lib/orderColumns";
@@ -109,6 +122,12 @@ export default function BusinessDashboardPage() {
   const [allReviews, setReviews] = useState<Rating[]>([]);
   const [ownedBusinessIds, setOwnedBusinessIds] = useState<number[]>([]);
   const [ownedOfferIds, setOwnedOfferIds] = useState<number[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [bagTemplates, setBagTemplates] = useState<BagTemplate[]>([]);
+  const [departmentId, setDepartmentId] = useState("");
+  const [departmentActionBusy, setDepartmentActionBusy] = useState(false);
+  const [busyTemplateId, setBusyTemplateId] = useState<number | null>(null);
+  const ensuredDefaultFor = useRef<Set<number>>(new Set());
 
   const [businessId, setBusinessId] = useState("");
   const [profileBusinessId, setProfileBusinessId] = useState<number | null>(
@@ -214,7 +233,7 @@ export default function BusinessDashboardPage() {
 
     const { data: myBusinesses, error: businessError } = await supabase
       .from("businesses")
-      .select("id, owner_id, name, business_type, address, phone, approved")
+      .select("id, owner_id, name, business_type, address, phone, approved, sales_paused_on, platform_fee_rate")
       .eq("owner_id", userId)
       .order("id", { ascending: false });
 
@@ -273,9 +292,59 @@ export default function BusinessDashboardPage() {
       setOrders([]);
       setReviews([]);
       setOwnedOfferIds([]);
+      setDepartments([]);
+      setBagTemplates([]);
       setLoading(false);
       return;
     }
+
+    // Every approved business gets a default department the first time its
+    // dashboard opens; a small shop never has to think about departments.
+    for (const business of approved) {
+      if (ensuredDefaultFor.current.has(business.id)) continue;
+      ensuredDefaultFor.current.add(business.id);
+      const { error: ensureError } = await supabase.rpc("ensure_default_department", {
+        p_business_id: business.id,
+      });
+      if (ensureError) {
+        ensuredDefaultFor.current.delete(business.id);
+        logAppError("Default department could not be ensured", ensureError, {
+          operation: "ensure_default_department",
+          businessId: business.id,
+        });
+      }
+    }
+
+    const [{ data: myDepartments, error: departmentError }, { data: myTemplates, error: templateError }] =
+      await Promise.all([
+        supabase
+          .from("departments")
+          .select("id, business_id, name, is_default, has_staff_pin, sales_paused_on, created_at")
+          .in("business_id", businessIds)
+          .order("is_default", { ascending: false })
+          .order("id", { ascending: true }),
+        supabase
+          .from("bag_templates")
+          .select("*")
+          .in("business_id", businessIds)
+          .order("id", { ascending: true }),
+      ]);
+
+    if (departmentError) {
+      logAppError("Business dashboard failed to load departments", departmentError, {
+        operation: "load_departments",
+        businessIds,
+      });
+    }
+    if (templateError) {
+      logAppError("Business dashboard failed to load bag templates", templateError, {
+        operation: "load_bag_templates",
+        businessIds,
+      });
+    }
+
+    setDepartments(departmentError ? [] : ((myDepartments || []) as Department[]));
+    setBagTemplates(templateError ? [] : ((myTemplates || []) as BagTemplate[]));
 
     const [
       { data: myOffers, error: offerError },
@@ -576,6 +645,308 @@ export default function BusinessDashboardPage() {
     return publicUrl;
   }
 
+  // ---- Departments, "Today: no bags", staff PINs -----------------------------
+
+  async function uploadTemplateImage(file: File): Promise<string | null> {
+    const selectedBusinessId = Number(businessId);
+    const validationError = getImageValidationError(file);
+
+    if (validationError || !selectedBusinessId) {
+      setMessageTone("error");
+      setMessage(validationError || "Choose a business first.");
+      return null;
+    }
+
+    const fileName = `business-${selectedBusinessId}/${createImageFileName(file)}`;
+    const { error } = await supabase.storage
+      .from("offer-images")
+      .upload(fileName, file, { cacheControl: "3600", upsert: false });
+
+    if (error) {
+      logAppError("Template image upload failed", error, {
+        operation: "upload_template_image",
+        fileName,
+      });
+      setMessageTone("error");
+      setMessage("Image upload failed. Please try a smaller JPG, PNG, or WebP file.");
+      return null;
+    }
+
+    return supabase.storage.from("offer-images").getPublicUrl(fileName).data.publicUrl;
+  }
+
+  async function setSalesPaused(departmentTarget: Department | null, paused: boolean) {
+    const selectedBusinessId = Number(businessId);
+    if (!selectedBusinessId || departmentActionBusy) return;
+
+    setDepartmentActionBusy(true);
+    setMessage("");
+    const { data, error } = await supabase.rpc("set_sales_paused", {
+      p_business_id: selectedBusinessId,
+      p_department_id: departmentTarget ? departmentTarget.id : null,
+      p_paused: paused,
+    });
+    setDepartmentActionBusy(false);
+
+    if (error) {
+      logAppError("Sales pause update failed", error, {
+        operation: "set_sales_paused",
+        businessId: selectedBusinessId,
+        departmentId: departmentTarget?.id ?? null,
+      });
+      setMessageTone("error");
+      setMessage("Sales could not be updated. Please try again.");
+      return;
+    }
+
+    const changed = Number(data || 0);
+    setMessageTone(paused ? "warning" : "success");
+    setMessage(
+      paused
+        ? `No more bags today. ${changed} unsold offer(s) taken off sale; reserved bags stay and must be handed over or cancelled.`
+        : `Sales are back on. ${changed} offer(s) are available again.`
+    );
+    await loadDashboard();
+  }
+
+  async function addDepartment(name: string) {
+    const selectedBusinessId = Number(businessId);
+    if (!selectedBusinessId) return false;
+
+    const nameResult = validateTextField({
+      label: isGeorgian ? "დეპარტამენტის სახელი" : "Department name",
+      value: name,
+      minLength: 1,
+      maxLength: 60,
+      language,
+    });
+
+    if (nameResult.error) {
+      setMessageTone("error");
+      setMessage(nameResult.error);
+      return false;
+    }
+
+    const { error } = await supabase.from("departments").insert({
+      business_id: selectedBusinessId,
+      name: nameResult.value,
+      is_default: false,
+    });
+
+    if (error) {
+      logAppError("Department creation failed", error, {
+        operation: "create_department",
+        businessId: selectedBusinessId,
+      });
+      setMessageTone("error");
+      setMessage("Department could not be added. Please try again.");
+      return false;
+    }
+
+    setMessageTone("success");
+    setMessage("Department added.");
+    await loadDashboard();
+    return true;
+  }
+
+  async function deleteDepartment(department: Department) {
+    if (department.is_default) return;
+
+    const templateCount = bagTemplates.filter(
+      (template) => template.department_id === department.id
+    ).length;
+
+    if (
+      !window.confirm(
+        isGeorgian
+          ? `წაიშალოს დეპარტამენტი „${department.name}“? მისი ${templateCount} შაბლონიც წაიშლება; უკვე გამოქვეყნებული შეთავაზებები რჩება.`
+          : `Delete department "${department.name}"? Its ${templateCount} template(s) are deleted too; already published offers stay.`
+      )
+    ) {
+      return;
+    }
+
+    setDepartmentActionBusy(true);
+    const { error } = await supabase
+      .from("departments")
+      .delete()
+      .eq("id", department.id)
+      .in("business_id", ownedBusinessIds);
+    setDepartmentActionBusy(false);
+
+    if (error) {
+      logAppError("Department deletion failed", error, {
+        operation: "delete_department",
+        departmentId: department.id,
+      });
+      setMessageTone("error");
+      setMessage("Department could not be deleted. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Department deleted.");
+    await loadDashboard();
+  }
+
+  async function setStaffPin(department: Department, pin: string | null) {
+    setDepartmentActionBusy(true);
+    const { error } = await supabase.rpc("set_department_staff_pin", {
+      p_department_id: department.id,
+      p_pin: pin,
+    });
+    setDepartmentActionBusy(false);
+
+    if (error) {
+      logAppError("Staff PIN update failed", error, {
+        operation: "set_department_staff_pin",
+        departmentId: department.id,
+      });
+      setMessageTone("error");
+      setMessage(
+        error.message.includes("4 to 8 digits")
+          ? "The staff PIN must be 4 to 8 digits."
+          : "The staff PIN could not be saved. Please try again."
+      );
+      return false;
+    }
+
+    setMessageTone("success");
+    setMessage(pin ? "Staff PIN saved. Share the staff link with the department." : "Staff PIN removed.");
+    await loadDashboard();
+    return true;
+  }
+
+  // ---- Bag templates ----------------------------------------------------------
+
+  async function saveBagTemplate(input: BagTemplateInput, templateId: number | null) {
+    if (!ownedBusinessIds.includes(input.business_id)) {
+      setMessageTone("error");
+      setMessage("You can only manage templates for your own business.");
+      return false;
+    }
+
+    const query = templateId
+      ? supabase.from("bag_templates").update(input).eq("id", templateId).in("business_id", ownedBusinessIds).select("id").maybeSingle()
+      : supabase.from("bag_templates").insert(input).select("id").maybeSingle();
+    const { data, error } = await query;
+
+    if (error || !data) {
+      logAppError("Bag template save failed", error, {
+        operation: templateId ? "update_bag_template" : "create_bag_template",
+        businessId: input.business_id,
+      });
+      setMessageTone("error");
+      setMessage("The template could not be saved. Please check the details and try again.");
+      return false;
+    }
+
+    setMessageTone("success");
+    setMessage(
+      templateId
+        ? "Template updated. Tomorrow's bag will use the new details."
+        : "Template saved. Tomorrow's bag is created automatically at 19:00; use \"Publish for today\" to start now."
+    );
+    await loadDashboard();
+    return true;
+  }
+
+  async function toggleTemplateActive(template: BagTemplate) {
+    setBusyTemplateId(template.id);
+    const { error } = await supabase
+      .from("bag_templates")
+      .update({ active: !template.active })
+      .eq("id", template.id)
+      .in("business_id", ownedBusinessIds);
+    setBusyTemplateId(null);
+
+    if (error) {
+      logAppError("Bag template toggle failed", error, {
+        operation: "toggle_bag_template",
+        templateId: template.id,
+      });
+      setMessageTone("error");
+      setMessage("The template could not be updated. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage(template.active ? "Template paused. No new bags will be created from it." : "Template resumed.");
+    await loadDashboard();
+  }
+
+  async function deleteBagTemplate(template: BagTemplate) {
+    if (
+      !window.confirm(
+        isGeorgian
+          ? `წაიშალოს შაბლონი „${template.title}“? უკვე გამოქვეყნებული შეთავაზებები რჩება.`
+          : `Delete template "${template.title}"? Already published offers stay.`
+      )
+    ) {
+      return;
+    }
+
+    setBusyTemplateId(template.id);
+    const { error } = await supabase
+      .from("bag_templates")
+      .delete()
+      .eq("id", template.id)
+      .in("business_id", ownedBusinessIds);
+    setBusyTemplateId(null);
+
+    if (error) {
+      logAppError("Bag template deletion failed", error, {
+        operation: "delete_bag_template",
+        templateId: template.id,
+      });
+      setMessageTone("error");
+      setMessage("The template could not be deleted. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Template deleted.");
+    await loadDashboard();
+  }
+
+  async function publishTemplateNow(template: BagTemplate, day: "today" | "tomorrow") {
+    setBusyTemplateId(template.id);
+    const targetDate = day === "today" ? getTbilisiDateKey() : getTomorrowDateKey();
+    const { data, error } = await supabase.rpc("publish_bag_template_now", {
+      p_template_id: template.id,
+      p_date: targetDate,
+    });
+    setBusyTemplateId(null);
+
+    if (error) {
+      logAppError("Template publish failed", error, {
+        operation: "publish_bag_template_now",
+        templateId: template.id,
+      });
+      setMessageTone("error");
+      setMessage("The bag could not be published. Please try again.");
+      return;
+    }
+
+    if (!data) {
+      setMessageTone("warning");
+      setMessage(
+        day === "today"
+          ? "Nothing published: today's bag already exists, its pickup window has ended, this weekday is off, or sales are paused today."
+          : "Nothing published: tomorrow's bag already exists, or this weekday is off."
+      );
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage(day === "today" ? "Today's bag is on sale." : "Tomorrow's bag is published.");
+    notifyOfferPublished({
+      offerTitle: template.title,
+      businessName: selectedBusiness?.name,
+    });
+    await loadDashboard();
+  }
+
   async function createOffer(actionTime: number) {
     setMessage("");
     setMessageTone("error");
@@ -719,6 +1090,16 @@ export default function BusinessDashboardPage() {
       pickup_end: pickupEnd,
       category: selectedCategory,
       size,
+      department_id: (() => {
+        const businessDepartments = departments.filter(
+          (department) => department.business_id === selectedBusinessId
+        );
+        const chosen =
+          businessDepartments.find((department) => String(department.id) === departmentId) ||
+          businessDepartments.find((department) => department.is_default) ||
+          businessDepartments[0];
+        return chosen ? chosen.id : null;
+      })(),
       description: descriptionResult.value || null,
       active: true,
       status: "active",
@@ -1068,6 +1449,7 @@ export default function BusinessDashboardPage() {
       title: `${offer.title} copy`.slice(0, 120),
       category: normalizeOfferCategory(offer.category),
       size: normalizeBagSize(offer.size),
+      department_id: offer.department_id ?? null,
       price: Number(offer.price || 0),
       old_price: offer.old_price ? Number(offer.old_price) : null,
       quantity: Math.max(Number(offer.quantity || 1), 1),
@@ -1404,6 +1786,16 @@ export default function BusinessDashboardPage() {
           filter: `business_id=in.(${businessFilter})`,
         },
         scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "departments",
+          filter: `business_id=in.(${businessFilter})`,
+        },
+        scheduleRefresh
       );
 
     if (offerFilter) {
@@ -1431,6 +1823,34 @@ export default function BusinessDashboardPage() {
     approvedBusinesses.find((business) => String(business.id) === businessId) ||
     approvedBusinesses[0] ||
     businesses[0];
+  const selectedBusinessIdNumber = Number(businessId);
+  const selectedDepartments = departments.filter(
+    (department) => department.business_id === selectedBusinessIdNumber
+  );
+  const selectedTemplates = bagTemplates.filter(
+    (template) => template.business_id === selectedBusinessIdNumber
+  );
+  // The one-off offer form points at a department of the selected business:
+  // the owner's pick if it still belongs to this business, else the default.
+  const effectiveDepartmentId = selectedDepartments.some(
+    (department) => String(department.id) === departmentId
+  )
+    ? departmentId
+    : String(
+        (
+          selectedDepartments.find((department) => department.is_default) ||
+          selectedDepartments[0]
+        )?.id ?? ""
+      );
+  const templateCountByDepartment = selectedTemplates.reduce<Record<number, number>>(
+    (counts, template) => {
+      if (template.department_id) {
+        counts[template.department_id] = (counts[template.department_id] || 0) + 1;
+      }
+      return counts;
+    },
+    {}
+  );
   // The header, stats, offers, reservations and reviews must all describe the
   // same business, so everything below is scoped to selectedBusiness.
   const selectedBusinessId = selectedBusiness?.id;
@@ -2067,12 +2487,47 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
+        {selectedBusiness && canCreateOffers && (
+          <>
+            <DepartmentsPanel
+              language={language}
+              business={selectedBusiness}
+              departments={selectedDepartments}
+              templateCountByDepartment={templateCountByDepartment}
+              busy={departmentActionBusy}
+              onToggleStorePause={(paused) => void setSalesPaused(null, paused)}
+              onToggleDepartmentPause={(department, paused) =>
+                void setSalesPaused(department, paused)
+              }
+              onAddDepartment={addDepartment}
+              onDeleteDepartment={(department) => void deleteDepartment(department)}
+              onSetStaffPin={setStaffPin}
+            />
+
+            <BagTemplatesPanel
+              language={language}
+              business={selectedBusiness}
+              departments={selectedDepartments}
+              templates={selectedTemplates}
+              busyTemplateId={busyTemplateId}
+              onSave={saveBagTemplate}
+              onToggleActive={(template) => void toggleTemplateActive(template)}
+              onDelete={(template) => void deleteBagTemplate(template)}
+              onPublishNow={(template, day) => void publishTemplateNow(template, day)}
+              onUploadImage={uploadTemplateImage}
+            />
+          </>
+        )}
+
         <OfferForm
           t={t}
           canCreateOffers={canCreateOffers}
           businessStatusMessage={businessStatusMessage}
           approvedBusinesses={approvedBusinesses}
           businessId={businessId}
+          departments={selectedDepartments}
+          departmentId={effectiveDepartmentId}
+          onDepartmentIdChange={setDepartmentId}
           title={title}
           description={description}
           category={category}

@@ -185,7 +185,11 @@ export function OfferList({
 
                     <p className="text-body">
                       {formatMoney(offer.price)} · {t("common.quantity")}:{" "}
-                      {offer.quantity}
+                      {offer.unlimited_quantity
+                        ? isGeorgian
+                          ? `სანამ არ გაჩერდება (${offer.quantity})`
+                          : `until stopped (${offer.quantity})`
+                        : offer.quantity}
                     </p>
                     <p className="text-body">
                       {t("common.pickup")}: {formatPickupWindow(offer, language)}

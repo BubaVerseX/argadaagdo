@@ -44,12 +44,15 @@ export function OfferCard({
   const originalPrice = getOriginalPrice(offer);
   const detailsHref = `/offers/${offer.id}`;
   const quantityLeft = Number(offer.quantity ?? 0);
-  const quantityLabel =
-    quantityLeft > 0
-      ? language === "ka"
-        ? `დარჩა ${quantityLeft}`
-        : `${quantityLeft} left`
-      : null;
+  const quantityLabel = offer.unlimited_quantity
+    ? language === "ka"
+      ? "ხელმისაწვდომია"
+      : "Available"
+    : quantityLeft > 0
+    ? language === "ka"
+      ? `დარჩა ${quantityLeft}`
+      : `${quantityLeft} left`
+    : null;
   const heartClass = `absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-ink/75 backdrop-blur-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
     cornerAction?.active ? "text-mint" : "text-cream hover:text-mint"
   }`;

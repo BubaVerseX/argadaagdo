@@ -1,4 +1,5 @@
 export type { Business } from "@/types/business";
+export type { BagTemplate, Department } from "@/types/department";
 export type { Favorite, Offer } from "@/types/offer";
 export type { Order, OrderStatus } from "@/types/order";
 export type { Payment, PaymentStatus } from "@/types/payment";

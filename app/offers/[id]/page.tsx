@@ -16,6 +16,7 @@ import {
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
+import { formatBagsLeft } from "@/lib/greenBag";
 import { getGreenBagLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
@@ -469,10 +470,14 @@ export default function OfferDetailPage() {
                         {t("common.quantity")}
                       </p>
                       <p className="mt-2 text-3xl font-semibold text-mint">
-                        {offer.quantity}
+                        {formatBagsLeft(offer, language)}
                       </p>
                       <p className="mt-1 text-sm text-body">
-                        {t("offers.boxesLeft")}
+                        {offer.unlimited_quantity
+                          ? language === "ka"
+                            ? "იყიდება, სანამ ბიზნესი არ გააჩერებს"
+                            : "On sale until the business stops for today"
+                          : t("offers.boxesLeft")}
                       </p>
                     </div>
                   </div>

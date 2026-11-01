@@ -22,6 +22,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
+import { formatBagsLeft } from "@/lib/greenBag";
 import { getGreenBagLabel } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
@@ -424,7 +425,7 @@ export default function CheckoutPage() {
                         {t("offers.boxesLeft")}
                       </p>
                       <p className="text-3xl font-semibold text-cream">
-                        {offer.quantity}
+                        {formatBagsLeft(offer, language)}
                       </p>
                     </div>
                   </div>

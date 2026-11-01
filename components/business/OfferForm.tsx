@@ -13,7 +13,8 @@ import {
 } from "@/lib/offerCategories";
 import type { TranslationKey } from "@/lib/i18n";
 import { getTbilisiDateKey } from "@/lib/offerLifecycle";
-import type { Business } from "@/lib/types";
+import { getDepartmentDisplayName } from "@/lib/greenBag";
+import type { Business, Department } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import type { ChangeEvent } from "react";
 
@@ -28,6 +29,9 @@ type OfferFormProps = {
   businessStatusMessage: string;
   approvedBusinesses: Business[];
   businessId: string;
+  departments: Department[];
+  departmentId: string;
+  onDepartmentIdChange: (value: string) => void;
   title: string;
   description: string;
   category: OfferCategory;
@@ -64,6 +68,9 @@ export function OfferForm({
   businessStatusMessage,
   approvedBusinesses,
   businessId,
+  departments,
+  departmentId,
+  onDepartmentIdChange,
   title,
   description,
   category,
@@ -106,6 +113,11 @@ export function OfferForm({
       <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
         {t("businessDashboard.createOffer")}
       </h2>
+      <p className="mt-2 max-w-xl text-sm leading-6 text-body">
+        {isGeorgian
+          ? "ერთჯერადი შეთავაზებისთვის. ყოველდღიური ჩანთებისთვის გამოიყენე შაბლონები ზემოთ."
+          : "For a one-off offer. Daily bags are better set up as templates above."}
+      </p>
 
       {canCreateOffers ? (
         <>
@@ -142,6 +154,23 @@ export function OfferForm({
                 ))}
               </select>
             </label>
+
+            {departments.length > 1 && (
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
+                <span>{isGeorgian ? "დეპარტამენტი" : "Department"}</span>
+                <select
+                  value={departmentId}
+                  onChange={(event) => onDepartmentIdChange(event.target.value)}
+                  className="premium-input w-full min-w-0 p-4 font-semibold"
+                >
+                  {departments.map((department) => (
+                    <option key={department.id} value={department.id}>
+                      {getDepartmentDisplayName(department, language)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
               <span>
