@@ -6,6 +6,8 @@ export type Business = {
   address: string;
   phone: string | null;
   approved: boolean;
+  /** App Review demo business (service-role flag). */
+  is_review_demo?: boolean | null;
   created_at?: string | null;
   description?: string | null;
   /** Tbilisi date of a store-wide "Today: no bags"; paused while it equals today. */

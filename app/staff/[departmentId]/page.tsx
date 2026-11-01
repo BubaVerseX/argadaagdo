@@ -56,15 +56,15 @@ function getDeviceToken() {
 }
 
 function describePinError(message: string, isGeorgian: boolean) {
-  if (message.includes("staff_pin_locked")) {
+  if (message.includes("pin_locked") || message.includes("staff_pin_locked")) {
     return isGeorgian
       ? "ამ მოწყობილობიდან ძალიან ბევრი არასწორი ცდა იყო. სცადე 15 წუთში, ან სთხოვე მფლობელს განბლოკვა პანელიდან."
       : "Too many wrong attempts from this device. Try again in 15 minutes, or ask the owner to unlock it from the dashboard.";
   }
-  if (message.includes("staff_pin_rate_limited")) {
+  if (message.includes("rate_limited")) {
     return isGeorgian ? "ძალიან სწრაფად. სცადე წამში." : "Too fast. Try again in a second.";
   }
-  if (message.includes("staff_pin_invalid")) {
+  if (message.includes("pin_invalid")) {
     return isGeorgian ? "არასწორი PIN." : "Wrong PIN.";
   }
   return isGeorgian
@@ -96,29 +96,27 @@ export default function StaffDepartmentPage() {
   const load = useCallback(
     async (activePin: string, silent = false) => {
       if (!Number.isFinite(departmentId)) return false;
-      // One PIN-checked call: the list carries everything the page needs and
-      // a second concurrent check would trip the per-device rate limit.
-      const listResult = await supabase.rpc("staff_list_reservations", {
+      // staff_session returns {status, summary, reservations} and never raises
+      // for a bad PIN, so wrong attempts are counted per device.
+      const sessionResult = await supabase.rpc("staff_session", {
         p_department_id: departmentId,
         p_pin: activePin,
         p_device: getDeviceToken(),
       });
-      const summaryResult = listResult.error
-        ? listResult
-        : await supabase.rpc("staff_department_summary", {
-            p_department_id: departmentId,
-            p_pin: activePin,
-            p_device: getDeviceToken(),
-          });
+      const payload = (sessionResult.data || {}) as {
+        status?: string;
+        summary?: Summary;
+        reservations?: StaffReservation[];
+      };
+      const failure =
+        sessionResult.error?.message || (payload.status !== "ok" ? payload.status || "error" : null);
 
-      const error = summaryResult.error || listResult.error;
-
-      if (error) {
+      if (failure) {
         if (!silent) {
           setMessageTone("error");
-          setMessage(describePinError(error.message, isGeorgian));
+          setMessage(describePinError(failure, isGeorgian));
         }
-        if (error.message.includes("staff_pin")) {
+        if (/pin_invalid|pin_locked/.test(failure)) {
           setPin(null);
           try {
             window.sessionStorage.removeItem(pinStorageKey(String(departmentId)));
@@ -127,9 +125,8 @@ export default function StaffDepartmentPage() {
         return false;
       }
 
-      const summaryRow = ((summaryResult.data || []) as Summary[])[0] || null;
-      setSummary(summaryRow);
-      setReservations((listResult.data || []) as StaffReservation[]);
+      setSummary(payload.summary || null);
+      setReservations(payload.reservations || []);
       return true;
     },
     [departmentId, isGeorgian]
@@ -198,7 +195,7 @@ export default function StaffDepartmentPage() {
     }
     setBusy(true);
     setMessage("");
-    const { data, error } = await supabase.rpc("staff_complete_pickup", {
+    const { data, error } = await supabase.rpc("staff_collect", {
       p_department_id: departmentId,
       p_pin: pin,
       p_pickup_code: trimmed,
@@ -206,9 +203,10 @@ export default function StaffDepartmentPage() {
     });
     setBusy(false);
 
-    if (error) {
+    if (error || data === "pin_invalid" || data === "pin_locked" || data === "rate_limited") {
       setMessageTone("error");
-      setMessage(describePinError(error.message, isGeorgian));
+      setMessage(describePinError(error?.message || String(data), isGeorgian));
+      if (data === "pin_invalid" || data === "pin_locked") signOut();
       return;
     }
 
@@ -242,16 +240,17 @@ export default function StaffDepartmentPage() {
   async function togglePause() {
     if (!pin || !summary || busy) return;
     setBusy(true);
-    const { error } = await supabase.rpc("staff_set_sales_paused", {
+    const { data, error } = await supabase.rpc("staff_pause", {
       p_department_id: departmentId,
       p_pin: pin,
       p_paused: !summary.sales_paused,
       p_device: getDeviceToken(),
     });
     setBusy(false);
-    if (error) {
+    const pauseStatus = (data as { status?: string } | null)?.status;
+    if (error || pauseStatus !== "ok") {
       setMessageTone("error");
-      setMessage(describePinError(error.message, isGeorgian));
+      setMessage(describePinError(error?.message || String(pauseStatus), isGeorgian));
       return;
     }
     setMessageTone("success");

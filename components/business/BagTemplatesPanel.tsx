@@ -178,7 +178,9 @@ export function BagTemplatesPanel({
       setFormError(isGeorgian ? "დაამატე სათაური (მინ. 3 სიმბოლო)." : "Add a title (at least 3 characters).");
       return;
     }
-    if (!Number.isFinite(price) || price <= 0) {
+    // Price 0 is allowed only for the App Review demo business (same rule as
+    // offers, enforced again by the database).
+    if (!Number.isFinite(price) || price < 0 || (price === 0 && !business.is_review_demo)) {
       setFormError(isGeorgian ? "მიუთითე ფასი 0-ზე მეტი." : "Add a price greater than 0.");
       return;
     }
