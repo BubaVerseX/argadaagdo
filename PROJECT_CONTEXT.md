@@ -4,6 +4,68 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-11-01 — Green Bag model (branch `claude/green-bag`, one PR, NOT merged)
+
+Apple is reviewing iOS 1.0.0 from `main`; nothing here is deployed or applied
+until the founder says "deploy". Four migrations (`20261101120000` …
+`20261101150000`) were dry-run on production in rolled-back transactions with
+scenario checks; each file ends with a commented Down block.
+
+- **Naming**: "surprise bag / სიურპრიზის ყუთი" → "Green Bag / მწვანე ჩანთა"
+  in UI, emails, SEO/OG text and docs. The App Review demo bag keeps its
+  literal title "Demo surprise bag (free, App Review)" and the reviewer notes
+  in `docs/app-store-submission.md` are unchanged on purpose.
+- **Taxonomy** (`lib/offerCategories.ts`): category is a tag under the Green
+  Bag — Bakery / Fruit & veg / Dairy / Deli / Mixed (ცომეული / ხილ-ბოსტნეული /
+  რძის ნაწარმი / კულინარია / შერეული); old values (Cafe, Restaurant, Grocery,
+  Other) stay in the DB and display under the nearest tag. Size S / M / L is
+  `offers.size` with its own price. `getGreenBagLabel()` renders
+  "Green Bag M · Bakery" everywhere (cards, detail, checkout, orders,
+  dashboard, staff page).
+- **Departments** (`departments`, owner-managed through RLS): a store can
+  split into departments, each with its own bag templates, schedule and an
+  optional staff PIN (bcrypt hash in `private.department_staff_pins`). Every
+  approved business gets a default "Main" department lazily
+  (`ensure_default_department`); offers with `department_id` null belong to
+  it. Staff page `/staff/<departmentId>` (no login, PIN-gated `staff_*` RPCs
+  callable by anon): today's reservations, complete pickup by code,
+  "Today: no bags". 5 wrong PINs/codes lock the department for 15 min.
+- **Bag templates** (`bag_templates`): category, size/price, bags per day
+  (fixed or null = "until stopped" → offer gets quantity 500 +
+  `unlimited_quantity`, UI hides the count), pickup window, ISO weekdays.
+  `publish_bag_templates(date)` (service role only) is run by the new daily
+  cron `/api/cron/publish-green-bags` (15:00 UTC = 19:00 Tbilisi, creates
+  tomorrow's and catches up today's); `publish_bag_template_now` lets the
+  owner publish today/tomorrow by hand. Idempotent per template+date.
+- **"Today: no bags"** (`set_sales_paused`, store-wide or per department):
+  sets `businesses.sales_paused_on` / `departments.sales_paused_on` to the
+  Tbilisi date and flips today's unsold offers to inactive with `paused_at`;
+  reserved bags stay and go through the normal fulfil/cancel flow. Turning
+  back on reactivates offers still inside their window with stock left.
+- **Swipe-to-collect** (`components/orders/CollectSlider.tsx`): full-screen
+  slider on the customer's order (1 h before the window until 2 h after);
+  `collect_my_order` sets the same `completed` status as `complete_pickup`
+  plus `orders.customer_collected_at`; `undo_collect_my_order` reverts within
+  2 minutes. The business dashboard updates through its existing realtime
+  orders channel. The 6-digit code flow is unchanged (App Review fallback).
+- **Commission**: `businesses.platform_fee_rate` (numeric, default 0.30, 0
+  for pilot partners), admin/service-role only (trigger + 
+  `set_business_platform_fee_rate`; admin dashboard has a per-business
+  input). `create_provider_payment_order` reads it for `platform_fee` /
+  `business_amount`, so the TBC split (`extra2`) follows. **Applying this
+  migration changes live fees from 10% to 30% immediately**; set pilot
+  partners to 0 in the same session. `lib/paymentArchitecture.ts` exports
+  `defaultPlatformFeeRate = 0.3` as the analytics fallback only.
+- **Impact** (`lib/impact.ts`): 1 bag ≈ 1 kg food ≈ 2.7 kg CO₂ (replaces the
+  old 0.6 kg/box estimate). Customer profile and business dashboard show an
+  `ImpactCard` with a canvas share image; the dashboard's
+  `ImpactReportSection` exports a monthly CSV and opens the printable
+  `/business/report?business=<id>&month=YYYY-MM` page (Print → Save as PDF).
+- **Deploy order**: migrations 1–3 are invisible to the old app; migration 4
+  changes fees. Apply 1–3 any time, deploy the branch, then apply 4 (or all
+  four together at deploy). Add `publish-green-bags` to `vercel.json` crons
+  (done in the branch) and confirm `CRON_SECRET` is set.
+
 ## 🆕 2026-10-27 — green dark re-theme + leaf brand (PR from `claude/green-retheme`)
 
 The cream/amber neumorphic look is gone. The app (web + both native

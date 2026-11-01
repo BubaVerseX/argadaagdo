@@ -700,12 +700,12 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const changed = Number(data || 0);
+    void data;
     setMessageTone(paused ? "warning" : "success");
     setMessage(
       paused
-        ? `No more bags today. ${changed} unsold offer(s) taken off sale; reserved bags stay and must be handed over or cancelled.`
-        : `Sales are back on. ${changed} offer(s) are available again.`
+        ? "No more bags today. Unsold offers are off sale; reserved bags stay and must be handed over or cancelled."
+        : "Sales are back on. Paused offers are available again."
     );
     await loadDashboard();
   }
