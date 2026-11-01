@@ -1,5 +1,21 @@
 apply plugin: 'com.android.application'
 
+// Google Play upload-key signing. The keystore and its passwords live OUTSIDE
+// this (public) repository, in a properties file with storeFile /
+// storePassword / keyAlias / keyPassword. Default location:
+// ~/.android/argadaagdo/keystore.properties (backup copy in
+// ~/Documents/argadaagdo-keys/). Override with the environment variable
+// ARGADAAGDO_KEYSTORE_PROPERTIES. Without the file, release builds are
+// unsigned (debug/CI builds still work).
+def keystorePropertiesFile = file(
+    System.getenv("ARGADAAGDO_KEYSTORE_PROPERTIES")
+        ?: "${System.getProperty('user.home')}/.android/argadaagdo/keystore.properties"
+)
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "com.argadaagdo.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -8,7 +24,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +32,23 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystoreProperties['storeFile']) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (keystoreProperties['storeFile']) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

@@ -30,6 +30,9 @@ export default function PrivacyPage() {
       text: t("privacy.ordersText"),
     },
     {
+      // Anchor used as the account-deletion URL in the store listings
+      // (Google Play "Account deletion" requirement): /privacy#delete-account
+      id: "delete-account",
       title: t("privacy.deletionTitle"),
       text: t("privacy.deletionText"),
     },
@@ -61,7 +64,8 @@ export default function PrivacyPage() {
             {sections.map((section) => (
               <section
                 key={section.title}
-                className="rounded-3xl ui-card p-5 sm:p-8"
+                id={section.id}
+                className="scroll-mt-24 rounded-3xl ui-card p-5 sm:p-8"
               >
                 <h2 className="text-2xl font-semibold text-cream">
                   {section.title}
