@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import { ImpactCard } from "@/components/ImpactCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import {
@@ -474,6 +475,12 @@ export default function ProfilePage() {
                   ? "შენი საკვების გადარჩენის სტატისტიკა"
                   : "Your food rescue stats"}
               </h2>
+              <ImpactCard
+                className="mt-5"
+                language={language}
+                bags={growthStats.completedPickups}
+                subject="you"
+              />
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {[
                   {

@@ -20,6 +20,7 @@ import {
   type BagTemplateInput,
 } from "@/components/business/BagTemplatesPanel";
 import { DepartmentsPanel } from "@/components/business/DepartmentsPanel";
+import { ImpactReportSection } from "@/components/business/ImpactReportSection";
 import { OfferForm } from "@/components/business/OfferForm";
 import { OfferList } from "@/components/business/OfferList";
 import { PickupVerificationModal } from "@/components/business/PickupVerificationModal";
@@ -2463,6 +2464,15 @@ export default function BusinessDashboardPage() {
           onExportCompletedPickups={exportCompletedPickupsCsv}
           onExportOfferStatistics={exportOfferStatisticsCsv}
         />
+
+        {selectedBusiness && (
+          <ImpactReportSection
+            language={language}
+            businessId={selectedBusiness.id}
+            businessName={selectedBusiness.name}
+            orders={orders}
+          />
+        )}
 
         <BusinessIntelligencePanel
           dailySummary={dailySummary}
