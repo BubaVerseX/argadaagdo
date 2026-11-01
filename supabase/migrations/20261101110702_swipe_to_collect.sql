@@ -1,5 +1,5 @@
 -- Green Bag model, stage 3 (2026-11-01): swipe-to-collect.
--- STATUS: not applied. Additive: one nullable column and two customer RPCs.
+-- STATUS: applied to production on 2026-11-01 (recorded as version 20261101110702).
 --
 -- On the customer's order screen a full-screen "Collected" slider is swiped
 -- in front of staff. collect_my_order marks the reservation completed (the

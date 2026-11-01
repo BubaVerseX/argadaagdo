@@ -1,5 +1,5 @@
 -- Green Bag model, stage 1 (2026-11-01): sizes and "until stopped" bags.
--- STATUS: not applied. Additive and safe with the live app: the old code
+-- STATUS: applied to production on 2026-11-01 (recorded as version 20261101110454).
 -- never reads these columns, and both have defaults.
 --
 -- "Surprise bag" becomes "Green Bag" (მწვანე ჩანთა) in the UI only. The

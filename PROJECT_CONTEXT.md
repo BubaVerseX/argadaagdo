@@ -7,9 +7,11 @@ around. Update it when the architecture materially changes.
 ## 🆕 2026-11-01 — Green Bag model (branch `claude/green-bag`, one PR, NOT merged)
 
 Apple is reviewing iOS 1.0.0 from `main`; nothing here is deployed or applied
-until the founder says "deploy". Four migrations (`20261101120000` …
-`20261101150000`) were dry-run on production in rolled-back transactions with
-scenario checks; each file ends with a commented Down block.
+until the founder says "deploy". Migrations 1–3 (`20261101110454_green_bag_sizes`,
+`20261101110658_departments_and_bag_templates`, `20261101110702_swipe_to_collect`)
+were **applied to production on 2026-11-01** (additive, invisible to the live
+app). Migration 4 (`20261101150000_platform_fee_rate`) is NOT applied: it
+changes live fees. Each file ends with a commented Down block.
 
 - **Naming**: "surprise bag / სიურპრიზის ყუთი" → "Green Bag / მწვანე ჩანთა"
   in UI, emails, SEO/OG text and docs. The App Review demo bag keeps its

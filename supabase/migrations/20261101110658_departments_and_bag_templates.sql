@@ -1,6 +1,6 @@
 -- Green Bag model, stage 2 (2026-11-01): departments, bag templates with
 -- auto-publish, "Today: no bags", department staff PINs.
--- STATUS: not applied. Additive: new tables, new nullable offer columns and
+-- STATUS: applied to production on 2026-11-01 (recorded as version 20261101110658).
 -- new RPCs. The live app ignores all of it, and the App Review demo flow
 -- (reserve_review_demo_offer, complete_pickup, refresh_review_demo_offers)
 -- is untouched.
