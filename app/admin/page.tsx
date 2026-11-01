@@ -238,6 +238,41 @@ export default function AdminPage() {
     );
   }, [checkAdminAndLoadData]);
 
+  async function setBusinessFeeRate(id: number, percent: number) {
+    if (updatingBusinessId !== null) return;
+
+    if (!Number.isFinite(percent) || percent < 0 || percent > 100) {
+      setMessageTone("error");
+      setMessage("The commission must be between 0 and 100 percent.");
+      return;
+    }
+
+    setUpdatingBusinessId(id);
+    const { error } = await supabase.rpc("set_business_platform_fee_rate", {
+      p_business_id: id,
+      p_rate: percent / 100,
+    });
+    setUpdatingBusinessId(null);
+
+    if (error) {
+      logAppError("Platform fee update failed", error, {
+        operation: "set_business_platform_fee_rate",
+        businessId: id,
+      });
+      setMessageTone("error");
+      setMessage("The commission could not be saved. Please try again.");
+      return;
+    }
+
+    setBusinesses((currentBusinesses) =>
+      currentBusinesses.map((business) =>
+        business.id === id ? { ...business, platform_fee_rate: percent / 100 } : business
+      )
+    );
+    setMessageTone("success");
+    setMessage(`Commission for this business set to ${percent}% for new reservations.`);
+  }
+
   async function approveBusiness(id: number) {
     if (updatingBusinessId !== null) return;
 
@@ -1327,6 +1362,7 @@ export default function AdminPage() {
           businesses={paginatedApprovedBusinesses.items}
           updatingBusinessId={updatingBusinessId}
           onMoveToPending={(id) => void moveToPending(id)}
+          onSetFeeRate={(id, percent) => void setBusinessFeeRate(id, percent)}
         />
 
         <Pagination

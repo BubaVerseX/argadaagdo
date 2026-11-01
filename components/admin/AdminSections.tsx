@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import StatCard from "@/components/StatCard";
 import { CheckIcon } from "@/components/icons";
@@ -174,7 +175,7 @@ export function AdminRevenueInsights({
         <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-cream lg:max-w-sm">
           <p className="font-semibold">Future commission model</p>
           <p className="mt-1">
-            Each order records the platform commission at the business's rate (30% by default) and the business
+            Each order records the platform commission at the business&apos;s rate (30% by default) and the business
             revenue per paid reservation.
           </p>
         </div>
@@ -820,11 +821,20 @@ export function ApprovedBusinesses({
   businesses,
   updatingBusinessId,
   onMoveToPending,
+  onSetFeeRate,
 }: {
   businesses: AdminBusiness[];
   updatingBusinessId: number | null;
   onMoveToPending: (id: number) => void;
+  /** Platform commission as a percentage (0–100). */
+  onSetFeeRate: (id: number, percent: number) => void;
 }) {
+  const [feeDrafts, setFeeDrafts] = useState<Record<number, string>>({});
+
+  function currentPercent(business: AdminBusiness) {
+    return Math.round(Number(business.platform_fee_rate ?? 0.3) * 100);
+  }
+
   return (
     <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
       <h2 className="text-xl font-semibold sm:text-2xl">Approved businesses</h2>
@@ -856,6 +866,39 @@ export function ApprovedBusinesses({
               <p className="mt-2 inline-block rounded-full bg-well px-3 py-1 text-sm font-semibold text-mint">
                 Approved
               </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                <label className="flex items-center gap-2 text-body">
+                  Platform commission
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="1"
+                    inputMode="numeric"
+                    value={feeDrafts[business.id] ?? String(currentPercent(business))}
+                    onChange={(event) =>
+                      setFeeDrafts((drafts) => ({ ...drafts, [business.id]: event.target.value }))
+                    }
+                    aria-label={`Platform commission for ${business.name}, percent`}
+                    className="premium-input w-20 px-3 py-2 text-right font-semibold"
+                  />
+                  %
+                </label>
+                <button
+                  type="button"
+                  disabled={
+                    updatingBusinessId !== null ||
+                    Number(feeDrafts[business.id] ?? currentPercent(business)) === currentPercent(business)
+                  }
+                  onClick={() => onSetFeeRate(business.id, Number(feeDrafts[business.id]))}
+                  className="premium-button-secondary min-h-9 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Save rate
+                </button>
+                <span className="text-xs text-body">
+                  Default 30%; 0% for pilot partners. Applies to new reservations.
+                </span>
+              </div>
             </div>
 
             <button

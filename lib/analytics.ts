@@ -10,10 +10,11 @@ import {
   isStrictlyCancelledOrderStatus,
   isUnpaidCheckoutOrder,
 } from "@/lib/orderStatus";
-import { platformFeeRate } from "@/lib/paymentArchitecture";
+import { defaultPlatformFeeRate } from "@/lib/paymentArchitecture";
+import { KG_FOOD_PER_BAG } from "@/lib/impact";
 import type { Offer, Order, Rating } from "@/lib/types";
 
-export const estimatedKgSavedPerBox = 0.6;
+export const estimatedKgSavedPerBox = KG_FOOD_PER_BAG;
 
 export type ChartDatum = {
   label: string;
@@ -94,12 +95,12 @@ function getOrderGrossAmount(order: Order) {
 
 function getBusinessAmount(order: Order) {
   const grossAmount = getOrderGrossAmount(order);
-  return toNumber(order.business_amount) || grossAmount * (1 - platformFeeRate);
+  return toNumber(order.business_amount) || grossAmount * (1 - defaultPlatformFeeRate);
 }
 
 function getPlatformAmount(order: Order) {
   const grossAmount = getOrderGrossAmount(order);
-  return toNumber(order.platform_fee) || grossAmount * platformFeeRate;
+  return toNumber(order.platform_fee) || grossAmount * defaultPlatformFeeRate;
 }
 
 function isRevenueOrder(order: Order) {

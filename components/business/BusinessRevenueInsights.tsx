@@ -120,8 +120,8 @@ export function BusinessRevenueInsights({
       title: isGeorgian ? "გადარჩენილი საკვები" : "Estimated Food Saved",
       value: `${analytics.estimatedFoodSavedKg} ${isGeorgian ? "კგ" : "kg"}`,
       helper: isGeorgian
-        ? "მარტივი შეფასებით, 0.6 კგ თითო გადარჩენილ ყუთზე"
-        : "Using a simple 0.6 kg estimate per rescued bag",
+        ? "შეფასება: 1 კგ თითო გადარჩენილ ჩანთაზე"
+        : "Estimate: 1 kg per rescued bag",
       tone: "green",
     },
     {
@@ -151,8 +151,8 @@ export function BusinessRevenueInsights({
       title: isGeorgian ? "ბიზნესის შემოსავალი" : "Business Earnings",
       value: formatAnalyticsMoney(analytics.estimatedBusinessEarnings),
       helper: isGeorgian
-        ? "ბიზნესის სავარაუდო 90%-იანი წილი ანაზღაურების გადამოწმებამდე"
-        : "Estimated 90% business earnings before payout review",
+        ? "ბიზნესის წილი თითოეული შეკვეთის ჩაწერილი საკომისიოს მიხედვით, ანაზღაურების გადამოწმებამდე"
+        : "Business share after each order's recorded commission, before payout review",
       tone: "green",
     },
   ];
