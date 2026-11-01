@@ -1,6 +1,7 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
 import { ClockIcon, MapPinIcon } from "@/components/icons";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { getGreenBagLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -96,7 +97,9 @@ export function OrderCard({
             </span>
 
             <span className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-body">
-              {order.offers?.businesses?.business_type || t("common.food")}
+              {order.offers
+                ? getGreenBagLabel(order.offers, language)
+                : t("common.food")}
             </span>
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (

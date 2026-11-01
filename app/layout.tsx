@@ -14,7 +14,7 @@ import "@fontsource/noto-sans-georgian/georgian-600.css";
 import "./globals.css";
 
 const appDescription =
-  "Save money on surprise food bags from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
+  "Save money on Green Bags of food from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

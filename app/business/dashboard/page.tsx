@@ -58,8 +58,11 @@ import {
   isStrictlyCancelledOrderStatus,
 } from "@/lib/orderStatus";
 import {
+  DEFAULT_BAG_SIZE,
   DEFAULT_OFFER_CATEGORY,
+  normalizeBagSize,
   normalizeOfferCategory,
+  type BagSize,
 } from "@/lib/offerCategories";
 import {
   getEffectiveOfferStatus,
@@ -119,6 +122,7 @@ export default function BusinessDashboardPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(DEFAULT_OFFER_CATEGORY);
+  const [size, setSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
   const [price, setPrice] = useState("");
   const [oldPrice, setOldPrice] = useState("");
   const [quantity, setQuantity] = useState("1");
@@ -150,6 +154,7 @@ export default function BusinessDashboardPage() {
   const [offerManagementPage, setOfferManagementPage] = useState(1);
   const [editTitle, setEditTitle] = useState("");
   const [editCategory, setEditCategory] = useState(DEFAULT_OFFER_CATEGORY);
+  const [editSize, setEditSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
   const [editPrice, setEditPrice] = useState("");
   const [editOldPrice, setEditOldPrice] = useState("");
   const [editQuantity, setEditQuantity] = useState("");
@@ -322,7 +327,7 @@ export default function BusinessDashboardPage() {
     if (offerIds.length > 0) {
       const orderSelect = `
           ${ORDER_COLUMNS},
-          offers(title, price, pickup_date, pickup_start, pickup_end),
+          offers(title, price, pickup_date, pickup_start, pickup_end, category, size),
           profiles(email, reliability_score, reliability_status)
         `;
       // Active reservations are always loaded in full — they're what staff
@@ -608,7 +613,7 @@ export default function BusinessDashboardPage() {
     });
 
     if (titleResult.error) {
-      setMessage(titleResult.error || "Add an offer title. Example: Bakery Surprise Bag.");
+      setMessage(titleResult.error || "Add an offer title. Example: Bakery Green Bag.");
       return;
     }
 
@@ -713,6 +718,7 @@ export default function BusinessDashboardPage() {
       pickup_start: pickupStart,
       pickup_end: pickupEnd,
       category: selectedCategory,
+      size,
       description: descriptionResult.value || null,
       active: true,
       status: "active",
@@ -737,6 +743,7 @@ export default function BusinessDashboardPage() {
     setTitle("");
     setDescription("");
     setCategory(DEFAULT_OFFER_CATEGORY);
+    setSize(DEFAULT_BAG_SIZE);
     setPrice("");
     setOldPrice("");
     setQuantity("1");
@@ -763,6 +770,7 @@ export default function BusinessDashboardPage() {
     setEditingOfferId(offer.id);
     setEditTitle(offer.title);
     setEditCategory(normalizeOfferCategory(offer.category));
+    setEditSize(normalizeBagSize(offer.size) ?? DEFAULT_BAG_SIZE);
     setEditPrice(String(offer.price ?? ""));
     setEditOldPrice(offer.old_price ? String(offer.old_price) : "");
     setEditQuantity(String(offer.quantity ?? 0));
@@ -776,6 +784,7 @@ export default function BusinessDashboardPage() {
     setEditingOfferId(null);
     setEditTitle("");
     setEditCategory(DEFAULT_OFFER_CATEGORY);
+    setEditSize(DEFAULT_BAG_SIZE);
     setEditPrice("");
     setEditOldPrice("");
     setEditQuantity("");
@@ -926,6 +935,7 @@ export default function BusinessDashboardPage() {
       .update({
         title: titleResult.value,
         category: selectedCategory,
+        size: editSize,
         price: priceValue,
         old_price: oldPriceValue,
         pickup_date: editPickupDate,
@@ -1057,6 +1067,7 @@ export default function BusinessDashboardPage() {
       business_id: offer.business_id,
       title: `${offer.title} copy`.slice(0, 120),
       category: normalizeOfferCategory(offer.category),
+      size: normalizeBagSize(offer.size),
       price: Number(offer.price || 0),
       old_price: offer.old_price ? Number(offer.old_price) : null,
       quantity: Math.max(Number(offer.quantity || 1), 1),
@@ -1576,8 +1587,8 @@ export default function BusinessDashboardPage() {
         ? "ლოგო ან შეთავაზების სურათი ატვირთულია"
         : "Logo or offer image uploaded",
       helper: isGeorgian
-        ? "გამოიყენე მკაფიო სურათები, რომ მომხმარებლებმა შენს სიურპრიზის ყუთებს ენდონ."
-        : "Use clear images so customers trust your surprise bags.",
+        ? "გამოიყენე მკაფიო სურათები, რომ მომხმარებლებმა შენს მწვანე ჩანთებს ენდონ."
+        : "Use clear images so customers trust your Green Bags.",
       complete: hasBusinessImage,
     },
     {
@@ -1620,8 +1631,8 @@ export default function BusinessDashboardPage() {
     {
       label: isGeorgian ? "შექმენი პირველი შეთავაზება" : "Create first offer",
       helper: isGeorgian
-        ? "გამოაქვეყნე რეალისტური სიურპრიზის ყუთი ფასითა და წაღების დროით."
-        : "Publish a realistic surprise bag with price and pickup time.",
+        ? "გამოაქვეყნე რეალისტური მწვანე ჩანთა ფასითა და წაღების დროით."
+        : "Publish a realistic Green Bag with price and pickup time.",
       complete: offers.length > 0,
       anchor: "#create-offer",
     },
@@ -1684,12 +1695,12 @@ export default function BusinessDashboardPage() {
       tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
     },
     {
-      title: isGeorgian ? "გაყიდული ყუთები" : "Boxes sold",
+      title: isGeorgian ? "გაყიდული ჩანთები" : "Bags sold",
       value: businessAnalytics.boxesSold,
       tone: "green" as const,
     },
     {
-      title: isGeorgian ? "ხელმისაწვდომი ყუთები" : "Boxes available",
+      title: isGeorgian ? "ხელმისაწვდომი ჩანთები" : "Bags available",
       value: businessAnalytics.boxesRemaining,
       tone: "neutral" as const,
     },
@@ -1806,10 +1817,10 @@ export default function BusinessDashboardPage() {
           {
             title: isGeorgian ? "მცირე რაოდენობა" : "Low quantity",
             text: isGeorgian
-              ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ყუთი დარჩა.`
+              ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ჩანთა დარჩა.`
               : `${nearlySoldOutOffers.length} active ${
                   nearlySoldOutOffers.length === 1 ? "offer has" : "offers have"
-                } 2 or fewer boxes left.`,
+                } 2 or fewer bags left.`,
             className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]
@@ -2065,6 +2076,7 @@ export default function BusinessDashboardPage() {
           title={title}
           description={description}
           category={category}
+          size={size}
           price={price}
           oldPrice={oldPrice}
           quantity={quantity}
@@ -2078,6 +2090,7 @@ export default function BusinessDashboardPage() {
           onTitleChange={setTitle}
           onDescriptionChange={setDescription}
           onCategoryChange={setCategory}
+          onSizeChange={setSize}
           onPriceChange={setPrice}
           onOldPriceChange={setOldPrice}
           onQuantityChange={setQuantity}
@@ -2165,6 +2178,7 @@ export default function BusinessDashboardPage() {
             updatingOfferId={updatingOfferId}
             editTitle={editTitle}
             editCategory={editCategory}
+            editSize={editSize}
             editPrice={editPrice}
             editOldPrice={editOldPrice}
             editQuantity={editQuantity}
@@ -2180,6 +2194,7 @@ export default function BusinessDashboardPage() {
             onSaveEdits={(offer) => void saveOfferEdits(offer)}
             onEditTitleChange={setEditTitle}
             onEditCategoryChange={setEditCategory}
+            onEditSizeChange={setEditSize}
             onEditPriceChange={setEditPrice}
             onEditOldPriceChange={setEditOldPrice}
             onEditQuantityChange={setEditQuantity}

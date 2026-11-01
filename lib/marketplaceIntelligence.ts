@@ -284,8 +284,8 @@ function getOfferRecommendations(
     recommendations.push({
       title: isGeorgian ? "შეთავაზება ნელა იყიდება" : "Offer selling slowly",
       text: isGeorgian
-        ? "გამოაქვეყნე უფრო ადრე ან გამოიყენე უფრო მკაფიო სათაური, მაგალითად „საცხობის სიურპრიზის ყუთი“."
-        : "Publish earlier or use a clearer title like Bakery Surprise Bag.",
+        ? "გამოაქვეყნე უფრო ადრე ან გამოიყენე უფრო მკაფიო სათაური, მაგალითად „საცხობის მწვანე ჩანთა“."
+        : "Publish earlier or use a clearer title like Bakery Green Bag.",
       tone: "yellow",
     });
   }
@@ -431,10 +431,10 @@ export function buildBusinessRecommendations(
         ? "რაოდენობა ფრთხილად გაზარდე"
         : "Increase quantity carefully",
       text: isGeorgian
-        ? `${strongOffers.length} შეთავაზება კარგად იყიდება. გაიმეორე იგივე დრო და შემდეგ ჯერზე განიხილე რამდენიმე დამატებითი ყუთი.`
+        ? `${strongOffers.length} შეთავაზება კარგად იყიდება. გაიმეორე იგივე დრო და შემდეგ ჯერზე განიხილე რამდენიმე დამატებითი ჩანთა.`
         : `${strongOffers.length} offer ${
             strongOffers.length === 1 ? "is" : "are"
-          } selling well. Repeat the timing and consider a few more boxes next time.`,
+          } selling well. Repeat the timing and consider a few more bags next time.`,
       tone: "green",
     });
   }
@@ -521,13 +521,13 @@ export function buildBusinessDailySummary(
       tone: revenue > 0 ? "green" : "white",
     },
     {
-      title: isGeorgian ? "გადარჩენილი ყუთები" : "Boxes saved",
+      title: isGeorgian ? "გადარჩენილი ჩანთები" : "Bags saved",
       value: `${Math.round(revenueOrders.length * estimatedKgSavedPerBox * 10) / 10} ${
         isGeorgian ? "კგ" : "kg"
       }`,
       helper: isGeorgian
-        ? "გადარჩენილი საკვების მარტივი შეფასება დაჯავშნილი ყუთების მიხედვით"
-        : "Simple food rescue estimate based on reserved boxes",
+        ? "გადარჩენილი საკვების მარტივი შეფასება დაჯავშნილი ჩანთების მიხედვით"
+        : "Simple food rescue estimate based on reserved bags",
       tone: revenueOrders.length > 0 ? "green" : "white",
     },
     {

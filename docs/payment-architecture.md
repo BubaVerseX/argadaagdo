@@ -20,7 +20,7 @@ for database compatibility.
 9. The server calls `finalize_provider_payment(...)`.
 10. Paid orders become `reserved` and receive a pickup code.
 
-The inventory hold prevents overselling the last available surprise bag. If the
+The inventory hold prevents overselling the last available Green Bag. If the
 provider session fails, expires, is cancelled, or is refunded, inventory is
 restored through RPC logic exactly once.
 
@@ -75,7 +75,7 @@ Each paid order already stores:
 
 Current split:
 
-- 10% platform fee
+- platform fee at the business's `platform_fee_rate` (30% by default, 0% for pilot partners)
 - 90% business revenue
 
 Future payout architecture:

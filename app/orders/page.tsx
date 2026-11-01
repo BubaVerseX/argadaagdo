@@ -126,6 +126,8 @@ export default function OrdersPage() {
           price,
           quantity,
           active,
+          category,
+          size,
           businesses(name, address, business_type)
         )
       `

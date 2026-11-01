@@ -1,7 +1,7 @@
 # ArGadaagdo
 
 ArGadaagdo is a pickup-only food-rescue marketplace for Tbilisi, Georgia.
-Local food businesses publish discounted surprise bags, customers reserve them
+Local food businesses publish discounted Green Bags, customers reserve them
 online, and pickup codes make in-store collection clear and simple.
 
 The project is a production-demo MVP inspired by Too Good To Go. It includes
@@ -49,7 +49,7 @@ Production beta URL:
 
 1. A business creates an account and submits a business registration.
 2. An admin reviews and approves the business.
-3. The business creates a pickup-only surprise bag offer.
+3. The business creates a pickup-only Green Bag offer.
 4. A customer browses active offers and confirms a reservation.
 5. The payment RPC creates a pending order and payment hold while decreasing
    offer quantity atomically.
@@ -65,7 +65,7 @@ Production beta URL:
 | --- | --- |
 | `profiles` | User email, role, and reliability fields |
 | `businesses` | Business ownership, details, approval state, and profile data |
-| `offers` | Surprise bags, prices, pickup windows, images, status, and quantity |
+| `offers` | Green Bags, prices, pickup windows, images, status, and quantity |
 | `orders` | Pending payment, reservation lifecycle, pickup codes, cancellation, and rating state |
 | `payments` | Provider payment state, fees, business amount, references, and refund state |
 | `business_ratings` | Customer ratings for completed pickups |

@@ -16,7 +16,7 @@ import {
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
-import { getOfferCategoryLabel } from "@/lib/offerCategories";
+import { getGreenBagLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -52,7 +52,7 @@ function toNumber(value: number | string | null | undefined) {
 
 function getUrgencyMessage(quantity: number, language: string) {
   if (quantity === 1) {
-    return language === "ka" ? "ბოლო ყუთი ხელმისაწვდომია" : "Last one available";
+    return language === "ka" ? "ბოლო ჩანთა ხელმისაწვდომია" : "Last one available";
   }
 
   if (quantity > 1 && quantity <= 5) {
@@ -259,7 +259,7 @@ export default function OfferDetailPage() {
   }
 
   const rating = offer ? ratingSummaries[offer.business_id] : undefined;
-  const offerCategory = offer ? getOfferCategoryLabel(offer.category, language) : "";
+  const offerCategory = offer ? getGreenBagLabel(offer, language) : "";
   const mapsUrl = offer
     ? createMapsSearchUrl(offer.businesses?.address, offer.businesses?.name)
     : "";
@@ -285,19 +285,19 @@ export default function OfferDetailPage() {
     ? [
         {
           question:
-            language === "ka" ? "ვინ ამზადებს ამ ყუთს?" : "Who prepares this bag?",
+            language === "ka" ? "ვინ ამზადებს ამ ჩანთას?" : "Who prepares this bag?",
           answer:
             language === "ka"
-              ? `${businessName} ამზადებს ამ სიურპრიზის ყუთს. ბიზნესის პროფილში შეგიძლია ნახო მისამართი, შეფასებები და აქტიური შეთავაზებები.`
-              : `${businessName} prepares this surprise bag. You can review the business profile, address, ratings and active offers before reserving.`,
+              ? `${businessName} ამზადებს ამ მწვანე ჩანთას. ბიზნესის პროფილში შეგიძლია ნახო მისამართი, შეფასებები და აქტიური შეთავაზებები.`
+              : `${businessName} prepares this Green Bag. You can review the business profile, address, ratings and active offers before reserving.`,
         },
         {
           question:
             language === "ka" ? "რამდენად ახალია საკვები?" : "How fresh is the food?",
           answer:
             language === "ka"
-              ? "სიურპრიზის ყუთები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ ფანჯარაში, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
-              : "Surprise bags are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
+              ? "მწვანე ჩანთები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ ფანჯარაში, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
+              : "Green Bags are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
         },
         {
           question:
@@ -580,8 +580,8 @@ export default function OfferDetailPage() {
                     <p className="mt-3 leading-7 text-body">
                       {offer.description ||
                         (language === "ka"
-                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული სიურპრიზის ყუთი."
-                          : "A surprise rescue box prepared by the business from available food.")}
+                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული მწვანე ჩანთა."
+                          : "A Green Bag prepared by the business from available food.")}
                     </p>
 
                     <h3 className="mt-6 text-xl font-semibold">
@@ -595,13 +595,13 @@ export default function OfferDetailPage() {
                   <HelpCard
                     title={
                       language === "ka"
-                        ? "რა არის სიურპრიზის ყუთი?"
-                        : "What is a surprise bag?"
+                        ? "რა არის მწვანე ჩანთა?"
+                        : "What is a Green Bag?"
                     }
                     text={
                       language === "ka"
-                        ? "ეს არის ფასდაკლებული საკვების ყუთი, რომელიც ბიზნესმა კარგი დარჩენილი საკვებიდან მოამზადა. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს."
-                        : "It is a discounted food bag prepared from good surplus food. The exact contents can vary, but the price, business and pickup window are clear before you reserve."
+                        ? "ეს არის კარგი დარჩენილი საკვები ფასდაკლებით, S, M ან L ზომის ჩანთაში. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს, მაგრამ ბიზნესი, კატეგორია, ზომა, ფასი და წაღების დრო დაჯავშნამდე ნათელია."
+                        : "It is good surplus food at a discount, in a bag of size S, M or L. The exact contents can vary, but the business, category, size, price and pickup window are clear before you reserve."
                     }
                   />
 

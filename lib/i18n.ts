@@ -72,6 +72,9 @@ const translations = {
     "common.pickup": "Pickup",
     "common.quantity": "Quantity",
     "common.category": "Category",
+    "common.size": "Size",
+    "common.greenBag": "Green Bag",
+    "common.greenBags": "Green Bags",
     "common.rating": "Rating",
     "common.reviews": "Reviews",
     "common.noRatings": "No ratings yet",
@@ -91,7 +94,7 @@ const translations = {
     "home.title2": "Rescue food.",
     "home.title3": "Support local businesses.",
     "home.subtitle":
-      "Find discounted surprise bags from verified local businesses in Tbilisi. Reserve online, collect in person, save money and help reduce food waste.",
+      "Find discounted Green Bags from verified local businesses in Tbilisi. Reserve online, collect in person, save money and help reduce food waste.",
     "home.explore": "Browse offers",
     "home.joinBusiness": "For businesses",
     "home.pickupOnly": "pickup only",
@@ -114,9 +117,9 @@ const translations = {
     "home.stats": "Pilot trust",
     "home.howItWorks": "How ArGadaagdo works",
     "home.howItWorksIntro":
-      "A simple pickup-only flow for discounted food boxes from trusted local businesses.",
+      "A simple pickup-only flow for discounted Green Bags from trusted local businesses.",
     "home.step1": "Step 1",
-    "home.step1Text": "Browse surprise food bags from local businesses.",
+    "home.step1Text": "Browse Green Bags of food from local businesses.",
     "home.step2": "Step 2",
     "home.step2Text": "Reserve a bag before it sells out.",
     "home.step3": "Step 3",
@@ -143,7 +146,7 @@ const translations = {
     "home.whyDiscoverTbilisi": "Discover new places in Tbilisi",
     "home.noFeatured": "No featured offers yet.",
     "home.pickupWindows": "Pickup windows",
-    "home.noSurpriseBags": "No surprise bags available right now.",
+    "home.noSurpriseBags": "No Green Bags available right now.",
     "home.publishLater": "Businesses usually publish offers later in the day.",
     "home.missionBadge": "Pilot launch",
     "home.missionTitle": "Why ArGadaagdo?",
@@ -164,18 +167,18 @@ const translations = {
     "home.customerCtaBadge": "For customers",
     "home.customerCtaTitle": "Looking for great food at a great price?",
     "home.customerCtaText":
-      "Save money, reduce food waste and support local businesses by reserving discounted surprise bags.",
+      "Save money, reduce food waste and support local businesses by reserving discounted Green Bags.",
     "home.finalCtaTitle": "Ready to rescue food?",
-    "home.finalCtaText": "Browse today's surprise bags.",
+    "home.finalCtaText": "Browse today's Green Bags.",
 
     "customerOnboarding.title": "New to ArGadaagdo?",
-    "customerOnboarding.stepBrowse": "Browse surprise bags.",
+    "customerOnboarding.stepBrowse": "Browse Green Bags.",
     "customerOnboarding.stepReserve": "Reserve before they sell out.",
     "customerOnboarding.stepCollect": "Collect during pickup time.",
     "customerOnboarding.stepEnjoy": "Enjoy great food at a lower price.",
 
     "offers.badge": "Live offers in Tbilisi",
-    "offers.title": "Rescue food boxes near you.",
+    "offers.title": "Rescue Green Bags near you.",
     "offers.subtitle": "Search live rescue deals, reserve online, and pick up in store.",
     "offers.filterHint":
       "Use search, categories and sorting to find the right pickup window.",
@@ -186,19 +189,19 @@ const translations = {
     "offers.sortLowest": "Lowest price",
     "offers.sortHighest": "Highest price",
     "offers.availableOnly": "Available only",
-    "offers.boxesLeft": "Boxes left",
+    "offers.boxesLeft": "Bags left",
     "offers.tbilisiPilot": "Tbilisi pilot",
     "offers.heading": "Food rescue offers",
     "offers.matches": "matches your filters.",
     "offers.noOffers": "No offers available right now.",
     "offers.noMatching": "No matching offers",
     "offers.noOffersHint":
-      "Businesses usually publish surprise bags later in the day.",
+      "Businesses usually publish Green Bags later in the day.",
     "offers.noMatchingHint": "Try changing the category, price sort, or availability filter.",
-    "offers.checkBackSoon": "Check back again soon for fresh surprise bags.",
-    "offers.surpriseBagTitle": "What is a surprise bag?",
+    "offers.checkBackSoon": "Check back again soon for fresh Green Bags.",
+    "offers.surpriseBagTitle": "What is a Green Bag?",
     "offers.surpriseBagText":
-      "A surprise bag is a discounted food box prepared from good surplus food. The exact items may vary, but every offer shows the business, price and pickup window before you reserve.",
+      "A Green Bag is a bag of good surplus food at a discount, in size S, M or L. The exact items may vary, but every offer shows the business, category, size, price and pickup window before you reserve.",
     "offers.clearFilters": "Clear filters",
     "offers.backHome": "Back to Home",
     "offers.addFavorite": "Add to favorites",
@@ -207,7 +210,7 @@ const translations = {
 
     "offerDetail.back": "Back to offers",
     "offerDetail.title": "Offer details",
-    "offerDetail.about": "About this surprise bag",
+    "offerDetail.about": "About this Green Bag",
     "offerDetail.allergens": "Allergens",
     "offerDetail.allergensAsk": "Ask the business during pickup.",
     "offerDetail.businessProfile": "Business profile",
@@ -218,7 +221,7 @@ const translations = {
     "offerDetail.pickupDate": "Pickup date",
     "offerDetail.pickupTime": "Pickup time",
     "offerDetail.reviewSummary": "Review summary",
-    "offerDetail.urgencyHint": "Reserve before this surprise bag sells out.",
+    "offerDetail.urgencyHint": "Reserve before this Green Bag sells out.",
     "offerDetail.pickupInfoTitle": "Pickup information",
     "offerDetail.pickupVisit": "Visit during the pickup window",
     "offerDetail.pickupCode": "Show your pickup code",
@@ -257,13 +260,13 @@ const translations = {
       "This business has been approved to sell offers on ArGadaagdo.",
     "businessProfile.localBusinessTitle": "Local food business",
     "businessProfile.localBusinessText":
-      "This profile helps customers understand who prepares the surprise bags.",
+      "This profile helps customers understand who prepares the Green Bags.",
     "businessProfile.pickupOnlyTitle": "Pickup-only offers",
     "businessProfile.pickupOnlyText":
       "Customers reserve online and collect directly from the business during the pickup window.",
     "businessProfile.reviewsIntro":
       "Reviews come from customers after completed pickups and help future customers choose with confidence.",
-    "businessProfile.noActiveOffers": "No active surprise bags right now.",
+    "businessProfile.noActiveOffers": "No active Green Bags right now.",
     "businessProfile.noActiveOffersHint":
       "Check back later for fresh food rescue offers from this business.",
     "businessProfile.noReviewsHint":
@@ -279,10 +282,10 @@ const translations = {
     "orders.status": "Status",
     "orders.loading": "Loading orders...",
     "orders.emptyTitle": "No orders yet",
-    "orders.emptyHint": "Reserve a surprise bag and it will appear here.",
+    "orders.emptyHint": "Reserve a Green Bag and it will appear here.",
     "orders.educationTitle": "How orders work",
     "orders.educationText":
-      "After you reserve a surprise bag, it will appear here together with your pickup code and collection details.",
+      "After you reserve a Green Bag, it will appear here together with your pickup code and collection details.",
     "orders.pickupCode": "Pickup code",
     "orders.showCode": "Show this code at pickup.",
     "orders.cancelPolicy": "You can cancel up to 2 hours before pickup for a full refund.",
@@ -304,7 +307,7 @@ const translations = {
       "Remember to collect your order during the pickup window. Bring your pickup code.",
     "orders.pickupInstructionTitle": "At pickup",
     "orders.pickupInstructionText":
-      "Open this page, show the pickup code to the business, and collect your surprise bag during the pickup window.",
+      "Open this page, show the pickup code to the business, and collect your Green Bag during the pickup window.",
     "orders.statusGuideReservedTitle": "Reserved",
     "orders.statusGuideReservedText":
       "Your pickup code is active. Visit the business during the pickup window.",
@@ -327,15 +330,15 @@ const translations = {
     "orders.submitReview": "Submit review",
 
     "favorites.badge": "Saved offers",
-    "favorites.title": "Your favorite surprise bags.",
+    "favorites.title": "Your favorite Green Bags.",
     "favorites.subtitle": "Keep interesting offers in one place and come back when you are ready to reserve.",
     "favorites.saved": "Saved",
     "favorites.loading": "Loading your favorites...",
     "favorites.emptyTitle": "No saved offers yet",
-    "favorites.emptyHint": "Save interesting surprise bags and find them here later.",
+    "favorites.emptyHint": "Save interesting Green Bags and find them here later.",
     "favorites.educationTitle": "Save offers for later",
     "favorites.educationText":
-      "Use Favorites to keep track of surprise bags you might want to reserve later.",
+      "Use Favorites to keep track of Green Bags you might want to reserve later.",
     "favorites.trustReminder":
       "Offers may sell out quickly. Reserve early if you find something you like.",
     "favorites.viewOffer": "View offer",
@@ -344,7 +347,7 @@ const translations = {
       "This saved offer may have ended, sold out, or become unavailable.",
 
     "businessDashboard.title": "Manage offers and pickups.",
-    "businessDashboard.subtitle": "Publish surprise bags, track reservations, and verify pickup codes when customers arrive.",
+    "businessDashboard.subtitle": "Publish Green Bags, track reservations, and verify pickup codes when customers arrive.",
     "businessDashboard.welcome": "Welcome back",
     "businessDashboard.welcomeText":
       "Manage your offers, reservations and customer feedback from one place.",
@@ -386,7 +389,7 @@ const translations = {
       "A quick view of which reservations still need attention.",
     "businessDashboard.noShow": "No-show",
     "businessDashboard.noReviews": "No ratings yet.",
-    "businessDashboard.noOffers": "Create your first surprise bag.",
+    "businessDashboard.noOffers": "Create your first Green Bag.",
     "businessDashboard.noReservations": "No reservations yet.",
     "businessDashboard.noOffersHint":
       "Your offers will appear here after creation.",
@@ -402,8 +405,8 @@ const translations = {
     "businessOnboarding.badge": "Pilot onboarding",
     "businessOnboarding.welcomeTitle": "Welcome to ArGadaagdo.",
     "businessOnboarding.welcomeText":
-      "Create your first surprise bag and start receiving reservations from customers in Tbilisi.",
-    "businessOnboarding.createFirstBag": "Create your first surprise bag",
+      "Create your first Green Bag and start receiving reservations from customers in Tbilisi.",
+    "businessOnboarding.createFirstBag": "Create your first Green Bag",
     "businessOnboarding.workflowBadge": "Business guide",
     "businessOnboarding.workflowTitle": "How ArGadaagdo works",
     "businessOnboarding.workflowCreateOffer": "Create an offer.",
@@ -426,16 +429,16 @@ const translations = {
     "businessOnboarding.tipPromptPickup": "Serve customers promptly at pickup.",
     "businessOnboarding.firstOfferGuidanceTitle": "First offer guidance",
     "businessOnboarding.recommendedQuantity": "Recommended quantity",
-    "businessOnboarding.recommendedQuantityValue": "3-10 surprise bags",
+    "businessOnboarding.recommendedQuantityValue": "3-10 Green Bags",
     "businessOnboarding.recommendedPickupWindow": "Pickup window",
     "businessOnboarding.recommendedPickupWindowValue": "1-2 hours",
     "businessOnboarding.recommendedTitle": "Clear title example",
-    "businessOnboarding.recommendedTitleValue": "Bakery Surprise Bag",
+    "businessOnboarding.recommendedTitleValue": "Bakery Green Bag",
     "businessOnboarding.realExamplesTitle": "Realistic offer examples",
     "businessOnboarding.realExamplesText":
-      "Try names like Bakery Surprise Bag, Cafe Closing Time Bag, or Restaurant Rescue Box so customers quickly understand the offer.",
+      "Try names like Bakery Green Bag, Dairy Green Bag, or Deli Green Bag so customers quickly understand the offer.",
     "businessOnboarding.titleHelper":
-      "Title: use a clear customer-friendly name, for example Bakery Surprise Bag.",
+      "Title: use a clear customer-friendly name, for example Bakery Green Bag.",
     "businessOnboarding.quantityHelper":
       "Quantity: how many customers can reserve this offer.",
     "businessOnboarding.pickupWindowHelper":
@@ -487,14 +490,14 @@ const translations = {
     "login.customerHint": "Reserve food offers.",
     "login.businessHint": "Create and manage offers.",
     "login.forCustomers": "For customers",
-    "login.forCustomersText": "Reserve discounted surprise bags and collect them in person.",
+    "login.forCustomersText": "Reserve discounted Green Bags and collect them in person.",
     "login.forBusinesses": "For businesses",
     "login.forBusinessesText": "Create pickup-only offers and manage customer reservations.",
 
     "businessRegister.badge": "For local businesses",
     "businessRegister.title": "Register your food business",
     "businessRegister.subtitle":
-      "Join ArGadaagdo and sell leftover food boxes to customers in Tbilisi. After admin approval, you can publish offers from your dashboard.",
+      "Join ArGadaagdo and sell leftover food as Green Bags to customers in Tbilisi. After admin approval, you can publish offers from your dashboard.",
     "businessRegister.step1": "1. Submit business",
     "businessRegister.step1Text": "Add your name, type, address and phone number.",
     "businessRegister.step2": "2. Wait for approval",
@@ -510,7 +513,7 @@ const translations = {
     "businessRegister.requiredPhone": "Phone number for admin follow-up",
     "businessRegister.expectationsTitle": "What happens next",
     "businessRegister.expectationsText":
-      "Applications are reviewed manually during the pilot. After approval, your dashboard will let you create surprise bags and manage pickups.",
+      "Applications are reviewed manually during the pilot. After approval, your dashboard will let you create Green Bags and manage pickups.",
     "businessRegister.name": "Business name",
     "businessRegister.address": "Address in Tbilisi",
     "businessRegister.phone": "Phone number",
@@ -535,7 +538,7 @@ const translations = {
       "Set a price, a quantity and a pickup window from your dashboard. No photo studio and no long descriptions required.",
     "forBusinesses.solutionReachTitle": "Reach new customers",
     "forBusinesses.solutionReachText":
-      "Surprise bags put your business in front of people actively looking for a deal nearby, many of whom have never walked through your door.",
+      "Green Bags put your business in front of people actively looking for a deal nearby, many of whom have never walked through your door.",
     "forBusinesses.solutionRecoverTitle": "Recover real revenue",
     "forBusinesses.solutionRecoverText":
       "Instead of writing off unsold food as a pure loss, turn it into paid orders, reserved and paid for before the customer even arrives.",
@@ -544,7 +547,7 @@ const translations = {
     "forBusinesses.howStep1Title": "Register your business",
     "forBusinesses.howStep1Text":
       "Tell us who you are and where customers can pick up. Every business is reviewed before going live.",
-    "forBusinesses.howStep2Title": "Publish a surprise bag",
+    "forBusinesses.howStep2Title": "Publish a Green Bag",
     "forBusinesses.howStep2Text":
       "Add a price, a quantity and a pickup window whenever you have surplus, that morning, that afternoon, whenever it happens.",
     "forBusinesses.howStep3Title": "Get reserved and paid",
@@ -554,13 +557,13 @@ const translations = {
     "forBusinesses.howStep4Text":
       "The customer shows their pickup code, you confirm it in the dashboard, and you're done.",
     "forBusinesses.commissionBadge": "Pricing, in plain terms",
-    "forBusinesses.commissionTitle": "10% to ArGadaagdo. 90% stays with you.",
+    "forBusinesses.commissionTitle": "A commission only when a bag sells. 70% or more stays with you.",
     "forBusinesses.commissionText":
-      "No listing fees, no monthly subscription, no hidden charges. ArGadaagdo takes a 10% commission only on bags that actually sell. If nothing sells, you owe nothing, and you set your own prices and quantities.",
+      "No listing fees, no monthly subscription, no hidden charges. ArGadaagdo takes a commission only on bags that actually sell: 30% by default, agreed per partner, and 0% for pilot partners. If nothing sells, you owe nothing, and you set your own prices and quantities.",
     "forBusinesses.commissionYouKeep": "You keep",
-    "forBusinesses.commissionYouKeepValue": "90%",
+    "forBusinesses.commissionYouKeepValue": "70%+",
     "forBusinesses.commissionPlatformFee": "Platform commission",
-    "forBusinesses.commissionPlatformFeeValue": "10%",
+    "forBusinesses.commissionPlatformFeeValue": "30% or less",
     "forBusinesses.commissionNoSale": "No sale, no fee",
     "forBusinesses.commissionNoSaleText":
       "You only pay a commission once a bag is actually reserved and paid for.",
@@ -584,7 +587,7 @@ const translations = {
     "checkout.stepPickupTitle": "Pickup",
     "checkout.stepPickupText":
       "After confirmation, use your pickup code during the pickup window.",
-    "checkout.rescueBox": "Surprise bag",
+    "checkout.rescueBox": "Green Bag",
     "checkout.offerTitle": "Offer",
     "checkout.businessName": "Business",
     "checkout.pickupDate": "Pickup date",
@@ -631,7 +634,7 @@ const translations = {
     "checkout.pickupGuideIntro":
       "Your pickup code is the proof of reservation. Keep it ready when you arrive.",
     "checkout.pickupStep1": "Step 1",
-    "checkout.pickupStep1Text": "Reserve your surprise bag.",
+    "checkout.pickupStep1Text": "Reserve your Green Bag.",
     "checkout.pickupStep2": "Step 2",
     "checkout.pickupStep2Text": "Receive your pickup code.",
     "checkout.pickupStep3": "Step 3",
@@ -655,10 +658,10 @@ const translations = {
     "faq.general": "General",
     "faq.customer.what.question": "What is ArGadaagdo?",
     "faq.customer.what.answer":
-      "ArGadaagdo is a Georgian food rescue marketplace where local businesses can sell leftover food boxes at a discount instead of wasting them.",
+      "ArGadaagdo is a Georgian food rescue marketplace where local businesses can sell leftover food as discounted Green Bags instead of wasting it.",
     "faq.customer.reservations.question": "How do reservations work?",
     "faq.customer.reservations.answer":
-      "Browse available surprise bags, open an offer, continue to checkout, and confirm your reservation. After confirmation, the order appears on your Orders page.",
+      "Browse available Green Bags, open an offer, continue to checkout, and confirm your reservation. After confirmation, the order appears on your Orders page.",
     "faq.customer.pickups.question": "How do pickups work?",
     "faq.customer.pickups.answer":
       "Pick up your order directly from the business during the pickup window. Show your pickup code so the business can verify and complete the order.",
@@ -679,7 +682,7 @@ const translations = {
       "An admin reviews submitted businesses before they can publish offers. This keeps the marketplace safer and more trustworthy.",
     "faq.business.offers.question": "How do I create offers?",
     "faq.business.offers.answer":
-      "After approval, open the Business Dashboard and create a surprise bag with title, price, quantity, image, and pickup window.",
+      "After approval, open the Business Dashboard and create a Green Bag with title, price, quantity, image, and pickup window.",
     "faq.business.collect.question": "How do customers collect orders?",
     "faq.business.collect.answer":
       "Customers show their pickup code at your business. You verify the code in the dashboard and mark the order collected.",
@@ -691,7 +694,7 @@ const translations = {
       "ArGadaagdo exists to help businesses recover value from unsold food, help customers save money, and reduce food waste in Georgia.",
     "faq.ctaTitle": "Ready to try ArGadaagdo?",
     "faq.ctaText":
-      "Browse current offers as a customer or register your food business to start publishing surprise bags.",
+      "Browse current offers as a customer or register your food business to start publishing Green Bags.",
 
     "contact.badge": "Contact & support",
     "contact.title": "Contact us",
@@ -729,7 +732,7 @@ const translations = {
     "about.badge": "About ArGadaagdo",
     "about.title": "Reducing food waste in Georgia.",
     "about.subtitle":
-      "ArGadaagdo is a Georgian food rescue marketplace helping local businesses sell surplus food and helping customers discover discounted surprise bags.",
+      "ArGadaagdo is a Georgian food rescue marketplace helping local businesses sell surplus food and helping customers discover discounted Green Bags.",
     "about.whatLabel": "What is ArGadaagdo?",
     "about.whatTitle": "A food rescue marketplace",
     "about.whatText":
@@ -782,7 +785,7 @@ const translations = {
       "These simple MVP terms explain the basic rules for reservations, pickups, cancellations, ratings and business approval.",
     "terms.reservationsTitle": "Reservations",
     "terms.reservationsText":
-      "Customers reserve available surprise bags from approved businesses. A reservation confirms your intention to collect the order during the listed pickup window.",
+      "Customers reserve available Green Bags from approved businesses. A reservation confirms your intention to collect the order during the listed pickup window.",
     "terms.pickupTitle": "Pickup responsibility",
     "terms.pickupText":
       "Customers are responsible for visiting the business during the pickup window and showing the pickup code from their Orders page.",
@@ -879,6 +882,9 @@ const translations = {
     "common.pickup": "წაღება",
     "common.quantity": "რაოდენობა",
     "common.category": "კატეგორია",
+    "common.size": "ზომა",
+    "common.greenBag": "მწვანე ჩანთა",
+    "common.greenBags": "მწვანე ჩანთები",
     "common.rating": "შეფასება",
     "common.reviews": "შეფასებები",
     "common.noRatings": "შეფასებები ჯერ არ არის",
@@ -898,7 +904,7 @@ const translations = {
     "home.title2": "გადაარჩინე საკვები.",
     "home.title3": "მხარი დაუჭირე ადგილობრივ ბიზნესებს.",
     "home.subtitle":
-      "იპოვე ფასდაკლებული სიურპრიზის ყუთები თბილისის დამოწმებული ადგილობრივი ბიზნესებიდან. დაჯავშნე ონლაინ, წაიღე ადგილზე, დაზოგე თანხა და შეამცირე საკვების ნარჩენი.",
+      "იპოვე ფასდაკლებული მწვანე ჩანთები თბილისის დამოწმებული ადგილობრივი ბიზნესებიდან. დაჯავშნე ონლაინ, წაიღე ადგილზე, დაზოგე თანხა და შეამცირე საკვების ნარჩენი.",
     "home.explore": "შეთავაზებების ნახვა",
     "home.joinBusiness": "ბიზნესებისთვის",
     "home.pickupOnly": "მხოლოდ წაღება",
@@ -921,11 +927,11 @@ const translations = {
     "home.stats": "საპილოტე ნდობა",
     "home.howItWorks": "როგორ მუშაობს არ გადააგდო",
     "home.howItWorksIntro":
-      "მარტივი წაღების პროცესი ფასდაკლებული საკვების ყუთებისთვის სანდო ადგილობრივი ბიზნესებიდან.",
+      "მარტივი წაღების პროცესი ფასდაკლებული მწვანე ჩანთებისთვის სანდო ადგილობრივი ბიზნესებიდან.",
     "home.step1": "ნაბიჯი 1",
-    "home.step1Text": "დაათვალიერე სიურპრიზის საკვების ყუთები ადგილობრივი ბიზნესებიდან.",
+    "home.step1Text": "დაათვალიერე საკვების მწვანე ჩანთები ადგილობრივი ბიზნესებიდან.",
     "home.step2": "ნაბიჯი 2",
-    "home.step2Text": "დაჯავშნე ყუთი, სანამ გაიყიდება.",
+    "home.step2Text": "დაჯავშნე ჩანთა, სანამ გაიყიდება.",
     "home.step3": "ნაბიჯი 3",
     "home.step3Text": "წაიღე შეკვეთა მითითებულ წაღების ფანჯარაში.",
     "home.step4": "ნაბიჯი 4",
@@ -950,7 +956,7 @@ const translations = {
     "home.whyDiscoverTbilisi": "აღმოაჩინე ახალი ადგილები თბილისში",
     "home.noFeatured": "რჩეული შეთავაზებები ჯერ არ არის.",
     "home.pickupWindows": "წაღების ფანჯრები",
-    "home.noSurpriseBags": "ახლა სიურპრიზის ყუთები ხელმისაწვდომი არ არის.",
+    "home.noSurpriseBags": "ახლა მწვანე ჩანთები ხელმისაწვდომი არ არის.",
     "home.publishLater": "ბიზნესები შეთავაზებებს ხშირად დღის მეორე ნახევარში აქვეყნებენ.",
     "home.missionBadge": "საპილოტე გაშვება",
     "home.missionTitle": "რატომ არ გადააგდო?",
@@ -971,18 +977,18 @@ const translations = {
     "home.customerCtaBadge": "მომხმარებლებისთვის",
     "home.customerCtaTitle": "ეძებ კარგ საკვებს კარგ ფასად?",
     "home.customerCtaText":
-      "დაზოგე თანხა, შეამცირე საკვების ნარჩენი და მხარი დაუჭირე ადგილობრივ ბიზნესებს ფასდაკლებული სიურპრიზის ყუთებით.",
+      "დაზოგე თანხა, შეამცირე საკვების ნარჩენი და მხარი დაუჭირე ადგილობრივ ბიზნესებს ფასდაკლებული მწვანე ჩანთებით.",
     "home.finalCtaTitle": "მზად ხარ საკვების გადასარჩენად?",
-    "home.finalCtaText": "დაათვალიერე დღევანდელი სიურპრიზის ყუთები.",
+    "home.finalCtaText": "დაათვალიერე დღევანდელი მწვანე ჩანთები.",
 
     "customerOnboarding.title": "პირველად იყენებ არ გადააგდოს?",
-    "customerOnboarding.stepBrowse": "დაათვალიერე სიურპრიზის ყუთები.",
+    "customerOnboarding.stepBrowse": "დაათვალიერე მწვანე ჩანთები.",
     "customerOnboarding.stepReserve": "დაჯავშნე, სანამ გაიყიდება.",
     "customerOnboarding.stepCollect": "წაიღე მითითებულ დროს.",
     "customerOnboarding.stepEnjoy": "ისიამოვნე კარგი საკვებით უკეთეს ფასად.",
 
     "offers.badge": "ცოცხალი შეთავაზებები თბილისში",
-    "offers.title": "გადაარჩინე საკვების ყუთები შენთან ახლოს.",
+    "offers.title": "გადაარჩინე მწვანე ჩანთები შენთან ახლოს.",
     "offers.subtitle": "მოძებნე ცოცხალი შეთავაზებები, დაჯავშნე ონლაინ და წაიღე ადგილზე.",
     "offers.search": "მოძებნე საკვები, ბიზნესი, მისამართი...",
     "offers.reset": "გასუფთავება",
@@ -991,7 +997,7 @@ const translations = {
     "offers.sortLowest": "დაბალი ფასი",
     "offers.sortHighest": "მაღალი ფასი",
     "offers.availableOnly": "მხოლოდ ხელმისაწვდომი",
-    "offers.boxesLeft": "დარჩენილი ყუთები",
+    "offers.boxesLeft": "დარჩენილი ჩანთები",
     "offers.filterHint":
       "გამოიყენე ძიება, კატეგორიები და დალაგება სასურველი წაღების ფანჯრის საპოვნელად.",
     "offers.tbilisiPilot": "თბილისის პილოტი",
@@ -1000,12 +1006,12 @@ const translations = {
     "offers.noOffers": "ახლა აქტიური შეთავაზებები არ არის.",
     "offers.noMatching": "შესაბამისი შეთავაზება არ არის",
     "offers.noOffersHint":
-      "ბიზნესები სიურპრიზის ყუთებს ხშირად დღის მეორე ნახევარში აქვეყნებენ.",
+      "ბიზნესები მწვანე ჩანთებს ხშირად დღის მეორე ნახევარში აქვეყნებენ.",
     "offers.noMatchingHint": "სცადე კატეგორიის, ფასის ან ხელმისაწვდომობის ფილტრის შეცვლა.",
-    "offers.checkBackSoon": "ახალი სიურპრიზის ყუთებისთვის მალე ისევ შეამოწმე.",
-    "offers.surpriseBagTitle": "რა არის სიურპრიზის ყუთი?",
+    "offers.checkBackSoon": "ახალი მწვანე ჩანთებისთვის მალე ისევ შეამოწმე.",
+    "offers.surpriseBagTitle": "რა არის მწვანე ჩანთა?",
     "offers.surpriseBagText":
-      "სიურპრიზის ყუთი არის ფასდაკლებული საკვების ყუთი კარგი დარჩენილი საკვებიდან. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ დაჯავშნამდე ყოველთვის ხედავ ბიზნესს, ფასს და წაღების დროს.",
+      "მწვანე ჩანთა არის კარგი დარჩენილი საკვები ფასდაკლებით, S, M ან L ზომის. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ დაჯავშნამდე ყოველთვის ხედავ ბიზნესს, კატეგორიას, ზომას, ფასსა და წაღების დროს.",
     "offers.clearFilters": "ფილტრების გასუფთავება",
     "offers.backHome": "მთავარზე დაბრუნება",
     "offers.addFavorite": "რჩეულებში დამატება",
@@ -1014,7 +1020,7 @@ const translations = {
 
     "offerDetail.back": "შეთავაზებებზე დაბრუნება",
     "offerDetail.title": "შეთავაზების დეტალები",
-    "offerDetail.about": "ამ სიურპრიზის ყუთის შესახებ",
+    "offerDetail.about": "ამ მწვანე ჩანთის შესახებ",
     "offerDetail.allergens": "ალერგენები",
     "offerDetail.allergensAsk": "ალერგენების შესახებ ჰკითხე ბიზნესს წაღებისას.",
     "offerDetail.businessProfile": "ბიზნეს პროფილი",
@@ -1025,7 +1031,7 @@ const translations = {
     "offerDetail.pickupDate": "წაღების თარიღი",
     "offerDetail.pickupTime": "წაღების დრო",
     "offerDetail.reviewSummary": "შეფასებების შეჯამება",
-    "offerDetail.urgencyHint": "დაჯავშნე, სანამ ეს სიურპრიზის ყუთი გაიყიდება.",
+    "offerDetail.urgencyHint": "დაჯავშნე, სანამ ეს მწვანე ჩანთა გაიყიდება.",
     "offerDetail.pickupInfoTitle": "წაღების ინფორმაცია",
     "offerDetail.pickupVisit": "ეწვიე მითითებულ წაღების ფანჯარაში",
     "offerDetail.pickupCode": "აჩვენე წაღების კოდი",
@@ -1064,13 +1070,13 @@ const translations = {
       "ეს ბიზნესი დამტკიცებულია არ გადააგდოზე შეთავაზებების გასაყიდად.",
     "businessProfile.localBusinessTitle": "ადგილობრივი კვების ბიზნესი",
     "businessProfile.localBusinessText":
-      "ეს პროფილი მომხმარებლებს ეხმარება გაიგონ, ვინ ამზადებს სიურპრიზის ყუთებს.",
+      "ეს პროფილი მომხმარებლებს ეხმარება გაიგონ, ვინ ამზადებს მწვანე ჩანთებს.",
     "businessProfile.pickupOnlyTitle": "მხოლოდ ადგილზე წაღება",
     "businessProfile.pickupOnlyText":
       "მომხმარებლები ონლაინ ჯავშნიან და შეკვეთას ბიზნესიდან მითითებულ ფანჯარაში იღებენ.",
     "businessProfile.reviewsIntro":
       "შეფასებები მოდის დასრულებული წაღებების შემდეგ და მომავალ მომხმარებლებს ნდობით არჩევაში ეხმარება.",
-    "businessProfile.noActiveOffers": "ახლა აქტიური სიურპრიზის ყუთები არ არის.",
+    "businessProfile.noActiveOffers": "ახლა აქტიური მწვანე ჩანთები არ არის.",
     "businessProfile.noActiveOffersHint":
       "ამ ბიზნესის ახალი საკვების გადარჩენის შეთავაზებებისთვის მოგვიანებით შეამოწმე.",
     "businessProfile.noReviewsHint":
@@ -1086,10 +1092,10 @@ const translations = {
     "orders.status": "სტატუსი",
     "orders.loading": "შეკვეთები იტვირთება...",
     "orders.emptyTitle": "შეკვეთები ჯერ არ არის",
-    "orders.emptyHint": "დაჯავშნე სიურპრიზის ყუთი და ის აქ გამოჩნდება.",
+    "orders.emptyHint": "დაჯავშნე მწვანე ჩანთა და ის აქ გამოჩნდება.",
     "orders.educationTitle": "როგორ მუშაობს შეკვეთები",
     "orders.educationText":
-      "როცა სიურპრიზის ყუთს დაჯავშნი, ის აქ გამოჩნდება წაღების კოდთან და შეკვეთის დეტალებთან ერთად.",
+      "როცა მწვანე ჩანთას დაჯავშნი, ის აქ გამოჩნდება წაღების კოდთან და შეკვეთის დეტალებთან ერთად.",
     "orders.pickupCode": "წაღების კოდი",
     "orders.showCode": "აჩვენე ეს კოდი ადგილზე.",
     "orders.cancelPolicy": "გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე სრული დაბრუნებით.",
@@ -1111,7 +1117,7 @@ const translations = {
       "არ დაგავიწყდეს შეკვეთის წაღება მითითებულ ფანჯარაში. თან გქონდეს წაღების კოდი.",
     "orders.pickupInstructionTitle": "წაღებისას",
     "orders.pickupInstructionText":
-      "გახსენი ეს გვერდი, აჩვენე წაღების კოდი ბიზნესს და აიღე სიურპრიზის ყუთი მითითებულ ფანჯარაში.",
+      "გახსენი ეს გვერდი, აჩვენე წაღების კოდი ბიზნესს და აიღე მწვანე ჩანთა მითითებულ ფანჯარაში.",
     "orders.statusGuideReservedTitle": "დაჯავშნილი",
     "orders.statusGuideReservedText":
       "შენი წაღების კოდი აქტიურია. ეწვიე ბიზნესს მითითებულ წაღების ფანჯარაში.",
@@ -1134,15 +1140,15 @@ const translations = {
     "orders.submitReview": "შეფასების გაგზავნა",
 
     "favorites.badge": "შენახული შეთავაზებები",
-    "favorites.title": "შენი რჩეული სიურპრიზის ყუთები.",
+    "favorites.title": "შენი რჩეული მწვანე ჩანთები.",
     "favorites.subtitle": "შეინახე საინტერესო შეთავაზებები და დაუბრუნდი, როცა დაჯავშნას გადაწყვეტ.",
     "favorites.saved": "შენახული",
     "favorites.loading": "რჩეულები იტვირთება...",
     "favorites.emptyTitle": "შენახული შეთავაზებები ჯერ არ არის",
-    "favorites.emptyHint": "შეინახე საინტერესო სიურპრიზის ყუთები და მოგვიანებით აქ ნახავ.",
+    "favorites.emptyHint": "შეინახე საინტერესო მწვანე ჩანთები და მოგვიანებით აქ ნახავ.",
     "favorites.educationTitle": "შეინახე შეთავაზებები მოგვიანებისთვის",
     "favorites.educationText":
-      "რჩეულებში შეგიძლია შეინახო სიურპრიზის ყუთები, რომლებსაც მოგვიანებით დაჯავშნას განიხილავ.",
+      "რჩეულებში შეგიძლია შეინახო მწვანე ჩანთები, რომლებსაც მოგვიანებით დაჯავშნას განიხილავ.",
     "favorites.trustReminder":
       "შეთავაზებები შეიძლება სწრაფად გაიყიდოს. თუ რამე მოგეწონა, ადრე დაჯავშნე.",
     "favorites.viewOffer": "შეთავაზების ნახვა",
@@ -1151,7 +1157,7 @@ const translations = {
       "ეს შენახული შეთავაზება შეიძლება დასრულდა, გაიყიდა ან აღარ არის ხელმისაწვდომი.",
 
     "businessDashboard.title": "მართე შეთავაზებები და წაღებები.",
-    "businessDashboard.subtitle": "გამოაქვეყნე სიურპრიზის ყუთები, აკონტროლე ჯავშნები და გადაამოწმე წაღების კოდები.",
+    "businessDashboard.subtitle": "გამოაქვეყნე მწვანე ჩანთები, აკონტროლე ჯავშნები და გადაამოწმე წაღების კოდები.",
     "businessDashboard.welcome": "კეთილი დაბრუნება",
     "businessDashboard.welcomeText":
       "მართე შეთავაზებები, ჯავშნები და მომხმარებლის გამოხმაურება ერთ ადგილას.",
@@ -1191,7 +1197,7 @@ const translations = {
       "აქ სწრაფად ნახავ, რომელ ჯავშნებს სჭირდება ყურადღება.",
     "businessDashboard.noShow": "არ გამოცხადდა",
     "businessDashboard.noReviews": "შეფასებები ჯერ არ არის.",
-    "businessDashboard.noOffers": "შექმენი პირველი სიურპრიზის ყუთი.",
+    "businessDashboard.noOffers": "შექმენი პირველი მწვანე ჩანთა.",
     "businessDashboard.noReservations": "ჯავშნები ჯერ არ არის.",
     "businessDashboard.noOffersHint":
       "შენი შეთავაზებები შექმნის შემდეგ აქ გამოჩნდება.",
@@ -1207,8 +1213,8 @@ const translations = {
     "businessOnboarding.badge": "საპილოტე ონბორდინგი",
     "businessOnboarding.welcomeTitle": "კეთილი იყოს შენი მობრძანება არ გადააგდოში.",
     "businessOnboarding.welcomeText":
-      "შექმენი პირველი სიურპრიზის ყუთი და დაიწყე ჯავშნების მიღება თბილისის მომხმარებლებისგან.",
-    "businessOnboarding.createFirstBag": "პირველი სიურპრიზის ყუთის შექმნა",
+      "შექმენი პირველი მწვანე ჩანთა და დაიწყე ჯავშნების მიღება თბილისის მომხმარებლებისგან.",
+    "businessOnboarding.createFirstBag": "პირველი მწვანე ჩანთის შექმნა",
     "businessOnboarding.workflowBadge": "ბიზნეს გზამკვლევი",
     "businessOnboarding.workflowTitle": "როგორ მუშაობს არ გადააგდო",
     "businessOnboarding.workflowCreateOffer": "შექმენი შეთავაზება.",
@@ -1231,16 +1237,16 @@ const translations = {
     "businessOnboarding.tipPromptPickup": "მომხმარებლებს წაღებისას სწრაფად მოემსახურე.",
     "businessOnboarding.firstOfferGuidanceTitle": "პირველი შეთავაზების გზამკვლევი",
     "businessOnboarding.recommendedQuantity": "რეკომენდებული რაოდენობა",
-    "businessOnboarding.recommendedQuantityValue": "3-10 სიურპრიზის ყუთი",
+    "businessOnboarding.recommendedQuantityValue": "3-10 მწვანე ჩანთა",
     "businessOnboarding.recommendedPickupWindow": "წაღების ფანჯარა",
     "businessOnboarding.recommendedPickupWindowValue": "1-2 საათი",
     "businessOnboarding.recommendedTitle": "მკაფიო სათაურის მაგალითი",
-    "businessOnboarding.recommendedTitleValue": "საცხობის სიურპრიზის ყუთი",
+    "businessOnboarding.recommendedTitleValue": "საცხობის მწვანე ჩანთა",
     "businessOnboarding.realExamplesTitle": "რეალისტური შეთავაზებების მაგალითები",
     "businessOnboarding.realExamplesText":
-      "გამოიყენე სახელები, როგორიცაა საცხობის სიურპრიზის ყუთი, კაფეს დახურვის ყუთი ან რესტორნის გადარჩენის ყუთი, რომ მომხმარებელმა შეთავაზება სწრაფად გაიგოს.",
+      "გამოიყენე სახელები, როგორიცაა საცხობის მწვანე ჩანთა, რძის ნაწარმის მწვანე ჩანთა ან კულინარიის მწვანე ჩანთა, რომ მომხმარებელმა შეთავაზება სწრაფად გაიგოს.",
     "businessOnboarding.titleHelper":
-      "სათაური: გამოიყენე მკაფიო სახელი, მაგალითად საცხობის სიურპრიზის ყუთი.",
+      "სათაური: გამოიყენე მკაფიო სახელი, მაგალითად საცხობის მწვანე ჩანთა.",
     "businessOnboarding.quantityHelper":
       "რაოდენობა: რამდენ მომხმარებელს შეუძლია ამ შეთავაზების დაჯავშნა.",
     "businessOnboarding.pickupWindowHelper":
@@ -1294,14 +1300,14 @@ const translations = {
     "login.customerHint": "დაჯავშნე საკვების შეთავაზებები.",
     "login.businessHint": "შექმენი და მართე შეთავაზებები.",
     "login.forCustomers": "მომხმარებლებისთვის",
-    "login.forCustomersText": "დაჯავშნე ფასდაკლებული სიურპრიზის ყუთები და წაიღე ადგილზე.",
+    "login.forCustomersText": "დაჯავშნე ფასდაკლებული მწვანე ჩანთები და წაიღე ადგილზე.",
     "login.forBusinesses": "ბიზნესებისთვის",
     "login.forBusinessesText": "შექმენი ადგილზე წასაღები შეთავაზებები და მართე მომხმარებლის ჯავშნები.",
 
     "businessRegister.badge": "ადგილობრივი ბიზნესებისთვის",
     "businessRegister.title": "დაარეგისტრირე შენი კვების ბიზნესი",
     "businessRegister.subtitle":
-      "შემოუერთდი არ გადააგდოს და გაყიდე დარჩენილი საკვების ყუთები თბილისში. ადმინის დამტკიცების შემდეგ შეთავაზებებს პანელიდან გამოაქვეყნებ.",
+      "შემოუერთდი არ გადააგდოს და გაყიდე დარჩენილი საკვები მწვანე ჩანთებად თბილისში. ადმინის დამტკიცების შემდეგ შეთავაზებებს პანელიდან გამოაქვეყნებ.",
     "businessRegister.step1": "1. გაგზავნე ბიზნესი",
     "businessRegister.step1Text": "დაამატე სახელი, ტიპი, მისამართი და ტელეფონი.",
     "businessRegister.step2": "2. დაელოდე დამტკიცებას",
@@ -1317,7 +1323,7 @@ const translations = {
     "businessRegister.requiredPhone": "ტელეფონის ნომერი ადმინთან კომუნიკაციისთვის",
     "businessRegister.expectationsTitle": "რა ხდება შემდეგ",
     "businessRegister.expectationsText":
-      "პილოტის პერიოდში განაცხადებს ხელით ვამოწმებთ. დამტკიცების შემდეგ პანელიდან სიურპრიზის ყუთებს შექმნი და წაღებებს მართავ.",
+      "პილოტის პერიოდში განაცხადებს ხელით ვამოწმებთ. დამტკიცების შემდეგ პანელიდან მწვანე ჩანთებს შექმნი და წაღებებს მართავ.",
     "businessRegister.name": "ბიზნესის სახელი",
     "businessRegister.address": "მისამართი თბილისში",
     "businessRegister.phone": "ტელეფონის ნომერი",
@@ -1342,7 +1348,7 @@ const translations = {
       "დააყენე ფასი, რაოდენობა და წაღების დრო პანელიდან. არც ფოტოსტუდია გჭირდება და არც გრძელი აღწერა.",
     "forBusinesses.solutionReachTitle": "მიაღწიე ახალ მომხმარებლებს",
     "forBusinesses.solutionReachText":
-      "სიურპრიზის ყუთები შენს ბიზნესს უჩვენებს ადამიანებს, რომლებიც ახლომახლო ფასდაკლებას ეძებენ, ბევრი მათგანი აქამდე შენთან არასდროს ყოფილა.",
+      "მწვანე ჩანთები შენს ბიზნესს უჩვენებს ადამიანებს, რომლებიც ახლომახლო ფასდაკლებას ეძებენ, ბევრი მათგანი აქამდე შენთან არასდროს ყოფილა.",
     "forBusinesses.solutionRecoverTitle": "დაიბრუნე რეალური შემოსავალი",
     "forBusinesses.solutionRecoverText":
       "გაუყიდავი საკვების დანაკარგად ჩამოწერის ნაცვლად, გადააქციე ის გადახდილ შეკვეთად, რომელიც მომხმარებლის მისვლამდეა დაჯავშნილი და გადახდილი.",
@@ -1351,7 +1357,7 @@ const translations = {
     "forBusinesses.howStep1Title": "დაარეგისტრირე ბიზნესი",
     "forBusinesses.howStep1Text":
       "მოგვიყევი შენ შესახებ და სად შეძლებენ მომხმარებლები წაღებას. ყველა ბიზნესი მოწმდება გამოქვეყნებამდე.",
-    "forBusinesses.howStep2Title": "გამოაქვეყნე სიურპრიზის ყუთი",
+    "forBusinesses.howStep2Title": "გამოაქვეყნე მწვანე ჩანთა",
     "forBusinesses.howStep2Text":
       "დაამატე ფასი, რაოდენობა და წაღების დრო, როცა ჭარბი საკვები გაქვს — დილით, საღამოს, ნებისმიერ დროს.",
     "forBusinesses.howStep3Title": "მიიღე ჯავშანი და გადახდა",
@@ -1361,16 +1367,16 @@ const translations = {
     "forBusinesses.howStep4Text":
       "მომხმარებელი გიჩვენებს წაღების კოდს, შენ ადასტურებ პანელში და საქმე დასრულებულია.",
     "forBusinesses.commissionBadge": "ფასები, მარტივად",
-    "forBusinesses.commissionTitle": "10% არ გადააგდოს, 90% შენთან რჩება.",
+    "forBusinesses.commissionTitle": "საკომისიო მხოლოდ გაყიდულ ჩანთაზე. 70% ან მეტი შენთან რჩება.",
     "forBusinesses.commissionText":
-      "არანაირი გამოქვეყნების საფასური, ყოველთვიური გადასახადი თუ ფარული ხარჯი. არ გადააგდო იღებს 10%-იან საკომისიოს მხოლოდ გაყიდულ ყუთებზე. თუ არაფერი გაიყიდა, არაფერს იხდი, ხოლო ფასებსა და რაოდენობებს თავად ადგენ.",
+      "არანაირი გამოქვეყნების საფასური, ყოველთვიური გადასახადი თუ ფარული ხარჯი. არ გადააგდო საკომისიოს მხოლოდ გაყიდულ ჩანთებზე იღებს: სტანდარტულად 30%, პარტნიორთან შეთანხმებით, პილოტის პარტნიორებისთვის კი 0%. თუ არაფერი გაიყიდა, არაფერს იხდი, ხოლო ფასებსა და რაოდენობებს თავად ადგენ.",
     "forBusinesses.commissionYouKeep": "შენ იტოვებ",
-    "forBusinesses.commissionYouKeepValue": "90%",
+    "forBusinesses.commissionYouKeepValue": "70%+",
     "forBusinesses.commissionPlatformFee": "პლატფორმის საკომისიო",
-    "forBusinesses.commissionPlatformFeeValue": "10%",
+    "forBusinesses.commissionPlatformFeeValue": "30% ან ნაკლები",
     "forBusinesses.commissionNoSale": "არ გაიყიდა — არ იხდი",
     "forBusinesses.commissionNoSaleText":
-      "საკომისიოს იხდი მხოლოდ მაშინ, როცა ყუთი რეალურად დაჯავშნილი და გადახდილია.",
+      "საკომისიოს იხდი მხოლოდ მაშინ, როცა ჩანთა რეალურად დაჯავშნილი და გადახდილია.",
     "forBusinesses.ctaTitle": "მზად ხარ, შეწყვიტო საკვების გადაყრა?",
     "forBusinesses.ctaText":
       "შემოუერთდი თბილისის ბიზნესებს, რომლებიც ჭარბ საკვებს გაყიდვად აქცევენ ნარჩენის ნაცვლად.",
@@ -1391,7 +1397,7 @@ const translations = {
     "checkout.stepPickupTitle": "წაღება",
     "checkout.stepPickupText":
       "დადასტურების შემდეგ გამოიყენე წაღების კოდი მითითებულ ფანჯარაში.",
-    "checkout.rescueBox": "სიურპრიზის ყუთი",
+    "checkout.rescueBox": "მწვანე ჩანთა",
     "checkout.offerTitle": "შეთავაზება",
     "checkout.businessName": "ბიზნესი",
     "checkout.pickupDate": "წაღების თარიღი",
@@ -1438,7 +1444,7 @@ const translations = {
     "checkout.pickupGuideIntro":
       "წაღების კოდი შენი ჯავშნის დადასტურებაა. მისვლისას მზად გქონდეს.",
     "checkout.pickupStep1": "ნაბიჯი 1",
-    "checkout.pickupStep1Text": "დაჯავშნე შენი სიურპრიზის ყუთი.",
+    "checkout.pickupStep1Text": "დაჯავშნე შენი მწვანე ჩანთა.",
     "checkout.pickupStep2": "ნაბიჯი 2",
     "checkout.pickupStep2Text": "მიიღე წაღების კოდი.",
     "checkout.pickupStep3": "ნაბიჯი 3",
@@ -1462,10 +1468,10 @@ const translations = {
     "faq.general": "ზოგადი",
     "faq.customer.what.question": "რა არის არ გადააგდო?",
     "faq.customer.what.answer":
-      "არ გადააგდო არის ქართული საკვების გადარჩენის მარკეტი, სადაც ადგილობრივ ბიზნესებს შეუძლიათ დარჩენილი საკვების ყუთების ფასდაკლებით გაყიდვა ნარჩენად გადაყრის ნაცვლად.",
+      "არ გადააგდო არის ქართული საკვების გადარჩენის მარკეტი, სადაც ადგილობრივ ბიზნესებს შეუძლიათ დარჩენილი საკვების მწვანე ჩანთებად ფასდაკლებით გაყიდვა ნარჩენად გადაყრის ნაცვლად.",
     "faq.customer.reservations.question": "როგორ მუშაობს დაჯავშნა?",
     "faq.customer.reservations.answer":
-      "დაათვალიერე ხელმისაწვდომი სიურპრიზის ყუთები, გახსენი შეთავაზება, გადადი გადახდის გვერდზე და დაადასტურე ჯავშანი. დადასტურების შემდეგ შეკვეთა „შეკვეთების“ გვერდზე გამოჩნდება.",
+      "დაათვალიერე ხელმისაწვდომი მწვანე ჩანთები, გახსენი შეთავაზება, გადადი გადახდის გვერდზე და დაადასტურე ჯავშანი. დადასტურების შემდეგ შეკვეთა „შეკვეთების“ გვერდზე გამოჩნდება.",
     "faq.customer.pickups.question": "როგორ მუშაობს წაღება?",
     "faq.customer.pickups.answer":
       "შეკვეთა უნდა წაიღო პირდაპირ ბიზნესიდან მითითებულ წაღების ფანჯარაში. აჩვენე წაღების კოდი, რომ ბიზნესმა შეკვეთა გადაამოწმოს და დაასრულოს.",
@@ -1486,7 +1492,7 @@ const translations = {
       "ადმინი ამოწმებს გაგზავნილ ბიზნესებს, სანამ ისინი შეთავაზებების გამოქვეყნებას შეძლებენ. ეს მარკეტს უფრო უსაფრთხოს და სანდოს ხდის.",
     "faq.business.offers.question": "როგორ შევქმნა შეთავაზებები?",
     "faq.business.offers.answer":
-      "დამტკიცების შემდეგ გახსენი ბიზნეს პანელი და შექმენი სიურპრიზის ყუთი სათაურით, ფასით, რაოდენობით, სურათით და წაღების ფანჯარით.",
+      "დამტკიცების შემდეგ გახსენი ბიზნეს პანელი და შექმენი მწვანე ჩანთა სათაურით, ფასით, რაოდენობით, სურათით და წაღების ფანჯარით.",
     "faq.business.collect.question": "როგორ იღებენ მომხმარებლები შეკვეთებს?",
     "faq.business.collect.answer":
       "მომხმარებელი ბიზნესში აჩვენებს წაღების კოდს. შენ კოდს პანელში ამოწმებ და შეკვეთას „წაღებულის“ სტატუსით ასრულებ.",
@@ -1498,7 +1504,7 @@ const translations = {
       "არ გადააგდო ეხმარება ბიზნესებს გაუყიდავი საკვებიდან ღირებულების დაბრუნებაში, მომხმარებლებს თანხის დაზოგვაში და საქართველოში საკვების ნარჩენის შემცირებაში.",
     "faq.ctaTitle": "მზად ხარ არ გადააგდოს გამოსაცდელად?",
     "faq.ctaText":
-      "დაათვალიერე მიმდინარე შეთავაზებები როგორც მომხმარებელმა ან დაარეგისტრირე შენი კვების ბიზნესი სიურპრიზის ყუთების გამოსაქვეყნებლად.",
+      "დაათვალიერე მიმდინარე შეთავაზებები როგორც მომხმარებელმა ან დაარეგისტრირე შენი კვების ბიზნესი მწვანე ჩანთების გამოსაქვეყნებლად.",
 
     "contact.badge": "კონტაქტი და მხარდაჭერა",
     "contact.title": "დაგვიკავშირდი",
@@ -1536,7 +1542,7 @@ const translations = {
     "about.badge": "არ გადააგდოს შესახებ",
     "about.title": "საკვების ნარჩენის შემცირება საქართველოში.",
     "about.subtitle":
-      "არ გადააგდო არის ქართული საკვების გადარჩენის მარკეტი, რომელიც ადგილობრივ ბიზნესებს დარჩენილი საკვების გაყიდვაში და მომხმარებლებს ფასდაკლებული სიურპრიზის ყუთების აღმოჩენაში ეხმარება.",
+      "არ გადააგდო არის ქართული საკვების გადარჩენის მარკეტი, რომელიც ადგილობრივ ბიზნესებს დარჩენილი საკვების გაყიდვაში და მომხმარებლებს ფასდაკლებული მწვანე ჩანთების აღმოჩენაში ეხმარება.",
     "about.whatLabel": "რა არის არ გადააგდო?",
     "about.whatTitle": "საკვების გადარჩენის მარკეტი",
     "about.whatText":
@@ -1589,7 +1595,7 @@ const translations = {
       "ეს მარტივი MVP წესები ხსნის ჯავშნების, წაღების, გაუქმების, შეფასებების და ბიზნეს დამტკიცების ძირითად წესებს.",
     "terms.reservationsTitle": "ჯავშნები",
     "terms.reservationsText":
-      "მომხმარებლები ჯავშნიან ხელმისაწვდომ სიურპრიზის ყუთებს დამტკიცებული ბიზნესებიდან. ჯავშანი ადასტურებს შეკვეთის მითითებულ წაღების ფანჯარაში აღების განზრახვას.",
+      "მომხმარებლები ჯავშნიან ხელმისაწვდომ მწვანე ჩანთებს დამტკიცებული ბიზნესებიდან. ჯავშანი ადასტურებს შეკვეთის მითითებულ წაღების ფანჯარაში აღების განზრახვას.",
     "terms.pickupTitle": "წაღების პასუხისმგებლობა",
     "terms.pickupText":
       "მომხმარებელი პასუხისმგებელია ბიზნესში მითითებულ წაღების ფანჯარაში მისვლაზე და „შეკვეთების“ გვერდიდან წაღების კოდის ჩვენებაზე.",

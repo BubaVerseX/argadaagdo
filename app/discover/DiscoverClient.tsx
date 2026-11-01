@@ -191,8 +191,8 @@ export default function DiscoverClient() {
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
               {isGeorgian
-                ? "იპოვე შენი შემდეგი სიურპრიზის ყუთი."
-                : "Find your next surprise bag."}
+                ? "იპოვე შენი შემდეგი მწვანე ჩანთა."
+                : "Find your next Green Bag."}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {isGeorgian
@@ -217,8 +217,8 @@ export default function DiscoverClient() {
                   ka: "აღმოჩენის გვერდი იტვირთება...",
                 }}
                 description={{
-                  en: "Finding active surprise bags and verified businesses.",
-                  ka: "ვეძებთ აქტიურ სიურპრიზის ყუთებს და დამოწმებულ ბიზნესებს.",
+                  en: "Finding active Green Bags and verified businesses.",
+                  ka: "ვეძებთ აქტიურ მწვანე ჩანთებს და დამოწმებულ ბიზნესებს.",
                 }}
               />
             </div>
@@ -230,8 +230,8 @@ export default function DiscoverClient() {
                 title={isGeorgian ? "დღის პოპულარული" : "Popular Today"}
                 text={
                   isGeorgian
-                    ? "დღევანდელი საუკეთესო შეფასების ხელმისაწვდომი სიურპრიზის ყუთები."
-                    : "Today’s best-rated available surprise bags."
+                    ? "დღევანდელი საუკეთესო შეფასების ხელმისაწვდომი მწვანე ჩანთები."
+                    : "Today’s best-rated available Green Bags."
                 }
                 offers={discoverSections.popularToday}
                 ratingSummaries={ratingSummaries}
@@ -390,8 +390,8 @@ function DiscoverOfferSection({
             </p>
             <p className="mt-2 leading-7 text-body">
               {language === "ka"
-                ? "ახალი სიურპრიზის ყუთები აქ გამოჩნდება, როცა ბიზნესები შეთავაზებებს გამოაქვეყნებენ."
-                : "New surprise bags will appear here as businesses publish offers."}
+                ? "ახალი მწვანე ჩანთები აქ გამოჩნდება, როცა ბიზნესები შეთავაზებებს გამოაქვეყნებენ."
+                : "New Green Bags will appear here as businesses publish offers."}
             </p>
           </div>
         )}

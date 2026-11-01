@@ -47,6 +47,8 @@ export type Order = {
     | "price"
     | "quantity"
     | "active"
+    | "category"
+    | "size"
   > & {
     businesses?: Pick<Business, "name" | "address" | "business_type"> | null;
   }) | null;

@@ -127,10 +127,10 @@ export default function BusinessProfilePage() {
     (isGeorgian
       ? `დამოწმებული ბიზნესი${
           business?.business_type ? ` (${business.business_type})` : ""
-        }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ სიურპრიზის ყუთებს გთავაზობს.`
+        }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ მწვანე ჩანთებს გთავაზობს.`
       : `Verified ${
           business?.business_type || "food"
-        } business offering pickup-only surprise bags in Tbilisi.`);
+        } business offering pickup-only Green Bags in Tbilisi.`);
   const completedPickupSignal =
     reviewCount > 0
       ? `${reviewCount}+`

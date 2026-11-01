@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Food Rescue Offers",
   description:
-    "Browse discounted surprise bags from verified local businesses in Tbilisi. Reserve online and collect in person.",
+    "Browse discounted Green Bags from verified local businesses in Tbilisi. Reserve online and collect in person.",
   openGraph: {
     title: "Food Rescue Offers | ArGadaagdo",
     description:

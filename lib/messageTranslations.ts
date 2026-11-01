@@ -429,8 +429,8 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შეთავაზების გამოქვეყნებამდე აირჩიე დამტკიცებული ბიზნესი.",
   ],
   [
-    "Add an offer title. Example: Bakery Surprise Bag.",
-    "დაამატე შეთავაზების სათაური. მაგალითად: საცხობის სიურპრიზის ყუთი.",
+    "Add an offer title. Example: Bakery Green Bag.",
+    "დაამატე შეთავაზების სათაური. მაგალითად: საცხობის მწვანე ჩანთა.",
   ],
   [
     "Your business is not approved yet.",

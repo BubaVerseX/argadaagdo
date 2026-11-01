@@ -143,7 +143,7 @@ export function AdminRevenueInsights({
     {
       title: "Marketplace Revenue",
       value: formatAnalyticsMoney(analytics.estimatedMarketplaceRevenue),
-      helper: "Estimated 10% platform commission",
+      helper: "Recorded platform commission (30% default, per-business rate)",
       tone: "green",
     },
     {
@@ -174,7 +174,7 @@ export function AdminRevenueInsights({
         <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-cream lg:max-w-sm">
           <p className="font-semibold">Future commission model</p>
           <p className="mt-1">
-            Current architecture prepares 10% platform revenue and 90% business
+            Each order records the platform commission at the business's rate (30% by default) and the business
             revenue per paid reservation.
           </p>
         </div>
