@@ -820,6 +820,27 @@ export default function BusinessDashboardPage() {
     return true;
   }
 
+  async function resetStaffLockouts(department: Department) {
+    setDepartmentActionBusy(true);
+    const { data, error } = await supabase.rpc("reset_department_staff_lockouts", {
+      p_department_id: department.id,
+    });
+    setDepartmentActionBusy(false);
+
+    if (error) {
+      logAppError("Staff lockout reset failed", error, {
+        operation: "reset_department_staff_lockouts",
+        departmentId: department.id,
+      });
+      setMessageTone("error");
+      setMessage("Locked staff devices could not be reset. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage(Number(data || 0) > 0 ? "Locked staff devices were unlocked." : "No staff device was locked.");
+  }
+
   // ---- Bag templates ----------------------------------------------------------
 
   async function saveBagTemplate(input: BagTemplateInput, templateId: number | null) {
@@ -2200,9 +2221,9 @@ export default function BusinessDashboardPage() {
     ...(reservationsWithStartedPickupWindow.length > 0
       ? [
           {
-            title: isGeorgian ? "წაღების ფანჯარა დაიწყო" : "Pickup window started",
+            title: isGeorgian ? "წაღების დრო დაიწყო" : "Pickup window started",
             text: isGeorgian
-              ? `${reservationsWithStartedPickupWindow.length} ჯავშანი ახლა წაღების ფანჯარაშია.`
+              ? `${reservationsWithStartedPickupWindow.length} ჯავშანი ახლა წაღების დროსა.`
               : `${reservationsWithStartedPickupWindow.length} ${
                   reservationsWithStartedPickupWindow.length === 1
                     ? "reservation is"
@@ -2266,7 +2287,7 @@ export default function BusinessDashboardPage() {
           {
             title: isGeorgian ? "ვადაგასული შეთავაზება" : "Expired offer",
             text: isGeorgian
-              ? `${expiredOffers.length} შეთავაზებას წაღების ფანჯარა გაუვიდა და ისტორიაში უნდა დარჩეს.`
+              ? `${expiredOffers.length} შეთავაზებას წაღების დრო გაუვიდა და ისტორიაში უნდა დარჩეს.`
               : `${expiredOffers.length} ${
                   expiredOffers.length === 1 ? "offer has" : "offers have"
                 } passed the pickup window and should stay in history.`,
@@ -2514,6 +2535,7 @@ export default function BusinessDashboardPage() {
               onAddDepartment={addDepartment}
               onDeleteDepartment={(department) => void deleteDepartment(department)}
               onSetStaffPin={setStaffPin}
+              onResetStaffLockouts={(department) => void resetStaffLockouts(department)}
             />
 
             <BagTemplatesPanel

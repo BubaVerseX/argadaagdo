@@ -20,7 +20,7 @@ export default function BusinessesError({
       }}
       description={{
         en: "The business directory hit a temporary problem. Try again to reload verified businesses.",
-        ka: "ბიზნესების კატალოგში დროებითი პრობლემა წარმოიშვა. სცადე ხელახლა, რომ დამოწმებული ბიზნესები თავიდან ჩაიტვირთოს.",
+        ka: "ბიზნესების კატალოგში დროებითი პრობლემა წარმოიშვა. სცადე ხელახლა, რომ დადასტურებული ბიზნესები თავიდან ჩაიტვირთოს.",
       }}
     />
   );

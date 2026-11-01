@@ -59,7 +59,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Marketplace data is temporarily unavailable. Please try again in a moment.",
-    "მარკეტის მონაცემები დროებით მიუწვდომელია. გთხოვ, ცოტა ხანში სცადე ხელახლა.",
+    "პლატფორმის მონაცემები დროებით მიუწვდომელია. გთხოვ, ცოტა ხანში სცადე ხელახლა.",
   ],
   [
     "Image storage is temporarily unavailable. Please try again with the image in a moment.",
@@ -75,7 +75,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Cancellation window has closed for this reservation.",
-    "ამ ჯავშნის გაუქმების ფანჯარა დახურულია.",
+    "ამ ჯავშნის გაუქმების ვადა დახურულია.",
   ],
   ["Email or password is incorrect.", "ელფოსტა ან პაროლი არასწორია."],
   [
@@ -582,7 +582,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "The pickup window had already ended, so this order could not be completed.",
-    "წაღების ფანჯარა უკვე დასრულებული იყო, ამიტომ ეს შეკვეთა ვერ დასრულდა.",
+    "წაღების დრო უკვე დასრულებული იყო, ამიტომ ეს შეკვეთა ვერ დასრულდა.",
   ],
   ["Pickup completed successfully.", "წაღება წარმატებით დასრულდა."],
   ["Pickup code is required.", "წაღების კოდი სავალდებულოა."],
@@ -691,7 +691,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Nothing published: today's bag already exists, its pickup window has ended, this weekday is off, or sales are paused today.",
-    "არაფერი გამოქვეყნდა: დღევანდელი ჩანთა უკვე არსებობს, წაღების ფანჯარა დასრულდა, ეს დღე გამორთულია, ან გაყიდვები დღეს გაჩერებულია.",
+    "არაფერი გამოქვეყნდა: დღევანდელი ჩანთა უკვე არსებობს, წაღების დრო დასრულდა, ეს დღე გამორთულია, ან გაყიდვები დღეს გაჩერებულია.",
   ],
   [
     "Nothing published: tomorrow's bag already exists, or this weekday is off.",
@@ -709,6 +709,12 @@ const georgianMessageEntries: Array<[string, string]> = [
     "Choose a business first.",
     "ჯერ აირჩიე ბიზნესი.",
   ],
+  [
+    "Locked staff devices could not be reset. Please try again.",
+    "დაბლოკილი მოწყობილობების განბლოკვა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Locked staff devices were unlocked.", "დაბლოკილი მოწყობილობები განიბლოკა."],
+  ["No staff device was locked.", "დაბლოკილი მოწყობილობა არ იყო."],
 ];
 
 const georgianMessages = new Map<string, string>(georgianMessageEntries);

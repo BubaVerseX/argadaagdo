@@ -241,7 +241,7 @@ export function BagTemplatesPanel({
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-body">
             {isGeorgian
-              ? "შაბლონი = კატეგორია, ზომა და ფასი, ჩანთების რაოდენობა დღეში, წაღების ფანჯარა და კვირის დღეები. ყოველ საღამოს 19:00-ზე ხვალინდელი შეთავაზებები ავტომატურად იქმნება აქტიური შაბლონებიდან."
+              ? "შაბლონი = კატეგორია, ზომა და ფასი, ჩანთების რაოდენობა დღეში, წაღების დრო და კვირის დღეები. ყოველ საღამოს 19:00-ზე ხვალინდელი შეთავაზებები ავტომატურად იქმნება აქტიური შაბლონებიდან."
               : "A template is a category, size and price, bags per day, a pickup window and the days of the week. Every evening at 19:00 tomorrow's offers are created from the active templates."}
           </p>
         </div>

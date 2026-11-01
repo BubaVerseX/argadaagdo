@@ -20,8 +20,14 @@
 --    through the existing flow. Turning sales back on reactivates them.
 --  - Staff PIN: private.department_staff_pins holds a bcrypt hash per
 --    department. staff_* RPCs (callable without a login) verify the PIN,
---    list today's reservations and complete a pickup by code; 5 wrong PINs
---    or codes lock the department for 15 minutes.
+--    list today's reservations and complete a pickup by code. Wrong PINs and
+--    wrong codes are counted per device (a random token the staff page
+--    keeps, plus the request IP when PostgREST exposes it) in
+--    private.staff_pin_attempts: 5 failures lock that device for 15 minutes
+--    and never the whole department, so a stranger cannot lock staff out.
+--    Every attempt is also rate-limited to one per second per device. The
+--    owner can clear all lockouts (reset_department_staff_lockouts) or set a
+--    new PIN from the dashboard.
 --
 -- New RLS policies exist only for the two new tables; no existing policy or
 -- auth setting changes.
@@ -88,13 +94,24 @@ alter table public.businesses
 create table if not exists private.department_staff_pins (
   department_id bigint primary key references public.departments (id) on delete cascade,
   pin_hash text not null,
-  failed_attempts integer not null default 0,
-  locked_until timestamp with time zone,
   updated_at timestamp with time zone not null default timezone('utc'::text, now())
 );
 
 alter table private.department_staff_pins enable row level security;
 revoke all on table private.department_staff_pins from public, anon, authenticated;
+
+-- Wrong PINs / codes per department and device.
+create table if not exists private.staff_pin_attempts (
+  department_id bigint not null references public.departments (id) on delete cascade,
+  device_key text not null,
+  failed_attempts integer not null default 0,
+  locked_until timestamp with time zone,
+  last_attempt_at timestamp with time zone not null default timezone('utc'::text, now()),
+  primary key (department_id, device_key)
+);
+
+alter table private.staff_pin_attempts enable row level security;
+revoke all on table private.staff_pin_attempts from public, anon, authenticated;
 
 -- 3. Bag templates ---------------------------------------------------------------------
 create table if not exists public.bag_templates (
@@ -106,7 +123,9 @@ create table if not exists public.bag_templates (
   category text not null
     check (category in ('Bakery', 'Fruit & veg', 'Dairy', 'Deli', 'Mixed')),
   size text not null check (size in ('S', 'M', 'L')),
-  price numeric(10, 2) not null check (price > 0),
+  -- Price > 0 except for App Review demo businesses (same rule as offers,
+  -- enforced by guard_template_department below).
+  price numeric(10, 2) not null check (price >= 0),
   old_price numeric(10, 2) check (old_price is null or old_price > price),
   -- Bags per day. Null = "until stopped": the daily offer gets a large
   -- quantity and offers.unlimited_quantity, and sales end with "Today: no bags".
@@ -166,6 +185,16 @@ begin
       and departments.business_id = new.business_id
   ) then
     raise exception 'Department does not belong to this business'
+      using errcode = 'check_violation';
+  end if;
+
+  if new.price <= 0 and not exists (
+    select 1
+    from public.businesses
+    where businesses.id = new.business_id
+      and businesses.is_review_demo
+  ) then
+    raise exception 'Price must be greater than 0'
       using errcode = 'check_violation';
   end if;
 
@@ -573,19 +602,18 @@ begin
     raise exception 'PIN must be 4 to 8 digits' using errcode = 'check_violation';
   end if;
 
-  insert into private.department_staff_pins (department_id, pin_hash, failed_attempts, locked_until, updated_at)
+  insert into private.department_staff_pins (department_id, pin_hash, updated_at)
   values (
     p_department_id,
     extensions.crypt(normalized_pin, extensions.gen_salt('bf')),
-    0,
-    null,
     timezone('utc'::text, now())
   )
   on conflict (department_id) do update
     set pin_hash = excluded.pin_hash,
-        failed_attempts = 0,
-        locked_until = null,
         updated_at = excluded.updated_at;
+
+  -- A new PIN also clears every device lockout.
+  delete from private.staff_pin_attempts where department_id = p_department_id;
 
   update public.departments set has_staff_pin = true where id = p_department_id;
   return true;
@@ -595,55 +623,150 @@ $$;
 revoke all on function public.set_department_staff_pin(bigint, text) from public, anon;
 grant execute on function public.set_department_staff_pin(bigint, text) to authenticated;
 
--- Verifies a staff PIN. Wrong PINs count towards a 15-minute lock after 5.
-create or replace function private.check_staff_pin(p_department_id bigint, p_pin text)
+-- Owner action: clear all device lockouts of a department (keeps the PIN).
+create or replace function public.reset_department_staff_lockouts(p_department_id bigint)
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  department_business_id bigint;
+  cleared integer;
+begin
+  if (select auth.uid()) is null then
+    raise exception 'Not logged in';
+  end if;
+
+  select business_id into department_business_id
+  from public.departments
+  where id = p_department_id;
+
+  if department_business_id is null then
+    raise exception 'Department not found';
+  end if;
+
+  if not ((select private.is_admin()) or (select private.owns_approved_business(department_business_id))) then
+    raise exception 'Not allowed to manage this department';
+  end if;
+
+  delete from private.staff_pin_attempts where department_id = p_department_id;
+  get diagnostics cleared = row_count;
+  return cleared;
+end;
+$$;
+
+revoke all on function public.reset_department_staff_lockouts(bigint) from public, anon;
+grant execute on function public.reset_department_staff_lockouts(bigint) to authenticated;
+
+-- Device key for lockouts: the staff page's device token plus the caller's
+-- IP (when PostgREST exposes it). Never the department alone.
+create or replace function private.staff_device_key(p_device text)
+returns text
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  headers json;
+  ip text;
+begin
+  begin
+    headers := nullif(current_setting('request.headers', true), '')::json;
+  exception when others then
+    headers := null;
+  end;
+
+  if headers is not null then
+    ip := coalesce(
+      headers ->> 'cf-connecting-ip',
+      split_part(headers ->> 'x-forwarded-for', ',', 1),
+      headers ->> 'x-real-ip'
+    );
+  end if;
+
+  return coalesce(nullif(btrim(ip), ''), 'noip') || '|' || left(coalesce(nullif(btrim(p_device), ''), 'nodevice'), 80);
+end;
+$$;
+
+-- Records a failed attempt for the device; raises when it is now locked.
+create or replace function private.record_staff_failure(p_department_id bigint, p_device_key text)
 returns void
 language plpgsql
 security definer
 set search_path = ''
 as $$
 declare
-  pin_row record;
   max_attempts constant integer := 5;
+  attempts integer;
 begin
-  select * into pin_row
-  from private.department_staff_pins
-  where department_id = p_department_id
-  for update;
-
-  if not found then
-    raise exception 'staff_pin_invalid';
-  end if;
-
-  if pin_row.locked_until is not null and pin_row.locked_until > now() then
-    raise exception 'staff_pin_locked';
-  end if;
-
-  if pin_row.pin_hash <> extensions.crypt(coalesce(p_pin, ''), pin_row.pin_hash) then
-    update private.department_staff_pins
-    set failed_attempts = failed_attempts + 1,
+  insert into private.staff_pin_attempts (department_id, device_key, failed_attempts, last_attempt_at)
+  values (p_department_id, p_device_key, 1, timezone('utc'::text, now()))
+  on conflict (department_id, device_key) do update
+    set failed_attempts = private.staff_pin_attempts.failed_attempts + 1,
+        last_attempt_at = excluded.last_attempt_at,
         locked_until = case
-          when failed_attempts + 1 >= max_attempts then now() + interval '15 minutes'
-          else null
+          when private.staff_pin_attempts.failed_attempts + 1 >= max_attempts
+            then timezone('utc'::text, now()) + interval '15 minutes'
+          else private.staff_pin_attempts.locked_until
         end
-    where department_id = p_department_id;
+  returning failed_attempts into attempts;
 
-    if pin_row.failed_attempts + 1 >= max_attempts then
-      raise exception 'staff_pin_locked';
-    end if;
-
-    raise exception 'staff_pin_invalid';
-  end if;
-
-  if pin_row.failed_attempts <> 0 or pin_row.locked_until is not null then
-    update private.department_staff_pins
-    set failed_attempts = 0, locked_until = null
-    where department_id = p_department_id;
+  if attempts >= max_attempts then
+    raise exception 'staff_pin_locked';
   end if;
 end;
 $$;
 
-create or replace function public.staff_department_summary(p_department_id bigint, p_pin text)
+-- Verifies a staff PIN. Wrong PINs count towards a 15-minute lock after 5.
+-- Verifies a staff PIN for one device: locked devices are refused, every
+-- device may try at most once per second, and 5 wrong PINs lock that
+-- device for 15 minutes. Returns the device key for later code checks.
+create or replace function private.check_staff_pin(p_department_id bigint, p_pin text, p_device text)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  pin_row record;
+  attempt_row record;
+  v_device_key text := private.staff_device_key(p_device);
+begin
+  select * into attempt_row
+  from private.staff_pin_attempts
+  where department_id = p_department_id and device_key = v_device_key
+  for update;
+
+  if found then
+    if attempt_row.locked_until is not null and attempt_row.locked_until > timezone('utc'::text, now()) then
+      raise exception 'staff_pin_locked';
+    end if;
+
+    if attempt_row.last_attempt_at > timezone('utc'::text, now()) - interval '1 second' then
+      raise exception 'staff_pin_rate_limited';
+    end if;
+  end if;
+
+  select * into pin_row
+  from private.department_staff_pins
+  where department_id = p_department_id;
+
+  if not found or pin_row.pin_hash <> extensions.crypt(coalesce(p_pin, ''), pin_row.pin_hash) then
+    perform private.record_staff_failure(p_department_id, v_device_key);
+    raise exception 'staff_pin_invalid';
+  end if;
+
+  if attempt_row.failed_attempts is not null and attempt_row.failed_attempts <> 0 then
+    delete from private.staff_pin_attempts
+    where department_id = p_department_id and device_key = v_device_key;
+  end if;
+
+  return v_device_key;
+end;
+$$;
+
+create or replace function public.staff_department_summary(p_department_id bigint, p_pin text, p_device text default null)
 returns table (
   business_id bigint,
   business_name text,
@@ -656,7 +779,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  perform private.check_staff_pin(p_department_id, p_pin);
+  perform private.check_staff_pin(p_department_id, p_pin, p_device);
 
   return query
   select
@@ -672,7 +795,7 @@ begin
 end;
 $$;
 
-create or replace function public.staff_list_reservations(p_department_id bigint, p_pin text)
+create or replace function public.staff_list_reservations(p_department_id bigint, p_pin text, p_device text default null)
 returns table (
   order_id bigint,
   title text,
@@ -693,7 +816,7 @@ as $$
 declare
   department record;
 begin
-  perform private.check_staff_pin(p_department_id, p_pin);
+  perform private.check_staff_pin(p_department_id, p_pin, p_device);
 
   select id, business_id, is_default into department
   from public.departments where id = p_department_id;
@@ -734,7 +857,8 @@ $$;
 create or replace function public.staff_complete_pickup(
   p_department_id bigint,
   p_pin text,
-  p_pickup_code text
+  p_pickup_code text,
+  p_device text default null
 )
 returns text
 language plpgsql
@@ -743,25 +867,16 @@ set search_path = ''
 as $$
 declare
   department record;
-  pin_row record;
+  v_device_key text;
   matches bigint[];
   target_order record;
   max_attempts constant integer := 5;
   code text := btrim(coalesce(p_pickup_code, ''));
 begin
-  perform private.check_staff_pin(p_department_id, p_pin);
+  v_device_key := private.check_staff_pin(p_department_id, p_pin, p_device);
 
   select id, business_id, is_default into department
   from public.departments where id = p_department_id;
-
-  select * into pin_row
-  from private.department_staff_pins
-  where department_id = p_department_id
-  for update;
-
-  if pin_row.locked_until is not null and pin_row.locked_until > now() then
-    return 'locked';
-  end if;
 
   if code !~ '^[0-9]{6}$' then
     return 'invalid_code';
@@ -778,18 +893,17 @@ begin
     and offers.pickup_date between private.tbilisi_today() - 1 and private.tbilisi_today() + 1;
 
   if matches is null or cardinality(matches) = 0 then
-    update private.department_staff_pins
-    set failed_attempts = failed_attempts + 1,
-        locked_until = case
-          when failed_attempts + 1 >= max_attempts then now() + interval '15 minutes'
-          else null
-        end
-    where department_id = p_department_id;
-
-    return case
-      when pin_row.failed_attempts + 1 >= max_attempts then 'locked'
-      else 'invalid_code'
+    -- Wrong code: counts against this device like a wrong PIN.
+    begin
+      perform private.record_staff_failure(p_department_id, v_device_key);
+    exception when others then
+      if sqlerrm = 'staff_pin_locked' then
+        return 'locked';
+      end if;
+      raise;
     end;
+
+    return 'invalid_code';
   end if;
 
   if cardinality(matches) > 1 then
@@ -823,7 +937,8 @@ $$;
 create or replace function public.staff_set_sales_paused(
   p_department_id bigint,
   p_pin text,
-  p_paused boolean
+  p_paused boolean,
+  p_device text default null
 )
 returns integer
 language plpgsql
@@ -833,7 +948,7 @@ as $$
 declare
   department_business_id bigint;
 begin
-  perform private.check_staff_pin(p_department_id, p_pin);
+  perform private.check_staff_pin(p_department_id, p_pin, p_device);
 
   select business_id into department_business_id
   from public.departments where id = p_department_id;
@@ -842,25 +957,29 @@ begin
 end;
 $$;
 
-revoke all on function public.staff_department_summary(bigint, text) from public;
-revoke all on function public.staff_list_reservations(bigint, text) from public;
-revoke all on function public.staff_complete_pickup(bigint, text, text) from public;
-revoke all on function public.staff_set_sales_paused(bigint, text, boolean) from public;
-grant execute on function public.staff_department_summary(bigint, text) to anon, authenticated;
-grant execute on function public.staff_list_reservations(bigint, text) to anon, authenticated;
-grant execute on function public.staff_complete_pickup(bigint, text, text) to anon, authenticated;
-grant execute on function public.staff_set_sales_paused(bigint, text, boolean) to anon, authenticated;
+revoke all on function public.staff_department_summary(bigint, text, text) from public;
+revoke all on function public.staff_list_reservations(bigint, text, text) from public;
+revoke all on function public.staff_complete_pickup(bigint, text, text, text) from public;
+revoke all on function public.staff_set_sales_paused(bigint, text, boolean, text) from public;
+grant execute on function public.staff_department_summary(bigint, text, text) to anon, authenticated;
+grant execute on function public.staff_list_reservations(bigint, text, text) to anon, authenticated;
+grant execute on function public.staff_complete_pickup(bigint, text, text, text) to anon, authenticated;
+grant execute on function public.staff_set_sales_paused(bigint, text, boolean, text) to anon, authenticated;
 
 commit;
 
 -- Down (reversible; drops the new objects and columns, keeps everything else):
 -- begin;
--- drop function if exists public.staff_set_sales_paused(bigint, text, boolean);
--- drop function if exists public.staff_complete_pickup(bigint, text, text);
--- drop function if exists public.staff_list_reservations(bigint, text);
--- drop function if exists public.staff_department_summary(bigint, text);
--- drop function if exists private.check_staff_pin(bigint, text);
+-- drop function if exists public.staff_set_sales_paused(bigint, text, boolean, text);
+-- drop function if exists public.staff_complete_pickup(bigint, text, text, text);
+-- drop function if exists public.staff_list_reservations(bigint, text, text);
+-- drop function if exists public.staff_department_summary(bigint, text, text);
+-- drop function if exists private.check_staff_pin(bigint, text, text);
+-- drop function if exists private.record_staff_failure(bigint, text);
+-- drop function if exists private.staff_device_key(text);
+-- drop function if exists public.reset_department_staff_lockouts(bigint);
 -- drop function if exists public.set_department_staff_pin(bigint, text);
+-- drop table if exists private.staff_pin_attempts;
 -- drop function if exists public.publish_bag_template_now(bigint, date);
 -- drop function if exists public.publish_bag_templates(date);
 -- drop function if exists private.publish_bag_template(bigint, date);

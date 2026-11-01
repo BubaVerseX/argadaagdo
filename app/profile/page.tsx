@@ -279,7 +279,7 @@ export default function ProfilePage() {
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
               {isGeorgian
-                ? "მართე ანგარიშის პირადი მონაცემები ისე, რომ ანგარიშის როლი და მარკეტის უფლებები არ შეიცვალოს."
+                ? "მართე ანგარიშის პირადი მონაცემები ისე, რომ ანგარიშის როლი და პლატფორმის უფლებები არ შეიცვალოს."
                 : "Manage your personal account details without changing your account role or marketplace permissions."}
             </p>
           </div>
@@ -468,7 +468,7 @@ export default function ProfilePage() {
           <div className="mt-6">
             <section className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-                {isGeorgian ? "აქტივობა მარკეტზე" : "Marketplace activity"}
+                {isGeorgian ? "აქტივობა პლატფორმაზე" : "Marketplace activity"}
               </p>
               <h2 className="mt-2 text-2xl font-semibold">
                 {isGeorgian

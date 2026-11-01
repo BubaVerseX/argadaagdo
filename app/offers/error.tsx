@@ -20,7 +20,7 @@ export default function OffersError({
       }}
       description={{
         en: "The marketplace view hit a temporary problem. Try again to reload the latest offers.",
-        ka: "მარკეტის ხედში დროებითი პრობლემა წარმოიშვა. სცადე ხელახლა, რომ უახლესი შეთავაზებები თავიდან ჩაიტვირთოს.",
+        ka: "პლატფორმის ხედში დროებითი პრობლემა წარმოიშვა. სცადე ხელახლა, რომ უახლესი შეთავაზებები თავიდან ჩაიტვირთოს.",
       }}
     />
   );

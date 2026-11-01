@@ -88,7 +88,7 @@ function formatTimeUntilPickup(
     return isGeorgian ? "წაღების დრო მიუწვდომელია" : "Pickup time unavailable";
   }
   if (hours <= 0) {
-    return isGeorgian ? "წაღების ფანჯარა იწყება" : "Pickup window starting";
+    return isGeorgian ? "წაღების დრო იწყება" : "Pickup window starting";
   }
   if (hours < 1) return isGeorgian ? "1 საათზე ნაკლები" : "Under 1 hour";
   if (hours < 24) {
@@ -292,7 +292,7 @@ function getOfferRecommendations(
 
   if (hoursUntilPickup !== null && hoursUntilPickup <= 3 && boxesRemaining > 3) {
     recommendations.push({
-      title: isGeorgian ? "წაღების ფანჯარა ახლოვდება" : "Pickup window is close",
+      title: isGeorgian ? "წაღების დრო ახლოვდება" : "Pickup window is close",
       text: isGeorgian
         ? "შემდეგ ჯერზე განიხილე წაღების ფანჯრის გახანგრძლივება, თუ სურსათის უსაფრთხოება ამის საშუალებას იძლევა."
         : "Consider extending the pickup window next time if food safety allows it.",

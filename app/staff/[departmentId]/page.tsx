@@ -40,11 +40,29 @@ function pinStorageKey(departmentId: string) {
   return `argadaagdo-staff-pin-${departmentId}`;
 }
 
+// Random token kept on this device; wrong PINs/codes are counted per device
+// (plus IP) in the database, so nobody can lock a whole department out.
+function getDeviceToken() {
+  const key = "argadaagdo-staff-device";
+  try {
+    const existing = window.localStorage.getItem(key);
+    if (existing) return existing;
+    const token = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    window.localStorage.setItem(key, token);
+    return token;
+  } catch {
+    return "nostorage";
+  }
+}
+
 function describePinError(message: string, isGeorgian: boolean) {
   if (message.includes("staff_pin_locked")) {
     return isGeorgian
-      ? "ძალიან ბევრი არასწორი ცდა. სცადე 15 წუთში."
-      : "Too many wrong attempts. Try again in 15 minutes.";
+      ? "ამ მოწყობილობიდან ძალიან ბევრი არასწორი ცდა იყო. სცადე 15 წუთში, ან სთხოვე მფლობელს განბლოკვა პანელიდან."
+      : "Too many wrong attempts from this device. Try again in 15 minutes, or ask the owner to unlock it from the dashboard.";
+  }
+  if (message.includes("staff_pin_rate_limited")) {
+    return isGeorgian ? "ძალიან სწრაფად. სცადე წამში." : "Too fast. Try again in a second.";
   }
   if (message.includes("staff_pin_invalid")) {
     return isGeorgian ? "არასწორი PIN." : "Wrong PIN.";
@@ -78,16 +96,20 @@ export default function StaffDepartmentPage() {
   const load = useCallback(
     async (activePin: string, silent = false) => {
       if (!Number.isFinite(departmentId)) return false;
-      const [summaryResult, listResult] = await Promise.all([
-        supabase.rpc("staff_department_summary", {
-          p_department_id: departmentId,
-          p_pin: activePin,
-        }),
-        supabase.rpc("staff_list_reservations", {
-          p_department_id: departmentId,
-          p_pin: activePin,
-        }),
-      ]);
+      // One PIN-checked call: the list carries everything the page needs and
+      // a second concurrent check would trip the per-device rate limit.
+      const listResult = await supabase.rpc("staff_list_reservations", {
+        p_department_id: departmentId,
+        p_pin: activePin,
+        p_device: getDeviceToken(),
+      });
+      const summaryResult = listResult.error
+        ? listResult
+        : await supabase.rpc("staff_department_summary", {
+            p_department_id: departmentId,
+            p_pin: activePin,
+            p_device: getDeviceToken(),
+          });
 
       const error = summaryResult.error || listResult.error;
 
@@ -180,6 +202,7 @@ export default function StaffDepartmentPage() {
       p_department_id: departmentId,
       p_pin: pin,
       p_pickup_code: trimmed,
+      p_device: getDeviceToken(),
     });
     setBusy(false);
 
@@ -204,8 +227,8 @@ export default function StaffDepartmentPage() {
     setMessage(
       data === "locked"
         ? isGeorgian
-          ? "ძალიან ბევრი არასწორი კოდი. დეპარტამენტი 15 წუთით დაიბლოკა."
-          : "Too many wrong codes. This department is locked for 15 minutes."
+          ? "ძალიან ბევრი არასწორი კოდი. ეს მოწყობილობა 15 წუთით დაიბლოკა; მფლობელს პანელიდან განბლოკვა შეუძლია."
+          : "Too many wrong codes. This device is locked for 15 minutes; the owner can unlock it from the dashboard."
         : data === "ambiguous"
         ? isGeorgian
           ? "ამ კოდით ორი ღია ჯავშანია. დაასრულე მფლობელის პანელიდან."
@@ -223,6 +246,7 @@ export default function StaffDepartmentPage() {
       p_department_id: departmentId,
       p_pin: pin,
       p_paused: !summary.sales_paused,
+      p_device: getDeviceToken(),
     });
     setBusy(false);
     if (error) {

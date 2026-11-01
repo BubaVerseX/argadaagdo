@@ -125,7 +125,7 @@ export default function BusinessProfilePage() {
   const businessDescription =
     business?.description?.trim() ||
     (isGeorgian
-      ? `დამოწმებული ბიზნესი${
+      ? `დადასტურებული ბიზნესი${
           business?.business_type ? ` (${business.business_type})` : ""
         }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ მწვანე ჩანთებს გთავაზობს.`
       : `Verified ${
@@ -302,7 +302,7 @@ export default function BusinessProfilePage() {
                         </p>
                         <p className="mt-1 text-sm text-body">
                           {isGeorgian
-                            ? "მარკეტის დამტკიცებული ადგილობრივი წევრი"
+                            ? "პლატფორმის დამტკიცებული ადგილობრივი წევრი"
                             : "Approved local marketplace member"}
                         </p>
                       </div>
@@ -330,7 +330,7 @@ export default function BusinessProfilePage() {
                         </p>
                         <p className="mt-1 text-sm text-body">
                           {isGeorgian
-                            ? "წაღების ფანჯრები აქტიურ შეთავაზებებზეა მითითებული"
+                            ? "წაღების დროები აქტიურ შეთავაზებებზეა მითითებული"
                             : "Pickup windows are shown on active offers"}
                         </p>
                       </div>

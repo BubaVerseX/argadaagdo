@@ -20,7 +20,7 @@ const defaultCopy: Record<Language, { title: string; description: string }> = {
   },
   ka: {
     title: "არ გადააგდო იტვირთება...",
-    description: "მარკეტის ხედი მზადდება.",
+    description: "პლატფორმის ხედი მზადდება.",
   },
 };
 

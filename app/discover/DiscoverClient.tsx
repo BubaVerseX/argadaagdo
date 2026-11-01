@@ -196,7 +196,7 @@ export default function DiscoverClient() {
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
               {isGeorgian
-                ? "დაათვალიერე პოპულარული შეთავაზებები, უახლესი დამატებები, საუკეთესო შეფასების ბიზნესები და მალე დასრულებადი წაღების ფანჯრები."
+                ? "დაათვალიერე პოპულარული შეთავაზებები, უახლესი დამატებები, საუკეთესო შეფასების ბიზნესები და მალე დასრულებადი წაღების დროები."
                 : "Browse popular offers, newest drops, best-rated businesses and pickup windows ending soon."}
             </p>
           </div>
@@ -218,7 +218,7 @@ export default function DiscoverClient() {
                 }}
                 description={{
                   en: "Finding active Green Bags and verified businesses.",
-                  ka: "ვეძებთ აქტიურ მწვანე ჩანთებს და დამოწმებულ ბიზნესებს.",
+                  ka: "ვეძებთ აქტიურ მწვანე ჩანთებს და დადასტურებულ ბიზნესებს.",
                 }}
               />
             </div>
@@ -253,7 +253,7 @@ export default function DiscoverClient() {
                 title={isGeorgian ? "მალე სრულდება" : "Ending Soon"}
                 text={
                   isGeorgian
-                    ? "წაღების ფანჯრები, რომლებიც ყველაზე მალე სრულდება."
+                    ? "წაღების დროები, რომლებიც ყველაზე მალე სრულდება."
                     : "Pickup windows that end soonest."
                 }
                 offers={discoverSections.endingSoon}

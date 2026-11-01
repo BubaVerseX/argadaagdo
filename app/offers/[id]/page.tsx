@@ -297,7 +297,7 @@ export default function OfferDetailPage() {
             language === "ka" ? "რამდენად ახალია საკვები?" : "How fresh is the food?",
           answer:
             language === "ka"
-              ? "მწვანე ჩანთები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ ფანჯარაში, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
+              ? "მწვანე ჩანთები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ დროს, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
               : "Green Bags are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
         },
         {
@@ -322,7 +322,7 @@ export default function OfferDetailPage() {
               : "What happens if I cannot collect?",
           answer:
             language === "ka"
-              ? "თუ გეგმები შეიცვალა, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე. თუ წაღების ფანჯარაში არ მიხვალ, შეკვეთა შეიძლება გამოტოვებულ წაღებად ჩაითვალოს."
+              ? "თუ გეგმები შეიცვალა, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე. თუ წაღების დროს არ მიხვალ, შეკვეთა შეიძლება გამოტოვებულ წაღებად ჩაითვალოს."
               : "If plans change, cancel up to 2 hours before pickup. If you miss the pickup window, the order may be marked as a missed pickup.",
         },
       ]
@@ -605,7 +605,7 @@ export default function OfferDetailPage() {
                     }
                     text={
                       language === "ka"
-                        ? "ეს არის კარგი დარჩენილი საკვები ფასდაკლებით, S, M ან L ზომის ჩანთაში. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს, მაგრამ ბიზნესი, კატეგორია, ზომა, ფასი და წაღების დრო დაჯავშნამდე ნათელია."
+                        ? "მწვანე ჩანთა არის დღის ბოლოს დარჩენილი ხარისხიანი პროდუქტი ფასდაკლებით — S, M ან L ზომის. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს, მაგრამ ბიზნესი, კატეგორია, ზომა, ფასი და წაღების დრო დაჯავშნამდე ნათელია."
                         : "It is good surplus food at a discount, in a bag of size S, M or L. The exact contents can vary, but the business, category, size, price and pickup window are clear before you reserve."
                     }
                   />

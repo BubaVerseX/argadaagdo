@@ -21,6 +21,7 @@ type DepartmentsPanelProps = {
   onAddDepartment: (name: string) => Promise<boolean>;
   onDeleteDepartment: (department: Department) => void;
   onSetStaffPin: (department: Department, pin: string | null) => Promise<boolean>;
+  onResetStaffLockouts: (department: Department) => void;
 };
 
 export function DepartmentsPanel({
@@ -34,6 +35,7 @@ export function DepartmentsPanel({
   onAddDepartment,
   onDeleteDepartment,
   onSetStaffPin,
+  onResetStaffLockouts,
 }: DepartmentsPanelProps) {
   const isGeorgian = language === "ka";
   const [newDepartmentName, setNewDepartmentName] = useState("");
@@ -272,10 +274,20 @@ export function DepartmentsPanel({
                           {isGeorgian ? "PIN-ის მოხსნა" : "Remove PIN"}
                         </button>
                       )}
+                      {department.has_staff_pin && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => onResetStaffLockouts(department)}
+                          className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60 sm:col-span-3 sm:justify-self-start"
+                        >
+                          {isGeorgian ? "დაბლოკილი მოწყობილობების განბლოკვა" : "Unlock locked devices"}
+                        </button>
+                      )}
                       <p className="text-xs leading-5 text-body sm:col-span-3">
                         {isGeorgian
-                          ? "თანამშრომლები ხსნიან ბმულს, შეჰყავთ PIN და მომხმარებლის კოდით ასრულებენ წაღებას მფლობელის შესვლის გარეშე."
-                          : "Staff open the link, enter the PIN and complete pickups with the customer's code, without the owner login."}
+                          ? "თანამშრომლები ხსნიან ბმულს, შეჰყავთ PIN და მომხმარებლის კოდით ასრულებენ წაღებას მფლობელის შესვლის გარეშე. 5 არასწორი ცდა მხოლოდ იმ მოწყობილობას ბლოკავს 15 წუთით; აქედან შეგიძლია განბლოკო ან ახალი PIN დააყენო."
+                          : "Staff open the link, enter the PIN and complete pickups with the customer's code, without the owner login. 5 wrong tries lock only that device for 15 minutes; unlock it here or set a new PIN."}
                       </p>
                     </div>
                   )}

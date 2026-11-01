@@ -131,7 +131,7 @@ export function BusinessOnboardingSections({
             title={isGeorgian ? "საუკეთესო პრაქტიკა" : "Best practice"}
             text={
               isGeorgian
-                ? "გამოიყენე რეალისტური სათაურები, მაგალითად „საცხობის მწვანე ჩანთა“, და წაღების ფანჯრები ზუსტად მიუთითე."
+                ? "გამოიყენე რეალისტური სათაურები, მაგალითად „საცხობის მწვანე ჩანთა“, და წაღების დროები ზუსტად მიუთითე."
                 : "Use realistic titles like Bakery Green Bag and keep pickup windows accurate."
             }
           />
