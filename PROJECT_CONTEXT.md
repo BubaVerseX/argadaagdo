@@ -63,10 +63,17 @@ changes live fees. Each file ends with a commented Down block.
   `ImpactCard` with a canvas share image; the dashboard's
   `ImpactReportSection` exports a monthly CSV and opens the printable
   `/business/report?business=<id>&month=YYYY-MM` page (Print → Save as PDF).
-- **Deploy order**: migrations 1–3 are invisible to the old app; migration 4
-  changes fees. Apply 1–3 any time, deploy the branch, then apply 4 (or all
-  four together at deploy). Add `publish-green-bags` to `vercel.json` crons
-  (done in the branch) and confirm `CRON_SECRET` is set.
+- **Staff PIN lockouts are per device** (random token in the staff page's
+  localStorage + request IP), never per department: 5 wrong PINs/codes lock
+  that device for 15 minutes, one attempt per second per device, and the
+  owner can "Unlock locked devices" or set a new PIN from the dashboard.
+  The staff RPCs (`staff_session`, `staff_collect`, `staff_pause`) return
+  statuses instead of raising, because a raising RPC rolls back the
+  recorded failed attempt (`20261101160000_staff_pin_status.sql`). The
+  first raising versions still exist without EXECUTE grants.
+- **Deploy order**: see `docs/green-bag-deploy-checklist.md` — migrations
+  1–3 ✓ → merge PR #28 → deploy → migration 4 → demo bakery + fixtures to
+  0% → pilot partners to 0%.
 
 ## 🆕 2026-10-27 — green dark re-theme + leaf brand (PR from `claude/green-retheme`)
 
