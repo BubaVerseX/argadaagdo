@@ -234,7 +234,9 @@ export default function BusinessDashboardPage() {
 
     const { data: myBusinesses, error: businessError } = await supabase
       .from("businesses")
-      .select("id, owner_id, name, business_type, address, phone, approved, sales_paused_on, platform_fee_rate")
+      // "*" so the dashboard keeps working whichever Green Bag migrations
+      // (sales_paused_on, platform_fee_rate) have been applied so far.
+      .select("*")
       .eq("owner_id", userId)
       .order("id", { ascending: false });
 

@@ -60,7 +60,7 @@ function BusinessReport() {
 
       const { data: businessRow, error: businessError } = await supabase
         .from("businesses")
-        .select("id, owner_id, name, business_type, address, phone, approved, platform_fee_rate")
+        .select("*")
         .eq("id", businessId)
         .maybeSingle();
 
