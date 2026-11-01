@@ -114,19 +114,25 @@ export default function StaffDepartmentPage() {
   );
 
   // Restore a PIN remembered on this device (sessionStorage) and unlock.
-  const restoreRememberedPin = useCallback(async () => {
-    let stored: string | null = null;
-    try {
-      stored = window.sessionStorage.getItem(pinStorageKey(String(departmentId)));
-    } catch {}
-    if (!stored) return;
-    const ok = await load(stored, true);
-    if (ok) setPin(stored);
-  }, [departmentId, load]);
-
   useEffect(() => {
+    let active = true;
+
+    async function restoreRememberedPin() {
+      let stored: string | null = null;
+      try {
+        stored = window.sessionStorage.getItem(pinStorageKey(String(departmentId)));
+      } catch {}
+      if (!stored) return;
+      const ok = await load(stored, true);
+      if (ok && active) setPin(stored);
+    }
+
     void restoreRememberedPin();
-  }, [restoreRememberedPin]);
+
+    return () => {
+      active = false;
+    };
+  }, [departmentId, load]);
 
   useEffect(() => {
     if (!pin) return;
