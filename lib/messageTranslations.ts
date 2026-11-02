@@ -59,7 +59,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Marketplace data is temporarily unavailable. Please try again in a moment.",
-    "მარკეტის მონაცემები დროებით მიუწვდომელია. გთხოვ, ცოტა ხანში სცადე ხელახლა.",
+    "პლატფორმის მონაცემები დროებით მიუწვდომელია. გთხოვ, ცოტა ხანში სცადე ხელახლა.",
   ],
   [
     "Image storage is temporarily unavailable. Please try again with the image in a moment.",
@@ -75,7 +75,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Cancellation window has closed for this reservation.",
-    "ამ ჯავშნის გაუქმების ფანჯარა დახურულია.",
+    "ამ ჯავშნის გაუქმების ვადა დახურულია.",
   ],
   ["Email or password is incorrect.", "ელფოსტა ან პაროლი არასწორია."],
   [
@@ -429,8 +429,8 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შეთავაზების გამოქვეყნებამდე აირჩიე დამტკიცებული ბიზნესი.",
   ],
   [
-    "Add an offer title. Example: Bakery Surprise Bag.",
-    "დაამატე შეთავაზების სათაური. მაგალითად: საცხობის სიურპრიზის ყუთი.",
+    "Add an offer title. Example: Bakery Green Bag.",
+    "დაამატე შეთავაზების სათაური. მაგალითად: საცხობის მწვანე ჩანთა.",
   ],
   [
     "Your business is not approved yet.",
@@ -582,7 +582,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "The pickup window had already ended, so this order could not be completed.",
-    "წაღების ფანჯარა უკვე დასრულებული იყო, ამიტომ ეს შეკვეთა ვერ დასრულდა.",
+    "წაღების დრო უკვე დასრულებული იყო, ამიტომ ეს შეკვეთა ვერ დასრულდა.",
   ],
   ["Pickup completed successfully.", "წაღება წარმატებით დასრულდა."],
   ["Pickup code is required.", "წაღების კოდი სავალდებულოა."],
@@ -603,6 +603,118 @@ const georgianMessageEntries: Array<[string, string]> = [
     "Order marked as no-show.",
     "შეკვეთა მოინიშნა სტატუსით „არ გამოცხადდა“.",
   ],
+
+  // Green Bag dashboard: departments, templates, staff PINs (app/business/dashboard/page.tsx).
+  [
+    "Sales could not be updated. Please try again.",
+    "გაყიდვების განახლება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "No more bags today. Unsold offers are off sale; reserved bags stay and must be handed over or cancelled.",
+    "დღეს ჩანთები აღარ იყიდება. გაუყიდავი შეთავაზებები მოხსნილია; დაჯავშნილი ჩანთები რჩება და უნდა გაიცეს ან გაუქმდეს.",
+  ],
+  [
+    "Sales are back on. Paused offers are available again.",
+    "გაყიდვები ისევ ჩართულია. გაჩერებული შეთავაზებები ისევ ხელმისაწვდომია.",
+  ],
+  [
+    "Department added.",
+    "დეპარტამენტი დაემატა.",
+  ],
+  [
+    "Department could not be added. Please try again.",
+    "დეპარტამენტის დამატება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Department deleted.",
+    "დეპარტამენტი წაიშალა.",
+  ],
+  [
+    "Department could not be deleted. Please try again.",
+    "დეპარტამენტის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "The staff PIN must be 4 to 8 digits.",
+    "თანამშრომლის PIN 4-დან 8 ციფრამდე უნდა იყოს.",
+  ],
+  [
+    "The staff PIN could not be saved. Please try again.",
+    "თანამშრომლის PIN ვერ შეინახა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Staff PIN saved. Share the staff link with the department.",
+    "თანამშრომლის PIN შენახულია. გაუზიარე თანამშრომლის ბმული დეპარტამენტს.",
+  ],
+  [
+    "Staff PIN removed.",
+    "თანამშრომლის PIN მოიხსნა.",
+  ],
+  [
+    "You can only manage templates for your own business.",
+    "შაბლონების მართვა მხოლოდ საკუთარი ბიზნესისთვის შეგიძლია.",
+  ],
+  [
+    "The template could not be saved. Please check the details and try again.",
+    "შაბლონი ვერ შეინახა. გადაამოწმე დეტალები და სცადე ხელახლა.",
+  ],
+  [
+    "Template updated. Tomorrow's bag will use the new details.",
+    "შაბლონი განახლდა. ხვალინდელი ჩანთა ახალ დეტალებს გამოიყენებს.",
+  ],
+  [
+    "Template saved. Tomorrow's bag is created automatically at 19:00; use \"Publish for today\" to start now.",
+    "შაბლონი შენახულია. ხვალინდელი ჩანთა 19:00-ზე ავტომატურად შეიქმნება; ახლავე დასაწყებად გამოიყენე „დღევანდელის გამოქვეყნება“.",
+  ],
+  [
+    "The template could not be updated. Please try again.",
+    "შაბლონის განახლება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Template paused. No new bags will be created from it.",
+    "შაბლონი გაჩერებულია. მისგან ახალი ჩანთები აღარ შეიქმნება.",
+  ],
+  [
+    "Template resumed.",
+    "შაბლონი ისევ ჩართულია.",
+  ],
+  [
+    "The template could not be deleted. Please try again.",
+    "შაბლონის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Template deleted.",
+    "შაბლონი წაიშალა.",
+  ],
+  [
+    "The bag could not be published. Please try again.",
+    "ჩანთის გამოქვეყნება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Nothing published: today's bag already exists, its pickup window has ended, this weekday is off, or sales are paused today.",
+    "არაფერი გამოქვეყნდა: დღევანდელი ჩანთა უკვე არსებობს, წაღების დრო დასრულდა, ეს დღე გამორთულია, ან გაყიდვები დღეს გაჩერებულია.",
+  ],
+  [
+    "Nothing published: tomorrow's bag already exists, or this weekday is off.",
+    "არაფერი გამოქვეყნდა: ხვალინდელი ჩანთა უკვე არსებობს, ან ეს დღე გამორთულია.",
+  ],
+  [
+    "Today's bag is on sale.",
+    "დღევანდელი ჩანთა გაყიდვაშია.",
+  ],
+  [
+    "Tomorrow's bag is published.",
+    "ხვალინდელი ჩანთა გამოქვეყნდა.",
+  ],
+  [
+    "Choose a business first.",
+    "ჯერ აირჩიე ბიზნესი.",
+  ],
+  [
+    "Locked staff devices could not be reset. Please try again.",
+    "დაბლოკილი მოწყობილობების განბლოკვა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Locked staff devices were unlocked.", "დაბლოკილი მოწყობილობები განიბლოკა."],
+  ["No staff device was locked.", "დაბლოკილი მოწყობილობა არ იყო."],
 ];
 
 const georgianMessages = new Map<string, string>(georgianMessageEntries);

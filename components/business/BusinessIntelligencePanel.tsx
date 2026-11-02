@@ -41,7 +41,7 @@ export function BusinessIntelligencePanel({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            {isGeorgian ? "მარკეტის ანალიტიკა" : "Marketplace intelligence"}
+            {isGeorgian ? "პლატფორმის ანალიტიკა" : "Marketplace intelligence"}
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
             {isGeorgian ? "გაყიდე მეტი ჭარბი საკვები" : "Sell more surplus food"}

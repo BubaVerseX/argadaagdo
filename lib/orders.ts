@@ -109,6 +109,21 @@ export function isPickupWindowOpen(order: Order) {
   return now >= pickupStart && now <= pickupEnd;
 }
 
+// The in-app "Collected" slider is offered from one hour before the pickup
+// window until two hours after it (mirrors collect_my_order in the database).
+export function isCollectWindowOpen(order: Order) {
+  const pickupStart = getPickupDateTime(order, "pickup_start");
+  const pickupEnd = getPickupDateTime(order, "pickup_end");
+
+  if (!pickupStart || !pickupEnd) return false;
+
+  const now = Date.now();
+  return (
+    now >= pickupStart.getTime() - 60 * 60 * 1000 &&
+    now <= pickupEnd.getTime() + 2 * 60 * 60 * 1000
+  );
+}
+
 export function getPickupReminderMessage(order: Order, language: Language) {
   if (!isConfirmedOrderStatus(getEffectiveOrderStatus(order))) return "";
 

@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/site";
 export const metadata: Metadata = buildPageMetadata({
   title: "Checkout",
   description:
-    "Reserve and pay for your surprise bag.",
+    "Reserve and pay for your Green Bag.",
   path: "/checkout",
   index: false,
 });

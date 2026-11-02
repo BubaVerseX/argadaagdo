@@ -2,6 +2,7 @@ import Link from "next/link";
 import OfferImage from "@/components/OfferImage";
 import { ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
 import type { Language } from "@/lib/i18n";
+import { getGreenBagLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -43,12 +44,15 @@ export function OfferCard({
   const originalPrice = getOriginalPrice(offer);
   const detailsHref = `/offers/${offer.id}`;
   const quantityLeft = Number(offer.quantity ?? 0);
-  const quantityLabel =
-    quantityLeft > 0
-      ? language === "ka"
-        ? `დარჩა ${quantityLeft}`
-        : `${quantityLeft} left`
-      : null;
+  const quantityLabel = offer.unlimited_quantity
+    ? language === "ka"
+      ? "ხელმისაწვდომია"
+      : "Available"
+    : quantityLeft > 0
+    ? language === "ka"
+      ? `დარჩა ${quantityLeft}`
+      : `${quantityLeft} left`
+    : null;
   const heartClass = `absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-ink/75 backdrop-blur-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
     cornerAction?.active ? "text-mint" : "text-cream hover:text-mint"
   }`;
@@ -103,7 +107,10 @@ export function OfferCard({
 
       <div className="flex flex-1 flex-col p-4">
         <Link href={detailsHref} className="block min-w-0">
-          <h3 className="truncate text-base font-medium leading-snug text-cream">
+          <p className="truncate text-xs font-semibold uppercase tracking-wide text-mint">
+            {getGreenBagLabel(offer, language)}
+          </p>
+          <h3 className="mt-0.5 truncate text-base font-medium leading-snug text-cream">
             {offer.title}
           </h3>
           <div className="mt-1 flex min-w-0 items-center gap-1.5 text-sm text-body">

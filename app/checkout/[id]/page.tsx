@@ -22,6 +22,8 @@ import {
 } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
+import { formatBagsLeft } from "@/lib/greenBag";
+import { getGreenBagLabel } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import { getNativeBrowser } from "@/lib/native";
@@ -408,7 +410,7 @@ export default function CheckoutPage() {
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                        {offer.businesses?.business_type || t("common.food")}
+                        {getGreenBagLabel(offer, language)}
                       </p>
                       <h2 className="mt-2 text-3xl font-semibold">
                         {offer.title}
@@ -423,7 +425,7 @@ export default function CheckoutPage() {
                         {t("offers.boxesLeft")}
                       </p>
                       <p className="text-3xl font-semibold text-cream">
-                        {offer.quantity}
+                        {formatBagsLeft(offer, language)}
                       </p>
                     </div>
                   </div>

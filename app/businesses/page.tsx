@@ -188,13 +188,13 @@ export default function BusinessesPage() {
             </p>
             <h1 className="mt-3 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-5xl">
               {isGeorgian
-                ? "აღმოაჩინე თბილისის დამოწმებული ბიზნესები"
+                ? "აღმოაჩინე თბილისის დადასტურებული ბიზნესები"
                 : "Discover verified Tbilisi businesses"}
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-body md:text-lg">
               {isGeorgian
-                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც არ გადააგდოზე სიურპრიზის ყუთების გამოქვეყნების უფლება აქვთ."
-                : "Search bakeries, cafes, restaurants and shops that are approved to publish surprise bags on ArGadaagdo."}
+                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც არ გადააგდოზე მწვანე ჩანთების გამოქვეყნების უფლება აქვთ."
+                : "Search bakeries, cafes, restaurants and shops that are approved to publish Green Bags on ArGadaagdo."}
             </p>
           </div>
 
@@ -334,7 +334,7 @@ export default function BusinessesPage() {
               </h2>
               <p className="mx-auto mt-2 max-w-lg leading-7 text-body">
                 {isGeorgian
-                  ? "სცადე ფილტრების გასუფთავება ან პირდაპირ შეთავაზებების დათვალიერება. ახალი დამოწმებული ბიზნესები აქ პილოტის ზრდასთან ერთად გამოჩნდება."
+                  ? "სცადე ფილტრების გასუფთავება ან პირდაპირ შეთავაზებების დათვალიერება. ახალი დადასტურებული ბიზნესები აქ პილოტის ზრდასთან ერთად გამოჩნდება."
                   : "Try clearing filters or browsing offers directly. New verified businesses will appear here as the pilot grows."}
               </p>
               <Link
@@ -368,7 +368,7 @@ export default function BusinessesPage() {
                           {business.name}
                         </h2>
                         <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide text-mint">
-                          {isGeorgian ? "დამოწმებული" : "Verified"}
+                          {isGeorgian ? "დადასტურებული" : "Verified"}
                         </span>
                       </div>
                       <p className="mt-2 text-body">

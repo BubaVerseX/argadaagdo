@@ -1,6 +1,7 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
 import { ClockIcon, MapPinIcon } from "@/components/icons";
 import { createMapsSearchUrl } from "@/lib/maps";
+import { getGreenBagLabel } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -19,6 +20,7 @@ import {
   getCustomerStatusLabel,
   getCustomerTimelineSteps,
   getPickupReminderMessage,
+  isCollectWindowOpen,
 } from "@/lib/orders";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import type { Order } from "@/lib/types";
@@ -32,6 +34,7 @@ type OrderCardProps = {
   cancellingOrderId: number | null;
   ratingOrderId: number | null;
   onCancelOrder: (order: Order) => void;
+  onOpenCollect?: (order: Order) => void;
   onRateOrder: (order: Order) => void;
   onRatingChange: (orderId: number, rating: number) => void;
   onReviewChange: (orderId: number, value: string) => void;
@@ -46,6 +49,7 @@ export function OrderCard({
   cancellingOrderId,
   ratingOrderId,
   onCancelOrder,
+  onOpenCollect,
   onRateOrder,
   onRatingChange,
   onReviewChange,
@@ -83,6 +87,8 @@ export function OrderCard({
     : t("orders.pickupCodeAvailable");
   const pickupReminderMessage = getPickupReminderMessage(order, language);
   const timelineSteps = getCustomerTimelineSteps(order, language);
+  const canSwipeCollect =
+    isConfirmed && Boolean(order.pickup_code) && Boolean(onOpenCollect) && isCollectWindowOpen(order);
 
   return (
     <div className="premium-card rounded-3xl p-4 sm:rounded-3xl sm:p-5 md:p-8">
@@ -96,7 +102,9 @@ export function OrderCard({
             </span>
 
             <span className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-body">
-              {order.offers?.businesses?.business_type || t("common.food")}
+              {order.offers
+                ? getGreenBagLabel(order.offers, language)
+                : t("common.food")}
             </span>
 
             {isCollectedOrderStatus(displayStatus) && !order.rated_at && (
@@ -252,6 +260,16 @@ export function OrderCard({
               <p className="mt-3 text-sm text-body">
                 {t("orders.showCode")}
               </p>
+
+              {canSwipeCollect && (
+                <button
+                  type="button"
+                  onClick={() => onOpenCollect?.(order)}
+                  className="premium-button cta-glow mt-4 min-h-12 w-full py-3"
+                >
+                  {isGeorgian ? "ჩანთა ხელშია? დაადასტურე წაღება" : "Got the bag? Confirm pickup"}
+                </button>
+              )}
 
               <div className="ui-card mt-4 rounded-2xl p-4 text-left">
                 <p className="text-sm font-semibold leading-6 text-cream">

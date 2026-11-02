@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/site";
 export const metadata: Metadata = buildPageMetadata({
   title: "For Businesses",
   description:
-    "Sell your unsold food as surprise bags to customers in Tbilisi. Join the ArGadaagdo pilot.",
+    "Sell your unsold food as Green Bags to customers in Tbilisi. Join the ArGadaagdo pilot.",
   path: "/for-businesses",
 });
 

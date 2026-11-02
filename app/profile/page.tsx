@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import { ImpactCard } from "@/components/ImpactCard";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import {
@@ -278,7 +279,7 @@ export default function ProfilePage() {
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
               {isGeorgian
-                ? "მართე ანგარიშის პირადი მონაცემები ისე, რომ ანგარიშის როლი და მარკეტის უფლებები არ შეიცვალოს."
+                ? "მართე ანგარიშის პირადი მონაცემები ისე, რომ ანგარიშის როლი და პლატფორმის უფლებები არ შეიცვალოს."
                 : "Manage your personal account details without changing your account role or marketplace permissions."}
             </p>
           </div>
@@ -467,13 +468,19 @@ export default function ProfilePage() {
           <div className="mt-6">
             <section className="premium-card rounded-3xl p-5 sm:p-8">
               <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-                {isGeorgian ? "აქტივობა მარკეტზე" : "Marketplace activity"}
+                {isGeorgian ? "აქტივობა პლატფორმაზე" : "Marketplace activity"}
               </p>
               <h2 className="mt-2 text-2xl font-semibold">
                 {isGeorgian
                   ? "შენი საკვების გადარჩენის სტატისტიკა"
                   : "Your food rescue stats"}
               </h2>
+              <ImpactCard
+                className="mt-5"
+                language={language}
+                bags={growthStats.completedPickups}
+                subject="you"
+              />
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {[
                   {

@@ -24,7 +24,11 @@ export const currentDatabasePaymentStatuses = [
   "expired",
 ] as const;
 
-export const platformFeeRate = 0.1;
+// Default platform commission. The live rate is per business
+// (businesses.platform_fee_rate, 30% by default, 0 for pilot partners) and is
+// recorded on every order; this constant is only a fallback for orders that
+// predate those fields.
+export const defaultPlatformFeeRate = 0.3;
 
 export const paymentProviderOptions = [
   {

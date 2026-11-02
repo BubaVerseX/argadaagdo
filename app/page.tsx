@@ -112,8 +112,8 @@ export default function Home() {
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების სიურპრიზის ყუთები, სანამ გაქრება."
-      : "Spot surprise bags from real Tbilisi favorites before they're gone.",
+      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების მწვანე ჩანთები, სანამ გაქრება."
+      : "Spot Green Bags from real Tbilisi favorites before they're gone.",
     reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
     reserveText: isGeorgian
       ? "გადაიხადე უსაფრთხოდ ერთი შეხებით და მაშინვე მიიღე წაღების კოდი."
@@ -160,7 +160,7 @@ export default function Home() {
   ];
   const marqueeItems = isGeorgian
     ? [
-        "დამოწმებული თბილისური ბიზნესები",
+        "დადასტურებული თბილისური ბიზნესები",
         "მხოლოდ ადგილზე წაღება",
         "დაცული ჯავშნები",
         "ნამდვილი მომხმარებლების შეფასებები",
@@ -171,7 +171,7 @@ export default function Home() {
         "Pickup-only, zero delivery waste",
         "Secure code-based reservations",
         "Rated by real customers",
-        "Fresh surprise bags daily",
+        "Fresh Green Bags daily",
       ];
   const stats = [
     {

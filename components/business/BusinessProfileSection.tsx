@@ -43,8 +43,8 @@ export function BusinessProfileSection({
           </h2>
           <p className="mt-2 max-w-2xl leading-7 text-body">
             {isGeorgian
-              ? "ბიზნესის საჯარო ინფორმაცია მკაფიო გქონდეს, რომ მომხმარებლებმა იცოდნენ, სად წაიღონ სიურპრიზის ყუთი."
-              : "Keep your public business information clear so customers know where to collect their surprise bag."}
+              ? "ბიზნესის საჯარო ინფორმაცია მკაფიო გქონდეს, რომ მომხმარებლებმა იცოდნენ, სად წაიღონ მწვანე ჩანთა."
+              : "Keep your public business information clear so customers know where to collect their Green Bag."}
           </p>
         </div>
 

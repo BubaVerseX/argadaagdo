@@ -2,6 +2,7 @@ import { TimelineSteps } from "@/components/TimelineSteps";
 import { Pagination } from "@/components/Pagination";
 import { ClockIcon, ReceiptIcon } from "@/components/icons";
 import { getBusinessTimelineSteps, type ReservationFilter } from "@/lib/business/dashboard";
+import { getGreenBagLabel } from "@/lib/offerCategories";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
   formatDisplayDateTime,
@@ -231,6 +232,11 @@ export function ReservationList({
                 <h3 className="text-xl font-semibold sm:text-2xl">
                   {order.offers?.title || t("common.offerUnavailable")}
                 </h3>
+                {order.offers && (
+                  <p className="mt-1 text-sm font-semibold text-mint">
+                    {getGreenBagLabel(order.offers, language)}
+                  </p>
+                )}
 
                 <p className="mt-2 text-body">
                   {t("businessDashboard.customer")}:{" "}

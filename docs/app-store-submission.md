@@ -37,6 +37,12 @@ new build + review (see `docs/domain-day-checklist.md`).
 
 ## 2. Reviewer demo (no real payment)
 
+> 2026-11-01: the product was renamed from "surprise bag" to "Green Bag"
+> (branch `claude/green-bag`). The demo business, the demo bag's literal
+> title "Demo surprise bag (free, App Review)", the 6-digit code flow and the
+> reviewer steps below are deliberately unchanged, so this section still
+> matches what the reviewer sees. Only re-check them after that branch ships.
+
 Migration `supabase/migrations/20261026121039_app_review_demo.sql`, applied
 to production 2026-10-26 after a rolled-back dry run.
 

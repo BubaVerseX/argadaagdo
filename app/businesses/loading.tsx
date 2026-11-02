@@ -10,7 +10,7 @@ export default function BusinessesLoading() {
         }}
         description={{
           en: "Checking verified local businesses.",
-          ka: "მოწმდება დამოწმებული ადგილობრივი ბიზნესები.",
+          ka: "მოწმდება დადასტურებული ადგილობრივი ბიზნესები.",
         }}
       />
     </main>

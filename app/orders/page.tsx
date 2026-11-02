@@ -3,6 +3,7 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { LoadingState } from "@/components/LoadingState";
+import { CollectSlider } from "@/components/orders/CollectSlider";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { OrdersEmptyState } from "@/components/orders/OrdersEmptyState";
 import { OrdersHeader } from "@/components/orders/OrdersHeader";
@@ -16,6 +17,7 @@ import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   notifyOrderCancelled,
+  notifyPickupCompleted,
   notifyRatingSubmitted,
 } from "@/lib/notifications";
 import {
@@ -106,6 +108,7 @@ export default function OrdersPage() {
   const [ratingOrderId, setRatingOrderId] = useState<number | null>(null);
   const [ratingValues, setRatingValues] = useState<Record<number, number>>({});
   const [reviewTexts, setReviewTexts] = useState<Record<number, string>>({});
+  const [collectingOrder, setCollectingOrder] = useState<Order | null>(null);
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function loadOrders(userId: string, showLoading = false) {
@@ -126,6 +129,8 @@ export default function OrdersPage() {
           price,
           quantity,
           active,
+          category,
+          size,
           businesses(name, address, business_type)
         )
       `
@@ -240,6 +245,66 @@ export default function OrdersPage() {
     });
     setRatingOrderId(null);
     await loadOrders(order.user_id ?? "");
+  }
+
+  // Swipe-to-collect: the customer confirms the pickup in front of staff.
+  // collect_my_order sets the same "completed" status as the code check, so
+  // the business dashboard updates in real time through its orders channel.
+  async function collectOrder(order: Order) {
+    const { data, error } = await supabase.rpc("collect_my_order", {
+      p_order_id: order.id,
+    });
+
+    if (error) {
+      logAppError("Swipe collect failed", error, {
+        operation: "collect_my_order",
+        orderId: order.id,
+      });
+      return false;
+    }
+
+    if (data === "collected" || data === "already_collected") {
+      setOrders((currentOrders) =>
+        currentOrders.map((item) =>
+          item.id === order.id
+            ? { ...item, status: "completed", completed_at: new Date().toISOString() }
+            : item
+        )
+      );
+      notifyPickupCompleted({
+        orderId: order.id,
+        offerTitle: order.offers?.title,
+        businessName: order.offers?.businesses?.name,
+      });
+      await loadOrders(order.user_id ?? "");
+      return true;
+    }
+
+    return false;
+  }
+
+  async function undoCollectOrder(order: Order) {
+    const { data, error } = await supabase.rpc("undo_collect_my_order", {
+      p_order_id: order.id,
+    });
+
+    if (error || data !== "reserved") {
+      if (error) {
+        logAppError("Swipe collect undo failed", error, {
+          operation: "undo_collect_my_order",
+          orderId: order.id,
+        });
+      }
+      return false;
+    }
+
+    setOrders((currentOrders) =>
+      currentOrders.map((item) =>
+        item.id === order.id ? { ...item, status: "reserved", completed_at: null } : item
+      )
+    );
+    await loadOrders(order.user_id ?? "");
+    return true;
   }
 
   async function cancelOrder(order: Order) {
@@ -472,6 +537,7 @@ export default function OrdersPage() {
               cancellingOrderId={cancellingOrderId}
               ratingOrderId={ratingOrderId}
               onCancelOrder={(selectedOrder) => void cancelOrder(selectedOrder)}
+              onOpenCollect={(selectedOrder) => setCollectingOrder(selectedOrder)}
               onRateOrder={(selectedOrder) => void rateOrder(selectedOrder)}
               onRatingChange={(orderId, rating) =>
                 setRatingValues((currentRatings) => ({
@@ -489,6 +555,16 @@ export default function OrdersPage() {
           ))}
         </div>
       </section>
+
+      {collectingOrder && (
+        <CollectSlider
+          order={orders.find((order) => order.id === collectingOrder.id) || collectingOrder}
+          language={language}
+          onCollect={() => collectOrder(collectingOrder)}
+          onUndo={() => undoCollectOrder(collectingOrder)}
+          onClose={() => setCollectingOrder(null)}
+        />
+      )}
     </main>
   );
 }

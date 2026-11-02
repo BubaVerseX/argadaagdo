@@ -4,6 +4,77 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
+## 🆕 2026-11-01 — Green Bag model (branch `claude/green-bag`, one PR, NOT merged)
+
+Apple is reviewing iOS 1.0.0 from `main`; nothing here is deployed or applied
+until the founder says "deploy". Migrations 1–3 (`20261101110454_green_bag_sizes`,
+`20261101110658_departments_and_bag_templates`, `20261101110702_swipe_to_collect`)
+were **applied to production on 2026-11-01** (additive, invisible to the live
+app). Migration 4 (`20261101150000_platform_fee_rate`) is NOT applied: it
+changes live fees. Each file ends with a commented Down block.
+
+- **Naming**: "surprise bag / სიურპრიზის ყუთი" → "Green Bag / მწვანე ჩანთა"
+  in UI, emails, SEO/OG text and docs. The App Review demo bag keeps its
+  literal title "Demo surprise bag (free, App Review)" and the reviewer notes
+  in `docs/app-store-submission.md` are unchanged on purpose.
+- **Taxonomy** (`lib/offerCategories.ts`): category is a tag under the Green
+  Bag — Bakery / Fruit & veg / Dairy / Deli / Mixed (ცომეული / ხილ-ბოსტნეული /
+  რძის ნაწარმი / კულინარია / შერეული); old values (Cafe, Restaurant, Grocery,
+  Other) stay in the DB and display under the nearest tag. Size S / M / L is
+  `offers.size` with its own price. `getGreenBagLabel()` renders
+  "Green Bag M · Bakery" everywhere (cards, detail, checkout, orders,
+  dashboard, staff page).
+- **Departments** (`departments`, owner-managed through RLS): a store can
+  split into departments, each with its own bag templates, schedule and an
+  optional staff PIN (bcrypt hash in `private.department_staff_pins`). Every
+  approved business gets a default "Main" department lazily
+  (`ensure_default_department`); offers with `department_id` null belong to
+  it. Staff page `/staff/<departmentId>` (no login, PIN-gated `staff_*` RPCs
+  callable by anon): today's reservations, complete pickup by code,
+  "Today: no bags". 5 wrong PINs/codes lock the department for 15 min.
+- **Bag templates** (`bag_templates`): category, size/price, bags per day
+  (fixed or null = "until stopped" → offer gets quantity 500 +
+  `unlimited_quantity`, UI hides the count), pickup window, ISO weekdays.
+  `publish_bag_templates(date)` (service role only) is run by the new daily
+  cron `/api/cron/publish-green-bags` (15:00 UTC = 19:00 Tbilisi, creates
+  tomorrow's and catches up today's); `publish_bag_template_now` lets the
+  owner publish today/tomorrow by hand. Idempotent per template+date.
+- **"Today: no bags"** (`set_sales_paused`, store-wide or per department):
+  sets `businesses.sales_paused_on` / `departments.sales_paused_on` to the
+  Tbilisi date and flips today's unsold offers to inactive with `paused_at`;
+  reserved bags stay and go through the normal fulfil/cancel flow. Turning
+  back on reactivates offers still inside their window with stock left.
+- **Swipe-to-collect** (`components/orders/CollectSlider.tsx`): full-screen
+  slider on the customer's order (1 h before the window until 2 h after);
+  `collect_my_order` sets the same `completed` status as `complete_pickup`
+  plus `orders.customer_collected_at`; `undo_collect_my_order` reverts within
+  2 minutes. The business dashboard updates through its existing realtime
+  orders channel. The 6-digit code flow is unchanged (App Review fallback).
+- **Commission**: `businesses.platform_fee_rate` (numeric, default 0.30, 0
+  for pilot partners), admin/service-role only (trigger + 
+  `set_business_platform_fee_rate`; admin dashboard has a per-business
+  input). `create_provider_payment_order` reads it for `platform_fee` /
+  `business_amount`, so the TBC split (`extra2`) follows. **Applying this
+  migration changes live fees from 10% to 30% immediately**; set pilot
+  partners to 0 in the same session. `lib/paymentArchitecture.ts` exports
+  `defaultPlatformFeeRate = 0.3` as the analytics fallback only.
+- **Impact** (`lib/impact.ts`): 1 bag ≈ 1 kg food ≈ 2.7 kg CO₂ (replaces the
+  old 0.6 kg/box estimate). Customer profile and business dashboard show an
+  `ImpactCard` with a canvas share image; the dashboard's
+  `ImpactReportSection` exports a monthly CSV and opens the printable
+  `/business/report?business=<id>&month=YYYY-MM` page (Print → Save as PDF).
+- **Staff PIN lockouts are per device** (random token in the staff page's
+  localStorage + request IP), never per department: 5 wrong PINs/codes lock
+  that device for 15 minutes, one attempt per second per device, and the
+  owner can "Unlock locked devices" or set a new PIN from the dashboard.
+  The staff RPCs (`staff_session`, `staff_collect`, `staff_pause`) return
+  statuses instead of raising, because a raising RPC rolls back the
+  recorded failed attempt (`20261101160000_staff_pin_status.sql`). The
+  first raising versions still exist without EXECUTE grants.
+- **Deploy order**: see `docs/green-bag-deploy-checklist.md` — migrations
+  1–3 ✓ → merge PR #28 → deploy → migration 4 → demo bakery + fixtures to
+  0% → pilot partners to 0%.
+
 ## 🆕 2026-10-27 — green dark re-theme + leaf brand (PR from `claude/green-retheme`)
 
 The cream/amber neumorphic look is gone. The app (web + both native

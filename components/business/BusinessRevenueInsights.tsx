@@ -120,8 +120,8 @@ export function BusinessRevenueInsights({
       title: isGeorgian ? "გადარჩენილი საკვები" : "Estimated Food Saved",
       value: `${analytics.estimatedFoodSavedKg} ${isGeorgian ? "კგ" : "kg"}`,
       helper: isGeorgian
-        ? "მარტივი შეფასებით, 0.6 კგ თითო გადარჩენილ ყუთზე"
-        : "Using a simple 0.6 kg estimate per rescued bag",
+        ? "შეფასება: 1 კგ თითო გადარჩენილ ჩანთაზე"
+        : "Estimate: 1 kg per rescued bag",
       tone: "green",
     },
     {
@@ -133,15 +133,15 @@ export function BusinessRevenueInsights({
       tone: analytics.averageRating === "No ratings yet" ? "white" : "yellow",
     },
     {
-      title: isGeorgian ? "გაყიდული ყუთები" : "Boxes Sold",
+      title: isGeorgian ? "გაყიდული ჩანთები" : "Bags sold",
       value: analytics.boxesSold,
       helper: isGeorgian
-        ? "დაჯავშნილი, დასრულებული და გამოუცხადებელი ყუთები"
-        : "Reserved, completed and no-show boxes",
+        ? "დაჯავშნილი, წაღებული და გამოუცხადებელი ჩანთები"
+        : "Reserved, collected and no-show bags",
       tone: "green",
     },
     {
-      title: isGeorgian ? "დარჩენილი ყუთები" : "Boxes Remaining",
+      title: isGeorgian ? "დარჩენილი ჩანთები" : "Bags remaining",
       value: analytics.boxesRemaining,
       helper: isGeorgian
         ? "შეთავაზებებში ამჟამად დარჩენილი რაოდენობა"
@@ -151,8 +151,8 @@ export function BusinessRevenueInsights({
       title: isGeorgian ? "ბიზნესის შემოსავალი" : "Business Earnings",
       value: formatAnalyticsMoney(analytics.estimatedBusinessEarnings),
       helper: isGeorgian
-        ? "ბიზნესის სავარაუდო 90%-იანი წილი ანაზღაურების გადამოწმებამდე"
-        : "Estimated 90% business earnings before payout review",
+        ? "ბიზნესის წილი თითოეული შეკვეთის ჩაწერილი საკომისიოს მიხედვით, ანაზღაურების გადამოწმებამდე"
+        : "Business share after each order's recorded commission, before payout review",
       tone: "green",
     },
   ];
@@ -239,8 +239,8 @@ export function BusinessRevenueInsights({
           </p>
           <p className="mt-1">
             {isGeorgian
-              ? "მიმდინარე შეფასება: 10% პლატფორმის საკომისიო და 90% ბიზნესის შემოსავალი. ანაზღაურებამდე შეადარე გადახდის პროვაიდერის ჩანაწერებს."
-              : "Current estimate: 10% platform commission and 90% business earnings. Reconcile against payment provider records before payout."}
+              ? "მიმდინარე შეფასება თითოეულ შეკვეთაზე ჩაწერილი პლატფორმის საკომისიოს მიხედვით (სტანდარტულად 30%, პარტნიორთან შეთანხმებით). ანაზღაურებამდე შეადარე გადახდის პროვაიდერის ჩანაწერებს."
+              : "Current estimate based on each order's recorded platform commission (30% by default, agreed per partner). Reconcile against payment provider records before payout."}
           </p>
         </div>
       </div>

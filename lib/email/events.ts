@@ -133,7 +133,7 @@ function getOrderPayload(order: EmailOrderContext) {
   const business = offer?.businesses;
 
   return {
-    offerTitle: offer?.title || "Surprise Bag",
+    offerTitle: offer?.title || "Green Bag",
     businessName: business?.name || "ArGadaagdo business",
     businessAddress: business?.address || null,
     pickupWindow: offer ? formatPickupWindow(offer, "en") : null,

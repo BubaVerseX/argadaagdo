@@ -1,7 +1,7 @@
 # ArGadaagdo
 
 ArGadaagdo is a pickup-only food-rescue marketplace for Tbilisi, Georgia.
-Local food businesses publish discounted surprise bags, customers reserve them
+Local food businesses publish discounted Green Bags, customers reserve them
 online, and pickup codes make in-store collection clear and simple.
 
 The project is a production-demo MVP inspired by Too Good To Go. It includes
@@ -20,6 +20,11 @@ Production beta URL:
 - Customer signup, login, persistent sessions, and protected routes
 - Business registration with admin approval
 - Business dashboard for offers, reservations, pickup verification, and reviews
+- Green Bags: category tag (Bakery, Fruit & veg, Dairy, Deli, Mixed) and size S / M / L
+- Departments per store with bag templates, daily auto-publish, "Today: no bags" and a PIN-protected staff page
+- Swipe-to-collect on the customer's order (2-minute undo) next to the pickup-code fallback
+- Per-business platform commission (30% default, 0% for pilot partners) driving the TBC split
+- Impact numbers (bags, kg food, kg CO₂) with a share image, plus monthly CSV / PDF reports for businesses
 - Public marketplace with categories, sorting, favorites, and offer detail pages
 - TBC Bank checkout session preparation through server route handlers
 - Payment-first reservation flow through Supabase RPC functions
@@ -49,14 +54,14 @@ Production beta URL:
 
 1. A business creates an account and submits a business registration.
 2. An admin reviews and approves the business.
-3. The business creates a pickup-only surprise bag offer.
+3. The business sets up Green Bag templates (or a one-off offer); the daily job publishes tomorrow's bags.
 4. A customer browses active offers and confirms a reservation.
 5. The payment RPC creates a pending order and payment hold while decreasing
    offer quantity atomically.
 6. TBC Bank confirms payment through a verified server callback.
 7. The order becomes reserved and the pickup code is created.
 8. The customer shows the pickup code during the pickup window.
-9. The business verifies the code and completes the pickup.
+9. The customer swipes "Collected" in front of staff, or the business (or department staff) verifies the code.
 10. The customer can rate the completed order.
 
 ## Database Overview
@@ -65,7 +70,9 @@ Production beta URL:
 | --- | --- |
 | `profiles` | User email, role, and reliability fields |
 | `businesses` | Business ownership, details, approval state, and profile data |
-| `offers` | Surprise bags, prices, pickup windows, images, status, and quantity |
+| `offers` | Green Bags, size, category, department, prices, pickup windows, images, status, and quantity |
+| `departments` | Store departments: default flag, staff PIN flag, "Today: no bags" date |
+| `bag_templates` | Daily Green Bag templates: category, size, price, bags per day, pickup window, weekdays |
 | `orders` | Pending payment, reservation lifecycle, pickup codes, cancellation, and rating state |
 | `payments` | Provider payment state, fees, business amount, references, and refund state |
 | `business_ratings` | Customer ratings for completed pickups |

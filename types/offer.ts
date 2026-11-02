@@ -17,7 +17,18 @@ export type Offer = {
   description?: string | null;
   allergens?: string | null;
   image_url: string | null;
+  /** Green Bag size; null on offers created before sizes existed. */
+  size?: "S" | "M" | "L" | null;
+  /** Department that sells this bag (null = the business's default). */
+  department_id?: number | null;
+  /** Set when the daily job created this offer from a bag template. */
+  template_id?: number | null;
+  /** "Until stopped" bags: the remaining count is not shown to customers. */
+  unlimited_quantity?: boolean | null;
+  /** Set while the department/store has pressed "Today: no bags". */
+  paused_at?: string | null;
   businesses?: Pick<Business, "name" | "address" | "business_type"> | null;
+  departments?: { id: number; name: string } | null;
 };
 
 export type Favorite = {

@@ -3,10 +3,15 @@ import { PlusIcon, StarIcon } from "@/components/icons";
 import { formatAnalyticsMoney, type OfferAnalytics } from "@/lib/analytics";
 import type { OfferIntelligence } from "@/lib/marketplaceIntelligence";
 import {
+  BAG_SIZES,
   DEFAULT_OFFER_CATEGORY,
   OFFER_CATEGORIES,
+  getBagSizeLabel,
+  getGreenBagLabel,
   getOfferCategoryLabel,
+  normalizeBagSize,
   normalizeOfferCategory,
+  type BagSize,
   type OfferCategory,
 } from "@/lib/offerCategories";
 import {
@@ -35,6 +40,7 @@ type OfferListProps = {
   updatingOfferId: number | null;
   editTitle: string;
   editCategory: OfferCategory;
+  editSize: BagSize;
   editPrice: string;
   editOldPrice: string;
   editQuantity: string;
@@ -50,6 +56,7 @@ type OfferListProps = {
   onSaveEdits: (offer: Offer) => void;
   onEditTitleChange: (value: string) => void;
   onEditCategoryChange: (value: OfferCategory) => void;
+  onEditSizeChange: (value: BagSize) => void;
   onEditPriceChange: (value: string) => void;
   onEditOldPriceChange: (value: string) => void;
   onEditQuantityChange: (value: string) => void;
@@ -71,6 +78,7 @@ export function OfferList({
   updatingOfferId,
   editTitle,
   editCategory,
+  editSize,
   editPrice,
   editOldPrice,
   editQuantity,
@@ -86,6 +94,7 @@ export function OfferList({
   onSaveEdits,
   onEditTitleChange,
   onEditCategoryChange,
+  onEditSizeChange,
   onEditPriceChange,
   onEditOldPriceChange,
   onEditQuantityChange,
@@ -165,9 +174,7 @@ export function OfferList({
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-xl font-semibold">{offer.title}</h3>
                       <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold text-mint">
-                        {isGeorgian
-                          ? getOfferCategoryLabel(offer.category, language)
-                          : normalizeOfferCategory(offer.category)}
+                        {getGreenBagLabel(offer, language)}
                       </span>
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
@@ -178,7 +185,11 @@ export function OfferList({
 
                     <p className="text-body">
                       {formatMoney(offer.price)} · {t("common.quantity")}:{" "}
-                      {offer.quantity}
+                      {offer.unlimited_quantity
+                        ? isGeorgian
+                          ? `სანამ არ გაჩერდება (${offer.quantity})`
+                          : `until stopped (${offer.quantity})`
+                        : offer.quantity}
                     </p>
                     <p className="text-body">
                       {t("common.pickup")}: {formatPickupWindow(offer, language)}
@@ -425,6 +436,22 @@ export function OfferList({
                           {isGeorgian
                             ? getOfferCategoryLabel(offerCategory, language)
                             : offerCategory}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={editSize}
+                      onChange={(event) =>
+                        onEditSizeChange(normalizeBagSize(event.target.value) ?? "M")
+                      }
+                      required
+                      aria-label={t("common.size")}
+                      className="premium-input p-4 font-semibold"
+                    >
+                      {BAG_SIZES.map((bagSize) => (
+                        <option key={bagSize} value={bagSize}>
+                          {bagSize} · {getBagSizeLabel(bagSize, language)}
                         </option>
                       ))}
                     </select>
