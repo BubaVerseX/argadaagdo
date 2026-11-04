@@ -76,7 +76,7 @@ Each paid order already stores:
 Current split:
 
 - platform fee at the business's `platform_fee_rate` (30% by default, 0% for pilot partners)
-- 90% business revenue
+- Business revenue: 70% by default (30% platform fee)
 
 Future payout architecture:
 
