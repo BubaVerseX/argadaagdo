@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="utf-8">
+<title>B v3 – Checkout</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@600;700&family=Noto+Sans+Georgian:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0F3A32}a:hover{color:#235347}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F7F1E3; color: #0B2B26; font-family: 'Noto Sans Georgian', sans-serif; overflow: hidden; position: relative">
+
+  <div style="position: absolute; left: 0; top: 0; width: 390px; height: 150px; background: #0F3A32"></div>
+  <svg style="position: absolute; left: 0; top: 130px" width="390" height="50" viewBox="0 0 390 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H390 V18 C300 50 210 0 120 26 C70 40 30 38 0 28 Z" fill="#0F3A32"/></svg>
+
+  <div style="position: relative; padding: 16px 20px 0; display: flex; align-items: center; gap: 12px">
+    <a href="B3Bag.dc.html" aria-label="უკან" style="width: 44px; height: 44px; border-radius: 50%; background: #164A3F; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F7F1E3" stroke-width="2" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></a>
+    <div style="font-family: 'Noto Serif Georgian', serif; font-weight: 700; font-size: 22px; color: #F7F1E3">დაჯავშნა</div>
+  </div>
+
+  <div style="position: relative; margin: 26px 20px 0; border-radius: 26px; background: #F4C15D; padding: 14px; display: flex; gap: 12px; align-items: center; overflow: hidden">
+    <svg style="position: absolute; right: -40px; top: -40px" width="140" height="140" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="100" fill="#F7D27F"/></svg>
+    <div style="position: relative; width: 64px; height: 64px; border-radius: 16px 34px 16px 16px; background: #E7A93A; flex: none"></div>
+    <div style="position: relative; flex: 1">
+      <div style="font-weight: 700; font-size: 15px; color: #2E1F00">ძველი ქალაქის საცხობი</div>
+      <div style="font-size: 12px; color: #5C3D00">მწვანე ჩანთა · M · დღეს 19:00–21:00</div>
+    </div>
+    <div style="position: relative; font-weight: 700; font-size: 20px; color: #2E1F00">7 ₾</div>
+  </div>
+
+  <div style="margin: 18px 20px 0; font-weight: 700; font-size: 14px">რაოდენობა</div>
+  <div style="margin: 8px 20px 0; display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border-radius: 18px; padding: 8px">
+    <button aria-label="ნაკლები" style="width: 44px; height: 44px; border-radius: 14px; border: 0; background: #EDE4CF; font: inherit; font-size: 20px; color: #0B2B26">−</button>
+    <div style="font-weight: 700; font-size: 18px">1 ჩანთა</div>
+    <button aria-label="მეტი" style="width: 44px; height: 44px; border-radius: 14px; border: 0; background: #0F3A32; font: inherit; font-size: 20px; color: #F7F1E3">+</button>
+  </div>
+
+  <div style="margin: 18px 20px 0; background: #FFFFFF; border-radius: 22px; padding: 16px">
+    <div style="display: flex; justify-content: space-between; font-size: 14px; color: #4E6B63"><span>ჩვეულებრივი ფასი</span><span style="text-decoration: line-through">20 ₾</span></div>
+    <div style="margin-top: 8px; display: flex; justify-content: space-between; font-size: 14px; color: #2F7A47; font-weight: 700"><span>დაზოგავ</span><span>−13 ₾</span></div>
+    <div style="margin: 12px 0; height: 1px; background: #EDE4CF"></div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-weight: 700">სულ</span><span style="font-size: 26px; font-weight: 700">7 ₾</span></div>
+  </div>
+
+  <div style="margin: 14px 20px 0; padding: 14px; border-radius: 18px; background: #DDEFE0; display: flex; gap: 10px; align-items: flex-start; font-size: 13px">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F3A32" stroke-width="2" aria-hidden="true" style="flex: none"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <span>გადახდა ხდება თიბისი ბანკის დაცულ გვერდზე. ბარათის მონაცემებს ჩვენ ვერ ვხედავთ.</span>
+  </div>
+
+  <label style="margin: 14px 20px 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13px; line-height: 1.45">
+    <input type="checkbox" checked style="width: 22px; height: 22px; margin: 0; accent-color: #0F3A32; flex: none">
+    <span>ვეთანხმები წაღებისა და გაუქმების წესებს: გაუქმება შესაძლებელია წაღებამდე 2 საათით ადრე.</span>
+  </label>
+
+  <div style="position: absolute; left: 12px; right: 12px; bottom: 14px; padding: 12px; border-radius: 24px; background: #0F3A32">
+    <a href="B3Orders.dc.html" style="display: block; text-align: center; background: #B8E6C4; color: #0F3A32; text-decoration: none; font-weight: 700; font-size: 16px; padding: 16px; border-radius: 16px">გადახდა · 7 ₾</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
