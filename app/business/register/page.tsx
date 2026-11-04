@@ -182,8 +182,22 @@ export default function BusinessRegisterPage() {
     // Don't create a second application while one is already waiting.
     const { data: existingBusinesses } = await supabase
       .from("businesses")
-      .select("id, approved")
+      .select("id, approved, rejected_at")
       .eq("owner_id", userId);
+
+    // A rejected application is corrected and resubmitted, not filed again.
+    if (
+      (existingBusinesses || []).some(
+        (business: { rejected_at: string | null }) => business.rejected_at
+      )
+    ) {
+      setSubmitting(false);
+      setMessageTone("warning");
+      setMessage(
+        "Your application was not approved. Open your dashboard to edit it and resubmit."
+      );
+      return;
+    }
 
     if (
       (existingBusinesses || []).some(

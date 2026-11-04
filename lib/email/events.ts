@@ -58,6 +58,14 @@ type BusinessEmailContext = {
   approved: boolean | null;
 };
 
+type BusinessRejectionEmailContext = {
+  id: number;
+  owner_id: string;
+  name: string | null;
+  rejected_at: string | null;
+  rejection_reason: string | null;
+};
+
 function fromTable<T>(
   supabase: SupabaseLikeClient,
   table: string,
@@ -251,6 +259,48 @@ export async function sendBusinessApprovalEmail(
       supportUrl: absoluteSiteUrl("/support"),
     },
     idempotencyKey: `business-approval-${business.id}`,
+  });
+}
+
+export async function sendBusinessRejectionEmail(
+  supabase: SupabaseLikeClient,
+  businessId: number
+) {
+  // The reason comes from the saved row, never from the request, so this email
+  // only ever repeats what is stored and what the owner sees in the dashboard.
+  const { data: business, error } = await fromTable<BusinessRejectionEmailContext>(
+    supabase,
+    "businesses",
+    "id, owner_id, name, rejected_at, rejection_reason"
+  )
+    .eq("id", businessId)
+    .maybeSingle();
+
+  if (error || !business) {
+    return { ok: false, skipped: true, error: "business_not_found" };
+  }
+
+  if (!business.rejected_at || !business.rejection_reason) {
+    return { ok: false, skipped: true, error: "business_not_rejected" };
+  }
+
+  const profile = await getProfileById(supabase, business.owner_id);
+  if (!profile?.email) {
+    return { ok: false, skipped: true, error: "business_owner_email_not_found" };
+  }
+
+  return sendTransactionalEmail({
+    to: profile.email,
+    event: "business_rejection",
+    payload: {
+      businessName: business.name,
+      rejectionReason: business.rejection_reason,
+      actionUrl: absoluteSiteUrl("/business/dashboard"),
+      supportUrl: absoluteSiteUrl("/support"),
+    },
+    // Per rejection: an application rejected again after a resubmit needs its
+    // own email.
+    idempotencyKey: `business-rejection-${business.id}-${business.rejected_at}`,
   });
 }
 

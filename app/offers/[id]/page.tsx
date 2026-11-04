@@ -5,6 +5,10 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { FAQAccordion } from "@/components/help/FAQAccordion";
 import { HelpCard } from "@/components/help/HelpCard";
+import {
+  ReviewReportControl,
+  useReviewReporterId,
+} from "@/components/reviews/ReviewReportControl";
 import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { ArrowLeftIcon, ClockIcon, HeartIcon, MapPinIcon, StoreIcon } from "@/components/icons";
@@ -72,6 +76,7 @@ export default function OfferDetailPage() {
     Record<number, RatingSummary>
   >({});
   const [reviews, setReviews] = useState<PublicBusinessReview[]>([]);
+  const reviewReporterId = useReviewReporterId();
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const notFoundMessage = t("offerDetail.notFound");
@@ -728,6 +733,10 @@ export default function OfferDetailPage() {
                       <p className="mt-2 text-body">
                         {review.review?.trim() || t("common.noWrittenReview")}
                       </p>
+                      <ReviewReportControl
+                        reviewId={review.id}
+                        reporterId={reviewReporterId}
+                      />
                     </div>
                   ))}
                 </div>

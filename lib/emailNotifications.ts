@@ -2,6 +2,7 @@ export type EmailNotificationEvent =
   | "account_verification"
   | "password_reset"
   | "business_approved"
+  | "business_rejected"
   | "reservation_confirmed"
   | "reservation_cancelled"
   | "pickup_reminder"
@@ -42,6 +43,14 @@ export const emailNotificationPlaceholders: EmailNotificationPlaceholder[] = [
     trigger: "When our team approves a business application",
     status: "app",
     note: "Lets the owner know they can start publishing offers.",
+  },
+  {
+    event: "business_rejected",
+    title: "Application not approved",
+    recipient: "business",
+    trigger: "When our team rejects a business application",
+    status: "app",
+    note: "Gives the reason, so the owner can edit the details and resubmit.",
   },
   {
     event: "reservation_confirmed",

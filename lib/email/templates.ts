@@ -6,6 +6,7 @@ export type TransactionalEmailEvent =
   | "reservation_confirmation"
   | "reservation_cancellation"
   | "business_approval"
+  | "business_rejection"
   | "pickup_reminder"
   | "pickup_completed"
   | "rating_reminder";
@@ -21,6 +22,7 @@ export type TransactionalEmailPayload = {
   actionUrl?: string | null;
   actionLabel?: string | null;
   supportUrl?: string | null;
+  rejectionReason?: string | null;
 };
 
 export type TransactionalEmailTemplate = {
@@ -314,6 +316,36 @@ export function buildTransactionalEmailTemplate(
           intro,
           details: [["Business", businessName]],
           actionUrl: payload.actionUrl || absoluteSiteUrl("/business/dashboard"),
+        }),
+      };
+    }
+
+    // Georgian first, then English: no language preference is stored for an
+    // owner, and this email asks them to act.
+    case "business_rejection": {
+      const subject = `განაცხადი არ დამტკიცდა / Application not approved: ${businessName}`;
+      const title = "განაცხადი არ დამტკიცდა";
+      const intro = `ბიზნესის „${businessName}“ განაცხადი ვერ დავამტკიცეთ. გადახედე მიზეზს, გაასწორე დეტალები და პანელიდან ხელახლა გაგზავნე დასამტკიცებლად.`;
+      const englishNote = `Your application for ${businessName} was not approved. Please read the reason, edit the details and resubmit from your dashboard.`;
+      const preview = "განაცხადი არ დამტკიცდა. გადახედე მიზეზს და ხელახლა გაგზავნე.";
+      const actionUrl = payload.actionUrl || absoluteSiteUrl("/business/dashboard");
+      return {
+        subject,
+        preview,
+        html: renderLayout({
+          preview,
+          title,
+          intro,
+          details: renderDetail("მიზეზი / Reason", payload.rejectionReason),
+          actionUrl,
+          actionLabel: payload.actionLabel || "პანელის გახსნა / Open dashboard",
+          footer: englishNote,
+        }),
+        text: buildTextEmail({
+          title,
+          intro: `${intro}\n\n${englishNote}`,
+          details: [["მიზეზი / Reason", payload.rejectionReason]],
+          actionUrl,
         }),
       };
     }

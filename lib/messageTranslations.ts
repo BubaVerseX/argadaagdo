@@ -378,6 +378,18 @@ const georgianMessageEntries: Array<[string, string]> = [
     "Business submitted. Waiting for admin approval.",
     "ბიზნესი გაიგზავნა. ელოდება ადმინის დამტკიცებას.",
   ],
+  [
+    "Your application was not approved. Open your dashboard to edit it and resubmit.",
+    "შენი განაცხადი არ დამტკიცდა. გახსენი პანელი, გაასწორე დეტალები და ხელახლა გაგზავნე.",
+  ],
+  [
+    "Application resubmitted. Waiting for admin approval.",
+    "განაცხადი ხელახლა გაიგზავნა. ელოდება ადმინის დამტკიცებას.",
+  ],
+  [
+    "Your application could not be resubmitted. Please try again.",
+    "განაცხადი ვერ გაიგზავნა. გთხოვ, სცადე ხელახლა.",
+  ],
 
   // Business dashboard (app/business/dashboard/page.tsx and
   // lib/business/dashboard.ts image validation).
