@@ -1,7 +1,11 @@
 # Green Bag deploy-day checklist
 
 Branch `claude/green-bag`, PR #28. Run top to bottom on the day the founder
-says "deploy". Steps 1–3 are already done (2026-11-01); the rest waits.
+says "deploy".
+
+Status on 2026-11-04: steps 1, 2, 4 and 5 are done. The manual checks in
+step 3 have no recorded result. Step 6 repeats for each pilot partner as they
+join. Step 7 is still to do.
 
 Why the order matters: the new web code reads `offers.size`,
 `offers.department_id` and the `departments` / `bag_templates` tables (so
@@ -28,7 +32,7 @@ is unchanged. Verified on the preview: template → published offer →
 reserve → swipe-collect → dashboard shows collected → undo → verify by
 code → "Today: no bags" → staff PIN page.
 
-## 2. Merge PR #28 → `main`
+## 2. Merge PR #28 → `main` ✓ (production deployed `82d5296` on 2026-11-02)
 
 - Confirm Apple has finished reviewing iOS 1.0.0, or accept that the
   reviewer will see the Green Bag naming (the demo bag title, the code flow
@@ -48,7 +52,10 @@ code → "Today: no bags" → staff PIN page.
 - Optional smoke test of the job: `curl -H "Authorization: Bearer $CRON_SECRET"
   https://argadaagdo-silk.vercel.app/api/cron/publish-green-bags` → `{ ok: true }`.
 
-## 4. Migration 4 — `20261101150000_platform_fee_rate.sql`
+## 4. Migration 4 — `20261104081140_platform_fee_rate.sql` ✓ (applied 2026-11-04)
+
+Applied through the MCP `apply_migration` and recorded as version
+`20261104081140`. The instructions below are kept for reference.
 
 **Changes live commissions from the hard-coded 10% to the per-business
 rate (30% default) the moment it is applied.** Apply it in one sitting
@@ -60,7 +67,7 @@ Or through the MCP `apply_migration` with name `platform_fee_rate`.
 Dry-run was done on 2026-11-01 (rolled back): 9.00 GEL → 2.70 fee /
 6.30 business at 30%; 0% leaves 9.00 to the business.
 
-## 5. Demo bakery and fixtures
+## 5. Demo bakery and fixtures ✓ (set to 0% on 2026-11-04)
 
 Right after migration 4:
 
@@ -73,6 +80,11 @@ select public.set_business_platform_fee_rate(2, 0);
 ```
 
 ## 6. Pilot partners → 0%
+
+On 2026-11-04 production had no real partners, so no rates were set. The only
+businesses are test and demo ones: 2 and 14 are at 0% (step 5); 1 (QA Test
+Bakery) and 3 (Vake Corner Cafe) are at the 30% default. **Do this step for
+each new pilot partner when they onboard, because they start at 30%.**
 
 For every pilot partner business, either run
 `select public.set_business_platform_fee_rate(<business id>, 0);` or use

@@ -4,14 +4,13 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
-## 🆕 2026-11-01 — Green Bag model (branch `claude/green-bag`, one PR, NOT merged)
+## 🆕 2026-11-01 — Green Bag model (PR #28, merged and deployed)
 
-Apple is reviewing iOS 1.0.0 from `main`; nothing here is deployed or applied
-until the founder says "deploy". Migrations 1–3 (`20261101110454_green_bag_sizes`,
+Migrations 1–3 (`20261101110454_green_bag_sizes`,
 `20261101110658_departments_and_bag_templates`, `20261101110702_swipe_to_collect`)
-were **applied to production on 2026-11-01** (additive, invisible to the live
-app). Migration 4 (`20261101150000_platform_fee_rate`) is NOT applied: it
-changes live fees. Each file ends with a commented Down block.
+were **applied to production on 2026-11-01**. Migration 4
+(`20261104081140_platform_fee_rate`) was **applied on 2026-11-04, so live fees
+are now per business (30% default)**. Each file ends with a commented Down block.
 
 - **Naming**: "surprise bag / სიურპრიზის ყუთი" → "Green Bag / მწვანე ჩანთა"
   in UI, emails, SEO/OG text and docs. The App Review demo bag keeps its
@@ -54,9 +53,9 @@ changes live fees. Each file ends with a commented Down block.
   for pilot partners), admin/service-role only (trigger + 
   `set_business_platform_fee_rate`; admin dashboard has a per-business
   input). `create_provider_payment_order` reads it for `platform_fee` /
-  `business_amount`, so the TBC split (`extra2`) follows. **Applying this
-  migration changes live fees from 10% to 30% immediately**; set pilot
-  partners to 0 in the same session. `lib/paymentArchitecture.ts` exports
+  `business_amount`, so the TBC split (`extra2`) follows. **New businesses
+  start at 30%; set each pilot partner to 0 when they onboard.** The demo
+  bakery (14) and Old Town Bakery (2) are at 0. `lib/paymentArchitecture.ts` exports
   `defaultPlatformFeeRate = 0.3` as the analytics fallback only.
 - **Impact** (`lib/impact.ts`): 1 bag ≈ 1 kg food ≈ 2.7 kg CO₂ (replaces the
   old 0.6 kg/box estimate). Customer profile and business dashboard show an
@@ -72,8 +71,8 @@ changes live fees. Each file ends with a commented Down block.
   recorded failed attempt (`20261101160000_staff_pin_status.sql`). The
   first raising versions still exist without EXECUTE grants.
 - **Deploy order**: see `docs/green-bag-deploy-checklist.md` — migrations
-  1–3 ✓ → merge PR #28 → deploy → migration 4 → demo bakery + fixtures to
-  0% → pilot partners to 0%.
+  1–3 ✓ → merge PR #28 ✓ → deploy ✓ → migration 4 ✓ → demo bakery + fixtures
+  to 0% ✓ → pilot partners to 0% (as each one onboards).
 
 ## 🆕 2026-10-27 — green dark re-theme + leaf brand (PR from `claude/green-retheme`)
 
