@@ -5,6 +5,7 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
+import { LeafDecor, WaveEdge } from "@/components/design/Decor";
 import { ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
 import {
   getConfirmedUser,
@@ -16,6 +17,7 @@ import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   getOfferCategoryLabel,
+  getOfferCategoryTone,
   normalizeOfferCategory,
   OFFER_CATEGORIES,
 } from "@/lib/offerCategories";
@@ -467,14 +469,15 @@ export default function OffersPage() {
     <main className="app-shell">
       <Navbar />
 
-      <section className="relative overflow-hidden px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
+      <section className="theme-forest relative overflow-hidden bg-page px-4 pb-4 pt-3 sm:px-5 md:px-12 md:pt-8">
+        <LeafDecor className="-right-10 -top-8 h-56 w-56 text-brand-forest-2 lg:right-[6%] lg:h-96 lg:w-96" />
         <div className="relative mx-auto max-w-7xl">
-          <div className="ui-card rounded-[22px] p-5 sm:p-6 md:rounded-3xl md:p-10">
+          <div>
             <p className="premium-badge px-4 py-2">
               {t("offers.badge")}
             </p>
 
-            <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
+            <h1 className="mt-4 max-w-3xl font-serif text-[1.8125rem] font-bold leading-[1.25] text-cream sm:text-4xl md:text-5xl">
               {t("offers.title")}
             </h1>
 
@@ -502,28 +505,42 @@ export default function OffersPage() {
               </button>
             </div>
 
-            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1fr_auto] xl:items-center">
-              <select
-                value={selectedCategory}
-                onChange={(event) => {
-                  setSelectedCategory(event.target.value);
-                  setPage(1);
-                }}
-                aria-label={
-                  isGeorgian
-                    ? "შეთავაზებების ფილტრი კატეგორიით"
-                    : "Filter offers by category"
-                }
-                className="premium-input w-full min-w-0 px-4 py-3"
-              >
-                <option value="all">{t("offers.allCategories")}</option>
-                {categoryOptions.map((category) => (
-                  <option key={category} value={category}>
-                    {getOfferCategoryLabel(category, language)}
-                  </option>
-                ))}
-              </select>
+            <div
+              role="group"
+              aria-label={
+                isGeorgian
+                  ? "შეთავაზებების ფილტრი კატეგორიით"
+                  : "Filter offers by category"
+              }
+              className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 sm:-mx-5 sm:px-5 md:mx-0 md:flex-wrap md:px-0"
+            >
+              {["all", ...categoryOptions].map((category) => {
+                const selected = selectedCategory === category;
 
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setPage(1);
+                    }}
+                    className={`flex min-h-11 flex-none items-center rounded-full px-4 text-[13px] transition ${
+                      category === "all"
+                        ? "cat-mixed bg-cat text-cat-ink"
+                        : `${getOfferCategoryTone(category)} bg-cat text-cat-ink`
+                    } ${selected ? "font-bold outline outline-2 outline-offset-2 outline-brand-ground" : "font-medium"}`}
+                  >
+                    {category === "all"
+                      ? t("offers.allCategories")
+                      : getOfferCategoryLabel(category, language)}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] xl:items-center">
               <select
                 value={priceFilter}
                 onChange={(event) => {
@@ -623,7 +640,12 @@ export default function OffersPage() {
               {t("offers.surpriseBagText")}
             </div>
           </div>
+        </div>
+      </section>
+      <WaveEdge />
 
+      <section className="px-4 pb-6 pt-2 sm:px-5 md:px-12">
+        <div className="mx-auto max-w-7xl">
           {message && (
             <div className="mt-5 sm:mt-6">
               <Notice tone={messageTone}>
@@ -632,8 +654,8 @@ export default function OffersPage() {
             </div>
           )}
 
-          <div className="mt-8 sm:mt-10">
-            <h2 className="text-2xl font-semibold text-cream sm:text-3xl md:text-4xl">
+          <div className="mt-2 sm:mt-4">
+            <h2 className="font-serif text-2xl font-bold text-cream sm:text-3xl md:text-4xl">
               {t("offers.heading")}
             </h2>
             <p className="mt-2 text-sm text-body">
@@ -704,7 +726,7 @@ export default function OffersPage() {
                 <section key={section.key}>
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <h3 className="text-xl font-semibold text-cream sm:text-2xl">
+                      <h3 className="font-serif text-xl font-bold text-cream sm:text-2xl">
                         {section.title}
                       </h3>
                       <p className="mt-1 text-sm text-body">
@@ -731,7 +753,7 @@ export default function OffersPage() {
                       return (
                         <div
                           key={offer.id}
-                          className="ui-card group flex flex-col rounded-[22px] p-4 transition hover:-translate-y-1"
+                          className={`${getOfferCategoryTone(offer.category)} group flex flex-col rounded-[28px] bg-cat p-4 transition hover:-translate-y-1`}
                         >
                           <div className="relative">
                             <div className="photo-frame relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
@@ -745,7 +767,7 @@ export default function OffersPage() {
                             </div>
 
                             {discount !== null && (
-                              <div className="premium-discount-badge pointer-events-none absolute left-2 top-2 px-3 py-1.5">
+                              <div className="discount-sticker pointer-events-none absolute -left-1 -top-1">
                                 -{discount}%
                               </div>
                             )}
@@ -758,7 +780,7 @@ export default function OffersPage() {
                           <div className="flex flex-1 flex-col pt-5">
                             <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0">
-                                <h4 className="text-xl font-semibold leading-tight text-cream">
+                                <h4 className="font-serif text-xl font-bold leading-[1.25] text-cream">
                                   {offer.title}
                                 </h4>
                                 <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-body">
@@ -809,7 +831,7 @@ export default function OffersPage() {
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="ui-card mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                              className="ui-card mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
                             >
                               {t("common.openMap")}
                             </a>

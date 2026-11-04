@@ -500,7 +500,7 @@ export default function SettingsPage() {
                     setShowDeleteConfirm(true);
                     setDeleteError("");
                   }}
-                  className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-danger-solid px-6 py-3 font-semibold text-cream transition hover:bg-danger-solid sm:w-auto"
+                  className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-danger-solid px-6 py-3 font-semibold text-white transition hover:bg-danger-solid sm:w-auto"
                 >
                   {isGeorgian ? "ჩემი ანგარიშის წაშლა" : "Delete my account"}
                 </button>
@@ -536,7 +536,7 @@ export default function SettingsPage() {
                       type="button"
                       onClick={() => void deleteAccount()}
                       disabled={!deleteConfirmed || deletingAccount}
-                      className="inline-flex min-h-12 items-center justify-center rounded-full bg-danger-solid px-6 py-3 font-semibold text-cream transition hover:bg-danger-solid disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex min-h-12 items-center justify-center rounded-full bg-danger-solid px-6 py-3 font-semibold text-white transition hover:bg-danger-solid disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {deletingAccount
                         ? isGeorgian

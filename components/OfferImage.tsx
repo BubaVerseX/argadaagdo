@@ -43,7 +43,7 @@ export default function OfferImage({
     return (
       <div
         role="img"
-        className="flex h-full w-full items-center justify-center bg-well"
+        className="photo-fallback flex h-full w-full items-center justify-center"
         aria-label={`${alt} image unavailable`}
       >
         <LeafIcon className="h-10 w-10 text-muted sm:h-14 sm:w-14" strokeWidth={1.6} />

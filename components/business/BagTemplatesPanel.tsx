@@ -373,7 +373,7 @@ export function BagTemplatesPanel({
                   aria-pressed={form.quantityMode === "fixed"}
                   className={`${
                     form.quantityMode === "fixed" ? "premium-button" : "premium-button-secondary"
-                  } min-h-10 px-4 py-2 text-sm`}
+                  } min-h-11 px-4 py-2 text-sm`}
                 >
                   {isGeorgian ? "ფიქსირებული რაოდენობა" : "Fixed number"}
                 </button>
@@ -383,7 +383,7 @@ export function BagTemplatesPanel({
                   aria-pressed={form.quantityMode === "unlimited"}
                   className={`${
                     form.quantityMode === "unlimited" ? "premium-button" : "premium-button-secondary"
-                  } min-h-10 px-4 py-2 text-sm`}
+                  } min-h-11 px-4 py-2 text-sm`}
                 >
                   {isGeorgian ? "სანამ არ გავაჩერებ" : "Until stopped"}
                 </button>
@@ -446,7 +446,7 @@ export function BagTemplatesPanel({
                       }
                       className={`${
                         selected ? "premium-button" : "premium-button-secondary"
-                      } min-h-10 min-w-12 px-3 py-2 text-sm`}
+                      } min-h-11 min-w-12 px-3 py-2 text-sm`}
                     >
                       {getWeekdayLabel(day, language)}
                     </button>
@@ -594,7 +594,7 @@ export function BagTemplatesPanel({
                   type="button"
                   disabled={busy || !template.active}
                   onClick={() => onPublishNow(template, "tomorrow")}
-                  className="premium-button-secondary min-h-10 px-3 py-2 text-sm disabled:opacity-60"
+                  className="premium-button-secondary min-h-11 px-3 py-2 text-sm disabled:opacity-60"
                 >
                   {isGeorgian ? "ხვალინდელის გამოქვეყნება" : "Publish for tomorrow"}
                 </button>
@@ -602,7 +602,7 @@ export function BagTemplatesPanel({
                   type="button"
                   disabled={busy || !template.active}
                   onClick={() => onPublishNow(template, "today")}
-                  className="premium-button-secondary min-h-10 px-3 py-2 text-sm disabled:opacity-60"
+                  className="premium-button-secondary min-h-11 px-3 py-2 text-sm disabled:opacity-60"
                 >
                   {isGeorgian ? "დღევანდელის გამოქვეყნება" : "Publish for today"}
                 </button>
@@ -610,7 +610,7 @@ export function BagTemplatesPanel({
                   type="button"
                   disabled={busy}
                   onClick={() => openEdit(template)}
-                  className="premium-button-secondary min-h-10 px-3 py-2 text-sm disabled:opacity-60"
+                  className="premium-button-secondary min-h-11 px-3 py-2 text-sm disabled:opacity-60"
                 >
                   {isGeorgian ? "რედაქტირება" : "Edit"}
                 </button>
@@ -618,7 +618,7 @@ export function BagTemplatesPanel({
                   type="button"
                   disabled={busy}
                   onClick={() => onToggleActive(template)}
-                  className="premium-button-secondary min-h-10 px-3 py-2 text-sm disabled:opacity-60"
+                  className="premium-button-secondary min-h-11 px-3 py-2 text-sm disabled:opacity-60"
                 >
                   {template.active
                     ? isGeorgian
@@ -632,7 +632,7 @@ export function BagTemplatesPanel({
                   type="button"
                   disabled={busy}
                   onClick={() => onDelete(template)}
-                  className="premium-button-danger min-h-10 px-3 py-2 text-sm disabled:opacity-60"
+                  className="premium-button-danger min-h-11 px-3 py-2 text-sm disabled:opacity-60"
                 >
                   {isGeorgian ? "წაშლა" : "Delete"}
                 </button>

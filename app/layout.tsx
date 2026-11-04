@@ -3,15 +3,18 @@ import InstallAppPrompt from "@/components/InstallAppPrompt";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { siteUrl } from "@/lib/site";
-// Self-hosted brand fonts: Noto Sans (Latin) + Noto Sans Georgian, weights
-// 400/500/600 only — headings are 600, body 400.
+// Self-hosted brand fonts. Noto Sans for text; Noto Serif for titles and business
+// names. Weight 300 and serif 400 are the calm website style, 700 the app style.
+import "@fontsource/noto-sans/latin-300.css";
+import "@fontsource/noto-sans-georgian/georgian-300.css";
+import "@fontsource/noto-serif/latin-400.css";
+import "@fontsource/noto-serif-georgian/georgian-400.css";
 import "@fontsource/noto-sans/latin-400.css";
 import "@fontsource/noto-sans/latin-500.css";
 import "@fontsource/noto-sans/latin-600.css";
 import "@fontsource/noto-sans-georgian/georgian-400.css";
 import "@fontsource/noto-sans-georgian/georgian-500.css";
 import "@fontsource/noto-sans-georgian/georgian-600.css";
-// Design v3: 700 for the app style; serif for screen titles and business names.
 import "@fontsource/noto-sans/latin-700.css";
 import "@fontsource/noto-sans-georgian/georgian-700.css";
 import "@fontsource/noto-serif/latin-700.css";
@@ -91,8 +94,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#051f20",
-  colorScheme: "dark",
+  themeColor: "#0f3a32",
+  colorScheme: "light",
   viewportFit: "cover",
 };
 

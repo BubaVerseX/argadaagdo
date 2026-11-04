@@ -2,7 +2,7 @@ import Link from "next/link";
 import OfferImage from "@/components/OfferImage";
 import { ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
 import type { Language } from "@/lib/i18n";
-import { getGreenBagLabel } from "@/lib/offerCategories";
+import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
@@ -59,12 +59,14 @@ export function OfferCard({
   const originalPrice = getOriginalPrice(offer);
   const detailsHref = `/offers/${offer.id}`;
   const quantityLabel = getOfferQuantityLabel(offer, language);
-  const heartClass = `absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-ink/75 backdrop-blur-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
+  const heartClass = `absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-ink/75 backdrop-blur-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
     cornerAction?.active ? "text-mint" : "text-cream hover:text-mint"
   }`;
 
   return (
-    <article className="ui-card group flex min-w-0 flex-col overflow-hidden rounded-[22px] transition hover:-translate-y-0.5">
+    <article
+      className={`${getOfferCategoryTone(offer.category)} group flex min-w-0 flex-col overflow-hidden rounded-[28px] bg-cat transition hover:-translate-y-0.5`}
+    >
       <div className="relative">
         <Link href={detailsHref} className="block" tabIndex={-1} aria-hidden="true">
           <div className="photo-frame relative isolate h-44 rounded-none sm:h-48">
@@ -116,7 +118,7 @@ export function OfferCard({
           <p className="truncate text-xs font-semibold uppercase tracking-wide text-mint">
             {getGreenBagLabel(offer, language)}
           </p>
-          <h3 className="mt-0.5 truncate text-base font-medium leading-snug text-cream">
+          <h3 className="mt-0.5 truncate font-serif text-base font-bold leading-snug text-cream">
             {offer.title}
           </h3>
           <div className="mt-1 flex min-w-0 items-center gap-1.5 text-sm text-body">
@@ -149,7 +151,7 @@ export function OfferCard({
           <p className="truncate text-xs text-muted">{ratingLabel}</p>
           <Link
             href={detailsHref}
-            className="premium-button min-h-10 shrink-0 rounded-xl px-4 py-2 text-xs"
+            className="premium-button min-h-11 shrink-0 rounded-[14px] px-4 py-2 text-xs font-bold"
           >
             {detailsLabel}
           </Link>

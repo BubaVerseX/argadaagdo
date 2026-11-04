@@ -13,7 +13,7 @@ import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { ArrowLeftIcon, ClockIcon, StarIcon } from "@/components/icons";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
-import { getOfferCategoryLabel } from "@/lib/offerCategories";
+import { getOfferCategoryLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   getDiscountPercent,
@@ -393,7 +393,7 @@ export default function BusinessProfilePage() {
                       <Link
                         key={offer.id}
                         href={`/offers/${offer.id}`}
-                        className="ui-card block rounded-[22px] p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                        className={`${getOfferCategoryTone(offer.category)} block rounded-[28px] bg-cat p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint`}
                       >
                         <div className="photo-frame relative isolate h-48 overflow-hidden bg-well">
                           <OfferImage

@@ -547,7 +547,7 @@ const translations = {
     "forBusinesses.problemText":
       "Bakeries bake a little too much. Cafes over-prep. Restaurants end up with plates that never got ordered. At the end of the day it's usually binned, even though customers would happily pay for it at the right price.",
     "forBusinesses.solutionBadge": "The solution",
-    "forBusinesses.solutionTitle": "List it. Sell it. Keep 90% of it.",
+    "forBusinesses.solutionTitle": "List it. Sell it.",
     "forBusinesses.solutionListTitle": "List in a minute",
     "forBusinesses.solutionListText":
       "Set a price, a quantity and a pickup window from your dashboard. No photo studio and no long descriptions required.",
@@ -572,13 +572,8 @@ const translations = {
     "forBusinesses.howStep4Text":
       "The customer shows their pickup code, you confirm it in the dashboard, and you're done.",
     "forBusinesses.commissionBadge": "Pricing, in plain terms",
-    "forBusinesses.commissionTitle": "A commission only when a bag sells. 70% or more stays with you.",
-    "forBusinesses.commissionText":
-      "No listing fees, no monthly subscription, no hidden charges. ArGadaagdo takes a commission only on bags that actually sell: 30% by default, agreed per partner, and 0% for pilot partners. If nothing sells, you owe nothing, and you set your own prices and quantities.",
-    "forBusinesses.commissionYouKeep": "You keep",
-    "forBusinesses.commissionYouKeepValue": "70%+",
-    "forBusinesses.commissionPlatformFee": "Platform commission",
-    "forBusinesses.commissionPlatformFeeValue": "30% or less",
+    "forBusinesses.commissionTitle": "No monthly fee.",
+    "forBusinesses.commissionText": "You pay a commission only on bags you sell.",
     "forBusinesses.commissionNoSale": "No sale, no fee",
     "forBusinesses.commissionNoSaleText":
       "You only pay a commission once a bag is actually reserved and paid for.",
@@ -1372,7 +1367,7 @@ const translations = {
     "forBusinesses.problemText":
       "საცხობები ცოტათი მეტს აცხობენ, კაფეები ჭარბად ამზადებენ, რესტორნებში კერძები შეკვეთის გარეშე რჩება. დღის ბოლოს ეს ჩვეულებრივ იყრება, მაშინ როცა მომხმარებლები სიამოვნებით გადაიხდიდნენ სწორ ფასად.",
     "forBusinesses.solutionBadge": "გამოსავალი",
-    "forBusinesses.solutionTitle": "დაარეგისტრირე, გაყიდე, დაიტოვე 90%.",
+    "forBusinesses.solutionTitle": "დაარეგისტრირე, გაყიდე.",
     "forBusinesses.solutionListTitle": "დარეგისტრირდი წუთში",
     "forBusinesses.solutionListText":
       "დააყენე ფასი, რაოდენობა და წაღების დრო პანელიდან. არც ფოტოსტუდია გჭირდება და არც გრძელი აღწერა.",
@@ -1397,13 +1392,8 @@ const translations = {
     "forBusinesses.howStep4Text":
       "მომხმარებელი გიჩვენებს წაღების კოდს, შენ ადასტურებ პანელში და საქმე დასრულებულია.",
     "forBusinesses.commissionBadge": "ფასები, მარტივად",
-    "forBusinesses.commissionTitle": "საკომისიო მხოლოდ გაყიდულ ჩანთაზე. 70% ან მეტი შენთან რჩება.",
-    "forBusinesses.commissionText":
-      "არანაირი გამოქვეყნების საფასური, ყოველთვიური გადასახადი თუ ფარული ხარჯი. არ გადააგდო საკომისიოს მხოლოდ გაყიდულ ჩანთებზე იღებს: სტანდარტულად 30%, პარტნიორთან შეთანხმებით, პილოტის პარტნიორებისთვის კი 0%. თუ არაფერი გაიყიდა, არაფერს იხდი, ხოლო ფასებსა და რაოდენობებს თავად ადგენ.",
-    "forBusinesses.commissionYouKeep": "შენ იტოვებ",
-    "forBusinesses.commissionYouKeepValue": "70%+",
-    "forBusinesses.commissionPlatformFee": "პლატფორმის საკომისიო",
-    "forBusinesses.commissionPlatformFeeValue": "30% ან ნაკლები",
+    "forBusinesses.commissionTitle": "ყოველთვიური გადასახადის გარეშე.",
+    "forBusinesses.commissionText": "საკომისიოს იხდი მხოლოდ გაყიდულ ჩანთაზე.",
     "forBusinesses.commissionNoSale": "არ გაიყიდა — არ იხდი",
     "forBusinesses.commissionNoSaleText":
       "საკომისიოს იხდი მხოლოდ მაშინ, როცა ჩანთა რეალურად დაჯავშნილი და გადახდილია.",

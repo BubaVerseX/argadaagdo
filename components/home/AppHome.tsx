@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BagCard } from "@/components/BagCard";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { LeafDecor } from "@/components/design/Decor";
 import { LeafIcon } from "@/components/icons";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import { translateUserMessage } from "@/lib/messageTranslations";
@@ -11,8 +12,6 @@ import {
 } from "@/lib/offerCategories";
 import { getRatingLabel, type RatingSummary } from "@/lib/offerLifecycle";
 import type { Offer } from "@/lib/types";
-
-const LEAF_PATH = "M44 156 C44 96, 88 50, 158 42 C162 112, 118 158, 50 160 Z";
 
 export type HomeContent = {
   copy: {
@@ -34,7 +33,7 @@ export type HomeContent = {
     finalCtaSecondary: string;
   };
   categoryLinks: string[];
-  stats: Array<{ value: string; label: string; text: string }>;
+  stats: Array<{ value?: string; label: string; text: string }>;
   steps: Array<{ label: string; title: string; text: string }>;
   businessSolutions: Array<{ title: string; text: string }>;
   testimonials: Array<{ quote: string; name: string; location: string }>;
@@ -51,14 +50,6 @@ type AppHomeProps = {
   loading: boolean;
   errorMessage: string;
 };
-
-function HeaderLeaf({ className }: { className: string }) {
-  return (
-    <svg viewBox="0 0 200 200" aria-hidden="true" className={className}>
-      <path d={LEAF_PATH} fill="currentColor" />
-    </svg>
-  );
-}
 
 const statTones = ["cat-mixed", "cat-bakery", "cat-dairy"];
 const stepTones = ["cat-produce", "cat-bakery", "cat-deli"];
@@ -81,15 +72,15 @@ export function AppHome({
     getRatingLabel(ratingSummaries[offer.business_id], language);
 
   return (
-    <main className="app-shell theme-app">
-      <Navbar variant="app" />
+    <main className="app-shell">
+      <Navbar />
 
       <section className="relative overflow-x-clip">
         <div
           aria-hidden="true"
           className="absolute inset-x-0 -top-px bottom-24 bg-brand-forest lg:bottom-16"
         >
-          <HeaderLeaf className="absolute -right-10 -top-8 h-56 w-56 text-brand-forest-2 lg:right-[8%] lg:h-96 lg:w-96" />
+          <LeafDecor className="-right-10 -top-8 h-56 w-56 text-brand-forest-2 lg:right-[8%] lg:h-96 lg:w-96" />
           <svg
             viewBox="0 0 390 70"
             preserveAspectRatio="none"
@@ -237,8 +228,10 @@ export function AppHome({
                   index === 0 ? "sm:col-span-2 lg:col-span-1" : ""
                 }`}
               >
-                <p className="font-serif text-4xl font-bold">{item.value}</p>
-                <p className="mt-2 text-sm font-bold">{item.label}</p>
+                {item.value && <p className="mb-2 font-serif text-4xl font-bold">{item.value}</p>}
+                <p className={item.value ? "text-sm font-bold" : "font-serif text-xl font-bold"}>
+                  {item.label}
+                </p>
                 <p className="mt-1 text-sm leading-[1.55] text-cat-ink-2">{item.text}</p>
               </div>
             ))}
@@ -270,7 +263,7 @@ export function AppHome({
       <section className="py-10">
         <div className="app-container">
           <div className="theme-forest relative overflow-hidden rounded-[28px] bg-brand-forest p-6 sm:p-10 lg:p-14">
-            <HeaderLeaf className="absolute -right-12 -top-10 h-64 w-64 text-brand-forest-2" />
+            <LeafDecor className="-right-12 -top-10 h-64 w-64 text-brand-forest-2" />
             <div className="relative grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
               <div>
                 <p className="text-xs font-medium text-body">{t("forBusinesses.problemBadge")}</p>
@@ -343,7 +336,7 @@ export function AppHome({
       <section className="py-10">
         <div className="app-container">
           <div className="theme-forest relative overflow-hidden rounded-[28px] bg-brand-forest p-8 text-center sm:p-14">
-            <HeaderLeaf className="absolute -bottom-16 -left-12 h-64 w-64 text-brand-forest-2" />
+            <LeafDecor className="-bottom-16 -left-12 h-64 w-64 text-brand-forest-2" />
             <div className="relative">
               <p className="text-xs font-medium text-body">{copy.finalCtaBadge}</p>
               <h2 className="mx-auto mt-3 max-w-2xl font-serif text-3xl font-bold leading-[1.25] lg:text-4xl">

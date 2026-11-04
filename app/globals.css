@@ -1,51 +1,54 @@
 @import "tailwindcss";
 
-/* ArGadaagdo green theme — dark only. Every colour in the app comes from
-   these tokens (used as Tailwind utilities via @theme below, e.g.
-   `bg-card`, `text-body`, `border-line`). Never hard-code a hex in a
-   component; add a token here instead. */
+/* ArGadaagdo design v3 (docs/design-v3 on claude/design-v3-reference).
+   Every colour in the app comes from these tokens, used as Tailwind utilities
+   through @theme below (`bg-card`, `text-body`, `border-line`). Never hard-code
+   a hex in a component; add a token here instead.
+
+   Semantic tokens describe a role, not a colour, and the scopes further down
+   re-map them: `text-cream` is always "primary text" (dark on the cream ground,
+   cream on deep green) and `bg-mint` is always "primary action". */
 :root {
   /* Surfaces */
-  --page: #07241f;
-  --page-deep: #051f20;
-  --card: #1c4a40; /* card gradient start */
-  --card-2: #123630; /* card gradient end */
-  --well: #133832; /* inputs, chips, inset areas */
-  --line: #2e5a4c;
-  --line-strong: #3b7560;
+  --page: #f7f1e3;
+  --page-deep: #f7f1e3;
+  --card: #ffffff;
+  --card-2: #ffffff;
+  --well: #efe7d3; /* inputs on cards, chips, inset areas */
+  --line: #e6decb;
+  --line-strong: #0f3a32;
 
   /* Text */
-  --cream: #f4efe4; /* headings, primary text */
-  --body: #c3ddcb; /* body / secondary */
-  --body-2: #b3d1bc; /* small labels on dark surfaces */
-  --body-light: #d2e8d8; /* body text on the brighter hero gradient */
-  --muted: #9dbfa8; /* placeholder, tertiary (≥4.5:1 on every card corner) */
+  --cream: #0b2b26; /* headings, primary text */
+  --body: #4e6b63; /* body / secondary */
+  --body-2: #4e6b63;
+  --body-light: #4e6b63;
+  --muted: #47625a; /* placeholder, tertiary */
 
   /* Accents */
-  --mint: #daf1de; /* primary buttons, prices, active tab, links */
-  --mint-strong: #b9dec4;
-  --sage: #8eb69b; /* icons, decorative labels on dark surfaces */
-  --moss: #235347; /* pills (pickup time) */
-  --moss-light: #2e6b55; /* hero gradient start */
-  --ink: #051f20; /* text on mint / amber */
-  --amber: #e6b566; /* discount badges ONLY */
-  --amber-ink: #2b1d05;
+  --mint: #0f3a32; /* primary buttons, prices, active tab, links */
+  --mint-strong: #164a3f;
+  --sage: #4e6b63; /* icons */
+  --moss: #b8e6c4; /* pills */
+  --moss-light: #b8e6c4;
+  --ink: #f7f1e3; /* text on the primary action colour */
+  --amber: #0f3a32; /* discount stickers */
+  --amber-ink: #f7f1e3;
 
   /* Status */
-  --warning: #f3d98c;
-  --warning-soft: rgba(243, 217, 140, 0.12);
-  --warning-line: rgba(243, 217, 140, 0.32);
-  --danger: #f4a9a9;
-  --danger-soft: rgba(244, 120, 120, 0.14);
-  --danger-line: rgba(244, 120, 120, 0.38);
+  --warning: #6b4a00;
+  --warning-soft: #f9e7bd;
+  --warning-line: #e7c777;
+  --danger: #9c2b16;
+  --danger-soft: #fbe3da;
+  --danger-line: #eeb6a3;
   --danger-solid: #b83232;
 
   /* Effects */
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --glow-cta: 0 10px 30px rgba(142, 182, 155, 0.25);
+  --shadow-card: 0 8px 24px rgba(15, 58, 50, 0.08);
+  --glow-cta: none;
   --radius-card: 22px;
 
-  /* Kept for the few components that still reference them by name. */
   --background: var(--page);
   --foreground: var(--cream);
 }
@@ -65,6 +68,11 @@
   --brand-honey: #f4c15d;
   --brand-border: #e6decb;
   --brand-white: #ffffff;
+
+  /* Thin accent lines on the public website. */
+  --accent-sage: #5fa46d;
+  --accent-honey: #d9a84e;
+  --accent-coral: #d9785a;
 
   /* Category colours: card background, photo placeholder, soft decoration,
      main text, secondary text. Every text colour is at least 4.5:1 on its
@@ -141,55 +149,38 @@
   --cat-ink-2: var(--cat-mixed-ink-2);
 }
 
+/* Inside a category surface every semantic token follows the category, so any
+   markup placed on one stays readable. Soft surfaces hold nested cards and chips. */
 .cat-bakery,
 .cat-produce,
 .cat-dairy,
 .cat-deli,
 .cat-mixed {
-  /* The image placeholder inside a category card takes the category colour. */
-  --well: var(--cat-photo);
-  --muted: var(--cat-ink-2);
-}
-
-/* Colourful app style, on the cream ground. The existing semantic tokens keep
-   their meaning, so `text-cream` is still "primary text" (now dark) and
-   `bg-mint` is still "primary action" (now deep green). */
-.theme-app {
-  color-scheme: light;
-  --page: var(--brand-ground);
-  --page-deep: var(--brand-ground);
-  --card: var(--brand-white);
-  --card-2: var(--brand-white);
-  --well: #efe7d3;
-  --line: var(--brand-border);
+  --card: var(--cat-soft);
+  --card-2: var(--cat-soft);
+  --well: var(--cat-soft);
+  --line: var(--cat-photo);
   --line-strong: var(--brand-forest);
-  --cream: var(--brand-ink);
-  --body: var(--brand-secondary);
-  --body-2: var(--brand-secondary);
-  --body-light: var(--brand-secondary);
-  --muted: #47625a;
+  --cream: var(--cat-ink);
+  --body: var(--cat-ink-2);
+  --body-2: var(--cat-ink-2);
+  --body-light: var(--cat-ink-2);
+  --muted: var(--cat-ink-2);
+  --sage: var(--cat-ink-2);
   --mint: var(--brand-forest);
   --mint-strong: var(--brand-forest-2);
-  --sage: var(--brand-secondary);
-  --moss: var(--brand-mint);
-  --moss-light: var(--brand-mint);
+  --moss: var(--cat-soft);
   --ink: var(--brand-ground);
-  --amber: var(--brand-forest);
-  --amber-ink: var(--brand-ground);
-  --warning: #6b4a00;
-  --warning-soft: #f9e7bd;
-  --warning-line: #e7c777;
-  --danger: #9c2b16;
-  --danger-soft: #fbe3da;
-  --danger-line: #eeb6a3;
-  --shadow-card: 0 8px 24px rgba(15, 58, 50, 0.08);
-  --glow-cta: none;
-  background: var(--page);
-  color: var(--cream);
+  --warning: var(--cat-ink);
+  --warning-soft: var(--cat-soft);
+  --warning-line: var(--cat-photo);
+  --shadow-card: none;
+  color: var(--cat-ink);
 }
 
-/* Deep green areas inside the app style: headers, navigation, feature panels. */
-.theme-forest {
+/* Deep green areas: headers, navigation, feature panels. */
+.theme-forest,
+.hero-surface {
   color-scheme: dark;
   --page: var(--brand-forest);
   --page-deep: var(--brand-forest);
@@ -209,8 +200,105 @@
   --moss: var(--brand-forest-2);
   --moss-light: var(--brand-forest-2);
   --ink: var(--brand-forest);
+  --warning: #f3d98c;
+  --warning-soft: rgba(243, 217, 140, 0.16);
+  --warning-line: rgba(243, 217, 140, 0.32);
+  --danger: #f8bcbc;
+  --danger-soft: rgba(244, 120, 120, 0.18);
+  --danger-line: rgba(244, 120, 120, 0.38);
   --shadow-card: none;
   color: var(--cream);
+}
+
+/* A cream panel inside a deep green one, such as the pickup code. */
+.theme-cream {
+  color-scheme: light;
+  --card: var(--brand-white);
+  --card-2: var(--brand-white);
+  --well: #efe7d3;
+  --line: var(--brand-border);
+  --line-strong: var(--brand-forest);
+  --cream: var(--brand-ink);
+  --body: var(--brand-secondary);
+  --muted: #47625a;
+  --mint: var(--brand-forest);
+  --ink: var(--brand-ground);
+  background: var(--brand-ground);
+  color: var(--brand-ink);
+}
+
+/* Calm public website (B3Web): same palette, thin type, quiet buttons, white
+   cards, and colour only as small accents. */
+.theme-web {
+  --font-weight-medium: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --shadow-card: none;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.theme-web .theme-forest,
+.theme-web .hero-surface {
+  --mint: var(--brand-ground);
+  --mint-strong: #efe7d3;
+  --ink: var(--brand-forest);
+}
+
+.theme-web h1,
+.theme-web h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.theme-web h3,
+.theme-web h4 {
+  font-weight: 500;
+}
+
+/* Small eyebrow labels: 0.08em, however wide the page's utility classes ask for. */
+.theme-web .uppercase {
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.theme-web .ui-card,
+.theme-web .premium-card,
+.theme-web .premium-surface {
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  border-radius: 18px;
+}
+
+.theme-web .theme-forest .ui-card,
+.theme-web .hero-surface .ui-card {
+  background: var(--card);
+}
+
+.theme-web .premium-button,
+.theme-web .premium-button-secondary,
+.theme-web .premium-input {
+  border-radius: 10px;
+}
+
+.theme-web .premium-button,
+.theme-web .premium-button-secondary {
+  min-height: 2.75rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.theme-web .premium-button-secondary {
+  font-weight: 400;
+}
+
+.accent-line {
+  display: block;
+  height: 4px;
+  width: 32px;
+  border-radius: 2px;
 }
 
 @theme inline {
@@ -222,6 +310,9 @@
   --color-brand-secondary: var(--brand-secondary);
   --color-brand-honey: var(--brand-honey);
   --color-brand-border: var(--brand-border);
+  --color-accent-sage: var(--accent-sage);
+  --color-accent-honey: var(--accent-honey);
+  --color-accent-coral: var(--accent-coral);
   --color-cat: var(--cat);
   --color-cat-photo: var(--cat-photo);
   --color-cat-soft: var(--cat-soft);
@@ -271,7 +362,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
 }
 
@@ -330,7 +421,7 @@ body::before {
   position: fixed;
   inset: 0 0 auto 0;
   height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
-  background: var(--page);
+  background: var(--brand-forest);
   z-index: 60;
   pointer-events: none;
 }
@@ -370,7 +461,7 @@ textarea {
 }
 
 ::selection {
-  background: rgba(218, 241, 222, 0.28);
+  background: var(--brand-mint);
 }
 
 .app-shell {
@@ -397,11 +488,6 @@ textarea {
 .app-container {
   width: min(100% - 2rem, 75rem);
   margin-inline: auto;
-}
-
-/* Keep the page behind overscroll the same colour as an app-style screen. */
-body:has(.theme-app) {
-  background: var(--brand-ground);
 }
 
 /* Set by the inline script in app/layout.tsx when a session is stored, so a
@@ -451,25 +537,21 @@ html.has-session .public-home {
 
   /* Moss hero block (homepage / for-businesses / dashboard header). */
   .hero-surface {
-    background: radial-gradient(120% 100% at 0% 0%, var(--moss-light), var(--well) 65%);
-    border: 1px solid var(--line-strong);
+    background: var(--brand-forest);
     color: var(--cream);
   }
 
-  /* Photo container (offer images). Replaces the old blob mask. */
+  /* Photo container (offer images): one large rounded corner. */
   .photo-frame {
     position: relative;
     overflow: hidden;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #3c7a62, var(--card));
+    border-radius: var(--radius-leaf);
+    background: var(--cat-photo, var(--well));
   }
 
-  .photo-frame::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(5, 31, 32, 0) 55%, rgba(5, 31, 32, 0.45));
-    pointer-events: none;
+  /* Shown when an offer has no photo; takes the category colour on a category surface. */
+  .photo-fallback {
+    background: var(--cat-photo, var(--well));
   }
 
   /* Design v3 photo shape: one large rounded corner, no gradient or overlay. */
@@ -486,6 +568,12 @@ html.has-session .public-home {
 
   .photo-leaf-sm {
     border-radius: var(--radius-leaf-sm);
+  }
+
+  /* Large photo on the bag page. */
+  .photo-hero {
+    border-radius: 30px 90px 30px 30px;
+    background: var(--cat-photo, var(--well));
   }
 
   /* Discount sticker: dark circle, slightly rotated. */
@@ -540,12 +628,11 @@ html.has-session .public-home {
 
   /* Subtle glow — only behind the page's main call to action. */
   .cta-glow {
-    background: linear-gradient(90deg, var(--mint), var(--mint-strong));
-    box-shadow: var(--glow-cta);
+    background: var(--mint);
   }
 
   .cta-glow:hover {
-    background: linear-gradient(90deg, var(--mint-strong), var(--mint));
+    background: var(--mint-strong);
   }
 
   .premium-button-secondary {
@@ -583,7 +670,7 @@ html.has-session .public-home {
     justify-content: center;
     border-radius: 14px;
     background: var(--danger-solid);
-    color: var(--cream);
+    color: var(--brand-white);
     font-weight: 600;
   }
 
@@ -613,15 +700,16 @@ html.has-session .public-home {
     text-transform: uppercase;
   }
 
-  /* Amber is reserved for discount badges. */
+  /* Discount sticker. */
   .premium-discount-badge {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
     background: var(--amber);
     color: var(--amber-ink);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transform: rotate(-8deg);
   }
 
   /* Moss pill, e.g. the pickup window on an offer card. */
@@ -641,7 +729,7 @@ html.has-session .public-home {
     min-height: 3rem;
     border-radius: 14px;
     border: 1px solid var(--line);
-    background: var(--well);
+    background: var(--card);
     color: var(--cream);
     font-weight: 400;
     outline: none;
@@ -649,7 +737,7 @@ html.has-session .public-home {
 
   .premium-input:focus {
     border-color: var(--mint);
-    box-shadow: 0 0 0 3px rgba(218, 241, 222, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 18%, transparent);
   }
 
   .premium-input:disabled {
@@ -659,7 +747,7 @@ html.has-session .public-home {
 
   /* Native dark pickers/selects in the WebView */
   select.premium-input option {
-    background: var(--well);
+    background: var(--card);
     color: var(--cream);
   }
 
@@ -667,9 +755,7 @@ html.has-session .public-home {
      Bottom tab bar (mobile): translucent, blurred, active = mint.
      --------------------------------------------------------------------- */
   .tab-bar {
-    background: rgba(5, 31, 32, 0.9);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    background: var(--brand-forest);
     border-top: 1px solid var(--line);
   }
 

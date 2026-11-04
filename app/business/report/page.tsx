@@ -153,13 +153,13 @@ function BusinessReport() {
         {!loading && business && (
           <>
             <div className="print-hidden mb-6 flex flex-wrap items-center justify-between gap-3">
-              <a href="/business/dashboard" className="premium-button-secondary min-h-10 px-4 py-2 text-sm">
+              <a href="/business/dashboard" className="premium-button-secondary min-h-11 px-4 py-2 text-sm">
                 ← {isGeorgian ? "პანელი" : "Dashboard"}
               </a>
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="premium-button min-h-10 px-5 py-2 text-sm"
+                className="premium-button min-h-11 px-5 py-2 text-sm"
               >
                 {isGeorgian ? "ბეჭდვა / შენახვა PDF-ად" : "Print / Save as PDF"}
               </button>

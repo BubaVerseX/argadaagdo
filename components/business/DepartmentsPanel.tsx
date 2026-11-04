@@ -186,7 +186,7 @@ export function DepartmentsPanel({
                       type="button"
                       disabled={busy}
                       onClick={() => void copyStaffLink(department)}
-                      className="premium-button-secondary min-h-10 px-4 py-2 text-sm disabled:opacity-60"
+                      className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
                     >
                       {copiedId === department.id ? (
                         <span className="flex items-center gap-1.5">
@@ -206,7 +206,7 @@ export function DepartmentsPanel({
                         setPinEditingId(editingPin ? null : department.id);
                         setPinDrafts((drafts) => ({ ...drafts, [department.id]: "" }));
                       }}
-                      className="premium-button-secondary min-h-10 px-4 py-2 text-sm disabled:opacity-60"
+                      className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
                     >
                       {department.has_staff_pin
                         ? isGeorgian
@@ -226,7 +226,7 @@ export function DepartmentsPanel({
                             ? `${department.name} დეპარტამენტის წაშლა`
                             : `Delete department ${department.name}`
                         }
-                        className="premium-button-danger min-h-10 px-3 py-2 text-sm disabled:opacity-60"
+                        className="premium-button-danger min-h-11 px-3 py-2 text-sm disabled:opacity-60"
                       >
                         <TrashIcon className="h-4 w-4" strokeWidth={1.8} />
                       </button>

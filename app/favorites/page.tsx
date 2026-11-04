@@ -14,7 +14,7 @@ import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import type { TranslationKey } from "@/lib/i18n";
-import { getOfferCategoryLabel } from "@/lib/offerCategories";
+import { getOfferCategoryLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   getOriginalPrice,
@@ -388,7 +388,7 @@ export default function FavoritesPage() {
             return (
               <div
                 key={favorite.id}
-                className="ui-card rounded-[22px] p-4"
+                className={`${getOfferCategoryTone(offer?.category)} rounded-[28px] bg-cat p-4`}
               >
                 <div className="relative">
                   <div
@@ -471,7 +471,7 @@ export default function FavoritesPage() {
                             aria-label={`${t("common.openMap")} ${
                               offer.businesses?.name || offer.title
                             }`}
-                            className="ui-card inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition hover:text-mint sm:w-auto"
+                            className="ui-card inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition hover:text-mint sm:w-auto"
                           >
                             {t("common.openMap")}
                           </a>

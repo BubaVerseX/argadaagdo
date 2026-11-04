@@ -38,7 +38,7 @@ const toneStyles: Record<
   },
   error: {
     wrapper: "border border-danger-line bg-danger-soft text-cream",
-    icon: "bg-danger-solid text-cream",
+    icon: "bg-danger-solid text-white",
     role: "alert",
     Icon: XCircleIcon,
   },

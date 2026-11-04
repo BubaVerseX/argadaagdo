@@ -75,7 +75,7 @@ export function ReviewReportControl({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-3 text-sm font-semibold text-body underline underline-offset-4 transition hover:text-cream"
+        className="mt-1 inline-flex min-h-11 min-w-11 items-center text-sm font-semibold text-body underline underline-offset-4 transition hover:text-cream"
       >
         {t("reviewReport.link")}
       </button>

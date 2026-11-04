@@ -4,7 +4,8 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { LoadingState } from "@/components/LoadingState";
 import OfferImage from "@/components/OfferImage";
-import { CheckIcon } from "@/components/icons";
+import { WaveEdge } from "@/components/design/Decor";
+import { ArrowLeftIcon, CheckIcon } from "@/components/icons";
 import {
   getConfirmedUser,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
@@ -23,7 +24,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { formatBagsLeft } from "@/lib/greenBag";
-import { getGreenBagLabel } from "@/lib/offerCategories";
+import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import { getNativeBrowser } from "@/lib/native";
@@ -341,21 +342,32 @@ export default function CheckoutPage() {
 
   return (
     <main className="app-shell">
-      <Navbar />
+      <Navbar hideBottomNav />
 
-      <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
+      <section className="theme-forest bg-page px-4 pb-3 pt-3 sm:px-6 md:px-12">
         <div className="mx-auto max-w-5xl">
-          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-3xl md:p-10">
-            <p className="premium-badge px-4 py-2">
-              {t("common.continueCheckout")}
-            </p>
-            <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-5xl">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/offers"
+              aria-label={t("offerDetail.back")}
+              className="ui-well flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-0 text-cream"
+            >
+              <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
+            </Link>
+            <h1 className="min-w-0 font-serif text-[1.375rem] font-bold leading-tight text-cream sm:text-3xl">
               {t("checkout.title")}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
-              {t("checkout.subtitle")}
-            </p>
           </div>
+          <p className="mt-3 text-xs font-medium text-mint">{t("common.continueCheckout")}</p>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-body sm:text-base">
+            {t("checkout.subtitle")}
+          </p>
+        </div>
+      </section>
+      <WaveEdge />
+
+      <section className="px-4 pb-6 pt-2 sm:px-6 md:px-12">
+        <div className="mx-auto max-w-5xl">
 
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             {checkoutSteps.map((item) => (
@@ -397,8 +409,9 @@ export default function CheckoutPage() {
 
           {!loading && offer && (
             <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-              <div className="premium-card rounded-3xl p-3 sm:rounded-3xl">
-                <div className="photo-frame relative isolate h-64 overflow-hidden bg-well sm:h-80">
+              <div className={`${getOfferCategoryTone(offer.category)} relative overflow-hidden rounded-[26px] bg-cat p-3.5`}>
+                <span aria-hidden="true" className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-cat-soft" />
+                <div className="photo-frame relative isolate h-48 overflow-hidden sm:h-64">
                   <OfferImage
                     src={offer.image_url}
                     alt={offer.title}
@@ -412,7 +425,7 @@ export default function CheckoutPage() {
                       <p className="text-sm font-semibold uppercase tracking-widest text-mint">
                         {getGreenBagLabel(offer, language)}
                       </p>
-                      <h2 className="mt-2 text-3xl font-semibold">
+                      <h2 className="mt-2 font-serif text-2xl font-bold leading-[1.25]">
                         {offer.title}
                       </h2>
                       <p className="mt-2 text-lg font-semibold text-cream">
@@ -441,7 +454,7 @@ export default function CheckoutPage() {
               </div>
 
               <aside className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8">
-                <h2 className="text-2xl font-semibold">{t("checkout.summary")}</h2>
+                <h2 className="font-serif text-2xl font-bold">{t("checkout.summary")}</h2>
 
                 <div className="mt-6 grid gap-4">
                   <div className="premium-muted-card rounded-3xl p-4">
@@ -602,7 +615,7 @@ export default function CheckoutPage() {
                       onChange={(event) =>
                         setRulesAccepted(event.target.checked)
                       }
-                      className="mt-1 h-5 w-5 shrink-0 accent-mint"
+                      className="mt-0.5 h-[22px] w-[22px] shrink-0 accent-mint"
                     />
                     <span>
                       {t("checkout.rules")}
@@ -611,6 +624,7 @@ export default function CheckoutPage() {
 
                 </div>
 
+                <div className="theme-forest fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 rounded-3xl bg-page p-3 lg:static lg:mt-6">
                 <button
                   onClick={confirmPilotReservation}
                   disabled={
@@ -619,7 +633,7 @@ export default function CheckoutPage() {
                     !rulesAccepted ||
                     !isOfferReservable(offer)
                   }
-                  className="premium-button cta-glow mt-6 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="premium-button w-full rounded-2xl px-6 py-3 font-bold disabled:cursor-not-allowed"
                 >
                   {paying
                     ? t("checkout.reserving")
@@ -629,6 +643,7 @@ export default function CheckoutPage() {
                       : t("common.unavailable")
                     : t("checkout.payReserve")}
                 </button>
+                </div>
 
                 {checkoutBlocked && (
                   <Link

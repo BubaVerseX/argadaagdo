@@ -344,7 +344,7 @@ export default function StaffDepartmentPage() {
               <button
                 type="button"
                 onClick={signOut}
-                className="premium-button-secondary min-h-10 px-4 py-2 text-sm"
+                className="premium-button-secondary min-h-11 px-4 py-2 text-sm"
               >
                 {isGeorgian ? "გასვლა" : "Lock"}
               </button>
@@ -409,7 +409,7 @@ export default function StaffDepartmentPage() {
                 onClick={() => void togglePause()}
                 className={`${
                   summary?.sales_paused ? "premium-button" : "premium-button-danger"
-                } min-h-10 px-4 py-2 text-sm disabled:opacity-60`}
+                } min-h-11 px-4 py-2 text-sm disabled:opacity-60`}
               >
                 {summary?.sales_paused
                   ? isGeorgian

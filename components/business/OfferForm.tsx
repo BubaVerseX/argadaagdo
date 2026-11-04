@@ -105,7 +105,7 @@ export function OfferForm({
   return (
     <div
       id="create-offer"
-      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8"
+      className="cat-mixed mt-6 scroll-mt-24 rounded-[24px] bg-cat p-5 sm:mt-8 sm:p-8"
     >
       <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
         {isGeorgian ? "შეთავაზებების მართვა" : "Offer Management"}

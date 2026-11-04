@@ -50,10 +50,13 @@ function isApprovedValue(value: boolean | string | null) {
 }
 
 export default function Navbar({
-  variant = "default",
+  variant = "app",
+  hideBottomNav = false,
 }: {
-  /** "app": deep green header and floating bottom navigation (design v3). */
-  variant?: "default" | "app";
+  /** "app": floating bottom navigation. "web": quiet links for the public website. */
+  variant?: "app" | "web";
+  /** Hides the floating navigation on screens with their own fixed action bar. */
+  hideBottomNav?: boolean;
 }) {
   const isAppStyle = variant === "app";
   const pathname = usePathname();
@@ -240,8 +243,8 @@ export default function Navbar({
 
   return (
     <nav
-      className={`sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-page px-4 py-3 sm:px-5 md:px-10 ${
-        isAppStyle ? "theme-forest" : ""
+      className={`theme-forest sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-page px-4 py-3 sm:px-5 md:px-10 ${
+        isAppStyle ? "" : "border-b border-line"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -251,12 +254,12 @@ export default function Navbar({
           className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
           aria-label={t("brand.name")}
         >
-          <BrandMark tagline={t("brand.tagline")} mintTile={isAppStyle} />
+          <BrandMark tagline={t("brand.tagline")} />
         </Link>
 
         {/* Desktop horizontal nav — ui-card pill row, mobile relies on
             the fixed bottom tab bar instead. */}
-        <div className="ui-card hidden items-center gap-1 rounded-full p-1.5 lg:flex">
+        <div className={`hidden items-center gap-1 lg:flex ${isAppStyle ? "ui-card rounded-full p-1.5" : ""}`}>
           {tabs
             .filter((tabItem): tabItem is Extract<TabItem, { kind: "link" }> => tabItem.kind === "link")
             .map((tabItem) => {
@@ -266,7 +269,7 @@ export default function Navbar({
                   key={tabItem.href}
                   href={tabItem.href}
                   aria-current={ariaCurrent(tabItem.href)}
-                  className={`inline-flex ${isAppStyle ? "min-h-11" : "min-h-9"} items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ active
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ active
                       ? "ui-well text-mint"
                       : "text-body hover:text-cream"
                   }`}
@@ -281,7 +284,7 @@ export default function Navbar({
             <Link
               href="/for-businesses"
               aria-current={ariaCurrent("/for-businesses")}
-              className={`inline-flex ${isAppStyle ? "min-h-11" : "min-h-9"} items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ isActivePath("/for-businesses")
+              className={`inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ isActivePath("/for-businesses")
                   ? "ui-well text-mint"
                   : "text-body hover:text-cream"
               }`}
@@ -532,7 +535,7 @@ export default function Navbar({
       </div>
 
       {/* Fixed bottom navigation, the primary mobile navigation. */}
-      {isAppStyle && (
+      {isAppStyle && !hideBottomNav && (
         <div className="fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-50 min-[380px]:inset-x-5 lg:hidden">
           <div className="tab-pill mx-auto flex h-16 w-full max-w-md items-center justify-around gap-0.5 px-1.5">
             {tabs.map((tabItem) => {
