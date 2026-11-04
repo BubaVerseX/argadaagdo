@@ -5,6 +5,10 @@ import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { HelpCard } from "@/components/help/HelpCard";
 import { InfoBanner } from "@/components/help/InfoBanner";
+import {
+  ReviewReportControl,
+  useReviewReporterId,
+} from "@/components/reviews/ReviewReportControl";
 import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { ArrowLeftIcon, ClockIcon, StarIcon } from "@/components/icons";
@@ -54,6 +58,7 @@ export default function BusinessProfilePage() {
     Record<number, RatingSummary>
   >({});
   const [reviews, setReviews] = useState<PublicBusinessReview[]>([]);
+  const reviewReporterId = useReviewReporterId();
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const notFoundMessage = t("businessProfile.notFound");
@@ -484,6 +489,10 @@ export default function BusinessProfilePage() {
                       <p className="mt-2 text-body">
                         {review.review?.trim() || t("common.noWrittenReview")}
                       </p>
+                      <ReviewReportControl
+                        reviewId={review.id}
+                        reporterId={reviewReporterId}
+                      />
                     </div>
                   ))}
                 </div>
