@@ -73,8 +73,8 @@ export default function FAQPage() {
   ];
 
   return (
-    <main className="app-shell">
-      <Navbar />
+    <main className="app-shell theme-web">
+      <Navbar variant="web" />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">

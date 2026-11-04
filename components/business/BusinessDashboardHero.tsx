@@ -1,5 +1,6 @@
 "use client";
 
+import { LeafDecor } from "@/components/design/Decor";
 import type { TranslationKey } from "@/lib/i18n";
 import { useLanguage } from "@/lib/useLanguage";
 
@@ -21,12 +22,14 @@ export function BusinessDashboardHero({
   const { language } = useLanguage();
 
   return (
-    <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-3xl md:p-12">
+    <div className="theme-forest relative overflow-hidden rounded-[28px] bg-page p-5 sm:p-8 md:p-12">
+      <LeafDecor className="-right-10 -top-8 h-56 w-56 text-brand-forest-2 lg:h-80 lg:w-80" />
+      <div className="relative">
       <p className="premium-badge px-4 py-2">
         {language === "ka" ? "ბიზნესის მართვის ცენტრი" : "Business control center"}
       </p>
 
-      <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-5xl">
+      <h1 className="mt-4 font-serif text-[1.5rem] font-bold leading-[1.25] text-cream sm:text-4xl md:text-5xl">
         {t("businessDashboard.welcome")}, {businessName}
       </h1>
 
@@ -34,33 +37,34 @@ export function BusinessDashboardHero({
         {t("businessDashboard.welcomeText")}
       </p>
 
-      <div className="mt-6 grid gap-2 sm:mt-8 sm:grid-cols-3 sm:gap-4">
-        <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-semibold text-mint">
+      <div className="mt-6 grid grid-cols-3 gap-2 sm:mt-8 sm:gap-4">
+        <div className="rounded-[18px] bg-brand-forest-2 p-3 sm:rounded-3xl sm:p-5">
+          <p className="text-[11px] font-medium text-mint sm:text-sm">
             {t("businessDashboard.myOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-semibold text-cream sm:text-4xl">
+          <h2 className="mt-1 text-2xl font-bold text-cream sm:text-4xl">
             {totalOffers}
           </h2>
         </div>
 
-        <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-semibold text-mint">
+        <div className="rounded-[18px] bg-brand-forest-2 p-3 sm:rounded-3xl sm:p-5">
+          <p className="text-[11px] font-medium text-mint sm:text-sm">
             {t("businessProfile.activeOffers")}
           </p>
-          <h2 className="mt-1 text-3xl font-semibold text-cream sm:text-4xl">
+          <h2 className="mt-1 text-2xl font-bold text-cream sm:text-4xl">
             {activeOffers}
           </h2>
         </div>
 
-        <div className="premium-card rounded-2xl p-3 sm:rounded-3xl sm:p-5">
-          <p className="text-sm font-semibold text-mint">
+        <div className="cat-bakery rounded-[18px] bg-cat p-3 sm:rounded-3xl sm:p-5">
+          <p className="text-[11px] font-medium text-mint sm:text-sm">
             {t("orders.reserved")}
           </p>
-          <h2 className="mt-1 text-3xl font-semibold text-cream sm:text-4xl">
+          <h2 className="mt-1 text-2xl font-bold text-cream sm:text-4xl">
             {reservedOrders}
           </h2>
         </div>
+      </div>
       </div>
     </div>
   );

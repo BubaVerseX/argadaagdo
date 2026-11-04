@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { FAQAccordion } from "@/components/help/FAQAccordion";
+import { LeafDecor, WaveEdge } from "@/components/design/Decor";
 import { HelpCard } from "@/components/help/HelpCard";
 import {
   ReviewReportControl,
@@ -21,12 +22,13 @@ import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { formatBagsLeft } from "@/lib/greenBag";
-import { getGreenBagLabel } from "@/lib/offerCategories";
+import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupWindow,
   formatPickupTimeRange,
   formatReviewDate,
+  getDiscountPercent,
   getOfferDateLabel,
   isOfferReservable,
   type RatingSummary,
@@ -282,6 +284,8 @@ export default function OfferDetailPage() {
     rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
   const verifiedBusiness = isApprovedBusiness(offer?.businesses?.approved);
   const businessName = offer?.businesses?.name || t("common.business");
+  const categoryTone = getOfferCategoryTone(offer?.category);
+  const discountPercent = offer ? getDiscountPercent(offer) : null;
   const trustItems = [
     t("home.trustVerifiedBusinesses"),
     t("home.trustPickupCodeVerification"),
@@ -335,18 +339,69 @@ export default function OfferDetailPage() {
 
   return (
     <main className="app-shell">
-      <Navbar />
+      <Navbar hideBottomNav />
 
-      <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
+      <div className={categoryTone}>
+        <section className="relative overflow-hidden bg-cat px-4 pb-2 pt-4">
+          <span
+            aria-hidden="true"
+            className="absolute -left-16 top-8 h-64 w-64 rounded-full bg-cat-soft"
+          />
+          <LeafDecor className="-right-8 -top-6 h-48 w-48 text-cat-soft lg:right-[12%] lg:h-72 lg:w-72" />
+
+          <div className="relative mx-auto flex max-w-6xl justify-center">
+            <Link
+              href="/offers"
+              aria-label={t("offerDetail.back")}
+              className="absolute left-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border"
+            >
+              <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
+            </Link>
+
+            {offer && (
+              <button
+                type="button"
+                onClick={() => void toggleFavorite()}
+                disabled={favoriteUpdating}
+                aria-label={
+                  isFavorite
+                    ? `${t("offers.removeFavorite")} - ${offer.title}`
+                    : `${t("offers.addFavorite")} - ${offer.title}`
+                }
+                aria-pressed={isFavorite}
+                className="absolute right-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border focus:outline-none focus-visible:ring-2 focus-visible:ring-mint disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <HeartIcon className="h-5 w-5" strokeWidth={2} filled={isFavorite} />
+              </button>
+            )}
+
+            <div className="relative mt-3 h-44 w-44 sm:h-60 sm:w-60">
+              <div className="photo-hero relative isolate h-full w-full overflow-hidden">
+                {offer ? (
+                  <OfferImage
+                    src={offer.image_url}
+                    alt={offer.title}
+                    sizes="240px"
+                    priority
+                  />
+                ) : (
+                  <div className="photo-fallback h-full w-full" />
+                )}
+              </div>
+
+              {discountPercent !== null && (
+                <div className="discount-sticker pointer-events-none absolute -bottom-3 -right-8 h-[4.625rem] w-[4.625rem] border-4 border-brand-ground text-[1.0625rem]">
+                  −{discountPercent}%
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+        <WaveEdge fill="var(--cat)" />
+      </div>
+
+      <section className="px-4 pb-6 pt-2 sm:px-6 md:px-12">
         <div className="mx-auto max-w-6xl">
-          <Link
-            href="/offers"
-            className="premium-button-secondary flex w-fit items-center gap-2 px-5 py-2.5"
-          >
-            <ArrowLeftIcon className="h-4 w-4" strokeWidth={1.8} />
-            {t("offerDetail.back")}
-          </Link>
-
           {loading && (
             <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="h-80 animate-pulse rounded-[22px] bg-well" />
@@ -362,37 +417,8 @@ export default function OfferDetailPage() {
 
           {!loading && offer && (
             <>
-              <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                <div className="ui-card rounded-[22px] p-4">
-                  <div className="relative">
-                    <div className="photo-frame relative isolate h-72 overflow-hidden bg-well sm:h-96">
-                      <OfferImage
-                        src={offer.image_url}
-                        alt={offer.title}
-                        sizes="(max-width: 1024px) 100vw, 55vw"
-                        priority
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => void toggleFavorite()}
-                      disabled={favoriteUpdating}
-                      aria-label={
-                        isFavorite
-                          ? `${t("offers.removeFavorite")} - ${offer.title}`
-                          : `${t("offers.addFavorite")} - ${offer.title}`
-                      }
-                      aria-pressed={isFavorite}
-                      className={`ui-card absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint disabled:cursor-not-allowed disabled:opacity-60 ${ isFavorite ? "text-mint" : "text-body"
-                      }`}
-                    >
-                      <HeartIcon className="h-[18px] w-[18px]" strokeWidth={1.8} filled={isFavorite} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="premium-card rounded-[22px] p-5 sm:p-8">
+              <div>
+                <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-xs font-semibold uppercase tracking-widest text-mint">
                       {t("offerDetail.title")}
@@ -407,7 +433,7 @@ export default function OfferDetailPage() {
                     )}
                   </div>
 
-                  <h1 className="mt-3 text-3xl font-semibold sm:text-5xl">
+                  <h1 className="mt-3 font-serif text-2xl font-bold leading-[1.25] sm:text-4xl">
                     {offer.title}
                   </h1>
 
@@ -418,7 +444,7 @@ export default function OfferDetailPage() {
                     {offer.businesses?.name || t("common.business")}
                   </Link>
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="ui-card rounded-3xl p-5">
                       <p className="text-sm text-body">
                         {t("common.price")}
@@ -502,18 +528,35 @@ export default function OfferDetailPage() {
                     <p className="font-semibold text-cream">
                       {t("offerDetail.afterReservationTitle")}
                     </p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                    <div className="relative mt-3 grid grid-cols-3 gap-2">
+                      <svg
+                        viewBox="0 0 270 24"
+                        preserveAspectRatio="none"
+                        fill="none"
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-[16%] top-2 h-6 w-[68%]"
+                      >
+                        <path
+                          d="M0 12 C45 -4 90 28 135 12 C180 -4 225 28 270 12"
+                          stroke="var(--brand-forest)"
+                          strokeWidth="2"
+                          strokeDasharray="5 6"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </svg>
                       {[
-                        t("offerDetail.pickupCode"),
-                        t("offerDetail.pickupVisit"),
-                        t("offerDetail.ratingReminderTitle"),
-                      ].map((step) => (
-                        <p
-                          key={step}
-                          className="rounded-2xl bg-well px-4 py-3 text-sm font-semibold text-cream"
-                        >
-                          {step}
-                        </p>
+                        { label: t("offerDetail.pickupCode"), tone: "cat-mixed" },
+                        { label: t("offerDetail.pickupVisit"), tone: "cat-bakery" },
+                        { label: t("offerDetail.ratingReminderTitle"), tone: "cat-deli" },
+                      ].map((step, index) => (
+                        <div key={step.label} className="relative min-w-0 text-center">
+                          <div
+                            className={`${step.tone} mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-cat font-bold text-cat-ink`}
+                          >
+                            {index + 1}
+                          </div>
+                          <p className="mt-1.5 text-xs font-medium text-cream">{step.label}</p>
+                        </div>
                       ))}
                     </div>
                     <p className="mt-3 text-sm leading-6 text-body">
@@ -552,39 +595,51 @@ export default function OfferDetailPage() {
                     </div>
                   )}
 
-                  <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="premium-button-secondary mt-5 w-full px-6 py-3 sm:w-auto"
+                  >
+                    {t("common.openMap")}
+                  </a>
+
+                  <div className="theme-forest fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 flex items-center gap-3.5 rounded-3xl bg-page py-3 pl-[18px] pr-3 lg:static lg:mt-5 lg:max-w-xl">
+                    <div className="min-w-0">
+                      <p className="text-[1.375rem] font-bold leading-tight text-cream">
+                        {formatMoney(offer.price)}
+                      </p>
+                      <p className="text-xs text-mint">
+                        {t("offerDetail.savings")}:{" "}
+                        {savingsAmount > 0
+                          ? formatMoney(savingsAmount)
+                          : t("offerDetail.noSavingsListed")}
+                      </p>
+                    </div>
+
                     {reservable ? (
                       <Link
                         href={`/checkout/${offer.id}`}
-                        className="premium-button cta-glow px-6 py-3"
+                        className="premium-button min-w-0 flex-1 rounded-2xl px-4 py-3 text-center font-bold"
                       >
                         {t("common.continueCheckout")}
                       </Link>
                     ) : (
                       <button
                         disabled
-                        className="premium-button cta-glow px-6 py-3"
+                        className="premium-button min-w-0 flex-1 rounded-2xl px-4 py-3 font-bold"
                       >
                         {t("common.unavailable")}
                       </button>
                     )}
-
-                    <a
-                      href={mapsUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="premium-button-secondary px-6 py-3"
-                    >
-                      {t("common.openMap")}
-                    </a>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+              <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
                 <div className="grid gap-6">
                   <div className="premium-card rounded-[22px] p-5 sm:p-8">
-                    <h2 className="text-2xl font-semibold">
+                    <h2 className="font-serif text-2xl font-bold">
                       {t("offerDetail.about")}
                     </h2>
                     <p className="mt-3 leading-7 text-body">
@@ -616,7 +671,7 @@ export default function OfferDetailPage() {
                   />
 
                   <div className="premium-card rounded-[22px] p-5 sm:p-8">
-                    <h2 className="text-2xl font-semibold">
+                    <h2 className="font-serif text-2xl font-bold">
                       {language === "ka"
                         ? "კითხვები დაჯავშნამდე"
                         : "Questions before you reserve"}
@@ -634,7 +689,7 @@ export default function OfferDetailPage() {
 
                 <div className="grid gap-6">
                   <div className="ui-card rounded-[22px] p-5 sm:p-8">
-                    <h2 className="text-2xl font-semibold">
+                    <h2 className="font-serif text-2xl font-bold">
                       {t("offerDetail.pickupInfoTitle")}
                     </h2>
                     <div className="mt-5 grid gap-3">
@@ -668,7 +723,7 @@ export default function OfferDetailPage() {
 
                   <div className="premium-card rounded-[22px] p-5 sm:p-8">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-2xl font-semibold">
+                      <h2 className="font-serif text-2xl font-bold">
                         {t("offerDetail.businessProfile")}
                       </h2>
                       {verifiedBusiness && (
@@ -702,7 +757,7 @@ export default function OfferDetailPage() {
               </div>
 
               <div className="premium-card mt-6 rounded-[22px] p-5 sm:p-8">
-                <h2 className="text-2xl font-semibold">
+                <h2 className="font-serif text-2xl font-bold">
                   {t("offerDetail.reviewsTitle")}
                 </h2>
 

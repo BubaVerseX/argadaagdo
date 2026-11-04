@@ -13,6 +13,7 @@ import {
   normalizeOfferCategory,
   type BagSize,
   type OfferCategory,
+  getOfferCategoryTone,
 } from "@/lib/offerCategories";
 import {
   formatDisplayDateTime,
@@ -163,16 +164,19 @@ export function OfferList({
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
-            <div key={offer.id} className="ui-card grid gap-5 rounded-3xl p-5">
+            <div
+              key={offer.id}
+              className={`${getOfferCategoryTone(offer.category)} grid gap-5 rounded-[20px] bg-cat p-4 sm:p-5`}
+            >
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="ui-card rounded-[18px] relative isolate h-20 w-20 shrink-0 overflow-hidden sm:h-24 sm:w-24">
+                  <div className="photo-leaf-sm relative isolate h-20 w-20 shrink-0 sm:h-24 sm:w-24">
                     <OfferImage src={offer.image_url} alt={offer.title} sizes="96px" />
                   </div>
 
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-xl font-semibold">{offer.title}</h3>
+                      <h3 className="font-serif text-lg font-bold">{offer.title}</h3>
                       <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold text-mint">
                         {getGreenBagLabel(offer, language)}
                       </span>

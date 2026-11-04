@@ -1133,7 +1133,7 @@ export function ApprovedBusinesses({
                     Number(feeDrafts[business.id] ?? currentPercent(business)) === currentPercent(business)
                   }
                   onClick={() => onSetFeeRate(business.id, Number(feeDrafts[business.id]))}
-                  className="premium-button-secondary min-h-9 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                  className="premium-button-secondary min-h-11 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Save rate
                 </button>

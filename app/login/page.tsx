@@ -460,8 +460,8 @@ export default function LoginPage() {
   const redirectMessage = getRedirectMessage(redirectPath, t);
 
   return (
-    <main className="app-shell">
-      <Navbar />
+    <main className="app-shell theme-web">
+      <Navbar variant="web" />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">

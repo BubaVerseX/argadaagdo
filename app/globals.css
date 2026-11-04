@@ -1,56 +1,330 @@
 @import "tailwindcss";
 
-/* ArGadaagdo green theme — dark only. Every colour in the app comes from
-   these tokens (used as Tailwind utilities via @theme below, e.g.
-   `bg-card`, `text-body`, `border-line`). Never hard-code a hex in a
-   component; add a token here instead. */
+/* ArGadaagdo design v3 (docs/design-v3 on claude/design-v3-reference).
+   Every colour in the app comes from these tokens, used as Tailwind utilities
+   through @theme below (`bg-card`, `text-body`, `border-line`). Never hard-code
+   a hex in a component; add a token here instead.
+
+   Semantic tokens describe a role, not a colour, and the scopes further down
+   re-map them: `text-cream` is always "primary text" (dark on the cream ground,
+   cream on deep green) and `bg-mint` is always "primary action". */
 :root {
   /* Surfaces */
-  --page: #07241f;
-  --page-deep: #051f20;
-  --card: #1c4a40; /* card gradient start */
-  --card-2: #123630; /* card gradient end */
-  --well: #133832; /* inputs, chips, inset areas */
-  --line: #2e5a4c;
-  --line-strong: #3b7560;
+  --page: #f7f1e3;
+  --page-deep: #f7f1e3;
+  --card: #ffffff;
+  --card-2: #ffffff;
+  --well: #efe7d3; /* inputs on cards, chips, inset areas */
+  --line: #e6decb;
+  --line-strong: #0f3a32;
 
   /* Text */
-  --cream: #f4efe4; /* headings, primary text */
-  --body: #c3ddcb; /* body / secondary */
-  --body-2: #b3d1bc; /* small labels on dark surfaces */
-  --body-light: #d2e8d8; /* body text on the brighter hero gradient */
-  --muted: #9dbfa8; /* placeholder, tertiary (≥4.5:1 on every card corner) */
+  --cream: #0b2b26; /* headings, primary text */
+  --body: #4e6b63; /* body / secondary */
+  --body-2: #4e6b63;
+  --body-light: #4e6b63;
+  --muted: #47625a; /* placeholder, tertiary */
 
   /* Accents */
-  --mint: #daf1de; /* primary buttons, prices, active tab, links */
-  --mint-strong: #b9dec4;
-  --sage: #8eb69b; /* icons, decorative labels on dark surfaces */
-  --moss: #235347; /* pills (pickup time) */
-  --moss-light: #2e6b55; /* hero gradient start */
-  --ink: #051f20; /* text on mint / amber */
-  --amber: #e6b566; /* discount badges ONLY */
-  --amber-ink: #2b1d05;
+  --mint: #0f3a32; /* primary buttons, prices, active tab, links */
+  --mint-strong: #164a3f;
+  --sage: #4e6b63; /* icons */
+  --moss: #b8e6c4; /* pills */
+  --moss-light: #b8e6c4;
+  --ink: #f7f1e3; /* text on the primary action colour */
+  --amber: #0f3a32; /* discount stickers */
+  --amber-ink: #f7f1e3;
 
   /* Status */
-  --warning: #f3d98c;
-  --warning-soft: rgba(243, 217, 140, 0.12);
-  --warning-line: rgba(243, 217, 140, 0.32);
-  --danger: #f4a9a9;
-  --danger-soft: rgba(244, 120, 120, 0.14);
-  --danger-line: rgba(244, 120, 120, 0.38);
+  --warning: #6b4a00;
+  --warning-soft: #f9e7bd;
+  --warning-line: #e7c777;
+  --danger: #9c2b16;
+  --danger-soft: #fbe3da;
+  --danger-line: #eeb6a3;
   --danger-solid: #b83232;
 
   /* Effects */
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --glow-cta: 0 10px 30px rgba(142, 182, 155, 0.25);
+  --shadow-card: 0 8px 24px rgba(15, 58, 50, 0.08);
+  --glow-cta: none;
   --radius-card: 22px;
 
-  /* Kept for the few components that still reference them by name. */
   --background: var(--page);
   --foreground: var(--cream);
 }
 
+/* ---------------------------------------------------------------------
+   Design v3 palette (docs/design-v3 on claude/design-v3-reference).
+   Literal brand colours. Pages use the semantic tokens above, re-mapped by
+   the .theme-* scopes below, or these through bg-brand-* / text-brand-*.
+   --------------------------------------------------------------------- */
+:root {
+  --brand-ground: #f7f1e3;
+  --brand-forest: #0f3a32;
+  --brand-forest-2: #164a3f;
+  --brand-mint: #b8e6c4;
+  --brand-ink: #0b2b26;
+  --brand-secondary: #4e6b63;
+  --brand-honey: #f4c15d;
+  --brand-border: #e6decb;
+  --brand-white: #ffffff;
+
+  /* Thin accent lines on the public website. */
+  --accent-sage: #5fa46d;
+  --accent-honey: #d9a84e;
+  --accent-coral: #d9785a;
+
+  /* Category colours: card background, photo placeholder, soft decoration,
+     main text, secondary text. Every text colour is at least 4.5:1 on its
+     background. Apply one with a .cat-* class (see getOfferCategoryTone). */
+  --cat-bakery: #f4c15d;
+  --cat-bakery-photo: #e7a93a;
+  --cat-bakery-soft: #f7d27f;
+  --cat-bakery-ink: #2e1f00;
+  --cat-bakery-ink-2: #5c3d00;
+
+  --cat-produce: #8fd19e;
+  --cat-produce-photo: #6dba80;
+  --cat-produce-soft: #a7dcb3;
+  --cat-produce-ink: #0f3a32;
+  --cat-produce-ink-2: #1f4f3a;
+
+  --cat-dairy: #a9c8f2;
+  --cat-dairy-photo: #84abe6;
+  --cat-dairy-soft: #c0d7f5;
+  --cat-dairy-ink: #11305c;
+  --cat-dairy-ink-2: #1f3f70;
+
+  --cat-deli: #f2997a;
+  --cat-deli-photo: #e07a57;
+  --cat-deli-soft: #f6b39b;
+  --cat-deli-ink: #3d1405;
+  --cat-deli-ink-2: #5c2410;
+
+  /* "Mixed" uses mint. */
+  --cat-mixed: #b8e6c4;
+  --cat-mixed-photo: #8fcfa3;
+  --cat-mixed-soft: #cdeed5;
+  --cat-mixed-ink: #0f3a32;
+  --cat-mixed-ink-2: #1f4f3a;
+}
+
+.cat-bakery {
+  --cat: var(--cat-bakery);
+  --cat-photo: var(--cat-bakery-photo);
+  --cat-soft: var(--cat-bakery-soft);
+  --cat-ink: var(--cat-bakery-ink);
+  --cat-ink-2: var(--cat-bakery-ink-2);
+}
+
+.cat-produce {
+  --cat: var(--cat-produce);
+  --cat-photo: var(--cat-produce-photo);
+  --cat-soft: var(--cat-produce-soft);
+  --cat-ink: var(--cat-produce-ink);
+  --cat-ink-2: var(--cat-produce-ink-2);
+}
+
+.cat-dairy {
+  --cat: var(--cat-dairy);
+  --cat-photo: var(--cat-dairy-photo);
+  --cat-soft: var(--cat-dairy-soft);
+  --cat-ink: var(--cat-dairy-ink);
+  --cat-ink-2: var(--cat-dairy-ink-2);
+}
+
+.cat-deli {
+  --cat: var(--cat-deli);
+  --cat-photo: var(--cat-deli-photo);
+  --cat-soft: var(--cat-deli-soft);
+  --cat-ink: var(--cat-deli-ink);
+  --cat-ink-2: var(--cat-deli-ink-2);
+}
+
+.cat-mixed {
+  --cat: var(--cat-mixed);
+  --cat-photo: var(--cat-mixed-photo);
+  --cat-soft: var(--cat-mixed-soft);
+  --cat-ink: var(--cat-mixed-ink);
+  --cat-ink-2: var(--cat-mixed-ink-2);
+}
+
+/* Inside a category surface every semantic token follows the category, so any
+   markup placed on one stays readable. Soft surfaces hold nested cards and chips. */
+.cat-bakery,
+.cat-produce,
+.cat-dairy,
+.cat-deli,
+.cat-mixed {
+  --card: var(--cat-soft);
+  --card-2: var(--cat-soft);
+  --well: var(--cat-soft);
+  --line: var(--cat-photo);
+  --line-strong: var(--brand-forest);
+  --cream: var(--cat-ink);
+  --body: var(--cat-ink-2);
+  --body-2: var(--cat-ink-2);
+  --body-light: var(--cat-ink-2);
+  --muted: var(--cat-ink-2);
+  --sage: var(--cat-ink-2);
+  --mint: var(--brand-forest);
+  --mint-strong: var(--brand-forest-2);
+  --moss: var(--cat-soft);
+  --ink: var(--brand-ground);
+  --warning: var(--cat-ink);
+  --warning-soft: var(--cat-soft);
+  --warning-line: var(--cat-photo);
+  --shadow-card: none;
+  color: var(--cat-ink);
+}
+
+/* Deep green areas: headers, navigation, feature panels. */
+.theme-forest,
+.hero-surface {
+  color-scheme: dark;
+  --page: var(--brand-forest);
+  --page-deep: var(--brand-forest);
+  --card: var(--brand-forest-2);
+  --card-2: var(--brand-forest-2);
+  --well: var(--brand-forest-2);
+  --line: #1f4a40;
+  --line-strong: #4f7a6c;
+  --cream: var(--brand-ground);
+  --body: #c3ddcb;
+  --body-2: #c3ddcb;
+  --body-light: #c3ddcb;
+  --muted: #9dbfa8;
+  --mint: var(--brand-mint);
+  --mint-strong: #a4dab2;
+  --sage: #9dbfa8;
+  --moss: var(--brand-forest-2);
+  --moss-light: var(--brand-forest-2);
+  --ink: var(--brand-forest);
+  --warning: #f3d98c;
+  --warning-soft: rgba(243, 217, 140, 0.16);
+  --warning-line: rgba(243, 217, 140, 0.32);
+  --danger: #f8bcbc;
+  --danger-soft: rgba(244, 120, 120, 0.18);
+  --danger-line: rgba(244, 120, 120, 0.38);
+  --shadow-card: none;
+  color: var(--cream);
+}
+
+/* A cream panel inside a deep green one, such as the pickup code. */
+.theme-cream {
+  color-scheme: light;
+  --card: var(--brand-white);
+  --card-2: var(--brand-white);
+  --well: #efe7d3;
+  --line: var(--brand-border);
+  --line-strong: var(--brand-forest);
+  --cream: var(--brand-ink);
+  --body: var(--brand-secondary);
+  --muted: #47625a;
+  --mint: var(--brand-forest);
+  --ink: var(--brand-ground);
+  background: var(--brand-ground);
+  color: var(--brand-ink);
+}
+
+/* Calm public website (B3Web): same palette, thin type, quiet buttons, white
+   cards, and colour only as small accents. */
+.theme-web {
+  --font-weight-medium: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --shadow-card: none;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.theme-web .theme-forest,
+.theme-web .hero-surface {
+  --mint: var(--brand-ground);
+  --mint-strong: #efe7d3;
+  --ink: var(--brand-forest);
+}
+
+.theme-web h1,
+.theme-web h2 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.theme-web h3,
+.theme-web h4 {
+  font-weight: 500;
+}
+
+/* Small eyebrow labels: 0.08em, however wide the page's utility classes ask for. */
+.theme-web .uppercase {
+  letter-spacing: 0.08em;
+  text-transform: none;
+}
+
+.theme-web .ui-card,
+.theme-web .premium-card,
+.theme-web .premium-surface {
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  border-radius: 18px;
+}
+
+.theme-web .theme-forest .ui-card,
+.theme-web .hero-surface .ui-card {
+  background: var(--card);
+}
+
+.theme-web .premium-button,
+.theme-web .premium-button-secondary,
+.theme-web .premium-input {
+  border-radius: 10px;
+}
+
+.theme-web .premium-button,
+.theme-web .premium-button-secondary {
+  min-height: 2.75rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.theme-web .premium-button-secondary {
+  font-weight: 400;
+}
+
+.accent-line {
+  display: block;
+  height: 4px;
+  width: 32px;
+  border-radius: 2px;
+}
+
 @theme inline {
+  --color-brand-ground: var(--brand-ground);
+  --color-brand-forest: var(--brand-forest);
+  --color-brand-forest-2: var(--brand-forest-2);
+  --color-brand-mint: var(--brand-mint);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-honey: var(--brand-honey);
+  --color-brand-border: var(--brand-border);
+  --color-accent-sage: var(--accent-sage);
+  --color-accent-honey: var(--accent-honey);
+  --color-accent-coral: var(--accent-coral);
+  --color-cat: var(--cat);
+  --color-cat-photo: var(--cat-photo);
+  --color-cat-soft: var(--cat-soft);
+  --color-cat-ink: var(--cat-ink);
+  --color-cat-ink-2: var(--cat-ink-2);
+
+  --font-serif:
+    "Noto Serif", "Noto Serif Georgian", Georgia, serif;
+
+  --radius-leaf: 22px 60px 22px 22px;
+  --radius-leaf-sm: 16px 40px 16px 16px;
+
   --color-page: var(--page);
   --color-page-deep: var(--page-deep);
   --color-card: var(--card);
@@ -88,7 +362,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
 }
 
@@ -147,7 +421,7 @@ body::before {
   position: fixed;
   inset: 0 0 auto 0;
   height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
-  background: var(--page);
+  background: var(--brand-forest);
   z-index: 60;
   pointer-events: none;
 }
@@ -187,7 +461,7 @@ textarea {
 }
 
 ::selection {
-  background: rgba(218, 241, 222, 0.28);
+  background: var(--brand-mint);
 }
 
 .app-shell {
@@ -208,6 +482,26 @@ textarea {
 .premium-container {
   width: min(100% - 2rem, 80rem);
   margin-inline: auto;
+}
+
+/* App-style page width; lines up with the navbar at desktop widths. */
+.app-container {
+  width: min(100% - 2rem, 75rem);
+  margin-inline: auto;
+}
+
+/* Set by the inline script in app/layout.tsx when a session is stored, so a
+   signed-in visitor doesn't see the public page before the app has loaded. */
+html.has-session .public-home {
+  visibility: hidden;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @layer components {
@@ -243,25 +537,58 @@ textarea {
 
   /* Moss hero block (homepage / for-businesses / dashboard header). */
   .hero-surface {
-    background: radial-gradient(120% 100% at 0% 0%, var(--moss-light), var(--well) 65%);
-    border: 1px solid var(--line-strong);
+    background: var(--brand-forest);
     color: var(--cream);
   }
 
-  /* Photo container (offer images). Replaces the old blob mask. */
+  /* Photo container (offer images): one large rounded corner. */
   .photo-frame {
     position: relative;
     overflow: hidden;
-    border-radius: 18px;
-    background: linear-gradient(135deg, #3c7a62, var(--card));
+    border-radius: var(--radius-leaf);
+    background: var(--cat-photo, var(--well));
   }
 
-  .photo-frame::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(5, 31, 32, 0) 55%, rgba(5, 31, 32, 0.45));
-    pointer-events: none;
+  /* Shown when an offer has no photo; takes the category colour on a category surface. */
+  .photo-fallback {
+    background: var(--cat-photo, var(--well));
+  }
+
+  /* Design v3 photo shape: one large rounded corner, no gradient or overlay. */
+  .photo-leaf,
+  .photo-leaf-sm {
+    position: relative;
+    overflow: hidden;
+    background: var(--cat-photo, var(--well));
+  }
+
+  .photo-leaf {
+    border-radius: var(--radius-leaf);
+  }
+
+  .photo-leaf-sm {
+    border-radius: var(--radius-leaf-sm);
+  }
+
+  /* Large photo on the bag page. */
+  .photo-hero {
+    border-radius: 30px 90px 30px 30px;
+    background: var(--cat-photo, var(--well));
+  }
+
+  /* Discount sticker: dark circle, slightly rotated. */
+  .discount-sticker {
+    display: flex;
+    height: 3.25rem;
+    width: 3.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--brand-forest);
+    color: var(--brand-ground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transform: rotate(-8deg);
   }
 
   /* ---------------------------------------------------------------------
@@ -301,12 +628,11 @@ textarea {
 
   /* Subtle glow — only behind the page's main call to action. */
   .cta-glow {
-    background: linear-gradient(90deg, var(--mint), var(--mint-strong));
-    box-shadow: var(--glow-cta);
+    background: var(--mint);
   }
 
   .cta-glow:hover {
-    background: linear-gradient(90deg, var(--mint-strong), var(--mint));
+    background: var(--mint-strong);
   }
 
   .premium-button-secondary {
@@ -344,7 +670,7 @@ textarea {
     justify-content: center;
     border-radius: 14px;
     background: var(--danger-solid);
-    color: var(--cream);
+    color: var(--brand-white);
     font-weight: 600;
   }
 
@@ -374,15 +700,16 @@ textarea {
     text-transform: uppercase;
   }
 
-  /* Amber is reserved for discount badges. */
+  /* Discount sticker. */
   .premium-discount-badge {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
     background: var(--amber);
     color: var(--amber-ink);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transform: rotate(-8deg);
   }
 
   /* Moss pill, e.g. the pickup window on an offer card. */
@@ -402,7 +729,7 @@ textarea {
     min-height: 3rem;
     border-radius: 14px;
     border: 1px solid var(--line);
-    background: var(--well);
+    background: var(--card);
     color: var(--cream);
     font-weight: 400;
     outline: none;
@@ -410,7 +737,7 @@ textarea {
 
   .premium-input:focus {
     border-color: var(--mint);
-    box-shadow: 0 0 0 3px rgba(218, 241, 222, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 18%, transparent);
   }
 
   .premium-input:disabled {
@@ -420,7 +747,7 @@ textarea {
 
   /* Native dark pickers/selects in the WebView */
   select.premium-input option {
-    background: var(--well);
+    background: var(--card);
     color: var(--cream);
   }
 
@@ -428,10 +755,15 @@ textarea {
      Bottom tab bar (mobile): translucent, blurred, active = mint.
      --------------------------------------------------------------------- */
   .tab-bar {
-    background: rgba(5, 31, 32, 0.9);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    background: var(--brand-forest);
     border-top: 1px solid var(--line);
+  }
+
+  /* Bottom navigation in the app style: a floating deep green pill. */
+  .tab-pill {
+    background: var(--brand-forest);
+    border-radius: 24px;
+    box-shadow: 0 12px 32px rgba(11, 43, 38, 0.28);
   }
 }
 

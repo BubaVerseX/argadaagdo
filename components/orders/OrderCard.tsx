@@ -1,4 +1,5 @@
 import { TimelineSteps } from "@/components/TimelineSteps";
+import { LeafDecor } from "@/components/design/Decor";
 import { ClockIcon, MapPinIcon } from "@/components/icons";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { getGreenBagLabel } from "@/lib/offerCategories";
@@ -91,9 +92,16 @@ export function OrderCard({
     isConfirmed && Boolean(order.pickup_code) && Boolean(onOpenCollect) && isCollectWindowOpen(order);
 
   return (
-    <div className="premium-card rounded-3xl p-4 sm:rounded-3xl sm:p-5 md:p-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="order-2 lg:order-1">
+    <div
+      className={`relative overflow-hidden rounded-[30px] p-4 sm:p-5 md:p-8 ${
+        isConfirmed ? "theme-forest bg-page" : "premium-card"
+      }`}
+    >
+      {isConfirmed && (
+        <LeafDecor className="-right-12 -top-12 h-52 w-52 text-brand-forest-2" />
+      )}
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="order-2 min-w-0 lg:order-1">
           <div className="flex flex-wrap items-center gap-3">
             <span
               className={`rounded-full px-4 py-2 text-sm font-semibold ${statusClass}`}
@@ -114,7 +122,7 @@ export function OrderCard({
             )}
           </div>
 
-          <h2 className="mt-4 text-2xl font-semibold text-cream sm:text-3xl">
+          <h2 className="mt-4 font-serif text-xl font-bold text-cream sm:text-3xl">
             {order.offers?.title || t("common.offerUnavailable")}
           </h2>
 
@@ -197,7 +205,7 @@ export function OrderCard({
                       order.offers?.title ||
                       (isGeorgian ? "წაღების ადგილი" : "pickup location")
                     }`}
-                    className="ui-card mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition sm:w-auto"
+                    className="ui-card mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition sm:w-auto"
                   >
                     {t("common.openMap")}
                   </a>
@@ -248,7 +256,7 @@ export function OrderCard({
 
           {isConfirmed ? (
             <>
-              <div className="ui-card mt-3 rounded-2xl px-4 py-5 sm:rounded-3xl sm:px-6 sm:py-6">
+              <div className="theme-cream mt-3 rounded-[22px] px-4 py-5 sm:px-6 sm:py-6">
                 <p className="text-sm text-body">
                   {t("orders.pickupCode")}:
                 </p>
@@ -335,7 +343,7 @@ export function OrderCard({
                         aria-pressed={selectedRating === rating}
                         onClick={() => onRatingChange(order.id, rating)}
                         disabled={ratingOrderId !== null}
-                    className={`min-h-10 rounded-full font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${ selectedRating === rating
+                    className={`min-h-11 rounded-full font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${ selectedRating === rating
                             ? "ui-well text-mint"
                             : "ui-card text-body"
                         }`}

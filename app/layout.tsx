@@ -3,15 +3,28 @@ import InstallAppPrompt from "@/components/InstallAppPrompt";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { siteUrl } from "@/lib/site";
-// Self-hosted brand fonts: Noto Sans (Latin) + Noto Sans Georgian, weights
-// 400/500/600 only — headings are 600, body 400.
+// Self-hosted brand fonts. Noto Sans for text; Noto Serif for titles and business
+// names. Weight 300 and serif 400 are the calm website style, 700 the app style.
+import "@fontsource/noto-sans/latin-300.css";
+import "@fontsource/noto-sans-georgian/georgian-300.css";
+import "@fontsource/noto-serif/latin-400.css";
+import "@fontsource/noto-serif-georgian/georgian-400.css";
 import "@fontsource/noto-sans/latin-400.css";
 import "@fontsource/noto-sans/latin-500.css";
 import "@fontsource/noto-sans/latin-600.css";
 import "@fontsource/noto-sans-georgian/georgian-400.css";
 import "@fontsource/noto-sans-georgian/georgian-500.css";
 import "@fontsource/noto-sans-georgian/georgian-600.css";
+import "@fontsource/noto-sans/latin-700.css";
+import "@fontsource/noto-sans-georgian/georgian-700.css";
+import "@fontsource/noto-serif/latin-700.css";
+import "@fontsource/noto-serif-georgian/georgian-700.css";
 import "./globals.css";
+
+// Runs before first paint. It only checks that a stored session exists, so the
+// public home page stays hidden for a signed-in visitor until the app style
+// takes over. app/page.tsx removes the class if there turns out to be no session.
+const sessionHintScript = `try{for(var i=0;i<localStorage.length;i++){if(/^sb-.*-auth-token$/.test(localStorage.key(i))){document.documentElement.classList.add("has-session");break}}}catch(e){}`;
 
 const appDescription =
   "Save money on Green Bags of food from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
@@ -81,8 +94,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#051f20",
-  colorScheme: "dark",
+  themeColor: "#0f3a32",
+  colorScheme: "light",
   viewportFit: "cover",
 };
 
@@ -92,7 +105,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: sessionHintScript }} />
+      </head>
       <body className="flex min-h-full flex-col">
         {children}
         <NotificationCenter />

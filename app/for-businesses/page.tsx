@@ -47,8 +47,8 @@ export default function ForBusinessesPage() {
   ];
 
   return (
-    <main className="app-shell">
-      <Navbar />
+    <main className="app-shell theme-web">
+      <Navbar variant="web" />
 
       <section className="px-4 pb-12 pt-12 sm:px-6 sm:pb-16 sm:pt-16 lg:px-12 lg:pt-20">
         <div className="premium-container">
@@ -83,25 +83,13 @@ export default function ForBusinessesPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
                 {t("forBusinesses.commissionBadge")}
               </p>
-              <div className="mt-6 flex items-end gap-8">
-                <div>
-                  <p className="text-6xl font-semibold">
-                    {t("forBusinesses.commissionYouKeepValue")}
-                  </p>
-                  <p className="mt-2 text-sm text-body-light">
-                    {t("forBusinesses.commissionYouKeep")}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-3xl text-body-light">
-                    {t("forBusinesses.commissionPlatformFeeValue")}
-                  </p>
-                  <p className="mt-2 text-sm text-body-light">
-                    {t("forBusinesses.commissionPlatformFee")}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-6 text-sm leading-[1.55] text-body-light">
+              <p className="mt-4 font-serif text-2xl leading-[1.35] sm:text-3xl">
+                {t("forBusinesses.commissionTitle")}
+              </p>
+              <p className="mt-3 leading-[1.55] text-body-light">
+                {t("forBusinesses.commissionText")}
+              </p>
+              <p className="mt-6 border-t border-line pt-5 text-sm leading-[1.55] text-body-light">
                 {t("forBusinesses.commissionNoSaleText")}
               </p>
             </div>
@@ -195,24 +183,8 @@ export default function ForBusinessesPage() {
                 </p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.5rem] bg-ink/30 p-6">
-                  <p className="text-4xl font-semibold">
-                    {t("forBusinesses.commissionYouKeepValue")}
-                  </p>
-                  <p className="mt-2 text-sm text-body-light">
-                    {t("forBusinesses.commissionYouKeep")}
-                  </p>
-                </div>
-                <div className="rounded-[1.5rem] bg-ink/30 p-6">
-                  <p className="text-4xl font-semibold">
-                    {t("forBusinesses.commissionPlatformFeeValue")}
-                  </p>
-                  <p className="mt-2 text-sm text-body-light">
-                    {t("forBusinesses.commissionPlatformFee")}
-                  </p>
-                </div>
-                <div className="rounded-[1.5rem] bg-ink/30 p-6 sm:col-span-2">
+              <div>
+                <div className="rounded-[1.5rem] bg-brand-forest-2 p-6">
                   <p className="text-lg font-semibold">
                     {t("forBusinesses.commissionNoSale")}
                   </p>

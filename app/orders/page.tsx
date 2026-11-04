@@ -6,7 +6,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { CollectSlider } from "@/components/orders/CollectSlider";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { OrdersEmptyState } from "@/components/orders/OrdersEmptyState";
-import { OrdersHeader } from "@/components/orders/OrdersHeader";
+import { OrdersHeader, OrdersStats } from "@/components/orders/OrdersHeader";
 import {
   getConfirmedUser,
   getProfileById,
@@ -471,27 +471,7 @@ export default function OrdersPage() {
       <Navbar />
 
       <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
-        <OrdersHeader
-          t={t}
-          language={language}
-          confirmedCount={confirmedCount}
-          collectedCount={collectedCount}
-          cancelledCount={cancelledCount}
-          profile={profile}
-          reliabilityStatus={reliabilityStatus}
-          reliabilityTone={reliabilityTone}
-        />
-
-        {!loading && orders.length > 0 && (
-          <div className="premium-card mt-5 rounded-3xl p-5 sm:mt-6 sm:p-6">
-            <p className="text-lg font-semibold text-cream">
-              {t("orders.pickupInstructionTitle")}
-            </p>
-            <p className="mt-2 leading-7 text-body">
-              {t("orders.pickupInstructionText")}
-            </p>
-          </div>
-        )}
+        <OrdersHeader t={t} />
 
         {message && (
           <div className="mt-5 sm:mt-6">
@@ -554,6 +534,32 @@ export default function OrdersPage() {
             />
           ))}
         </div>
+
+        {!loading && orders.length > 0 && (
+          <div className="premium-card mt-5 rounded-3xl p-5 sm:mt-6 sm:p-6">
+            <p className="text-lg font-semibold text-cream">
+              {t("orders.pickupInstructionTitle")}
+            </p>
+            <p className="mt-2 leading-7 text-body">
+              {t("orders.pickupInstructionText")}
+            </p>
+          </div>
+        )}
+
+        {!loading && orders.length > 0 && (
+          <div className="mt-6">
+            <OrdersStats
+              t={t}
+              language={language}
+              confirmedCount={confirmedCount}
+              collectedCount={collectedCount}
+              cancelledCount={cancelledCount}
+              profile={profile}
+              reliabilityStatus={reliabilityStatus}
+              reliabilityTone={reliabilityTone}
+            />
+          </div>
+        )}
       </section>
 
       {collectingOrder && (

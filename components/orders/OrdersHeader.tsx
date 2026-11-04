@@ -11,7 +11,26 @@ const georgianReliabilityLabels = new Map<string, string>([
   ["restricted", "შეზღუდული"],
 ]);
 
-type OrdersHeaderProps = {
+/** Screen title. The pickup code comes right after it, so the stats are separate. */
+export function OrdersHeader({ t }: { t: (key: TranslationKey) => string }) {
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
+        {t("orders.reserved")}
+      </p>
+
+      <h1 className="mt-2 font-serif text-[1.625rem] font-bold text-cream sm:text-4xl md:text-5xl">
+        {t("orders.title")}
+      </h1>
+
+      <p className="mt-2 max-w-2xl text-sm text-body md:text-base">
+        {t("orders.subtitle")}
+      </p>
+    </div>
+  );
+}
+
+type OrdersStatsProps = {
   t: (key: TranslationKey) => string;
   language?: Language;
   confirmedCount: number;
@@ -22,7 +41,7 @@ type OrdersHeaderProps = {
   reliabilityTone: "green" | "yellow" | "red";
 };
 
-export function OrdersHeader({
+export function OrdersStats({
   t,
   language = "en",
   confirmedCount,
@@ -31,27 +50,15 @@ export function OrdersHeader({
   profile,
   reliabilityStatus,
   reliabilityTone,
-}: OrdersHeaderProps) {
+}: OrdersStatsProps) {
   const reliabilityStatusLabel =
     language === "ka"
       ? georgianReliabilityLabels.get(reliabilityStatus) ?? reliabilityStatus
       : reliabilityStatus;
 
   return (
-    <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-6 md:p-10">
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {t("orders.reserved")}
-      </p>
-
-      <h1 className="mt-3 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
-        {t("orders.title")}
-      </h1>
-
-      <p className="mt-4 max-w-2xl text-base text-body md:text-lg">
-        {t("orders.subtitle")}
-      </p>
-
-      <div className="mt-6 grid grid-cols-2 gap-2 sm:mt-8 sm:gap-4 md:grid-cols-5">
+    <div>
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-5">
         <StatCard title={t("orders.reserved")} value={confirmedCount} tone="yellow" />
         <StatCard title={t("orders.collected")} value={collectedCount} tone="green" />
         <StatCard title={t("orders.cancelled")} value={cancelledCount} tone="red" />
