@@ -1,5 +1,5 @@
 -- Green Bag model, stage 4 (2026-11-01): platform commission per business.
--- STATUS: not applied.
+-- STATUS: applied to production on 2026-11-04 (recorded as version 20261104081140).
 --
 -- businesses.platform_fee_rate (0.30 = 30%, default; 0 for pilot partners)
 -- is server-side: only admins (or the service role) can change it, through
