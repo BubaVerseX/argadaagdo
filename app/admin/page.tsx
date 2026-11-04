@@ -18,6 +18,7 @@ import {
   AdminPaymentsOverview,
   AdminSupportTools,
   ApprovedBusinesses,
+  HiddenReviews,
   PendingBusinesses,
   RejectedBusinesses,
   ReportedReviews,
@@ -147,6 +148,7 @@ export default function AdminPage() {
   const [rejectedPage, setRejectedPage] = useState(1);
   const [reviewReports, setReviewReports] = useState<AdminReviewReport[]>([]);
   const [reviewReportsPage, setReviewReportsPage] = useState(1);
+  const [hiddenReviewsPage, setHiddenReviewsPage] = useState(1);
   const [updatingReportId, setUpdatingReportId] = useState<number | null>(null);
   const [updatingBusinessId, setUpdatingBusinessId] = useState<number | null>(
     null
@@ -212,7 +214,7 @@ export default function AdminPage() {
           comment,
           created_at,
           status,
-          business_ratings(business_id, rating, comment)
+          business_ratings(business_id, rating, comment, hidden)
         `
         ),
       ]);
@@ -530,6 +532,36 @@ export default function AdminPage() {
     await checkAdminAndLoadData();
   }
 
+  async function unhideReview(report: AdminReviewReport) {
+    if (updatingReportId !== null) return;
+
+    const confirmed = window.confirm(
+      "Unhide this review?\n\nIt will be public again and count toward the business rating."
+    );
+
+    if (!confirmed) return;
+
+    setUpdatingReportId(report.id);
+    const { error } = await supabase.rpc("admin_unhide_review", {
+      p_review_id: report.review_id,
+    });
+    setUpdatingReportId(null);
+
+    if (error) {
+      logAppError("Unhiding review failed", error, {
+        operation: "admin_unhide_review",
+        reviewId: report.review_id,
+      });
+      setMessageTone("error");
+      setMessage("The review could not be unhidden. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Review is public again.");
+    await checkAdminAndLoadData();
+  }
+
   async function dismissReviewReport(reportId: number) {
     if (updatingReportId !== null) return;
 
@@ -614,6 +646,17 @@ export default function AdminPage() {
   const openReviewReports = reviewReports.filter(
     (report) => report.status === "open"
   );
+  // Several people can report one review; list each hidden review once.
+  const hiddenReviewReports = [
+    ...new Map(
+      reviewReports
+        .filter(
+          (report) =>
+            report.status === "hidden" && report.business_ratings?.hidden
+        )
+        .map((report) => [report.review_id, report] as const)
+    ).values(),
+  ];
   const businessNameById = businesses.reduce<Record<number, string>>(
     (businessMap, business) => {
       businessMap[business.id] = business.name;
@@ -973,6 +1016,11 @@ export default function AdminPage() {
   const paginatedReviewReports = paginateItems(
     openReviewReports,
     reviewReportsPage,
+    ADMIN_LIST_PAGE_SIZE
+  );
+  const paginatedHiddenReviews = paginateItems(
+    hiddenReviewReports,
+    hiddenReviewsPage,
     ADMIN_LIST_PAGE_SIZE
   );
   const todayDateKey = getTbilisiDateKey();
@@ -1610,6 +1658,22 @@ export default function AdminPage() {
           pageSize={ADMIN_LIST_PAGE_SIZE}
           label="Reported reviews"
           onPageChange={setReviewReportsPage}
+        />
+
+        <HiddenReviews
+          reports={paginatedHiddenReviews.items}
+          businessNameById={businessNameById}
+          updatingReportId={updatingReportId}
+          onUnhide={(report) => void unhideReview(report)}
+        />
+
+        <Pagination
+          className="mt-5"
+          page={paginatedHiddenReviews.page}
+          totalItems={hiddenReviewReports.length}
+          pageSize={ADMIN_LIST_PAGE_SIZE}
+          label="Hidden reviews"
+          onPageChange={setHiddenReviewsPage}
         />
       </section>
     </main>

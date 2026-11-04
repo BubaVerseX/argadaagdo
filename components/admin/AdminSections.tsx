@@ -39,6 +39,7 @@ export type AdminReviewReport = {
     business_id: number;
     rating: number;
     comment: string | null;
+    hidden: boolean;
   } | null;
 };
 
@@ -997,6 +998,59 @@ export function ReportedReviews({
                   Dismiss
                 </button>
               </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function HiddenReviews({
+  reports,
+  businessNameById,
+  updatingReportId,
+  onUnhide,
+}: {
+  /** One report per hidden review. */
+  reports: AdminReviewReport[];
+  businessNameById: Record<number, string>;
+  updatingReportId: number | null;
+  onUnhide: (report: AdminReviewReport) => void;
+}) {
+  if (reports.length === 0) return null;
+
+  return (
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
+      <h2 className="text-xl font-semibold sm:text-2xl">Hidden reviews</h2>
+
+      <div className="mt-6 grid gap-3">
+        {reports.map((report) => {
+          const review = report.business_ratings;
+
+          return (
+            <div
+              key={report.review_id}
+              className="ui-card flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="break-words font-semibold text-cream">
+                  {(review && businessNameById[review.business_id]) || "Unknown business"}
+                  {review ? ` · ${review.rating}/5` : ""}
+                </p>
+                <p className="mt-1 whitespace-pre-wrap break-words text-sm text-body">
+                  {review?.comment?.trim() || "No written review."}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                disabled={updatingReportId !== null}
+                onClick={() => onUnhide(report)}
+                className="min-h-11 shrink-0 self-start rounded-full bg-well px-4 py-2 text-sm font-semibold text-body transition hover:text-cream disabled:cursor-not-allowed disabled:text-muted sm:self-auto"
+              >
+                Unhide
+              </button>
             </div>
           );
         })}
