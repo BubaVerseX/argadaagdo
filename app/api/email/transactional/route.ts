@@ -3,6 +3,7 @@ import { isEmailConfirmed } from "@/lib/auth";
 import {
   getOrderEmailContext,
   sendBusinessApprovalEmail,
+  sendBusinessRejectionEmail,
   sendPickupCompletedEmails,
   sendPickupReminderEmail,
   sendRatingReminderEmail,
@@ -119,6 +120,27 @@ export async function POST(request: Request) {
       }
 
       const result = await sendBusinessApprovalEmail(supabase, businessId);
+      return NextResponse.json({ ok: result.ok, result });
+    }
+
+    if (event === "business_rejection") {
+      const businessId = toPositiveNumber(body.businessId);
+
+      if (!businessId) {
+        return NextResponse.json(
+          { error: "Business ID is required." },
+          { status: 400 }
+        );
+      }
+
+      if (role !== "admin") {
+        return NextResponse.json(
+          { error: "Only admins can send business rejection emails." },
+          { status: 403 }
+        );
+      }
+
+      const result = await sendBusinessRejectionEmail(supabase, businessId);
       return NextResponse.json({ ok: result.ok, result });
     }
 

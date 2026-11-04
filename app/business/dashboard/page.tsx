@@ -13,6 +13,10 @@ import { BusinessIntelligencePanel } from "@/components/business/BusinessIntelli
 import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
 import { BusinessRevenueInsights } from "@/components/business/BusinessRevenueInsights";
+import {
+  RejectedBusinessCard,
+  type BusinessDetailsDraft,
+} from "@/components/business/RejectedBusinessCard";
 import { BusinessReviews } from "@/components/business/BusinessReviews";
 import { BusinessStatsSection } from "@/components/business/BusinessStatsSection";
 import {
@@ -53,6 +57,7 @@ import {
   buildOfferIntelligence,
 } from "@/lib/marketplaceIntelligence";
 import {
+  notifyBusinessRegistrationSubmitted,
   notifyOfferPublished,
   notifyPickupCompleted,
   notifyProfileUpdated,
@@ -118,6 +123,9 @@ export default function BusinessDashboardPage() {
 
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [approvedBusinesses, setApprovedBusinesses] = useState<Business[]>([]);
+  const [resubmittingBusinessId, setResubmittingBusinessId] = useState<
+    number | null
+  >(null);
   const [allOffers, setOffers] = useState<Offer[]>([]);
   const [allOrders, setOrders] = useState<Order[]>([]);
   const [allReviews, setReviews] = useState<Rating[]>([]);
@@ -477,6 +485,125 @@ export default function BusinessDashboardPage() {
     setImageFile(selectedFile);
   }
 
+  function validateBusinessDetails(details: BusinessDetailsDraft) {
+    const nameResult = validateTextField({
+      label: isGeorgian ? "ბიზნესის სახელი" : "Business name",
+      value: details.name,
+      minLength: 2,
+      maxLength: 80,
+      language,
+    });
+    const typeResult = validateTextField({
+      label: isGeorgian ? "ბიზნესის ტიპი" : "Business type",
+      value: details.businessType,
+      minLength: 2,
+      maxLength: 60,
+      language,
+    });
+    const addressResult = validateTextField({
+      label: isGeorgian ? "მისამართი" : "Address",
+      value: details.address,
+      minLength: 5,
+      maxLength: 160,
+      language,
+    });
+    const phoneResult = validateTextField({
+      label: isGeorgian ? "ტელეფონის ნომერი" : "Phone number",
+      value: details.phone,
+      minLength: 5,
+      maxLength: 40,
+      required: false,
+      language,
+    });
+
+    return {
+      nameResult,
+      typeResult,
+      addressResult,
+      phoneResult,
+      validationError:
+        nameResult.error ||
+        typeResult.error ||
+        addressResult.error ||
+        phoneResult.error,
+    };
+  }
+
+  async function resubmitRejectedBusiness(
+    id: number,
+    details: BusinessDetailsDraft
+  ) {
+    if (resubmittingBusinessId !== null) return;
+
+    setMessage("");
+    setMessageTone("error");
+
+    const {
+      nameResult,
+      typeResult,
+      addressResult,
+      phoneResult,
+      validationError,
+    } = validateBusinessDetails(details);
+
+    if (validationError) {
+      setMessage(validationError);
+      return;
+    }
+
+    setResubmittingBusinessId(id);
+
+    // One update, so saving the edits and returning to Pending can't half-happen.
+    const { data, error } = await supabase
+      .from("businesses")
+      .update({
+        name: nameResult.value,
+        business_type: typeResult.value,
+        address: addressResult.value,
+        phone: phoneResult.value || null,
+        rejected_at: null,
+        rejection_reason: null,
+      })
+      .eq("id", id)
+      .select("*")
+      .maybeSingle();
+
+    setResubmittingBusinessId(null);
+
+    if (error || !data) {
+      logAppError(
+        "Business resubmission failed",
+        error || "No business row returned",
+        { operation: "resubmit_business", businessId: id }
+      );
+      setMessageTone("error");
+      setMessage("Your application could not be resubmitted. Please try again.");
+      return;
+    }
+
+    const updatedBusiness = data as Business;
+    setBusinesses((currentBusinesses) =>
+      currentBusinesses.map((business) =>
+        business.id === id ? updatedBusiness : business
+      )
+    );
+
+    // The profile form may already hold this business's old details; saving it
+    // later would undo the edits made here.
+    if (profileBusinessId === id) {
+      setProfileName(updatedBusiness.name || "");
+      setProfileType(updatedBusiness.business_type || "");
+      setProfileAddress(updatedBusiness.address || "");
+      setProfilePhone(updatedBusiness.phone || "");
+    }
+
+    setMessageTone("success");
+    setMessage("Application resubmitted. Waiting for admin approval.");
+    notifyBusinessRegistrationSubmitted({
+      businessName: updatedBusiness.name || "Business",
+    });
+  }
+
   async function saveBusinessProfile(actionTime: number) {
     setMessage("");
     setMessageTone("error");
@@ -513,41 +640,18 @@ export default function BusinessDashboardPage() {
       return;
     }
 
-    const nameResult = validateTextField({
-      label: isGeorgian ? "ბიზნესის სახელი" : "Business name",
-      value: profileName,
-      minLength: 2,
-      maxLength: 80,
-      language,
+    const {
+      nameResult,
+      typeResult,
+      addressResult,
+      phoneResult,
+      validationError,
+    } = validateBusinessDetails({
+      name: profileName,
+      businessType: profileType,
+      address: profileAddress,
+      phone: profilePhone,
     });
-    const typeResult = validateTextField({
-      label: isGeorgian ? "ბიზნესის ტიპი" : "Business type",
-      value: profileType,
-      minLength: 2,
-      maxLength: 60,
-      language,
-    });
-    const addressResult = validateTextField({
-      label: isGeorgian ? "მისამართი" : "Address",
-      value: profileAddress,
-      minLength: 5,
-      maxLength: 160,
-      language,
-    });
-    const phoneResult = validateTextField({
-      label: isGeorgian ? "ტელეფონის ნომერი" : "Phone number",
-      value: profilePhone,
-      minLength: 5,
-      maxLength: 40,
-      required: false,
-      language,
-    });
-
-    const validationError =
-      nameResult.error ||
-      typeResult.error ||
-      addressResult.error ||
-      phoneResult.error;
 
     if (validationError) {
       setMessage(validationError);
@@ -1925,6 +2029,9 @@ export default function BusinessDashboardPage() {
     {}
   );
   const canCreateOffers = approvedBusinesses.length > 0;
+  const rejectedBusinesses = businesses.filter(
+    (business) => business.rejected_at
+  );
   const businessStatusMessage =
     businesses.length === 0
       ? isGeorgian
@@ -2447,9 +2554,20 @@ export default function BusinessDashboardPage() {
           </div>
         )}
 
+        {rejectedBusinesses.map((business) => (
+          <RejectedBusinessCard
+            key={business.id}
+            business={business}
+            resubmitting={resubmittingBusinessId === business.id}
+            onResubmit={(id, details) =>
+              void resubmitRejectedBusiness(id, details)
+            }
+          />
+        ))}
+
         <BusinessAlertsSection alerts={businessAlerts} />
 
-        {selectedBusiness && (
+        {selectedBusiness && !selectedBusiness.rejected_at && (
           <>
             <BusinessProfileSection
               profileName={profileName}
@@ -2503,7 +2621,7 @@ export default function BusinessDashboardPage() {
           recommendations={businessRecommendations}
         />
 
-        {!canCreateOffers && (
+        {!canCreateOffers && rejectedBusinesses.length === 0 && (
           <div className="mt-6 rounded-3xl bg-warning-soft p-5 sm:mt-8 sm:p-8">
             <h2 className="text-xl font-semibold text-warning sm:text-2xl">
               {businessStatusMessage}

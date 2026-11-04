@@ -19,6 +19,9 @@ import {
   AdminSupportTools,
   ApprovedBusinesses,
   PendingBusinesses,
+  RejectedBusinesses,
+  ReportedReviews,
+  type AdminReviewReport,
   type AdminBusiness,
 } from "@/components/admin/AdminSections";
 import { getConfirmedProfile } from "@/lib/auth";
@@ -70,7 +73,12 @@ type AdminOrderFilter =
   | "cancelled"
   | "no_show";
 type AdminProfileFilter = "all" | "customer" | "business" | "admin";
-type ApprovalQueueFilter = "newest" | "oldest" | "needs_review" | "approved";
+type ApprovalQueueFilter =
+  | "newest"
+  | "oldest"
+  | "needs_review"
+  | "approved"
+  | "rejected";
 
 const ADMIN_LIST_PAGE_SIZE = 8;
 // PostgREST returns at most 1000 rows per request, so read in pages; the old
@@ -136,6 +144,10 @@ export default function AdminPage() {
     useState<ApprovalQueueFilter>("newest");
   const [pendingPage, setPendingPage] = useState(1);
   const [approvedPage, setApprovedPage] = useState(1);
+  const [rejectedPage, setRejectedPage] = useState(1);
+  const [reviewReports, setReviewReports] = useState<AdminReviewReport[]>([]);
+  const [reviewReportsPage, setReviewReportsPage] = useState(1);
+  const [updatingReportId, setUpdatingReportId] = useState<number | null>(null);
   const [updatingBusinessId, setUpdatingBusinessId] = useState<number | null>(
     null
   );
@@ -164,6 +176,7 @@ export default function AdminPage() {
       orderResult,
       profilesResult,
       ratingsResult,
+      reportsResult,
     ] =
       await Promise.all([
         fetchAllRows<AdminBusiness>("businesses", "*"),
@@ -189,7 +202,29 @@ export default function AdminPage() {
           "business_ratings",
           "id, rating"
         ),
+        fetchAllRows<AdminReviewReport>(
+          "review_reports",
+          `
+          id,
+          review_id,
+          reporter_id,
+          reason,
+          comment,
+          created_at,
+          status,
+          business_ratings(business_id, rating, comment)
+        `
+        ),
       ]);
+
+    // Reports are one panel among many: a failure here shouldn't take down the
+    // rest of the admin page.
+    if (reportsResult.error) {
+      logAppError("Admin dashboard failed to load review reports", reportsResult.error, {
+        operation: "load_review_reports",
+      });
+    }
+    setReviewReports(reportsResult.error ? [] : reportsResult.data);
 
     if (
       businessResult.error ||
@@ -404,14 +439,124 @@ export default function AdminPage() {
     );
   }
 
-  function rejectBusinessApplication(id: number, reason: string) {
+  async function rejectBusinessApplication(id: number, reason: string) {
+    if (updatingBusinessId !== null) return;
+
+    if (!reason) {
+      setMessageTone("error");
+      setMessage("Write a reason first. The owner will see it and get it by email.");
+      return;
+    }
+
     const business = businesses.find((item) => item.id === id);
-    setMessageTone("warning");
-    setMessage(
-      `Rejection noted for ${
-        business?.name || "this business"
-      }. Reason: ${reason || "No reason provided yet."} Because the current schema only stores approved or pending, no database status was changed.`
+    const confirmed = window.confirm(
+      `Reject ${business?.name || "this business"}?\n\n` +
+        "The owner will get an email with this reason, and can edit the details and resubmit."
     );
+
+    if (!confirmed) return;
+
+    setUpdatingBusinessId(id);
+    const { data: updatedRows, error } = await supabase
+      .from("businesses")
+      .update({
+        rejected_at: new Date().toISOString(),
+        rejection_reason: reason,
+      })
+      .eq("id", id)
+      .eq("approved", false)
+      .is("rejected_at", null)
+      .select("id");
+
+    if (error || !updatedRows || updatedRows.length === 0) {
+      if (error) {
+        logAppError("Business rejection failed", error, {
+          operation: "reject_business",
+          businessId: id,
+        });
+      }
+      setUpdatingBusinessId(null);
+      setMessageTone("error");
+      setMessage("Business could not be rejected. Please refresh and try again.");
+      return;
+    }
+
+    const emailResult = await triggerTransactionalEmail({
+      event: "business_rejection",
+      businessId: id,
+    });
+
+    if (emailResult.ok) {
+      setMessageTone("success");
+      setMessage("Business rejected. The owner has been emailed the reason.");
+    } else {
+      setMessageTone("warning");
+      setMessage(
+        "Business rejected, but the email to the owner could not be sent. They will still see the reason in their dashboard."
+      );
+    }
+
+    setUpdatingBusinessId(null);
+    await checkAdminAndLoadData();
+  }
+
+  async function hideReportedReview(reportId: number) {
+    if (updatingReportId !== null) return;
+
+    const confirmed = window.confirm(
+      "Hide this review?\n\nIt will disappear from all public pages and stop counting toward the business rating."
+    );
+
+    if (!confirmed) return;
+
+    setUpdatingReportId(reportId);
+    const { error } = await supabase.rpc("admin_hide_reported_review", {
+      p_report_id: reportId,
+    });
+    setUpdatingReportId(null);
+
+    if (error) {
+      logAppError("Hiding reported review failed", error, {
+        operation: "admin_hide_reported_review",
+        reportId,
+      });
+      setMessageTone("error");
+      setMessage("The review could not be hidden. Please try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Review hidden.");
+    await checkAdminAndLoadData();
+  }
+
+  async function dismissReviewReport(reportId: number) {
+    if (updatingReportId !== null) return;
+
+    setUpdatingReportId(reportId);
+    const { data: updatedRows, error } = await supabase
+      .from("review_reports")
+      .update({ status: "dismissed" })
+      .eq("id", reportId)
+      .eq("status", "open")
+      .select("id");
+    setUpdatingReportId(null);
+
+    if (error || !updatedRows || updatedRows.length === 0) {
+      if (error) {
+        logAppError("Dismissing review report failed", error, {
+          operation: "dismiss_review_report",
+          reportId,
+        });
+      }
+      setMessageTone("error");
+      setMessage("The report could not be dismissed. Please refresh and try again.");
+      return;
+    }
+
+    setMessageTone("success");
+    setMessage("Report dismissed. The review stays public.");
+    await checkAdminAndLoadData();
   }
 
   useEffect(() => {
@@ -459,12 +604,27 @@ export default function AdminPage() {
     };
   }, [realtimeReady, scheduleRefresh]);
 
-  const pendingBusinesses = businesses.filter((business) => !business.approved);
+  const pendingBusinesses = businesses.filter(
+    (business) => !business.approved && !business.rejected_at
+  );
+  const rejectedBusinesses = businesses.filter(
+    (business) => !business.approved && business.rejected_at
+  );
   const approvedBusinesses = businesses.filter((business) => business.approved);
+  const openReviewReports = reviewReports.filter(
+    (report) => report.status === "open"
+  );
   const businessNameById = businesses.reduce<Record<number, string>>(
     (businessMap, business) => {
       businessMap[business.id] = business.name;
       return businessMap;
+    },
+    {}
+  );
+  const profileEmailById = profiles.reduce<Record<string, string>>(
+    (emailMap, profile) => {
+      if (profile.email) emailMap[profile.id] = profile.email;
+      return emailMap;
     },
     {}
   );
@@ -699,6 +859,18 @@ export default function AdminPage() {
       className: "ui-card text-mint",
     },
     {
+      title: "Rejected businesses",
+      value: rejectedBusinesses.length,
+      helper: "Waiting for the owner to edit and resubmit",
+      className: "bg-danger-soft text-danger",
+    },
+    {
+      title: "Reported reviews",
+      value: openReviewReports.length,
+      helper: "Open reports waiting for a decision",
+      className: "bg-warning-soft text-warning",
+    },
+    {
       title: "Inactive offers",
       value: inactiveOffers.length,
       helper: "Offers hidden by businesses or admins",
@@ -723,6 +895,11 @@ export default function AdminPage() {
       `${business.name} ${business.business_type} ${business.address} ${business.phone}`.toLowerCase();
     return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
   });
+  const filteredRejectedBusinesses = rejectedBusinesses.filter((business) => {
+    const searchText =
+      `${business.name} ${business.business_type} ${business.address} ${business.phone} ${business.rejection_reason}`.toLowerCase();
+    return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
+  });
   const sortDirection = approvalQueueFilter === "oldest" ? 1 : -1;
   const sortedPendingBusinesses = [...filteredPendingBusinesses].sort(
     (first, second) =>
@@ -732,10 +909,15 @@ export default function AdminPage() {
     (first, second) =>
       (getBusinessSortTime(first) - getBusinessSortTime(second)) * sortDirection
   );
+  const showRejectedOnly = approvalQueueFilter === "rejected";
   const approvalVisiblePendingBusinesses =
-    approvalQueueFilter === "approved" ? [] : sortedPendingBusinesses;
+    approvalQueueFilter === "approved" || showRejectedOnly
+      ? []
+      : sortedPendingBusinesses;
   const approvalVisibleApprovedBusinesses =
-    approvalQueueFilter === "needs_review" ? [] : sortedApprovedBusinesses;
+    approvalQueueFilter === "needs_review" || showRejectedOnly
+      ? []
+      : sortedApprovedBusinesses;
   const filteredAdminOffers = offers.filter((offer) => {
     const status = getEffectiveOfferStatus(offer);
     const searchText =
@@ -783,6 +965,16 @@ export default function AdminPage() {
     approvedPage,
     ADMIN_LIST_PAGE_SIZE
   );
+  const paginatedRejectedBusinesses = paginateItems(
+    filteredRejectedBusinesses,
+    rejectedPage,
+    ADMIN_LIST_PAGE_SIZE
+  );
+  const paginatedReviewReports = paginateItems(
+    openReviewReports,
+    reviewReportsPage,
+    ADMIN_LIST_PAGE_SIZE
+  );
   const todayDateKey = getTbilisiDateKey();
   const offersCreatedToday = offers.filter(
     (offer) => getTbilisiDateKeyFromValue(offer.created_at) === todayDateKey
@@ -803,7 +995,8 @@ export default function AdminPage() {
     activeOffers.map((offer) => offer.business_id)
   );
   const businessesWithZeroOffers = businesses.filter(
-    (business) => !businessIdsWithOffers.has(business.id)
+    (business) =>
+      !businessIdsWithOffers.has(business.id) && !business.rejected_at
   );
   const inactiveBusinesses = approvedBusinesses.filter(
     (business) => !businessIdsWithActiveOffers.has(business.id)
@@ -1187,6 +1380,7 @@ export default function AdminPage() {
               setAdminSearch(value);
               setPendingPage(1);
               setApprovedPage(1);
+              setRejectedPage(1);
             }}
             placeholder="Search admin data..."
             label="Search admin data"
@@ -1244,6 +1438,7 @@ export default function AdminPage() {
               );
               setPendingPage(1);
               setApprovedPage(1);
+              setRejectedPage(1);
             }}
             aria-label="Filter approval center"
             className="premium-input px-4 py-3 font-semibold"
@@ -1252,6 +1447,7 @@ export default function AdminPage() {
             <option value="oldest">Approval: Oldest first</option>
             <option value="needs_review">Approval: Needs review</option>
             <option value="approved">Approval: Approved</option>
+            <option value="rejected">Approval: Rejected</option>
           </select>
         </FilterBar>
 
@@ -1259,7 +1455,9 @@ export default function AdminPage() {
           <div className="ui-card rounded-2xl p-4">
             <p className="text-sm text-body">Businesses found</p>
             <p className="mt-2 text-3xl font-semibold text-cream">
-              {filteredPendingBusinesses.length + filteredApprovedBusinesses.length}
+              {filteredPendingBusinesses.length +
+                filteredApprovedBusinesses.length +
+                filteredRejectedBusinesses.length}
             </p>
           </div>
           <div className="ui-card rounded-2xl p-4">
@@ -1338,40 +1536,80 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <PendingBusinesses
-          t={t}
+        {showRejectedOnly ? (
+          <>
+            <RejectedBusinesses
+              language={language}
+              businesses={paginatedRejectedBusinesses.items}
+            />
+
+            <Pagination
+              className="mt-5"
+              page={paginatedRejectedBusinesses.page}
+              totalItems={filteredRejectedBusinesses.length}
+              pageSize={ADMIN_LIST_PAGE_SIZE}
+              label="Rejected businesses"
+              onPageChange={setRejectedPage}
+            />
+          </>
+        ) : (
+          <>
+            <PendingBusinesses
+              t={t}
+              language={language}
+              businesses={paginatedPendingBusinesses.items}
+              waitingCount={approvalVisiblePendingBusinesses.length}
+              updatingBusinessId={updatingBusinessId}
+              onApprove={(id) => void approveBusiness(id)}
+              onRequestChanges={requestBusinessChanges}
+              onReject={(id, reason) => void rejectBusinessApplication(id, reason)}
+            />
+
+            <Pagination
+              className="mt-5"
+              page={paginatedPendingBusinesses.page}
+              totalItems={approvalVisiblePendingBusinesses.length}
+              pageSize={ADMIN_LIST_PAGE_SIZE}
+              label="Pending businesses"
+              onPageChange={setPendingPage}
+            />
+
+            <ApprovedBusinesses
+              businesses={paginatedApprovedBusinesses.items}
+              updatingBusinessId={updatingBusinessId}
+              onMoveToPending={(id) => void moveToPending(id)}
+              onSetFeeRate={(id, percent) => void setBusinessFeeRate(id, percent)}
+            />
+
+            <Pagination
+              className="mt-5"
+              page={paginatedApprovedBusinesses.page}
+              totalItems={approvalVisibleApprovedBusinesses.length}
+              pageSize={ADMIN_LIST_PAGE_SIZE}
+              label="Approved businesses"
+              onPageChange={setApprovedPage}
+            />
+          </>
+        )}
+
+        <ReportedReviews
           language={language}
-          businesses={paginatedPendingBusinesses.items}
-          waitingCount={approvalVisiblePendingBusinesses.length}
-          updatingBusinessId={updatingBusinessId}
-          onApprove={(id) => void approveBusiness(id)}
-          onRequestChanges={requestBusinessChanges}
-          onReject={rejectBusinessApplication}
+          reports={paginatedReviewReports.items}
+          openCount={openReviewReports.length}
+          businessNameById={businessNameById}
+          reporterEmailById={profileEmailById}
+          updatingReportId={updatingReportId}
+          onHide={(id) => void hideReportedReview(id)}
+          onDismiss={(id) => void dismissReviewReport(id)}
         />
 
         <Pagination
           className="mt-5"
-          page={paginatedPendingBusinesses.page}
-          totalItems={approvalVisiblePendingBusinesses.length}
+          page={paginatedReviewReports.page}
+          totalItems={openReviewReports.length}
           pageSize={ADMIN_LIST_PAGE_SIZE}
-          label="Pending businesses"
-          onPageChange={setPendingPage}
-        />
-
-        <ApprovedBusinesses
-          businesses={paginatedApprovedBusinesses.items}
-          updatingBusinessId={updatingBusinessId}
-          onMoveToPending={(id) => void moveToPending(id)}
-          onSetFeeRate={(id, percent) => void setBusinessFeeRate(id, percent)}
-        />
-
-        <Pagination
-          className="mt-5"
-          page={paginatedApprovedBusinesses.page}
-          totalItems={approvalVisibleApprovedBusinesses.length}
-          pageSize={ADMIN_LIST_PAGE_SIZE}
-          label="Approved businesses"
-          onPageChange={setApprovedPage}
+          label="Reported reviews"
+          onPageChange={setReviewReportsPage}
         />
       </section>
     </main>

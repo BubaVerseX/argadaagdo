@@ -27,6 +27,28 @@ export type AdminBusiness = Business & {
   created_at?: string | null;
 };
 
+export type AdminReviewReport = {
+  id: number;
+  review_id: number;
+  reporter_id: string;
+  reason: string;
+  comment: string | null;
+  created_at: string;
+  status: string;
+  business_ratings: {
+    business_id: number;
+    rating: number;
+    comment: string | null;
+  } | null;
+};
+
+const REVIEW_REPORT_REASON_LABELS: Record<string, string> = {
+  offensive: "Offensive",
+  spam: "Spam",
+  false: "False",
+  other: "Other",
+};
+
 type MetricCard = {
   title: string;
   value: number | string;
@@ -615,8 +637,8 @@ export function AdminModerationVisibility({
         </div>
 
         <p className="max-w-xl text-sm text-body sm:text-right">
-          Rejected businesses are not a separate state in the current approval
-          model; unapproved businesses stay in the pending queue.
+          Rejected businesses leave the pending queue until the owner edits the
+          details and resubmits. Find them under the Rejected filter.
         </p>
       </div>
 
@@ -766,8 +788,8 @@ export function PendingBusinesses({
                 <textarea
                   name="reason"
                   rows={3}
-                  placeholder="Optional note for rejection or requested changes"
-                  maxLength={220}
+                  placeholder="Required to reject. The owner sees this and gets it by email."
+                  maxLength={500}
                   className="premium-input p-3 font-semibold"
                 />
               </label>
@@ -806,12 +828,178 @@ export function PendingBusinesses({
               </div>
 
               <p className="mt-3 text-xs leading-5 text-body">
-                Current database stores approval as approved or pending. Notes
-                help the operator decide what to tell the business manually.
+                Reject saves the reason and emails the owner, who can edit the
+                details and resubmit. Request changes doesn&apos;t save or send
+                anything yet, so tell the business yourself.
               </p>
             </form>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+export function RejectedBusinesses({
+  language,
+  businesses,
+}: {
+  language: Language;
+  businesses: AdminBusiness[];
+}) {
+  return (
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
+      <h2 className="text-xl font-semibold sm:text-2xl">Rejected businesses</h2>
+
+      <div className="mt-6 grid gap-4">
+        {businesses.length === 0 && (
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
+            <h3 className="text-2xl font-semibold text-cream">
+              No rejected businesses
+            </h3>
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
+              Rejected applications appear here until the owner resubmits.
+            </p>
+          </div>
+        )}
+
+        {businesses.map((business) => (
+          <div key={business.id} className="rounded-3xl bg-danger-soft p-5 sm:p-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="min-w-0 break-words text-xl font-semibold sm:text-2xl">
+                {business.name}
+              </h3>
+              <span className="rounded-full bg-danger-soft px-3 py-1 text-xs font-semibold text-danger">
+                Rejected
+              </span>
+            </div>
+
+            <div className="mt-4 grid gap-3 text-sm font-semibold text-body sm:grid-cols-2 xl:grid-cols-4">
+              <BusinessDetail label="Business type" value={business.business_type} />
+              <BusinessDetail label="Address" value={business.address} />
+              <BusinessDetail label="Phone" value={business.phone} />
+              <BusinessDetail
+                label="Rejected"
+                value={formatDisplayDateTime(business.rejected_at, language)}
+              />
+            </div>
+
+            <p className="mt-4 whitespace-pre-wrap break-words text-body">
+              <span className="font-semibold text-cream">Reason: </span>
+              {business.rejection_reason}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ReportedReviews({
+  language,
+  reports,
+  openCount,
+  businessNameById,
+  reporterEmailById,
+  updatingReportId,
+  onHide,
+  onDismiss,
+}: {
+  language: Language;
+  reports: AdminReviewReport[];
+  openCount: number;
+  businessNameById: Record<number, string>;
+  reporterEmailById: Record<string, string>;
+  updatingReportId: number | null;
+  onHide: (reportId: number) => void;
+  onDismiss: (reportId: number) => void;
+}) {
+  return (
+    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold sm:text-2xl">Reported reviews</h2>
+          <p className="mt-2 max-w-2xl leading-7 text-body">
+            Hide removes the review from public pages and closes every open
+            report on it. Dismiss closes this report and leaves the review up.
+          </p>
+        </div>
+
+        <span className="w-full rounded-full bg-warning-soft px-4 py-2 text-center text-sm font-semibold text-warning sm:w-auto">
+          {openCount} open
+        </span>
+      </div>
+
+      <div className="mt-6 grid gap-4">
+        {reports.length === 0 && (
+          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
+            <h3 className="text-2xl font-semibold text-cream">
+              No open reports
+            </h3>
+            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
+              Reviews that customers report will appear here.
+            </p>
+          </div>
+        )}
+
+        {reports.map((report) => {
+          const review = report.business_ratings;
+
+          return (
+            <div
+              key={report.id}
+              className="ui-card flex flex-col gap-4 rounded-2xl p-5 md:flex-row md:items-start md:justify-between"
+            >
+              <div className="min-w-0">
+                <p className="break-words font-semibold text-cream">
+                  {(review && businessNameById[review.business_id]) || "Unknown business"}
+                  {review ? ` · ${review.rating}/5` : ""}
+                </p>
+                <p className="mt-2 whitespace-pre-wrap break-words text-body">
+                  {review?.comment?.trim() || "No written review."}
+                </p>
+
+                <div className="mt-4 grid gap-1 text-sm text-body">
+                  <p>
+                    <span className="font-semibold text-cream">Reason: </span>
+                    {REVIEW_REPORT_REASON_LABELS[report.reason] || report.reason}
+                  </p>
+                  {report.comment && (
+                    <p className="whitespace-pre-wrap break-words">
+                      <span className="font-semibold text-cream">Comment: </span>
+                      {report.comment}
+                    </p>
+                  )}
+                  <p className="break-words">
+                    <span className="font-semibold text-cream">Reported by: </span>
+                    {reporterEmailById[report.reporter_id] || report.reporter_id}
+                    {" · "}
+                    {formatDisplayDateTime(report.created_at, language)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid shrink-0 gap-2 md:w-44">
+                <button
+                  type="button"
+                  disabled={updatingReportId !== null}
+                  onClick={() => onHide(report.id)}
+                  className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
+                >
+                  Hide review
+                </button>
+                <button
+                  type="button"
+                  disabled={updatingReportId !== null}
+                  onClick={() => onDismiss(report.id)}
+                  className="min-h-12 rounded-full bg-well px-6 py-3 font-semibold text-body transition hover:text-cream disabled:cursor-not-allowed disabled:text-muted"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
