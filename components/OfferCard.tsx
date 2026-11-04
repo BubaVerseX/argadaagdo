@@ -31,6 +31,21 @@ type OfferCardProps = {
 const overlayChipClass =
   "pointer-events-none absolute rounded-full bg-ink/75 px-2.5 py-1.5 text-xs text-mint backdrop-blur-sm";
 
+/** "3 left" / "დარჩა 3", "Available" when unlimited, null when none are left. */
+export function getOfferQuantityLabel(offer: Offer, language: Language) {
+  const quantityLeft = Number(offer.quantity ?? 0);
+
+  if (offer.unlimited_quantity) {
+    return language === "ka" ? "ხელმისაწვდომია" : "Available";
+  }
+
+  if (quantityLeft > 0) {
+    return language === "ka" ? `დარჩა ${quantityLeft}` : `${quantityLeft} left`;
+  }
+
+  return null;
+}
+
 export function OfferCard({
   offer,
   language,
@@ -43,16 +58,7 @@ export function OfferCard({
   const discountPercent = getDiscountPercent(offer);
   const originalPrice = getOriginalPrice(offer);
   const detailsHref = `/offers/${offer.id}`;
-  const quantityLeft = Number(offer.quantity ?? 0);
-  const quantityLabel = offer.unlimited_quantity
-    ? language === "ka"
-      ? "ხელმისაწვდომია"
-      : "Available"
-    : quantityLeft > 0
-    ? language === "ka"
-      ? `დარჩა ${quantityLeft}`
-      : `${quantityLeft} left`
-    : null;
+  const quantityLabel = getOfferQuantityLabel(offer, language);
   const heartClass = `absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-ink/75 backdrop-blur-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
     cornerAction?.active ? "text-mint" : "text-cream hover:text-mint"
   }`;

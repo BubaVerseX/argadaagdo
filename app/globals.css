@@ -50,7 +50,190 @@
   --foreground: var(--cream);
 }
 
+/* ---------------------------------------------------------------------
+   Design v3 palette (docs/design-v3 on claude/design-v3-reference).
+   Literal brand colours. Pages use the semantic tokens above, re-mapped by
+   the .theme-* scopes below, or these through bg-brand-* / text-brand-*.
+   --------------------------------------------------------------------- */
+:root {
+  --brand-ground: #f7f1e3;
+  --brand-forest: #0f3a32;
+  --brand-forest-2: #164a3f;
+  --brand-mint: #b8e6c4;
+  --brand-ink: #0b2b26;
+  --brand-secondary: #4e6b63;
+  --brand-honey: #f4c15d;
+  --brand-border: #e6decb;
+  --brand-white: #ffffff;
+
+  /* Category colours: card background, photo placeholder, soft decoration,
+     main text, secondary text. Every text colour is at least 4.5:1 on its
+     background. Apply one with a .cat-* class (see getOfferCategoryTone). */
+  --cat-bakery: #f4c15d;
+  --cat-bakery-photo: #e7a93a;
+  --cat-bakery-soft: #f7d27f;
+  --cat-bakery-ink: #2e1f00;
+  --cat-bakery-ink-2: #5c3d00;
+
+  --cat-produce: #8fd19e;
+  --cat-produce-photo: #6dba80;
+  --cat-produce-soft: #a7dcb3;
+  --cat-produce-ink: #0f3a32;
+  --cat-produce-ink-2: #1f4f3a;
+
+  --cat-dairy: #a9c8f2;
+  --cat-dairy-photo: #84abe6;
+  --cat-dairy-soft: #c0d7f5;
+  --cat-dairy-ink: #11305c;
+  --cat-dairy-ink-2: #1f3f70;
+
+  --cat-deli: #f2997a;
+  --cat-deli-photo: #e07a57;
+  --cat-deli-soft: #f6b39b;
+  --cat-deli-ink: #3d1405;
+  --cat-deli-ink-2: #5c2410;
+
+  /* "Mixed" uses mint. */
+  --cat-mixed: #b8e6c4;
+  --cat-mixed-photo: #8fcfa3;
+  --cat-mixed-soft: #cdeed5;
+  --cat-mixed-ink: #0f3a32;
+  --cat-mixed-ink-2: #1f4f3a;
+}
+
+.cat-bakery {
+  --cat: var(--cat-bakery);
+  --cat-photo: var(--cat-bakery-photo);
+  --cat-soft: var(--cat-bakery-soft);
+  --cat-ink: var(--cat-bakery-ink);
+  --cat-ink-2: var(--cat-bakery-ink-2);
+}
+
+.cat-produce {
+  --cat: var(--cat-produce);
+  --cat-photo: var(--cat-produce-photo);
+  --cat-soft: var(--cat-produce-soft);
+  --cat-ink: var(--cat-produce-ink);
+  --cat-ink-2: var(--cat-produce-ink-2);
+}
+
+.cat-dairy {
+  --cat: var(--cat-dairy);
+  --cat-photo: var(--cat-dairy-photo);
+  --cat-soft: var(--cat-dairy-soft);
+  --cat-ink: var(--cat-dairy-ink);
+  --cat-ink-2: var(--cat-dairy-ink-2);
+}
+
+.cat-deli {
+  --cat: var(--cat-deli);
+  --cat-photo: var(--cat-deli-photo);
+  --cat-soft: var(--cat-deli-soft);
+  --cat-ink: var(--cat-deli-ink);
+  --cat-ink-2: var(--cat-deli-ink-2);
+}
+
+.cat-mixed {
+  --cat: var(--cat-mixed);
+  --cat-photo: var(--cat-mixed-photo);
+  --cat-soft: var(--cat-mixed-soft);
+  --cat-ink: var(--cat-mixed-ink);
+  --cat-ink-2: var(--cat-mixed-ink-2);
+}
+
+.cat-bakery,
+.cat-produce,
+.cat-dairy,
+.cat-deli,
+.cat-mixed {
+  /* The image placeholder inside a category card takes the category colour. */
+  --well: var(--cat-photo);
+  --muted: var(--cat-ink-2);
+}
+
+/* Colourful app style, on the cream ground. The existing semantic tokens keep
+   their meaning, so `text-cream` is still "primary text" (now dark) and
+   `bg-mint` is still "primary action" (now deep green). */
+.theme-app {
+  color-scheme: light;
+  --page: var(--brand-ground);
+  --page-deep: var(--brand-ground);
+  --card: var(--brand-white);
+  --card-2: var(--brand-white);
+  --well: #efe7d3;
+  --line: var(--brand-border);
+  --line-strong: var(--brand-forest);
+  --cream: var(--brand-ink);
+  --body: var(--brand-secondary);
+  --body-2: var(--brand-secondary);
+  --body-light: var(--brand-secondary);
+  --muted: #47625a;
+  --mint: var(--brand-forest);
+  --mint-strong: var(--brand-forest-2);
+  --sage: var(--brand-secondary);
+  --moss: var(--brand-mint);
+  --moss-light: var(--brand-mint);
+  --ink: var(--brand-ground);
+  --amber: var(--brand-forest);
+  --amber-ink: var(--brand-ground);
+  --warning: #6b4a00;
+  --warning-soft: #f9e7bd;
+  --warning-line: #e7c777;
+  --danger: #9c2b16;
+  --danger-soft: #fbe3da;
+  --danger-line: #eeb6a3;
+  --shadow-card: 0 8px 24px rgba(15, 58, 50, 0.08);
+  --glow-cta: none;
+  background: var(--page);
+  color: var(--cream);
+}
+
+/* Deep green areas inside the app style: headers, navigation, feature panels. */
+.theme-forest {
+  color-scheme: dark;
+  --page: var(--brand-forest);
+  --page-deep: var(--brand-forest);
+  --card: var(--brand-forest-2);
+  --card-2: var(--brand-forest-2);
+  --well: var(--brand-forest-2);
+  --line: #1f4a40;
+  --line-strong: #4f7a6c;
+  --cream: var(--brand-ground);
+  --body: #c3ddcb;
+  --body-2: #c3ddcb;
+  --body-light: #c3ddcb;
+  --muted: #9dbfa8;
+  --mint: var(--brand-mint);
+  --mint-strong: #a4dab2;
+  --sage: #9dbfa8;
+  --moss: var(--brand-forest-2);
+  --moss-light: var(--brand-forest-2);
+  --ink: var(--brand-forest);
+  --shadow-card: none;
+  color: var(--cream);
+}
+
 @theme inline {
+  --color-brand-ground: var(--brand-ground);
+  --color-brand-forest: var(--brand-forest);
+  --color-brand-forest-2: var(--brand-forest-2);
+  --color-brand-mint: var(--brand-mint);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-honey: var(--brand-honey);
+  --color-brand-border: var(--brand-border);
+  --color-cat: var(--cat);
+  --color-cat-photo: var(--cat-photo);
+  --color-cat-soft: var(--cat-soft);
+  --color-cat-ink: var(--cat-ink);
+  --color-cat-ink-2: var(--cat-ink-2);
+
+  --font-serif:
+    "Noto Serif", "Noto Serif Georgian", Georgia, serif;
+
+  --radius-leaf: 22px 60px 22px 22px;
+  --radius-leaf-sm: 16px 40px 16px 16px;
+
   --color-page: var(--page);
   --color-page-deep: var(--page-deep);
   --color-card: var(--card);
@@ -210,6 +393,31 @@ textarea {
   margin-inline: auto;
 }
 
+/* App-style page width; lines up with the navbar at desktop widths. */
+.app-container {
+  width: min(100% - 2rem, 75rem);
+  margin-inline: auto;
+}
+
+/* Keep the page behind overscroll the same colour as an app-style screen. */
+body:has(.theme-app) {
+  background: var(--brand-ground);
+}
+
+/* Set by the inline script in app/layout.tsx when a session is stored, so a
+   signed-in visitor doesn't see the public page before the app has loaded. */
+html.has-session .public-home {
+  visibility: hidden;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @layer components {
   /* ---------------------------------------------------------------------
      Surfaces. Flat cards: gradient fill, 1px border, one soft shadow.
@@ -262,6 +470,37 @@ textarea {
     inset: 0;
     background: linear-gradient(180deg, rgba(5, 31, 32, 0) 55%, rgba(5, 31, 32, 0.45));
     pointer-events: none;
+  }
+
+  /* Design v3 photo shape: one large rounded corner, no gradient or overlay. */
+  .photo-leaf,
+  .photo-leaf-sm {
+    position: relative;
+    overflow: hidden;
+    background: var(--cat-photo, var(--well));
+  }
+
+  .photo-leaf {
+    border-radius: var(--radius-leaf);
+  }
+
+  .photo-leaf-sm {
+    border-radius: var(--radius-leaf-sm);
+  }
+
+  /* Discount sticker: dark circle, slightly rotated. */
+  .discount-sticker {
+    display: flex;
+    height: 3.25rem;
+    width: 3.25rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--brand-forest);
+    color: var(--brand-ground);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    transform: rotate(-8deg);
   }
 
   /* ---------------------------------------------------------------------
@@ -432,6 +671,13 @@ textarea {
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
+  }
+
+  /* Bottom navigation in the app style: a floating deep green pill. */
+  .tab-pill {
+    background: var(--brand-forest);
+    border-radius: 24px;
+    box-shadow: 0 12px 32px rgba(11, 43, 38, 0.28);
   }
 }
 

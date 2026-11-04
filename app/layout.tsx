@@ -11,7 +11,17 @@ import "@fontsource/noto-sans/latin-600.css";
 import "@fontsource/noto-sans-georgian/georgian-400.css";
 import "@fontsource/noto-sans-georgian/georgian-500.css";
 import "@fontsource/noto-sans-georgian/georgian-600.css";
+// Design v3: 700 for the app style; serif for screen titles and business names.
+import "@fontsource/noto-sans/latin-700.css";
+import "@fontsource/noto-sans-georgian/georgian-700.css";
+import "@fontsource/noto-serif/latin-700.css";
+import "@fontsource/noto-serif-georgian/georgian-700.css";
 import "./globals.css";
+
+// Runs before first paint. It only checks that a stored session exists, so the
+// public home page stays hidden for a signed-in visitor until the app style
+// takes over. app/page.tsx removes the class if there turns out to be no session.
+const sessionHintScript = `try{for(var i=0;i<localStorage.length;i++){if(/^sb-.*-auth-token$/.test(localStorage.key(i))){document.documentElement.classList.add("has-session");break}}}catch(e){}`;
 
 const appDescription =
   "Save money on Green Bags of food from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
@@ -92,7 +102,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: sessionHintScript }} />
+      </head>
       <body className="flex min-h-full flex-col">
         {children}
         <NotificationCenter />

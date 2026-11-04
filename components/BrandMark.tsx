@@ -58,6 +58,8 @@ type BrandMarkProps = {
   withName?: boolean;
   tagline?: string;
   taglineClassName?: string;
+  /** Design v3: mint tile with a flat deep green leaf. */
+  mintTile?: boolean;
 };
 
 /**
@@ -70,16 +72,27 @@ export default function BrandMark({
   withName = true,
   tagline,
   taglineClassName = "hidden text-xs text-body md:block",
+  mintTile = false,
 }: BrandMarkProps) {
   const { t } = useLanguage();
 
   return (
     <span className="flex items-center gap-3">
-      <span
-        className={`flex shrink-0 items-center justify-center rounded-[10px] border border-line bg-[linear-gradient(135deg,#0E312B,#051F20)] ${tileClassName}`}
-      >
-        <BrandLeaf className="h-[70%] w-[70%]" />
-      </span>
+      {mintTile ? (
+        <svg viewBox="0 0 200 200" aria-hidden="true" className={`shrink-0 ${tileClassName}`}>
+          <rect width="200" height="200" rx="46" fill="var(--brand-mint)" />
+          <path
+            d="M44 156 C44 96, 88 50, 158 42 C162 112, 118 158, 50 160 Z"
+            fill="var(--brand-forest)"
+          />
+        </svg>
+      ) : (
+        <span
+          className={`flex shrink-0 items-center justify-center rounded-[10px] border border-line bg-[linear-gradient(135deg,#0E312B,#051F20)] ${tileClassName}`}
+        >
+          <BrandLeaf className="h-[70%] w-[70%]" />
+        </span>
+      )}
 
       {withName && (
         <span className="min-w-0">

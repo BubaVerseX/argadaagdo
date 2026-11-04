@@ -57,6 +57,20 @@ export function getOfferCategoryLabel(
   return language === "ka" ? georgianCategoryLabels[category] : category;
 }
 
+// Category colours live in app/globals.css as .cat-* classes.
+const categoryToneClasses: Record<OfferCategory, string> = {
+  Bakery: "cat-bakery",
+  "Fruit & veg": "cat-produce",
+  Dairy: "cat-dairy",
+  Deli: "cat-deli",
+  Mixed: "cat-mixed",
+};
+
+/** The .cat-* class for a stored category, legacy values included. */
+export function getOfferCategoryTone(value: string | null | undefined) {
+  return categoryToneClasses[normalizeOfferCategory(value)];
+}
+
 // Sizes ---------------------------------------------------------------------
 
 export const BAG_SIZES = ["S", "M", "L"] as const;

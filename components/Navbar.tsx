@@ -49,7 +49,13 @@ function isApprovedValue(value: boolean | string | null) {
   return value === true || String(value) === "true";
 }
 
-export default function Navbar() {
+export default function Navbar({
+  variant = "default",
+}: {
+  /** "app": deep green header and floating bottom navigation (design v3). */
+  variant?: "default" | "app";
+}) {
+  const isAppStyle = variant === "app";
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useLanguage();
@@ -233,7 +239,11 @@ export default function Navbar() {
   })();
 
   return (
-    <nav className="sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-page px-4 py-3 sm:px-5 md:px-10">
+    <nav
+      className={`sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-page px-4 py-3 sm:px-5 md:px-10 ${
+        isAppStyle ? "theme-forest" : ""
+      }`}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
           href="/"
@@ -241,7 +251,7 @@ export default function Navbar() {
           className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
           aria-label={t("brand.name")}
         >
-          <BrandMark tagline={t("brand.tagline")} />
+          <BrandMark tagline={t("brand.tagline")} mintTile={isAppStyle} />
         </Link>
 
         {/* Desktop horizontal nav — ui-card pill row, mobile relies on
@@ -256,7 +266,7 @@ export default function Navbar() {
                   key={tabItem.href}
                   href={tabItem.href}
                   aria-current={ariaCurrent(tabItem.href)}
-                  className={`inline-flex min-h-9 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ active
+                  className={`inline-flex ${isAppStyle ? "min-h-11" : "min-h-9"} items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ active
                       ? "ui-well text-mint"
                       : "text-body hover:text-cream"
                   }`}
@@ -271,7 +281,7 @@ export default function Navbar() {
             <Link
               href="/for-businesses"
               aria-current={ariaCurrent("/for-businesses")}
-              className={`inline-flex min-h-9 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ isActivePath("/for-businesses")
+              className={`inline-flex ${isAppStyle ? "min-h-11" : "min-h-9"} items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ isActivePath("/for-businesses")
                   ? "ui-well text-mint"
                   : "text-body hover:text-cream"
               }`}
@@ -521,8 +531,48 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Fixed bottom tab bar — primary mobile navigation (translucent, blurred). */}
-      <div className="tab-bar fixed inset-x-0 bottom-0 z-50 pb-[var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))] lg:hidden">
+      {/* Fixed bottom navigation, the primary mobile navigation. */}
+      {isAppStyle && (
+        <div className="fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-50 min-[380px]:inset-x-5 lg:hidden">
+          <div className="tab-pill mx-auto flex h-16 w-full max-w-md items-center justify-around gap-0.5 px-1.5">
+            {tabs.map((tabItem) => {
+              const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;
+              const active = tabItem.kind === "link" && isActivePath(tabItem.href);
+              const label = tabItem.shortLabel ?? tabItem.label;
+              const pillClass = `flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-2xl text-xs font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
+                active ? "bg-mint px-3 text-ink" : "text-mint"
+              }`;
+              const content = (
+                <>
+                  <tabItem.Icon className="h-5 w-5 shrink-0" strokeWidth={2} />
+                  <span className={active ? "whitespace-nowrap" : "sr-only"}>{label}</span>
+                </>
+              );
+
+              return tabItem.kind === "action" ? (
+                <button key={key} type="button" onClick={tabItem.onClick} className={pillClass}>
+                  {content}
+                </button>
+              ) : (
+                <Link
+                  key={key}
+                  href={tabItem.href}
+                  aria-current={ariaCurrent(tabItem.href)}
+                  className={pillClass}
+                >
+                  {content}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div
+        className={`tab-bar fixed inset-x-0 bottom-0 z-50 pb-[var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px))] lg:hidden ${
+          isAppStyle ? "hidden" : ""
+        }`}
+      >
         <div className="mx-auto flex w-full max-w-md items-stretch justify-between gap-1 px-2 pb-1.5 pt-2 min-[360px]:px-3">
           {tabs.map((tabItem) => {
             const key = tabItem.kind === "link" ? tabItem.href : tabItem.id;

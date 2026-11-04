@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import { AppHome } from "@/components/home/AppHome";
 import Navbar from "@/components/Navbar";
 import { OfferCard } from "@/components/OfferCard";
 import OfferImage from "@/components/OfferImage";
@@ -8,6 +9,7 @@ import { LeafIcon } from "@/components/icons";
 import { getUserErrorMessage } from "@/lib/errors";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { getOfferCategoryLabel } from "@/lib/offerCategories";
+import { useHasStoredSession } from "@/lib/useHasStoredSession";
 import { useLanguage } from "@/lib/useLanguage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import {
@@ -24,6 +26,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const { language, t } = useLanguage();
+  const signedIn = useHasStoredSession();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [ratingSummaries, setRatingSummaries] = useState<
     Record<number, RatingSummary>
@@ -94,6 +97,11 @@ export default function Home() {
       active = false;
     };
   }, []);
+
+  // Clears the pre-paint hint from app/layout.tsx when no session remains.
+  useEffect(() => {
+    document.documentElement.classList.toggle("has-session", signedIn);
+  }, [signedIn]);
 
   const isGeorgian = language === "ka";
   const featuredOffers = offers.slice(0, 3);
@@ -234,8 +242,38 @@ export default function Home() {
     ? homepageCopy.heroTitle.split(homepageCopy.heroAccentPhrase)
     : [homepageCopy.heroTitle, ""];
 
+  if (signedIn) {
+    return (
+      <AppHome
+        language={language}
+        t={t}
+        content={{
+          copy: {
+            ...homepageCopy,
+            heroBefore: heroTitleBefore,
+            heroAccent: homepageCopy.heroTitle.includes(homepageCopy.heroAccentPhrase)
+              ? homepageCopy.heroAccentPhrase
+              : "",
+            heroAfter: heroTitleAfter,
+          },
+          categoryLinks,
+          stats,
+          steps,
+          businessSolutions,
+          testimonials,
+          marqueeItems,
+        }}
+        offers={offers}
+        featuredOffers={featuredOffers}
+        ratingSummaries={ratingSummaries}
+        loading={loading}
+        errorMessage={errorMessage}
+      />
+    );
+  }
+
   return (
-    <main className="app-shell">
+    <main className="app-shell public-home">
       <Navbar />
 
       <section className="relative overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:px-12 lg:pb-28 lg:pt-20">
