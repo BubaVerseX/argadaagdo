@@ -1,3 +1,4 @@
+import { absoluteBusinessUrl } from "@/lib/businessArea";
 import {
   formatPickupWindow,
   getTbilisiDateKey,
@@ -255,7 +256,7 @@ export async function sendBusinessApprovalEmail(
     event: "business_approval",
     payload: {
       businessName: business.name,
-      actionUrl: absoluteSiteUrl("/business/dashboard"),
+      actionUrl: absoluteBusinessUrl("/business/dashboard"),
       supportUrl: absoluteSiteUrl("/support"),
     },
     idempotencyKey: `business-approval-${business.id}`,
@@ -295,7 +296,7 @@ export async function sendBusinessRejectionEmail(
     payload: {
       businessName: business.name,
       rejectionReason: business.rejection_reason,
-      actionUrl: absoluteSiteUrl("/business/dashboard"),
+      actionUrl: absoluteBusinessUrl("/business/dashboard"),
       supportUrl: absoluteSiteUrl("/support"),
     },
     // Per rejection: an application rejected again after a resubmit needs its

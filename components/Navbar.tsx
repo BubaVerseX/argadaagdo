@@ -65,7 +65,6 @@ export default function Navbar({
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState("");
   const [showBusinessDashboard, setShowBusinessDashboard] = useState(false);
-  const [showBusinessRegister, setShowBusinessRegister] = useState(false);
   const [accountMenu, setAccountMenu] = useState(false);
   const [moreExpanded, setMoreExpanded] = useState(false);
   const [notifMenu, setNotifMenu] = useState(false);
@@ -105,9 +104,6 @@ export default function Navbar({
       setUser(currentUser);
       setRole(currentRole);
       setShowBusinessDashboard(currentRole === "business" && ownsBusiness);
-      setShowBusinessRegister(
-        currentRole === "business" && !ownsBusiness && !ownsApprovedBusiness
-      );
       setAuthReady(true);
     }
 
@@ -130,7 +126,6 @@ export default function Navbar({
     setUser(null);
     setRole("");
     setShowBusinessDashboard(false);
-    setShowBusinessRegister(false);
     setAuthReady(true);
     setAccountMenu(false);
     router.replace("/");
@@ -272,19 +267,6 @@ export default function Navbar({
                 </Link>
               );
             })}
-
-          {(showBusinessRegister || !user) && (
-            <Link
-              href="/for-businesses"
-              aria-current={ariaCurrent("/for-businesses")}
-              className={`inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ isActivePath("/for-businesses")
-                  ? "ui-well text-mint"
-                  : "text-body hover:text-cream"
-              }`}
-            >
-              {t("nav.forBusiness")}
-            </Link>
-          )}
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -403,17 +385,6 @@ export default function Navbar({
                         </Link>
                       )}
                     </div>
-                  )}
-
-                  {(showBusinessRegister || !user) && (
-                    <Link
-                      href="/for-businesses"
-                      onClick={() => setAccountMenu(false)}
-                      className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream lg:hidden"
-                      role="menuitem"
-                    >
-                      {t("nav.forBusiness")}
-                    </Link>
                   )}
 
                   <button

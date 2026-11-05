@@ -1,5 +1,6 @@
 "use client";
 
+import { PhoneVerification } from "@/components/PhoneVerification";
 import Footer from "@/components/Footer";
 import { ImpactCard } from "@/components/ImpactCard";
 import Navbar from "@/components/Navbar";
@@ -80,6 +81,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [phoneRequired, setPhoneRequired] = useState(false);
   const [preferredLanguage, setPreferredLanguage] =
     useState<Language>(language);
   const [loading, setLoading] = useState(true);
@@ -134,6 +137,12 @@ export default function ProfilePage() {
 
     setUser(profileResult.user);
     setProfile(profileResult.profile);
+    setPhoneVerified(
+      Boolean(profileResult.user.phone_confirmed_at && profileResult.user.phone)
+    );
+    void supabase.rpc("phone_verification_required").then(({ data }) => {
+      setPhoneRequired(data === true);
+    });
     setDisplayName(getMetadataText(metadata, "display_name"));
     setPhone(getMetadataText(metadata, "phone"));
     setPreferredLanguage(
@@ -312,6 +321,29 @@ export default function ProfilePage() {
                     className="premium-input p-4 font-semibold opacity-70"
                   />
                 </label>
+
+                {phoneVerified && (
+                  <p className="rounded-2xl bg-well p-4 text-sm font-semibold text-mint">
+                    {isGeorgian ? "ტელეფონი დადასტურებულია ✓" : "Phone confirmed ✓"}{" "}
+                    {user?.phone ? `+${user.phone}` : ""}
+                  </p>
+                )}
+
+                {phoneRequired && !phoneVerified && (
+                  <div className="rounded-2xl bg-well p-4">
+                    <p className="mb-3 font-semibold text-cream">
+                      {isGeorgian
+                        ? "დაადასტურე ტელეფონი შეკვეთამდე"
+                        : "Confirm your phone before ordering"}
+                    </p>
+                    <PhoneVerification
+                      onVerified={() => {
+                        setPhoneVerified(true);
+                        setPhoneRequired(false);
+                      }}
+                    />
+                  </div>
+                )}
 
                 <label className="grid gap-2 text-sm font-semibold text-body">
                   {isGeorgian ? "საჩვენებელი სახელი" : "Display name"}

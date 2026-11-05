@@ -24,6 +24,7 @@ import {
   ReportedReviews,
   type AdminReviewReport,
   type AdminBusiness,
+  type BusinessVerificationReview,
 } from "@/components/admin/AdminSections";
 import { getConfirmedProfile } from "@/lib/auth";
 import { calculateMarketplaceAnalytics } from "@/lib/analytics";
@@ -310,6 +311,69 @@ export default function AdminPage() {
     setMessage(`Commission for this business set to ${percent}% for new reservations.`);
   }
 
+  const [businessVerifications, setBusinessVerifications] = useState<
+    Record<number, BusinessVerificationReview>
+  >({});
+
+  const loadBusinessVerifications = useCallback(async () => {
+    const { data, error } = await supabase.rpc("admin_list_business_verifications");
+
+    if (error) {
+      logAppError("Business verifications could not be loaded", error, {
+        operation: "load_business_verifications",
+      });
+      return;
+    }
+
+    setBusinessVerifications(
+      Object.fromEntries(
+        ((data || []) as BusinessVerificationReview[]).map((row) => [row.business_id, row])
+      )
+    );
+  }, []);
+
+  useEffect(() => {
+    const initialLoad = window.setTimeout(() => void loadBusinessVerifications(), 0);
+    return () => window.clearTimeout(initialLoad);
+  }, [loadBusinessVerifications]);
+
+  async function confirmIbanHolder(id: number, confirmed: boolean) {
+    const { error } = await supabase.rpc("admin_confirm_iban_holder", {
+      p_business_id: id,
+      p_confirmed: confirmed,
+    });
+
+    if (error) {
+      setMessageTone("error");
+      setMessage("The IBAN confirmation could not be saved. Please try again.");
+      return;
+    }
+
+    await loadBusinessVerifications();
+  }
+
+  async function openRegistryExtract(path: string) {
+    // Opened before the await, or the browser treats it as a pop-up.
+    const preview = window.open("", "_blank", "noopener=no");
+    const { data, error } = await supabase.storage
+      .from("business-documents")
+      .createSignedUrl(path, 300);
+
+    if (error || !data?.signedUrl) {
+      preview?.close();
+      setMessageTone("error");
+      setMessage("The registry extract could not be opened.");
+      return;
+    }
+
+    if (preview) {
+      preview.opener = null;
+      preview.location.href = data.signedUrl;
+    } else {
+      window.location.assign(data.signedUrl);
+    }
+  }
+
   async function approveBusiness(id: number) {
     if (updatingBusinessId !== null) return;
 
@@ -337,7 +401,12 @@ export default function AdminPage() {
       });
       setUpdatingBusinessId(null);
       setMessageTone("error");
-      setMessage("Business could not be approved. Please try again.");
+      setMessage(
+        error.message.includes("IBAN holder") ||
+          error.message.includes("verification is incomplete")
+          ? error.message
+          : "Business could not be approved. Please try again."
+      );
       return;
     }
 
@@ -1608,6 +1677,9 @@ export default function AdminPage() {
               businesses={paginatedPendingBusinesses.items}
               waitingCount={approvalVisiblePendingBusinesses.length}
               updatingBusinessId={updatingBusinessId}
+              verifications={businessVerifications}
+              onConfirmIbanHolder={(id, confirmed) => void confirmIbanHolder(id, confirmed)}
+              onOpenExtract={(path) => void openRegistryExtract(path)}
               onApprove={(id) => void approveBusiness(id)}
               onRequestChanges={requestBusinessChanges}
               onReject={(id, reason) => void rejectBusinessApplication(id, reason)}

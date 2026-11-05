@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { BusinessHostGuard } from "@/components/business/BusinessHostGuard";
 import { buildPageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -12,5 +13,10 @@ export const metadata: Metadata = buildPageMetadata({
 export default function BusinessDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <>
+      <BusinessHostGuard />
+      {children}
+    </>
+  );
 }

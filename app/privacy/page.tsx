@@ -14,6 +14,10 @@ export default function PrivacyPage() {
       text: t("privacy.infoText"),
     },
     {
+      title: t("privacy.verificationTitle"),
+      text: t("privacy.verificationText"),
+    },
+    {
       title: t("privacy.accountTitle"),
       text: t("privacy.accountText"),
     },

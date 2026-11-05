@@ -1,8 +1,9 @@
 "use client";
 
+import { businessSiteUrl, isBusinessHostname } from "@/lib/businessArea";
+import { isNativeApp } from "@/lib/native";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { StoreIcon, UserIcon } from "@/components/icons";
 import {
   getProfileById,
   isEmailConfirmed,
@@ -142,7 +143,15 @@ export default function LoginPage() {
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("customer");
+  // No account-type choice: each area creates its own kind of account.
+  const isBusinessArea = useSyncExternalStore(
+    subscribeToRedirectChanges,
+    () =>
+      isBusinessHostname(window.location.hostname) ||
+      Boolean(readRedirectPath()?.startsWith("/business")),
+    () => false
+  );
+  const role: UserRole = isBusinessArea ? "business" : "customer";
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -301,6 +310,30 @@ export default function LoginPage() {
         : "customer");
 
     setSubmitting(false);
+
+    // Each area signs in its own kind of account. Sessions aren't shared
+    // between hosts, so the person signs in again on the right one.
+    if (isBusinessHostname(window.location.hostname) && resolvedRole === "customer") {
+      await supabase.auth.signOut({ scope: "local" });
+      setMessageTone("warning");
+      setMessage(
+        isGeorgian
+          ? "ეს მომხმარებლის ანგარიშია. შედი მთავარ საიტზე."
+          : "This is a customer account. Please sign in on the main site."
+      );
+      return;
+    }
+
+    if (
+      businessSiteUrl &&
+      !isBusinessHostname(window.location.hostname) &&
+      !isNativeApp() &&
+      resolvedRole === "business"
+    ) {
+      await supabase.auth.signOut({ scope: "local" });
+      window.location.assign(`${businessSiteUrl}/login`);
+      return;
+    }
 
     if (!profile) {
       setMessageTone("warning");
@@ -682,55 +715,6 @@ export default function LoginPage() {
                       ? "პაროლის განახლება"
                       : "Update password"}
                   </button>
-                </div>
-              )}
-
-              {authMode === "signup" && (
-                <div>
-                  <p className="mb-3 font-semibold text-cream">
-                    {t("login.accountType")}
-                  </p>
-                  <p className="mb-4 text-sm leading-6 text-body">
-                    {t("login.accountTypeHint")}
-                  </p>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <button
-                      type="button"
-                      onClick={() => setRole("customer")}
-                      className={`rounded-2xl p-4 text-left font-semibold transition focus:outline-none focus:ring-2 focus:ring-mint ${ role === "customer"
-                          ? "ui-well text-cream"
-                          : "ui-card text-body"
-                      }`}
-                    >
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-widest text-mint">
-                        <UserIcon className="h-3 w-3" strokeWidth={2} />
-                        {t("login.customer")}
-                      </div>
-                      <p className="mt-2">{t("login.customer")}</p>
-                      <p className="mt-1 text-sm leading-5 text-body">
-                        {t("login.customerHint")}
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setRole("business")}
-                      className={`rounded-2xl p-4 text-left font-semibold transition focus:outline-none focus:ring-2 focus:ring-mint ${ role === "business"
-                          ? "ui-well text-cream"
-                          : "ui-card text-body"
-                      }`}
-                    >
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-widest text-mint">
-                        <StoreIcon className="h-3 w-3" strokeWidth={2} />
-                        {t("login.business")}
-                      </div>
-                      <p className="mt-2">{t("login.business")}</p>
-                      <p className="mt-1 text-sm leading-5 text-body">
-                        {t("login.businessHint")}
-                      </p>
-                    </button>
-                  </div>
                 </div>
               )}
 

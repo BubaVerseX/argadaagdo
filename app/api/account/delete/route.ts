@@ -24,6 +24,56 @@ function extractBearerToken(request: Request) {
   return match?.[1] || "";
 }
 
+// The privacy policy promises this: the owner's name, phone and registry extract
+// go; the company's legal name, ID code and IBAN stay for payout records.
+async function removeVerificationPersonalData(
+  serviceClient: ReturnType<typeof createServiceRoleSupabaseClient>,
+  userId: string,
+  businessIds: number[]
+) {
+  if (businessIds.length > 0) {
+    const { error } = await serviceClient
+      .from("business_verifications")
+      .update({
+        owner_full_name: null,
+        verified_phone: null,
+        registry_extract_path: null,
+      })
+      .in("business_id", businessIds);
+
+    if (error) {
+      logger.error("Verification data could not be removed", {
+        userId,
+        error: error.message,
+      });
+    }
+  }
+
+  const bucket = serviceClient.storage.from("business-documents");
+  const { data: files, error: listError } = await bucket.list(userId);
+
+  if (listError) {
+    logger.error("Registry extracts could not be listed", {
+      userId,
+      error: listError.message,
+    });
+    return;
+  }
+
+  if (files && files.length > 0) {
+    const { error: removeError } = await bucket.remove(
+      files.map((file) => `${userId}/${file.name}`)
+    );
+
+    if (removeError) {
+      logger.error("Registry extracts could not be removed", {
+        userId,
+        error: removeError.message,
+      });
+    }
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const accessToken = extractBearerToken(request);
@@ -72,6 +122,12 @@ export async function POST(request: Request) {
       );
     }
 
+    // Read before anonymizing, which detaches the businesses from the owner.
+    const { data: ownedBusinesses } = await serviceClient
+      .from("businesses")
+      .select("id")
+      .eq("owner_id", user.id);
+
     const { error: anonymizeError } = await serviceClient.rpc(
       "anonymize_account_for_deletion",
       { p_user_id: user.id }
@@ -100,6 +156,12 @@ export async function POST(request: Request) {
       });
       return NextResponse.json({ error: DELETE_FAILED_MESSAGE }, { status: 500 });
     }
+
+    await removeVerificationPersonalData(
+      serviceClient,
+      user.id,
+      (ownedBusinesses || []).map((business: { id: number }) => business.id)
+    );
 
     const { error: deleteError } = await serviceClient.auth.admin.deleteUser(
       user.id

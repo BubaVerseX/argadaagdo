@@ -43,6 +43,10 @@ const knownRpcErrors: Array<[string, string]> = [
     "Only confirmed reservations can be cancelled.",
   ],
   ["not logged in", "Please sign in and try again."],
+  [
+    "verify your phone number",
+    "Please verify your phone number before ordering.",
+  ],
 ];
 
 const knownUserMessages = new Set(

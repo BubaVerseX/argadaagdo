@@ -6,7 +6,7 @@ import { FAQAccordion } from "@/components/help/FAQAccordion";
 import { HelpCard } from "@/components/help/HelpCard";
 import { InfoBanner } from "@/components/help/InfoBanner";
 import { TrustBadge } from "@/components/help/TrustBadge";
-import { MapPinIcon, ReceiptIcon, StoreIcon } from "@/components/icons";
+import { MapPinIcon, ReceiptIcon } from "@/components/icons";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 
@@ -149,17 +149,6 @@ export default function SupportContent() {
               }
               href="/faq"
               actionLabel={isGeorgian ? "FAQ-ის წაკითხვა" : "Read FAQ"}
-            />
-            <HelpCard
-              icon={<StoreIcon className="h-5 w-5" strokeWidth={1.8} />}
-              title={isGeorgian ? "დახმარება ბიზნესებისთვის" : "Business help"}
-              text={
-                isGeorgian
-                  ? "გაიგე, როგორ მუშაობს დამტკიცება, შეთავაზებების შექმნა, წაღების შემოწმება და მომხმარებლის შეფასებები."
-                  : "Learn how approval, offer creation, pickup verification and customer ratings work."
-              }
-              href="/business/register"
-              actionLabel={t("home.joinBusiness")}
             />
           </div>
 
