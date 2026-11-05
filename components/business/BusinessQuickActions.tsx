@@ -33,7 +33,7 @@ export function BusinessQuickActions({
         onClick={() => onSelectPanel(activePanel === "publish" ? null : "publish")}
         className={`${tileClass} premium-button`}
       >
-        {isGeorgian ? "ჩანთის გამოქვეყნება" : "Publish bag"}
+        {isGeorgian ? "ლანჩ ბოქსის გამოქვეყნება" : "Publish bag"}
       </button>
 
       <button
@@ -62,7 +62,7 @@ export function BusinessQuickActions({
             ? "გაყიდვების განახლება"
             : "Resume sales"
           : isGeorgian
-            ? "დღეს: ჩანთები აღარ არის"
+            ? "დღეს: ლანჩ ბოქსები აღარ არის"
             : "Today: no bags"}
       </button>
     </div>

@@ -110,8 +110,8 @@ export default function Home() {
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "მწვანე ჩანთები შენთან ახლოს."
-      : "Green Bags near you.",
+      ? "ლანჩ ბოქსები შენთან ახლოს."
+      : "Lunch Boxes near you.",
     reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
     reserveText: isGeorgian
       ? "გადაიხადე და მიიღე კოდი."
@@ -132,15 +132,15 @@ export default function Home() {
     whyTitle: isGeorgian ? "რატომ არის ეს მნიშვნელოვანი" : "Why it matters",
     missionLink: isGeorgian ? "ჩვენი მისია →" : "Our mission →",
     missionLine: isGeorgian
-      ? "ერთი ჩანთა ≈1 კგ საკვებს გადაარჩენს (შიდა შეფასება)."
+      ? "ერთი ლანჩ ბოქსი ≈1 კგ საკვებს გადაარჩენს (შიდა შეფასება)."
       : "One bag rescues ≈1 kg of food (internal estimate).",
     finalCtaBadge: isGeorgian ? "მზად ხარ, როცა მოისურვებ" : "Ready when you are",
     finalCtaTitle: isGeorgian
       ? "შენი შემდეგი კერძი გელოდება."
       : "Your next meal is waiting.",
     finalCtaText: isGeorgian
-      ? "დაჯავშნე მწვანე ჩანთა შენთან ახლოს."
-      : "Reserve a Green Bag near you.",
+      ? "დაჯავშნე ლანჩ ბოქსი შენთან ახლოს."
+      : "Reserve a Lunch Box near you.",
   };
   const marqueeItems = isGeorgian
     ? [
@@ -169,7 +169,7 @@ export default function Home() {
     {
       value: isGeorgian ? "≈1 კგ" : "≈1 kg",
       label: isGeorgian
-        ? "ერთი ჩანთა გადაარჩენს (შიდა შეფასება)"
+        ? "ერთი ლანჩ ბოქსი გადაარჩენს (შიდა შეფასება)"
         : "rescued by one bag (internal estimate)",
     },
   ];

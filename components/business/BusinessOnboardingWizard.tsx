@@ -120,7 +120,7 @@ export function BusinessOnboardingWizard({
   const [iban, setIban] = useState("");
   const [extractFile, setExtractFile] = useState<File | null>(null);
   const [bag, setBag] = useState<FirstBag>({
-    title: isGeorgian ? "მწვანე ჩანთა" : "Green Bag",
+    title: isGeorgian ? "ლანჩ ბოქსი" : "Lunch Box",
     category: "Bakery",
     size: "M",
     price: "",
@@ -146,7 +146,7 @@ export function BusinessOnboardingWizard({
     text("კომპანია", "Company"),
     text("ტელეფონი", "Phone"),
     text("ანგარიში", "Payout"),
-    text("პირველი ჩანთა", "First bag"),
+    text("პირველი ლანჩ ბოქსი", "First bag"),
   ];
 
   function updateCompany(field: keyof CompanyDetails, value: string) {
@@ -202,7 +202,7 @@ export function BusinessOnboardingWizard({
       const quantity = Number(bag.dailyQuantity);
 
       if (bag.title.trim().length < 3) {
-        return text("ჩანთის სახელი ძალიან მოკლეა.", "The bag name is too short.");
+        return text("ლანჩ ბოქსის სახელი ძალიან მოკლეა.", "The bag name is too short.");
       }
 
       if (!(price > 0) || (oldPrice !== null && !(oldPrice > price))) {
@@ -421,12 +421,12 @@ export function BusinessOnboardingWizard({
         {step === 4 &&
           (hasExistingBag ? (
             <p className="rounded-2xl bg-well p-4 font-semibold text-mint">
-              {text("შენი პირველი ჩანთა უკვე შენახულია ✓", "Your first bag is already saved ✓")}
+              {text("შენი პირველი ლანჩ ბოქსი უკვე შენახულია ✓", "Your first bag is already saved ✓")}
             </p>
           ) : (
             <>
               <label className={labelClass}>
-                {text("ჩანთის სახელი", "Bag name")}
+                {text("ლანჩ ბოქსის სახელი", "Bag name")}
                 <input
                   value={bag.title}
                   onChange={(event) => updateBag("title", event.target.value)}
@@ -488,7 +488,7 @@ export function BusinessOnboardingWizard({
                   />
                 </label>
                 <label className={labelClass}>
-                  {text("ჩანთა დღეში", "Bags per day")}
+                  {text("ლანჩ ბოქსი დღეში", "Bags per day")}
                   <input
                     value={bag.dailyQuantity}
                     onChange={(event) => updateBag("dailyQuantity", event.target.value)}

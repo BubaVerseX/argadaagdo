@@ -67,7 +67,7 @@ create or replace function pg_temp.submit(p_iban text, p_id_code text, p_path te
   select format(
     'select public.submit_business_application(%L,%L,%L,%L,%L,%L,%L,%L,%L,%L,%L,%L,%s,%s,%s,%L,%L)',
     'Test Bakery', 'Bakery', 'Rustaveli Ave 1', 'Test Bakery LLC', p_id_code, 'llc', 'Test Owner', p_iban, p_path,
-    'Green Bag', 'Bakery', 'M', '10', 'null', '5', '19:00', '21:00');
+    'Lunch Box', 'Bakery', 'M', '10', 'null', '5', '19:00', '21:00');
 $$;
 
 -- Applying.

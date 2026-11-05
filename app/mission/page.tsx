@@ -19,11 +19,11 @@ const content = {
       },
       {
         title: "ჩვენი გადაწყვეტა.",
-        text: "„არ გადააგდო\" საქართველოს საცხობებს, კაფეებს, რესტორნებსა და მაღაზიებს აძლევს საშუალებას, დღის ბოლოს დარჩენილი ხარისხიანი საკვები „მწვანე ჩანთებში\" შესთავაზონ მომხმარებლებს ფასდაკლებით. მომხმარებელი ზოგავს, ბიზნესი იღებს დამატებით შემოსავალს, ქვეყანა კი ამცირებს ნარჩენს.",
+        text: "„არ გადააგდო\" საქართველოს საცხობებს, კაფეებს, რესტორნებსა და მაღაზიებს აძლევს საშუალებას, დღის ბოლოს დარჩენილი ხარისხიანი საკვები „ლანჩ ბოქსებში\" შესთავაზონ მომხმარებლებს ფასდაკლებით. მომხმარებელი ზოგავს, ბიზნესი იღებს დამატებით შემოსავალს, ქვეყანა კი ამცირებს ნარჩენს.",
       },
       {
         title: "ჩვენი გავლენა.",
-        text: "ყოველი მწვანე ჩანთა დაახლოებით 1 კგ საკვებს გადაარჩენს და დაახლოებით 2.7 კგ CO₂-ის ემისიას თავიდან აგვაცილებს.* (* შიდა შეფასება)",
+        text: "ყოველი ლანჩ ბოქსი დაახლოებით 1 კგ საკვებს გადაარჩენს და დაახლოებით 2.7 კგ CO₂-ის ემისიას თავიდან აგვაცილებს.* (* შიდა შეფასება)",
       },
     ],
     methodNote:
@@ -49,11 +49,11 @@ const content = {
       },
       {
         title: "Our solution.",
-        text: "ArGadaagdo lets Georgia's bakeries, cafes, restaurants and shops offer good-quality food left at the end of the day to customers at a discount, in \"Green Bags\". Customers save, businesses earn extra income, and the country reduces its waste.",
+        text: "ArGadaagdo lets Georgia's bakeries, cafes, restaurants and shops offer good-quality food left at the end of the day to customers at a discount, in \"Lunch Boxes\". Customers save, businesses earn extra income, and the country reduces its waste.",
       },
       {
         title: "Our impact.",
-        text: "Every Green Bag rescues about 1 kg of food and avoids about 2.7 kg of CO₂ emissions.* (* internal estimate)",
+        text: "Every Lunch Box rescues about 1 kg of food and avoids about 2.7 kg of CO₂ emissions.* (* internal estimate)",
       },
     ],
     methodNote:

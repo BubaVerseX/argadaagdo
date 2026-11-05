@@ -90,8 +90,8 @@ const translations = {
     "home.title2": "Rescue food.",
     "home.title3": "Support local businesses.",
     "home.subtitle":
-      "Discounted Green Bags in Tbilisi.",
-    "home.explore": "Browse offers",
+      "Discounted Lunch Boxes in Tbilisi.",
+    "home.explore": "Discover",
     "home.joinBusiness": "For businesses",
     "home.pickupOnly": "pickup only",
     "home.onlinePayment": "pilot reservations",
@@ -174,7 +174,7 @@ const translations = {
     "customerOnboarding.stepEnjoy": "Enjoy great food at a lower price.",
 
     "offers.badge": "Live offers in Tbilisi",
-    "offers.title": "Rescue Green Bags near you.",
+    "offers.title": "Rescue Lunch Boxes near you.",
     "offers.subtitle": "Search, reserve, pick up in store.",
     "offers.filterHint":
       "Use search, categories and sorting to find the right pickup window.",
@@ -262,7 +262,7 @@ const translations = {
       "Reserve online, collect in store.",
     "businessProfile.reviewsIntro":
       "Reviews from completed pickups.",
-    "businessProfile.noActiveOffers": "No active Green Bags right now.",
+    "businessProfile.noActiveOffers": "No active Lunch Boxes right now.",
     "businessProfile.noActiveOffersHint":
       "Check back later for fresh food rescue offers from this business.",
     "businessProfile.noReviewsHint":
@@ -296,7 +296,7 @@ const translations = {
     "orders.emptyHint": "Reserve a Lunch Box and it will appear here.",
     "orders.educationTitle": "How orders work",
     "orders.educationText":
-      "Reserved bags and pickup codes appear here.",
+      "Reserved boxes and pickup codes appear here.",
     "orders.pickupCode": "Pickup code",
     "orders.showCode": "Show this code at pickup.",
     "orders.cancelPolicy": "You can cancel up to 2 hours before pickup for a full refund.",
@@ -341,7 +341,7 @@ const translations = {
     "orders.submitReview": "Submit review",
 
     "favorites.badge": "Saved offers",
-    "favorites.title": "Your favorite Green Bags.",
+    "favorites.title": "Your favorite Lunch Boxes.",
     "favorites.subtitle": "Your saved offers in one place.",
     "favorites.saved": "Saved",
     "favorites.loading": "Loading your favorites...",
@@ -416,8 +416,8 @@ const translations = {
     "businessOnboarding.badge": "Pilot onboarding",
     "businessOnboarding.welcomeTitle": "Welcome to ArGadaagdo.",
     "businessOnboarding.welcomeText":
-      "Create your first Green Bag.",
-    "businessOnboarding.createFirstBag": "Create your first Green Bag",
+      "Create your first Lunch Box.",
+    "businessOnboarding.createFirstBag": "Create your first Lunch Box",
     "businessOnboarding.workflowBadge": "Business guide",
     "businessOnboarding.workflowTitle": "How ArGadaagdo works",
     "businessOnboarding.workflowCreateOffer": "Create an offer.",
@@ -447,7 +447,7 @@ const translations = {
     "businessOnboarding.recommendedTitleValue": "Bakery Lunch Box",
     "businessOnboarding.realExamplesTitle": "Realistic offer examples",
     "businessOnboarding.realExamplesText":
-      "For example: Bakery Green Bag.",
+      "For example: Bakery Lunch Box.",
     "businessOnboarding.titleHelper":
       "Title: use a clear customer-friendly name, for example Bakery Lunch Box.",
     "businessOnboarding.quantityHelper":
@@ -558,7 +558,7 @@ const translations = {
     "forBusinesses.howStep1Title": "Register your business",
     "forBusinesses.howStep1Text":
       "Your company and pickup location.",
-    "forBusinesses.howStep2Title": "Publish a Green Bag",
+    "forBusinesses.howStep2Title": "Publish a Lunch Box",
     "forBusinesses.howStep2Text":
       "Price, quantity, pickup time.",
     "forBusinesses.howStep3Title": "Get reserved and paid",
@@ -754,7 +754,7 @@ const translations = {
     "about.missionSupportLocal": "Support local businesses.",
     "about.ctaTitle": "Join the food rescue movement",
     "about.ctaText":
-      "Browse offers or contact us.",
+      "Discover offers or contact us.",
 
     "privacy.badge": "Privacy",
     "privacy.title": "Privacy Policy",
@@ -903,8 +903,8 @@ const translations = {
     "home.title2": "გადაარჩინე საკვები.",
     "home.title3": "მხარი დაუჭირე ადგილობრივ ბიზნესებს.",
     "home.subtitle":
-      "მწვანე ჩანთები ფასდაკლებით, თბილისში.",
-    "home.explore": "შეთავაზებების ნახვა",
+      "ლანჩ ბოქსები ფასდაკლებით, თბილისში.",
+    "home.explore": "აღმოჩენა",
     "home.joinBusiness": "ბიზნესებისთვის",
     "home.pickupOnly": "მხოლოდ წაღება",
     "home.onlinePayment": "პილოტური ჯავშნები",
@@ -987,7 +987,7 @@ const translations = {
     "customerOnboarding.stepEnjoy": "ისიამოვნე კარგი საკვებით უკეთეს ფასად.",
 
     "offers.badge": "ცოცხალი შეთავაზებები თბილისში",
-    "offers.title": "მწვანე ჩანთები შენთან ახლოს.",
+    "offers.title": "ლანჩ ბოქსები შენთან ახლოს.",
     "offers.subtitle": "მოძებნე, დაჯავშნე, წაიღე ადგილზე.",
     "offers.search": "მოძებნე საკვები, ბიზნესი, მისამართი...",
     "offers.reset": "გასუფთავება",
@@ -1075,7 +1075,7 @@ const translations = {
       "დაჯავშნე ონლაინ, წაიღე ადგილზე.",
     "businessProfile.reviewsIntro":
       "შეფასებები დასრულებული წაღებების შემდეგ.",
-    "businessProfile.noActiveOffers": "ახლა აქტიური მწვანე ჩანთები არ არის.",
+    "businessProfile.noActiveOffers": "ახლა აქტიური ლანჩ ბოქსები არ არის.",
     "businessProfile.noActiveOffersHint":
       "ამ ბიზნესის ახალი საკვების გადარჩენის შეთავაზებებისთვის მოგვიანებით შეამოწმე.",
     "businessProfile.noReviewsHint":
@@ -1109,7 +1109,7 @@ const translations = {
     "orders.emptyHint": "დაჯავშნე ლანჩ ბოქსი და ის აქ გამოჩნდება.",
     "orders.educationTitle": "როგორ მუშაობს შეკვეთები",
     "orders.educationText":
-      "დაჯავშნილი ჩანთები და კოდები აქ გამოჩნდება.",
+      "დაჯავშნილი ლანჩ ბოქსები და კოდები აქ გამოჩნდება.",
     "orders.pickupCode": "წაღების კოდი",
     "orders.showCode": "აჩვენე ეს კოდი ადგილზე.",
     "orders.cancelPolicy": "გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე სრული დაბრუნებით.",
@@ -1154,7 +1154,7 @@ const translations = {
     "orders.submitReview": "შეფასების გაგზავნა",
 
     "favorites.badge": "შენახული შეთავაზებები",
-    "favorites.title": "შენი რჩეული მწვანე ჩანთები.",
+    "favorites.title": "შენი რჩეული ლანჩ ბოქსები.",
     "favorites.subtitle": "შენი საყვარელი შეთავაზებები ერთად.",
     "favorites.saved": "შენახული",
     "favorites.loading": "რჩეულები იტვირთება...",
@@ -1171,7 +1171,7 @@ const translations = {
       "ეს შენახული შეთავაზება შეიძლება დასრულდა, გაიყიდა ან აღარ არის ხელმისაწვდომი.",
 
     "businessDashboard.title": "მართე შეთავაზებები და წაღებები.",
-    "businessDashboard.subtitle": "გამოაქვეყნე ჩანთები და გაეცი შეკვეთები.",
+    "businessDashboard.subtitle": "გამოაქვეყნე ლანჩ ბოქსები და გაეცი შეკვეთები.",
     "businessDashboard.welcome": "კეთილი დაბრუნება",
     "businessDashboard.welcomeText":
       "მართე შეთავაზებები, ჯავშნები და მომხმარებლის გამოხმაურება ერთ ადგილას.",
@@ -1227,8 +1227,8 @@ const translations = {
     "businessOnboarding.badge": "საპილოტე ონბორდინგი",
     "businessOnboarding.welcomeTitle": "კეთილი იყოს შენი მობრძანება არ გადააგდოში.",
     "businessOnboarding.welcomeText":
-      "შექმენი პირველი მწვანე ჩანთა.",
-    "businessOnboarding.createFirstBag": "პირველი მწვანე ჩანთის შექმნა",
+      "შექმენი პირველი ლანჩ ბოქსი.",
+    "businessOnboarding.createFirstBag": "პირველი ლანჩ ბოქსის შექმნა",
     "businessOnboarding.workflowBadge": "ბიზნეს გზამკვლევი",
     "businessOnboarding.workflowTitle": "როგორ მუშაობს არ გადააგდო",
     "businessOnboarding.workflowCreateOffer": "შექმენი შეთავაზება.",
@@ -1258,7 +1258,7 @@ const translations = {
     "businessOnboarding.recommendedTitleValue": "საცხობის ლანჩ ბოქსი",
     "businessOnboarding.realExamplesTitle": "რეალისტური შეთავაზებების მაგალითები",
     "businessOnboarding.realExamplesText":
-      "მაგალითად: საცხობის მწვანე ჩანთა.",
+      "მაგალითად: საცხობის ლანჩ ბოქსი.",
     "businessOnboarding.titleHelper":
       "სათაური: გამოიყენე მკაფიო სახელი, მაგალითად საცხობის ლანჩ ბოქსი.",
     "businessOnboarding.quantityHelper":
@@ -1348,7 +1348,7 @@ const translations = {
     "forBusinesses.metaBadge": "ბიზნესებისთვის",
     "forBusinesses.heroTitle": "შენს გაუყიდავ საკვებს ჯერ კიდევ აქვს ღირებულება.",
     "forBusinesses.heroSubtitle":
-      "გაყიდე დარჩენილი საკვები ჩანთებად.",
+      "გაყიდე დარჩენილი საკვები ლანჩ ბოქსებად.",
     "forBusinesses.heroCtaRegister": "დაარეგისტრირე ბიზნესი",
     "forBusinesses.heroCtaContact": "ჯერ დაგვიკავშირდი",
     "forBusinesses.problemBadge": "პრობლემა",
@@ -1371,7 +1371,7 @@ const translations = {
     "forBusinesses.howStep1Title": "დაარეგისტრირე ბიზნესი",
     "forBusinesses.howStep1Text":
       "შენი კომპანია და წაღების ადგილი.",
-    "forBusinesses.howStep2Title": "გამოაქვეყნე მწვანე ჩანთა",
+    "forBusinesses.howStep2Title": "გამოაქვეყნე ლანჩ ბოქსი",
     "forBusinesses.howStep2Text":
       "ფასი, რაოდენობა, წაღების დრო.",
     "forBusinesses.howStep3Title": "მიიღე ჯავშანი და გადახდა",
