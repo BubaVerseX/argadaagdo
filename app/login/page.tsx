@@ -1,6 +1,6 @@
 "use client";
 
-import { businessSiteUrl, isBusinessHostname } from "@/lib/businessArea";
+import { businessLoginUrl, businessSiteUrl, isBusinessHostname } from "@/lib/businessArea";
 import { isNativeApp } from "@/lib/native";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
@@ -498,39 +498,38 @@ export default function LoginPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
-          <div className="premium-surface rounded-3xl p-6 sm:rounded-3xl sm:p-8 md:p-12">
-            <p className="premium-badge px-4 py-2">
-              {t("login.title")}
-            </p>
+          {isBusinessArea ? (
+            <div className="theme-forest rounded-3xl bg-brand-forest p-6 sm:p-8 md:p-12">
+              <p className="premium-badge px-4 py-2">{t("login.business")}</p>
 
-            <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
-              {t("login.signIn")} · ArGadaagdo
-            </h1>
+              <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
+                {t("login.businessTitle")}
+              </h1>
 
-            <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
-              {t("home.subtitle")}
-            </p>
+              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
+                {t("login.forBusinessesText")}
+              </p>
+            </div>
+          ) : (
+            <div className="premium-surface rounded-3xl p-6 sm:rounded-3xl sm:p-8 md:p-12">
+              <p className="premium-badge px-4 py-2">{t("login.title")}</p>
 
-            <div className="mt-8 grid gap-4">
-              <div className="premium-card rounded-3xl p-5">
+              <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
+                {t("login.signIn")} · ArGadaagdo
+              </h1>
+
+              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
+                {t("home.subtitle")}
+              </p>
+
+              <div className="premium-card mt-8 rounded-3xl p-5">
                 <h3 className="text-xl font-semibold text-cream">
                   {t("login.forCustomers")}
                 </h3>
-                <p className="mt-2 text-body">
-                  {t("login.forCustomersText")}
-                </p>
-              </div>
-
-              <div className="premium-card rounded-3xl p-5">
-                <h3 className="text-xl font-semibold text-cream">
-                  {t("login.forBusinesses")}
-                </h3>
-                <p className="mt-2 text-body">
-                  {t("login.forBusinessesText")}
-                </p>
+                <p className="mt-2 text-body">{t("login.forCustomersText")}</p>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:p-10">
             <h2 className="text-2xl font-semibold text-cream sm:text-3xl">
@@ -771,6 +770,17 @@ export default function LoginPage() {
                 <Notice tone={messageTone}>
                   {translateUserMessage(message, language)}
                 </Notice>
+              )}
+
+              {!isBusinessArea && (
+                <p className="text-center text-sm">
+                  <a
+                    href={businessLoginUrl}
+                    className="inline-flex min-h-11 items-center text-body underline underline-offset-4 transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                  >
+                    {t("login.businessLink")}
+                  </a>
+                </p>
               )}
             </div>
           </div>

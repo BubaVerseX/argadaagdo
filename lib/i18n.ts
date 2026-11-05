@@ -502,7 +502,8 @@ const translations = {
     "login.businessHint": "Create and manage offers.",
     "login.forCustomers": "For customers",
     "login.forCustomersText": "Reserve discounted Lunch Boxes and collect them in person.",
-    "login.forBusinesses": "For businesses",
+    "login.businessTitle": "Business sign in",
+    "login.businessLink": "Are you a business? Sign in here",
     "login.forBusinessesText": "Create pickup-only offers and manage customer reservations.",
 
     "businessRegister.badge": "For local businesses",
@@ -1315,7 +1316,8 @@ const translations = {
     "login.businessHint": "შექმენი და მართე შეთავაზებები.",
     "login.forCustomers": "მომხმარებლებისთვის",
     "login.forCustomersText": "დაჯავშნე ფასდაკლებული ლანჩ ბოქსები და წაიღე ადგილზე.",
-    "login.forBusinesses": "ბიზნესებისთვის",
+    "login.businessTitle": "ბიზნესის შესვლა",
+    "login.businessLink": "ბიზნესი ხარ? შედი აქ",
     "login.forBusinessesText": "შექმენი ადგილზე წასაღები შეთავაზებები და მართე მომხმარებლის ჯავშნები.",
 
     "businessRegister.badge": "ადგილობრივი ბიზნესებისთვის",

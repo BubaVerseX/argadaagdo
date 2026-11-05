@@ -24,6 +24,9 @@ export function absoluteBusinessUrl(path: string) {
   return businessSiteUrl ? `${businessSiteUrl}${path}` : absoluteSiteUrl(path);
 }
 
+/** Where businesses sign in. Linked from the customer login even before the env var is set. */
+export const businessLoginUrl = `${businessSiteUrl || "https://business.argadaagdo.ge"}/login`;
+
 /** The link in the customer site's footer. */
 export function businessHomeUrl() {
   return businessSiteUrl ? `${businessSiteUrl}/` : "/for-businesses";
