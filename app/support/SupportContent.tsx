@@ -74,7 +74,7 @@ const businessQuestions = {
     {
       question: "How do ratings work?",
       answer:
-        "Customers can rate a business after a completed pickup. Ratings help future customers choose trusted local places.",
+        "Customers can rate a business after a completed pickup. Ratings help other customers choose where to reserve.",
     },
   ],
   ka: [
@@ -91,7 +91,7 @@ const businessQuestions = {
     {
       question: "როგორ მუშაობს შეფასებები?",
       answer:
-        "მომხმარებლებს ბიზნესის შეფასება დასრულებული წაღების შემდეგ შეუძლიათ. შეფასებები მომავალ მომხმარებლებს სანდო ადგილობრივი ადგილების არჩევაში ეხმარება.",
+        "მომხმარებლებს ბიზნესის შეფასება დასრულებული წაღების შემდეგ შეუძლიათ. შეფასებები სხვა მომხმარებლებს ეხმარება, აირჩიონ, სად დაჯავშნონ.",
     },
   ],
 };

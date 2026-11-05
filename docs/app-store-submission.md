@@ -454,7 +454,7 @@ assumed from memory.
 - **Category**: Food & Drink.
 - **Release notes (v1)**: same text as App Store "What's New" above.
 
-### Full description (both stores — 1,999 / 4,000 chars, identical copy works for both)
+### Full description (both stores — 1,995 / 4,000 chars, identical copy works for both)
 
 ```
 Rescue great food from local Tbilisi businesses — at a real discount.
@@ -462,7 +462,7 @@ Rescue great food from local Tbilisi businesses — at a real discount.
 Every day, bakeries, cafes, and restaurants across Tbilisi prepare more food than they sell. What doesn't sell by closing time usually gets thrown away. ArGadaagdo connects you directly with these businesses so surplus food finds a home instead of a bin, and you get a genuinely good deal.
 
 HOW IT WORKS
-1. Discover - Browse Lunch Boxes from real Tbilisi favorites, updated throughout the day.
+1. Discover - Browse Lunch Boxes from Tbilisi businesses, updated throughout the day.
 2. Reserve - Pay securely in the app and get your pickup code instantly.
 3. Collect - Swing by during the pickup window, show your code, and enjoy.
 

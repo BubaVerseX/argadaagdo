@@ -932,8 +932,8 @@ export default function DiscoverClient() {
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
                 {isGeorgian
-                  ? "სანდო ადგილობრივი ადგილები"
-                  : "Trusted local places"}
+                  ? "ადგილობრივი ბიზნესები"
+                  : "Local businesses"}
               </h2>
             </div>
             <Link

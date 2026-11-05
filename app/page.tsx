@@ -111,8 +111,8 @@ export default function Home() {
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების ლანჩ ბოქსები, სანამ გაქრება."
-      : "Spot Lunch Boxes from real Tbilisi favorites before they're gone.",
+      ? "დაათვალიერე თბილისის ბიზნესების ლანჩ ბოქსები, სანამ გაქრება."
+      : "Spot Lunch Boxes from Tbilisi businesses before they're gone.",
     reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
     reserveText: isGeorgian
       ? "გადაიხადე უსაფრთხოდ ერთი შეხებით და მაშინვე მიიღე წაღების კოდი."

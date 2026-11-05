@@ -574,7 +574,7 @@ const translations = {
       "You only pay a commission once a box is actually reserved and paid for.",
     "forBusinesses.ctaTitle": "Ready to stop throwing food away?",
     "forBusinesses.ctaText":
-      "Join the Tbilisi businesses turning surplus food into sales instead of waste.",
+      "Turn surplus food into sales instead of waste.",
     "forBusinesses.ctaRegister": "Register your business",
     "forBusinesses.ctaQuestions": "Have questions first?",
     "forBusinesses.ctaContact": "Contact us",
@@ -1383,7 +1383,7 @@ const translations = {
       "საკომისიოს იხდი მხოლოდ მაშინ, როცა ლანჩ ბოქსი რეალურად დაჯავშნილი და გადახდილია.",
     "forBusinesses.ctaTitle": "მზად ხარ, შეწყვიტო საკვების გადაყრა?",
     "forBusinesses.ctaText":
-      "შემოუერთდი თბილისის ბიზნესებს, რომლებიც ჭარბ საკვებს გაყიდვად აქცევენ ნარჩენის ნაცვლად.",
+      "გადააქციე ჭარბი საკვები გაყიდვებად, ნარჩენის ნაცვლად.",
     "forBusinesses.ctaRegister": "დაარეგისტრირე ბიზნესი",
     "forBusinesses.ctaQuestions": "გაქვს კითხვები?",
     "forBusinesses.ctaContact": "დაგვიკავშირდი",
