@@ -10,7 +10,20 @@ import {
   type ReactNode,
 } from "react";
 
-const subscribe = () => () => {};
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+/** The URL's ?full=1 changed inside the app: pages re-check which view they show. */
+export function notifyNativeRouteChange() {
+  listeners.forEach((listener) => listener());
+}
+
 const serverFalse = () => false;
 // Never resolves: see WebHold.
 const never = new Promise<never>(() => {});

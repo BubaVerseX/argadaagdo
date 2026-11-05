@@ -9,6 +9,7 @@ import {
 } from "@/components/icons";
 import { getProfileById } from "@/lib/auth";
 import { isNativeScreenUrl } from "@/lib/nativeBoot";
+import { notifyNativeRouteChange } from "./NativeSwitch";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
@@ -29,6 +30,7 @@ function ScreenClassSync() {
       "native-screen",
       isNativeScreenUrl(pathname, search ? `?${search}` : "")
     );
+    notifyNativeRouteChange();
   }, [pathname, search]);
 
   return null;

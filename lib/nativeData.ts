@@ -155,14 +155,22 @@ export function useNativeFeed() {
     sweepExpiredOffersOnce();
 
     void (async () => {
-      const [publicFeed, signedInOffers] = await Promise.all([
-        fetchPublicFeed(),
-        fetchSignedInOffers().catch(() => null),
-      ]);
+      const signedInRequest = fetchSignedInOffers().catch(() => null);
+      const publicFeed = await fetchPublicFeed();
 
       if (!active) return;
 
-      if (publicFeed) storeFeed(publicFeed);
+      // Show the public offers as soon as they're here; a signed-in view
+      // replaces them when it arrives.
+      if (publicFeed) {
+        storeFeed(publicFeed);
+        setFeed(publicFeed);
+        setLoading(false);
+      }
+
+      const signedInOffers = await signedInRequest;
+
+      if (!active) return;
 
       const nextFeed: NativeFeed | null =
         signedInOffers && (publicFeed || feedInMemory)
