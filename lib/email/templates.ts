@@ -410,7 +410,7 @@ export function buildTransactionalEmailTemplate(
     case "rating_reminder": {
       const subject = `Rate your pickup from ${businessName}`;
       const intro =
-        "Your rating helps other customers choose trusted local businesses and helps partners improve.";
+        "Your rating helps other customers choose where to pick up and helps partners improve.";
       return {
         subject,
         preview: "Share your ArGadaagdo pickup experience.",
