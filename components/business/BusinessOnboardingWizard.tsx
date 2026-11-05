@@ -332,8 +332,8 @@ export function BusinessOnboardingWizard({
             />
             <span className="font-semibold leading-6 text-body">
               {isGeorgian
-                ? "მომხმარებლები ამ მისამართზე მოვლენ დაჯავშნილი მწვანე ჩანთების წასაღებად."
-                : "Customers will use this address to collect reserved Green Bags."}
+                ? "მომხმარებლები ამ მისამართზე მოვლენ დაჯავშნილი ლანჩ ბოქსების წასაღებად."
+                : "Customers will use this address to collect reserved Lunch Boxes."}
             </span>
           </label>
         )}

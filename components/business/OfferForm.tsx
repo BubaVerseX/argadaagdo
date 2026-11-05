@@ -115,8 +115,8 @@ export function OfferForm({
       </h2>
       <p className="mt-2 max-w-xl text-sm leading-6 text-body">
         {isGeorgian
-          ? "ერთჯერადი შეთავაზებისთვის. ყოველდღიური ჩანთებისთვის გამოიყენე შაბლონები ზემოთ."
-          : "For a one-off offer. Daily bags are better set up as templates above."}
+          ? "ერთჯერადი შეთავაზებისთვის. ყოველდღიური ლანჩ ბოქსებისთვის გამოიყენე შაბლონები ზემოთ."
+          : "For a one-off offer. Daily boxes are better set up as templates above."}
       </p>
 
       {canCreateOffers ? (

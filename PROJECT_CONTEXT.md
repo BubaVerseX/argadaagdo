@@ -4,7 +4,7 @@ Read this file first, before exploring the codebase. It exists so a fresh
 Claude Code session doesn't have to rediscover the same things by grepping
 around. Update it when the architecture materially changes.
 
-## 🆕 2026-11-01 — Green Bag model (PR #28, merged and deployed)
+## 🆕 2026-11-01 — Lunch Box model (PR #28, merged and deployed)
 
 Migrations 1–3 (`20261101110454_green_bag_sizes`,
 `20261101110658_departments_and_bag_templates`, `20261101110702_swipe_to_collect`)
@@ -12,7 +12,7 @@ were **applied to production on 2026-11-01**. Migration 4
 (`20261104081140_platform_fee_rate`) was **applied on 2026-11-04, so live fees
 are now per business (30% default)**. Each file ends with a commented Down block.
 
-- **Naming**: "surprise bag / სიურპრიზის ყუთი" → "Green Bag / მწვანე ჩანთა"
+- **Naming**: "surprise bag / სიურპრიზის ყუთი" → "Lunch Box / ლანჩ ბოქსი"
   in UI, emails, SEO/OG text and docs. The App Review demo bag keeps its
   literal title "Demo surprise bag (free, App Review)" and the reviewer notes
   in `docs/app-store-submission.md` are unchanged on purpose.
@@ -21,7 +21,7 @@ are now per business (30% default)**. Each file ends with a commented Down block
   რძის ნაწარმი / კულინარია / შერეული); old values (Cafe, Restaurant, Grocery,
   Other) stay in the DB and display under the nearest tag. Size S / M / L is
   `offers.size` with its own price. `getGreenBagLabel()` renders
-  "Green Bag M · Bakery" everywhere (cards, detail, checkout, orders,
+  "Lunch Box M · Bakery" everywhere (cards, detail, checkout, orders,
   dashboard, staff page).
 - **Departments** (`departments`, owner-managed through RLS): a store can
   split into departments, each with its own bag templates, schedule and an
@@ -229,7 +229,7 @@ deployed to production, and verified live — see the full status section
 immediately below for the detailed proof. Nothing is stuck mid-work.
 
 **What's blocking further progress — exactly three things, none of them code:**
-1. **Domain purchase** (`argadaagdo.ge` not yet registered)
+1. **Domain purchase** (done since: `argadaagdo.ge` is live on Vercel)
 2. **TBC/BOG bank payment integration** (naming question unresolved — see
    below — plus real banking credentials, which the founder is obtaining
    through the real-world process this break is for)
@@ -292,7 +292,7 @@ the current truth.
 half-merged, and nothing waiting on a decision except the three items listed
 under "Only remaining blockers" below.**
 
-### Fully built and verified live in production (`https://argadaagdo-silk.vercel.app`)
+### Fully built and verified live in production (`https://argadaagdo.ge`)
 - **Core marketplace loop**: browse offers, offer detail, checkout (correctly
   stops *before* payment with a clean generic error, since BOG isn't
   configured — this is expected, not broken, see blockers below), orders,
@@ -337,7 +337,7 @@ under "Only remaining blockers" below.**
   overflowing at every mobile width, not just the originally-reported 428px)
   is fixed and verified at 375/390/428, EN/KA.
 - **Deploy pipeline**: confirmed working end-to-end this session — PR merge
-  → Vercel's GitHub integration auto-deploys → `argadaagdo-silk.vercel.app`
+  → Vercel's GitHub integration auto-deploys → `argadaagdo.ge`
   and its sibling aliases re-point to the new deployment, all within about a
   minute, verified by matching the deployment's `githubCommitSha` to the
   actual merge commit (not just "it looks new").
@@ -379,9 +379,8 @@ These are the three things — and the *only* three things — standing between
 this project and a real launch. Nothing else needs a decision, a credential,
 or a purchase to move forward:
 
-1. **Domain purchase** — `argadaagdo.ge` is still not registered on the
-   Vercel account. The app runs fine on `argadaagdo-silk.vercel.app` in the
-   meantime. `docs/domain-day-checklist.md` has the full day-of runbook
+1. **Domain purchase** — done since: `argadaagdo.ge` is live on Vercel.
+   `docs/domain-day-checklist.md` has the full day-of runbook
    (DNS, `NEXT_PUBLIC_SITE_URL`, Supabase Auth URL config, Resend domain
    verification, Capacitor `server.url` — all traced through the codebase
    already, nothing left to investigate, just to execute once the domain is
@@ -423,7 +422,7 @@ not easily reversible.
 ArGadaagdo is a pickup-only food-rescue marketplace for Tbilisi, Georgia
 (Too Good To Go model). Businesses list discounted surprise bags; customers
 pay online and pick up in person with a code. It's a production-demo MVP,
-currently live at `https://argadaagdo-silk.vercel.app`.
+currently live at `https://argadaagdo.ge`.
 
 Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind 4, Supabase
 (Auth + Postgres + RLS + Storage + Realtime + RPC), Resend for transactional
@@ -539,7 +538,7 @@ the kind of drift this file exists to prevent):
 - `CRON_SECRET` — Production
 
 Cross-checked against `/api/health` (public endpoint,
-`https://argadaagdo-silk.vercel.app/api/health`), which today reports
+`https://argadaagdo.ge/api/health`), which today reports
 `"status":"warning"` with `"4 production variable(s) should be configured
 before launch"` — and `lib/monitoring.ts`'s `envRequirements` list makes it
 possible to name exactly which 4 without needing `HEALTH_CHECK_SECRET` (which
@@ -741,10 +740,8 @@ doesn't rot; read that doc rather than re-deriving any of this.
 Headline findings for a future session to know without re-checking:
 - Capacitor scaffolding (from an even earlier session) was already correct
   — `com.argadaagdo.app` v1.0, `server.url` pointing at
-  `argadaagdo-silk.vercel.app`. `argadaagdo.ge` is **still not registered**
-  on the Vercel account as of this session (re-verify before assuming
-  otherwise — same "don't trust a stale note" lesson as the payment section
-  above).
+  the old Vercel address. `argadaagdo.ge` was not registered yet at the time
+  (it is live now; `server.url` was moved to it for the 1.0.1 builds).
 - iOS/Android icons and splash screens were still Capacitor's **default
   unbranded placeholder** (blue "X") until this session — now replaced with
   the real logo. (Superseded 2026-10-27 by the green re-theme — see the
@@ -910,7 +907,7 @@ password only), Resend domain verification, Capacitor `server.url` +
 `npx cap sync` (with a caveat that this only matters once a real native
 build/submission happens, which hasn't yet), doc reference updates, and an
 end-to-end verification checklist. Every literal reference to
-`argadaagdo-silk.vercel.app` in the repo was found by grep, not by memory —
+old-address mention in the repo was found by grep, not by memory —
 listed in the checklist doc itself so it can be re-run on the actual day.
 
 **5. Full honest completeness audit** (beyond payments/domain, which are

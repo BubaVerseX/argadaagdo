@@ -19,9 +19,9 @@ Dashboard → Authentication → Users if lost.
 | Bundle ID | `com.argadaagdo.app` |
 | Display name | ArGadaagdo |
 | Version / build | 1.0.0 / 1 (`MARKETING_VERSION` / `CURRENT_PROJECT_VERSION`) |
-| Loads | `https://argadaagdo-silk.vercel.app` (`capacitor.config.ts` → `server.url`) |
+| Loads | `https://argadaagdo.ge` (`capacitor.config.ts` → `server.url`) |
 | Devices | iPhone only (`TARGETED_DEVICE_FAMILY = 1`), iOS 15+ |
-| Icon / splash | real bag logo, 1024×1024 RGB without alpha / beige `#ece4d6` splash |
+| Icon / splash | real box logo, 1024×1024 RGB without alpha / beige `#ece4d6` splash |
 | Encryption | `ITSAppUsesNonExemptEncryption = false` (HTTPS only), so no export-compliance question |
 | Toolchain | Xcode 27.0 installed; Apple requires Xcode 26+ / iOS 26 SDK since 2026-04-28 |
 
@@ -37,8 +37,8 @@ new build + review (see `docs/domain-day-checklist.md`).
 
 ## 2. Reviewer demo (no real payment)
 
-> 2026-11-01: the product was renamed from "surprise bag" to "Green Bag"
-> (branch `claude/green-bag`). The demo business, the demo bag's literal
+> 2026-11-01: the product was renamed from "Lunch Box" to "Lunch Box"
+> (branch `claude/green-bag`). The demo business, the demo box's literal
 > title "Demo surprise bag (free, App Review)", the 6-digit code flow and the
 > reviewer steps below are deliberately unchanged, so this section still
 > matches what the reviewer sees. Only re-check them after that branch ships.
@@ -60,8 +60,8 @@ to production 2026-10-26 after a rolled-back dry run.
   TBC: reserved order, 6-digit pickup code, no payment row. Cancelling and
   completing the pickup use the normal code paths, with no bank call.
 - `refresh_review_demo_offers()` (daily payment-maintenance cron, 03:00 UTC)
-  keeps the bag on sale for tomorrow 18:00–21:00 with 20 boxes. **Before
-  submitting and while in review, check the bag is visible** when signed in
+  keeps the box on sale for tomorrow 18:00–21:00 with 20 boxes. **Before
+  submitting and while in review, check the box is visible** when signed in
   as the demo customer; if the cron ever fails, run
   `select public.refresh_review_demo_offers();` in the Supabase SQL editor.
 - If a reviewer deletes a demo account, recreate it with the same email
@@ -89,12 +89,12 @@ with a Georgian section, and the keywords mix in two Georgian words.
 | Subtitle | `Rescue surplus food in Tbilisi` | 30/30 |
 | Primary language | English (U.K.) | |
 | Primary / secondary category | Food & Drink / Shopping | |
-| Promotional text | `Surprise boxes of good leftover food from Tbilisi bakeries, cafes and restaurants, at a discount. Reserve in the app, pick up in person, cut food waste.` | 152/170 chars |
-| Keywords (recommended, EN + KA) | `bakery,cafe,surprise,box,discount,leftover,waste,pickup,საკვები,საცხობი` | 99/100 **bytes** |
-| Keywords (English only) | `bakery,cafe,restaurant,surprise,bag,box,discount,deals,leftover,waste,pickup,Georgia,meal,eco,save` | 98/100 bytes |
-| Support URL | `https://argadaagdo-silk.vercel.app/support` | |
-| Marketing URL | `https://argadaagdo-silk.vercel.app` | |
-| Privacy Policy URL | `https://argadaagdo-silk.vercel.app/privacy` | |
+| Promotional text | `Lunch Boxes of good leftover food from Tbilisi bakeries, cafes and restaurants, at a discount. Reserve in the app, pick up in person, cut food waste.` | 149/170 chars |
+| Keywords (recommended, EN + KA) | `bakery,cafe,lunch,box,discount,leftover,waste,pickup,საკვები,საცხობი` | 96/100 **bytes** |
+| Keywords (English only) | `bakery,cafe,restaurant,lunch,box,discount,deals,leftover,waste,pickup,Georgia,meal,eco,save` | 91/100 bytes |
+| Support URL | `https://argadaagdo.ge/support` | |
+| Marketing URL | `https://argadaagdo.ge` | |
+| Privacy Policy URL | `https://argadaagdo.ge/privacy` | |
 | Copyright | `2026 ArGadaagdo` | |
 | Price | Free | |
 
@@ -106,7 +106,7 @@ indexes those anyway.
 Georgian subtitle, if Apple ever adds Georgian:
 `გადაარჩინე საკვები თბილისში` (27/30).
 
-### Description (3,202 / 4,000 characters)
+### Description (3,186 / 4,000 characters)
 
 ```
 Rescue good food from local Tbilisi businesses, at a real discount.
@@ -114,11 +114,11 @@ Rescue good food from local Tbilisi businesses, at a real discount.
 Every day, bakeries, cafes and restaurants in Tbilisi are left with good food they couldn't sell. ArGadaagdo connects you with them, so that food gets eaten instead of thrown away, and you get a genuinely good deal.
 
 HOW IT WORKS
-1. Discover: browse surprise boxes from local businesses, updated through the day.
+1. Discover: browse Lunch Boxes from local businesses, updated through the day.
 2. Reserve: pay securely by card through TBC Bank and get your pickup code instantly.
 3. Collect: visit during the pickup window, show your code and enjoy.
 
-WHAT'S IN A SURPRISE BOX?
+WHAT'S IN A LUNCH BOX?
 It depends on what's left that day. You always see the business, category, price and pickup time before you reserve; the exact contents are a surprise.
 
 PICKUP, NOT DELIVERY
@@ -145,11 +145,11 @@ Now live in Tbilisi.
 ყოველდღე თბილისის საცხობებს, კაფეებსა და რესტორნებს რჩებათ კარგი საკვები, რომელიც ვერ გაიყიდა. ArGadaagdo გაკავშირებს მათთან, რომ ეს საკვები არ გადაიყაროს, შენ კი კარგ ფასად მიიღო.
 
 როგორ მუშაობს
-1. აღმოაჩინე: დაათვალიერე სიურპრიზის ყუთები ადგილობრივი ბიზნესებიდან, რომლებიც დღის განმავლობაში ახლდება.
+1. აღმოაჩინე: დაათვალიერე ლანჩ ბოქსები ადგილობრივი ბიზნესებიდან, რომლებიც დღის განმავლობაში ახლდება.
 2. დაჯავშნე: გადაიხადე ბარათით, უსაფრთხოდ, თიბისი ბანკის მეშვეობით და მაშინვე მიიღე წაღების კოდი.
 3. წაიღე: მიდი წაღების დროს, აჩვენე კოდი და ისიამოვნე.
 
-რა არის სიურპრიზის ყუთში?
+რა არის ლანჩ ბოქსში?
 ეს დამოკიდებულია იმაზე, რა დარჩა იმ დღეს. დაჯავშნამდე ყოველთვის ხედავ ბიზნესს, კატეგორიას, ფასსა და წაღების დროს; ზუსტი შემადგენლობა კი სიურპრიზია.
 
 მხოლოდ წაღება, მიტანის გარეშე
@@ -228,7 +228,7 @@ data.
 - Notes (about 2,330 / 4,000 characters once the passwords are in — replace both `<PASSWORD>` placeholders):
 
 ```
-ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Local bakeries, cafes and restaurants list "surprise boxes" of food they couldn't sell; customers reserve one in the app, pay by card, and collect it in person at the business by showing a 6-digit pickup code.
+ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Local bakeries, cafes and restaurants list "Lunch Boxes" of food they couldn't sell; customers reserve one in the app, pay by card, and collect it in person at the business by showing a 6-digit pickup code.
 
 PAYMENTS AND IN-APP PURCHASE
 Customers pay for physical food that they collect in person at the business, so under guideline 3.1.3(e) the app takes card payments through TBC Bank's own checkout page (opened in an in-app Safari sheet) instead of In-App Purchase. The app sells no digital content, subscriptions or unlockable features.
@@ -236,11 +236,11 @@ Customers pay for physical food that they collect in person at the business, so 
 DEMO ACCOUNTS (no real payment needed)
 Customer: argadaagdo.support+review.customer@gmail.com / <PASSWORD>
 Business: argadaagdo.support+review.business@gmail.com / <PASSWORD>
-These two accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) "Demo surprise bag (free, App Review)". Reserving it takes no payment. The demo business and bag are visible only to these accounts.
+These two accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) "Demo surprise bag (free, App Review)". Reserving it takes no payment. The demo business and box are visible only to these accounts.
 
 STEPS
 1. Tap Sign In and sign in with the customer account.
-2. Browse > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. No payment page opens for the demo bag.
+2. Browse > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. No payment page opens for the demo box.
 3. Orders shows the reservation with its 6-digit Pickup Code. You can also cancel it there (allowed until 2 hours before pickup).
 4. Log out (account icon, top right > Logout) and sign in with the business account. On the Dashboard tab, scroll down to Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed, and the customer can then rate the business from Orders.
 
@@ -248,7 +248,7 @@ ACCOUNT DELETION
 Account icon (top right) > Settings > Delete my account > type DELETE > confirm. Please test this with an account you register yourself: deletion is permanent and would remove the demo account for any further review.
 
 OTHER NOTES
-- Live offers depend on partner businesses in Tbilisi, so a newly registered account may currently see no offers; the demo customer account always sees the demo bag.
+- Live offers depend on partner businesses in Tbilisi, so a newly registered account may currently see no offers; the demo customer account always sees the demo box.
 - Sign-in is email and password only, with no third-party login.
 - The app requests no device permissions (location, camera, contacts, notifications) and has no ads or tracking.
 - Support: argadaagdo.support@gmail.com
@@ -283,9 +283,9 @@ Take them from the **iPhone 18 Pro Max** simulator (its screen is exactly
 Content: production has **no live offers right now**, and the
 Browse/Offer screens are the strongest shots. Best is a real pilot
 business's offer on the day you capture. Otherwise sign in as the demo
-customer — but the demo bag's title says "(free, App Review)" and the price
+customer — but the demo box's title says "(free, App Review)" and the price
 shows ₾0.00, so for screenshots use Home, the pickup-code screen in Orders
-and the business dashboard, rather than the demo bag's Browse/Offer pages.
+and the business dashboard, rather than the demo box's Browse/Offer pages.
 Don't create fake offers on real businesses: every signed-in and signed-out
 visitor would see them.
 
@@ -345,7 +345,7 @@ App → Bundle ID (explicit) `com.argadaagdo.app` → Register, then retry.
    this version** (you choose the launch moment after approval).
 6. Top right **Add for Review** → **Submit to App Review**. Status goes to
    "Waiting for Review" (usually reviewed within 24–48 hours).
-7. While waiting, keep the demo bag alive (section 2) and watch the support
+7. While waiting, keep the demo box alive (section 2) and watch the support
    inbox and App Store Connect for reviewer messages.
 
 ## 10. Rejection risks, most likely first
@@ -358,7 +358,7 @@ App → Bundle ID (explicit) `com.argadaagdo.app` → Register, then retry.
 2. **1.2 User-generated content.** Public review comments have no in-app
    "report" button. If Apple asks, add a Report link to support and
    explain that admins can remove reviews.
-3. **2.1 App completeness.** The demo bag must be live during review
+3. **2.1 App completeness.** The demo box must be live during review
    (section 2), and the demo accounts must still exist.
 
 ---
@@ -388,12 +388,9 @@ npx capacitor-assets generate --iconBackgroundColor '#5c7a5c' --splashBackground
 - `com.argadaagdo.app`, version `1.0` (build `1`), matches across
   `capacitor.config.ts`, Android's `build.gradle`/`MainActivity.java`, and
   iOS's `project.pbxproj` — nothing was out of sync.
-- `server.url` in `capacitor.config.ts` still correctly points at
-  `https://argadaagdo-silk.vercel.app` — re-verified this is the *only* live
-  URL (`vercel project ls`) and that `argadaagdo.ge` is **not yet
-  registered** on the Vercel account (`vercel domains ls` shows only
-  `blackseacomplex.ge` and `tryourcoach.app`) and doesn't resolve
-  (`dig argadaagdo.ge` returns nothing).
+- `server.url` in `capacitor.config.ts` pointed at the old Vercel address at
+  the time, because `argadaagdo.ge` was not registered yet. Since 1.0.1 it
+  points at `https://argadaagdo.ge`.
 - Added a code comment noting that the URL is baked into the binary at
   build time — switching to the real domain later means rebuild +
   resubmit to both stores, not just a redeploy.
@@ -436,14 +433,14 @@ assumed from memory.
 | Field | Limit | Draft | Length |
 |---|---|---|---|
 | Name | 30 | `ArGadaagdo: Food Rescue` | 23 |
-| Subtitle | 30 | `Surprise bags near you` | 22 |
-| Promotional text | 170 | `Tbilisi's food-rescue marketplace. Reserve discounted surprise bags from local bakeries, cafes and restaurants, then pick up in person. New offers all day.` | 155 |
+| Subtitle | 30 | `Lunch Boxes near you` | 20 |
+| Promotional text | 170 | `Tbilisi's food-rescue marketplace. Reserve discounted Lunch Boxes from local bakeries, cafes and restaurants, then pick up in person. New offers all day.` | 152 |
 | Keywords | 100 | `food,rescue,discount,surplus,bakery,cafe,restaurant,pickup,Tbilisi,Georgia,deals,marketplace,waste` | 98 |
 
 - **Primary category**: Food & Drink. **Secondary category**: Shopping.
   (Same pairing Too Good To Go and similar food-rescue apps use.)
 - **What's New (v1)**: "Welcome to ArGadaagdo — Tbilisi's new food-rescue
-  marketplace. Browse surprise bags from local bakeries, cafes, and
+  marketplace. Browse Lunch Boxes from local bakeries, cafes, and
   restaurants, reserve and pay online, and pick up in person. Thank you for
   helping us cut food waste in Tbilisi!"
 
@@ -457,7 +454,7 @@ assumed from memory.
 - **Category**: Food & Drink.
 - **Release notes (v1)**: same text as App Store "What's New" above.
 
-### Full description (both stores — 2,006 / 4,000 chars, identical copy works for both)
+### Full description (both stores — 1,999 / 4,000 chars, identical copy works for both)
 
 ```
 Rescue great food from local Tbilisi businesses — at a real discount.
@@ -465,15 +462,15 @@ Rescue great food from local Tbilisi businesses — at a real discount.
 Every day, bakeries, cafes, and restaurants across Tbilisi prepare more food than they sell. What doesn't sell by closing time usually gets thrown away. ArGadaagdo connects you directly with these businesses so surplus food finds a home instead of a bin, and you get a genuinely good deal.
 
 HOW IT WORKS
-1. Discover - Browse surprise bags from real Tbilisi favorites, updated throughout the day.
+1. Discover - Browse Lunch Boxes from real Tbilisi favorites, updated throughout the day.
 2. Reserve - Pay securely in the app and get your pickup code instantly.
 3. Collect - Swing by during the pickup window, show your code, and enjoy.
 
-WHAT'S IN A SURPRISE BAG?
+WHAT'S IN A LUNCH BOX?
 Contents vary by business and day, since they depend on what's genuinely left over. The category and business are always shown before you buy; specific contents are typically a surprise, so every pickup feels a little different.
 
 WHY IT'S A GOOD DEAL
-Surprise bags are typically 50-70% below retail price. Businesses recover value from food they'd otherwise throw away, and you get real food for real savings.
+Lunch Boxes are typically 50-70% below retail price. Businesses recover value from food they'd otherwise throw away, and you get real food for real savings.
 
 PICKUP, NOT DELIVERY
 ArGadaagdo is pickup-only by design. It keeps prices low, keeps things simple, and mirrors how food-rescue platforms work successfully elsewhere. Reserve online, then collect in person during the stated pickup window.
@@ -481,7 +478,7 @@ ArGadaagdo is pickup-only by design. It keeps prices low, keeps things simple, a
 TRUST AND SAFETY
 - Every business is manually reviewed and approved before it can list anything.
 - Payment is handled entirely by a licensed banking partner. ArGadaagdo never stores your card details.
-- Every reservation gets a unique pickup code, so only you can claim your bag.
+- Every reservation gets a unique pickup code, so only you can claim your box.
 - After pickup, you can rate your experience, building a transparent track record for every business.
 
 FOR BUSINESSES
@@ -649,7 +646,7 @@ specifically to avoid implying any real establishment's involvement.
 `pickup_date = '2026-09-25'` — adjust or re-run the seed if this data
 outlives that date and the offers expire):
 - id `4`, "Surprise Pastry Box" — ₾9.90 (was ₾24.90), business `2`
-- id `5`, "Surprise Lunch Bag" — ₾7.50 (was ₾18.00), business `3`
+- id `5`, "Surprise Lunch Box" — ₾7.50 (was ₾18.00), business `3`
 
 **To remove all of it later** (recommended before real pilot businesses
 onboard, so it's never confused with real data):
@@ -729,7 +726,7 @@ customers' orders), so deletion should anonymise rather than hard-delete.
    Under App Review Information, give the reviewer a working demo
    customer account (create a fresh one; don't commit its password) and
    make sure at least one live offer exists during review.
-5. Set the privacy policy URL to `https://argadaagdo-silk.vercel.app/privacy`
+5. Set the privacy policy URL to `https://argadaagdo.ge/privacy`
    (or the real domain, if live by then — update `capacitor.config.ts`'s
    `server.url` **first** and rebuild if so).
 6. Archive the app in Xcode (Product → Archive), upload to App Store

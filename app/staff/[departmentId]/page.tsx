@@ -215,7 +215,7 @@ export default function StaffDepartmentPage() {
         reservations.find((r) => ["reserved", "confirmed"].includes(r.status)) || null;
       setLastCompleted(matched);
       setMessageTone("success");
-      setMessage(isGeorgian ? "წაღება დადასტურდა. გადაეცი ჩანთა." : "Pickup confirmed. Hand over the bag.");
+      setMessage(isGeorgian ? "წაღება დადასტურდა. გადაეცი ლანჩ ბოქსი." : "Pickup confirmed. Hand over the box.");
       setCode("");
       await load(pin, true);
       return;
@@ -260,8 +260,8 @@ export default function StaffDepartmentPage() {
           ? "გაყიდვები ისევ ჩართულია."
           : "Sales are back on."
         : isGeorgian
-        ? "დღეს ახალი ჩანთები აღარ გაიყიდება."
-        : "No more bags will be sold today."
+        ? "დღეს ახალი ლანჩ ბოქსები აღარ გაიყიდება."
+        : "No more boxes will be sold today."
     );
     await load(pin, true);
   }
@@ -397,11 +397,11 @@ export default function StaffDepartmentPage() {
               <p className="text-sm text-body">
                 {summary?.sales_paused
                   ? isGeorgian
-                    ? "დღეს ახალი ჩანთები არ იყიდება."
-                    : "No new bags are being sold today."
+                    ? "დღეს ახალი ლანჩ ბოქსები არ იყიდება."
+                    : "No new boxes are being sold today."
                   : isGeorgian
-                  ? "მწვანე ჩანთები იყიდება."
-                  : "Green Bags are on sale."}
+                  ? "ლანჩ ბოქსები იყიდება."
+                  : "Lunch Boxes are on sale."}
               </p>
               <button
                 type="button"
@@ -416,8 +416,8 @@ export default function StaffDepartmentPage() {
                     ? "გაყიდვების ჩართვა"
                     : "Turn sales back on"
                   : isGeorgian
-                  ? "დღეს ჩანთები არ არის"
-                  : "Today: no bags"}
+                  ? "დღეს ლანჩ ბოქსები არ არის"
+                  : "Today: no boxes"}
               </button>
             </div>
           </div>

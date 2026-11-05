@@ -19,7 +19,7 @@ type ImpactCardProps = {
   className?: string;
 };
 
-// "You saved N bags ≈ N kg food ≈ N×2.7 kg CO₂", with a share image. Used on
+// "You saved N boxes ≈ N kg food ≈ N×2.7 kg CO₂", with a share image. Used on
 // the customer profile and the business dashboard.
 export function ImpactCard({ language, bags, subject, caption, className = "" }: ImpactCardProps) {
   const isGeorgian = language === "ka";
@@ -38,8 +38,8 @@ export function ImpactCard({ language, bags, subject, caption, className = "" }:
       language,
       headline,
       subline: isGeorgian
-        ? "argadaagdo-silk.vercel.app · საკვების გადარჩენა თბილისში"
-        : "argadaagdo-silk.vercel.app · Food rescue in Tbilisi",
+        ? "argadaagdo.ge · საკვების გადარჩენა თბილისში"
+        : "argadaagdo.ge · Food rescue in Tbilisi",
     });
 
     if (!blob) {
@@ -96,7 +96,7 @@ export function ImpactCard({ language, bags, subject, caption, className = "" }:
 
       <div className="mt-5 grid grid-cols-3 gap-2">
         {[
-          { value: String(impact.bags), label: isGeorgian ? "ჩანთა" : "bags" },
+          { value: String(impact.bags), label: isGeorgian ? "ლანჩ ბოქსი" : "boxes" },
           { value: formatKg(impact.foodKg, language), label: isGeorgian ? "საკვები" : "food" },
           { value: formatKg(impact.co2Kg, language), label: "CO₂" },
         ].map((item) => (
@@ -125,8 +125,8 @@ export function ImpactCard({ language, bags, subject, caption, className = "" }:
         <p className="text-xs leading-5 text-body">
           {shareNote ||
             (isGeorgian
-              ? "შეფასება: 1 ჩანთა ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂."
-              : "Estimate: 1 bag ≈ 1 kg of food ≈ 2.7 kg CO₂.")}
+              ? "შეფასება: 1 ლანჩ ბოქსი ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂."
+              : "Estimate: 1 box ≈ 1 kg of food ≈ 2.7 kg CO₂.")}
         </p>
       </div>
     </div>

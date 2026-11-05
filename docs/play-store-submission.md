@@ -19,7 +19,7 @@ enter there; the copy page has the same values with Copy buttons.
 | Application ID | `com.argadaagdo.app` |
 | versionCode / versionName | `1` / `1.0.0` (`android/app/build.gradle`) |
 | minSdk / target & compile SDK | 24 (Android 7.0) / 36 (Android 16) |
-| Loads | `https://argadaagdo-silk.vercel.app` (`capacitor.config.ts` → `server.url`), offline page `native-shell/offline.html` |
+| Loads | `https://argadaagdo.ge` (`capacitor.config.ts` → `server.url`), offline page `native-shell/offline.html` |
 | Icon / splash | leaf icon (adaptive: foreground + `#051F20` background) and dark-green splash, generated 2026-10-27 by `npx capacitor-assets generate` from `assets/` |
 | Plugins | `@capacitor/app`, `@capacitor/browser` (TBC payment page opens in a Custom Tab) |
 | Output | `android/app/build/outputs/bundle/release/app-release.aab` (gitignored), 4.4 MB, copy at `~/Desktop/play-upload/ArGadaagdo-1.0.0-1.aab` |
@@ -97,7 +97,7 @@ Same as iOS, `docs/app-store-submission.md` section 2: customer login
 `argadaagdo.support+review.customer@gmail.com`, business login
 `argadaagdo.support+review.business@gmail.com`, demo business "Demo Bakery
 (App Review)" with the free "Demo surprise bag (free, App Review)",
-refreshed daily by the payment-maintenance cron. Check the bag is visible
+refreshed daily by the payment-maintenance cron. Check the box is visible
 as the demo customer before uploading the first closed-testing release and
 once a day while anything is in review or pre-launch testing (Play's
 pre-launch report signs in with the App access credentials and crawls the
@@ -125,8 +125,8 @@ Georgian see the Georgian one. Store listing → Main store listing, then
 | Field | Value | Limit |
 |---|---|---|
 | App name | `ArGadaagdo` | 10/30 |
-| Short description | `Surprise boxes of leftover food from Tbilisi bakeries and cafes, at a discount.` | 79/80 |
-| Full description | below | 1,595/4,000 |
+| Short description | `Lunch Boxes of leftover food from Tbilisi bakeries and cafes, at a discount.` | 76/80 |
+| Full description | below | 1,589/4,000 |
 
 ```
 Rescue good food from local Tbilisi businesses, at a real discount.
@@ -134,11 +134,11 @@ Rescue good food from local Tbilisi businesses, at a real discount.
 Every day, bakeries, cafes and restaurants in Tbilisi are left with good food they couldn't sell. ArGadaagdo connects you with them, so that food gets eaten instead of thrown away, and you get a genuinely good deal.
 
 HOW IT WORKS
-1. Discover: browse surprise boxes from local businesses, updated through the day.
+1. Discover: browse Lunch Boxes from local businesses, updated through the day.
 2. Reserve: pay securely by card through TBC Bank and get your pickup code instantly.
 3. Collect: visit during the pickup window, show your code and enjoy.
 
-WHAT'S IN A SURPRISE BOX?
+WHAT'S IN A LUNCH BOX?
 It depends on what's left that day. You always see the business, category, price and pickup time before you reserve; the exact contents are a surprise.
 
 PICKUP, NOT DELIVERY
@@ -162,8 +162,8 @@ Now live in Tbilisi.
 | Field | Value | Limit |
 |---|---|---|
 | App name | `არ გადააგდო – ArGadaagdo` | 24/30 |
-| Short description | `დარჩენილი საკვების სიურპრიზის ყუთები თბილისის საცხობებიდან, ფასდაკლებით.` | 72/80 |
-| Full description | below | 1,590/4,000 |
+| Short description | `დარჩენილი საკვების ლანჩ ბოქსები თბილისის საცხობებიდან, ფასდაკლებით.` | 67/80 |
+| Full description | below | 1,580/4,000 |
 
 ```
 გადაარჩინე კარგი საკვები თბილისის ადგილობრივი ბიზნესებიდან, რეალური ფასდაკლებით.
@@ -171,11 +171,11 @@ Now live in Tbilisi.
 ყოველდღე თბილისის საცხობებს, კაფეებსა და რესტორნებს რჩებათ კარგი საკვები, რომელიც ვერ გაიყიდა. ArGadaagdo გაკავშირებს მათთან, რომ ეს საკვები არ გადაიყაროს, შენ კი კარგ ფასად მიიღო.
 
 როგორ მუშაობს
-1. აღმოაჩინე: დაათვალიერე სიურპრიზის ყუთები ადგილობრივი ბიზნესებიდან, რომლებიც დღის განმავლობაში ახლდება.
+1. აღმოაჩინე: დაათვალიერე ლანჩ ბოქსები ადგილობრივი ბიზნესებიდან, რომლებიც დღის განმავლობაში ახლდება.
 2. დაჯავშნე: გადაიხადე ბარათით, უსაფრთხოდ, თიბისი ბანკის მეშვეობით და მაშინვე მიიღე წაღების კოდი.
 3. წაიღე: მიდი წაღების დროს, აჩვენე კოდი და ისიამოვნე.
 
-რა არის სიურპრიზის ყუთში?
+რა არის ლანჩ ბოქსში?
 ეს დამოკიდებულია იმაზე, რა დარჩა იმ დღეს. დაჯავშნამდე ყოველთვის ხედავ ბიზნესს, კატეგორიას, ფასსა და წაღების დროს; ზუსტი შემადგენლობა კი სიურპრიზია.
 
 მხოლოდ წაღება, მიტანის გარეშე
@@ -230,7 +230,7 @@ discover, 05 checkout, 06 orders with pickup code.
 | App category | Food & Drink (Application) |
 | Tags | Food & Drink; optional |
 | Contact email (shown publicly) | `argadaagdo.support@gmail.com` |
-| Website | `https://argadaagdo-silk.vercel.app` |
+| Website | `https://argadaagdo.ge` |
 | Phone | optional |
 | External marketing | leave on |
 
@@ -238,7 +238,7 @@ discover, 05 checkout, 06 orders with pickup code.
 
 ### Privacy policy
 
-`https://argadaagdo-silk.vercel.app/privacy`
+`https://argadaagdo.ge/privacy`
 
 ### Ads
 
@@ -319,7 +319,7 @@ create an account):
 | Question | Answer |
 |---|---|
 | Does your app allow users to create an account? | Yes, with email and password |
-| Deletion URL (web page where users can request deletion) | `https://argadaagdo-silk.vercel.app/privacy#delete-account` |
+| Deletion URL (web page where users can request deletion) | `https://argadaagdo.ge/privacy#delete-account` |
 | Does the in-app path let users delete their account? | Yes: account icon → Settings → Delete my account |
 | Do you provide a way to request deletion of some data without deleting the account? | Yes, by email to `argadaagdo.support@gmail.com` (privacy page says so) |
 
@@ -429,7 +429,7 @@ checklist lists them.
    key (default).
 5. Testing → Closed testing → Alpha → upload the AAB, testers, countries,
    release notes, roll out (section 6).
-6. Share the opt-in link; keep the demo bag alive; watch the pre-launch
+6. Share the opt-in link; keep the demo box alive; watch the pre-launch
    report (Release → Pre-launch report) for crashes or login failures.
 7. Day 14+: Apply for production. After approval: Production release,
    countries (Georgia at least), release notes, roll out.
@@ -437,11 +437,11 @@ checklist lists them.
 Release notes, both tracks (en-GB / ka-GE, 500 chars max):
 
 ```
-First Android release: browse surprise boxes from Tbilisi bakeries, cafes and restaurants, reserve and pay by card, collect with your pickup code.
+First Android release: browse Lunch Boxes from Tbilisi bakeries, cafes and restaurants, reserve and pay by card, collect with your pickup code.
 ```
 
 ```
-პირველი Android ვერსია: დაათვალიერე სიურპრიზის ყუთები თბილისის საცხობებიდან, კაფეებიდან და რესტორნებიდან, დაჯავშნე და გადაიხადე ბარათით, წაიღე წაღების კოდით.
+პირველი Android ვერსია: დაათვალიერე ლანჩ ბოქსები თბილისის საცხობებიდან, კაფეებიდან და რესტორნებიდან, დაჯავშნე და გადაიხადე ბარათით, წაიღე წაღების კოდით.
 ```
 
 ## 8. Rejection risks, most likely first
@@ -459,7 +459,7 @@ First Android release: browse surprise boxes from Tbilisi bakeries, cafes and re
    functionality", the fix is a native feature such as push notifications
    for pickup reminders.
 3. **Pre-launch report sign-in failures.** The report's crawler uses the
-   App access credentials; if the demo customer login or demo bag is
+   App access credentials; if the demo customer login or demo box is
    missing it flags "login failed", which reviewers read. Keep section 2
    healthy.
 4. **Data safety mismatch.** Google compares the form with observed

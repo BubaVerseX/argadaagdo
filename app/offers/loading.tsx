@@ -9,8 +9,8 @@ export default function OffersLoading() {
           ka: "შეთავაზებები იტვირთება...",
         }}
         description={{
-          en: "Checking the latest Green Bags from local businesses.",
-          ka: "მოწმდება ადგილობრივი ბიზნესების უახლესი მწვანე ჩანთები.",
+          en: "Checking the latest Lunch Boxes from local businesses.",
+          ka: "მოწმდება ადგილობრივი ბიზნესების უახლესი ლანჩ ბოქსები.",
         }}
       />
     </main>

@@ -69,7 +69,7 @@ type FormState = {
 };
 
 function defaultTitle(size: BagSize, language: Language) {
-  return language === "ka" ? `მწვანე ჩანთა ${size}` : `Green Bag ${size}`;
+  return language === "ka" ? `ლანჩ ბოქსი ${size}` : `Lunch Box ${size}`;
 }
 
 function emptyForm(departments: Department[], language: Language): FormState {
@@ -188,12 +188,12 @@ export function BagTemplatesPanel({
       setFormError(
         isGeorgian
           ? "საწყისი ფასი ფასდაკლებულ ფასზე მეტი უნდა იყოს, ან დატოვე ცარიელი."
-          : "The original price must be higher than the bag price, or leave it empty."
+          : "The original price must be higher than the box price, or leave it empty."
       );
       return;
     }
     if (dailyQuantity !== null && (!Number.isInteger(dailyQuantity) || dailyQuantity < 1 || dailyQuantity > 500)) {
-      setFormError(isGeorgian ? "ჩანთების რაოდენობა 1-დან 500-მდე უნდა იყოს." : "Bags per day must be between 1 and 500.");
+      setFormError(isGeorgian ? "ლანჩ ბოქსების რაოდენობა 1-დან 500-მდე უნდა იყოს." : "Boxes per day must be between 1 and 500.");
       return;
     }
     if (!form.pickupStart || !form.pickupEnd || form.pickupStart >= form.pickupEnd) {
@@ -239,12 +239,12 @@ export function BagTemplatesPanel({
             {isGeorgian ? "ავტომატური გამოქვეყნება" : "Auto-publish"}
           </p>
           <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            {isGeorgian ? "მწვანე ჩანთის შაბლონები" : "Green Bag templates"}
+            {isGeorgian ? "ლანჩ ბოქსის შაბლონები" : "Lunch Box templates"}
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-body">
             {isGeorgian
-              ? "შაბლონი = კატეგორია, ზომა და ფასი, ჩანთების რაოდენობა დღეში, წაღების დრო და კვირის დღეები. ყოველ საღამოს 19:00-ზე ხვალინდელი შეთავაზებები ავტომატურად იქმნება აქტიური შაბლონებიდან."
-              : "A template is a category, size and price, bags per day, a pickup window and the days of the week. Every evening at 19:00 tomorrow's offers are created from the active templates."}
+              ? "შაბლონი = კატეგორია, ზომა და ფასი, ლანჩ ბოქსების რაოდენობა დღეში, წაღების დრო და კვირის დღეები. ყოველ საღამოს 19:00-ზე ხვალინდელი შეთავაზებები ავტომატურად იქმნება აქტიური შაბლონებიდან."
+              : "A template is a category, size and price, boxes per day, a pickup window and the days of the week. Every evening at 19:00 tomorrow's offers are created from the active templates."}
           </p>
         </div>
         <button
@@ -365,7 +365,7 @@ export function BagTemplatesPanel({
             </label>
 
             <div className={`${labelClass} md:col-span-2`}>
-              <span>{isGeorgian ? "ჩანთები დღეში" : "Bags per day"} <RequiredMark /></span>
+              <span>{isGeorgian ? "ლანჩ ბოქსები დღეში" : "Boxes per day"} <RequiredMark /></span>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -396,15 +396,15 @@ export function BagTemplatesPanel({
                     max="500"
                     step="1"
                     inputMode="numeric"
-                    aria-label={isGeorgian ? "ჩანთები დღეში" : "Bags per day"}
+                    aria-label={isGeorgian ? "ლანჩ ბოქსები დღეში" : "Boxes per day"}
                     className="premium-input w-28 p-3 font-semibold"
                   />
                 )}
               </div>
               <p className="text-xs leading-5 text-body">
                 {isGeorgian
-                  ? "„სანამ არ გავაჩერებ“: ჩანთები იყიდება, სანამ „დღეს ჩანთები არ არის“ ღილაკს არ დააჭერ. მომხმარებლები დარჩენილ რაოდენობას ვერ ხედავენ."
-                  : "“Until stopped”: bags sell until you press “Today: no bags”. Customers don't see a remaining count."}
+                  ? "„სანამ არ გავაჩერებ“: ლანჩ ბოქსები იყიდება, სანამ „დღეს ლანჩ ბოქსები არ არის“ ღილაკს არ დააჭერ. მომხმარებლები დარჩენილ რაოდენობას ვერ ხედავენ."
+                  : "“Until stopped”: boxes sell until you press “Today: no boxes”. Customers don't see a remaining count."}
               </p>
             </div>
 
@@ -533,8 +533,8 @@ export function BagTemplatesPanel({
         {templates.length === 0 && !formOpen && (
           <div className="ui-card rounded-2xl p-5 text-center text-sm font-semibold text-body">
             {isGeorgian
-              ? "შაბლონები ჯერ არ გაქვს. შექმენი ერთი და ხვალინდელი ჩანთები თავისით გამოქვეყნდება."
-              : "No templates yet. Create one and tomorrow's bags publish themselves."}
+              ? "შაბლონები ჯერ არ გაქვს. შექმენი ერთი და ხვალინდელი ლანჩ ბოქსები თავისით გამოქვეყნდება."
+              : "No templates yet. Create one and tomorrow's boxes publish themselves."}
           </div>
         )}
 
@@ -582,8 +582,8 @@ export function BagTemplatesPanel({
                       ? "სანამ არ გავაჩერებ"
                       : "until stopped"
                     : isGeorgian
-                    ? `${template.daily_quantity} ჩანთა დღეში`
-                    : `${template.daily_quantity} bags per day`}{" "}
+                    ? `${template.daily_quantity} ლანჩ ბოქსი დღეში`
+                    : `${template.daily_quantity} boxes per day`}{" "}
                   · {template.pickup_start.slice(0, 5)}–{template.pickup_end.slice(0, 5)} ·{" "}
                   {formatWeekdays(template.days_of_week || [], language)}
                 </p>

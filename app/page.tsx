@@ -111,8 +111,8 @@ export default function Home() {
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების მწვანე ჩანთები, სანამ გაქრება."
-      : "Spot Green Bags from real Tbilisi favorites before they're gone.",
+      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების ლანჩ ბოქსები, სანამ გაქრება."
+      : "Spot Lunch Boxes from real Tbilisi favorites before they're gone.",
     reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
     reserveText: isGeorgian
       ? "გადაიხადე უსაფრთხოდ ერთი შეხებით და მაშინვე მიიღე წაღების კოდი."
@@ -141,22 +141,6 @@ export default function Home() {
       : "Join the Tbilisi customers already saving money and rescuing food, or list your surplus and turn it into revenue.",
     finalCtaSecondary: isGeorgian ? "დაამატე შენი ბიზნესი" : "List your business",
   };
-  const testimonials = [
-    {
-      quote: isGeorgian
-        ? "ყოველ კვირას ვზოგავ ფულს და ვამჩნევ, რომ ჩვენს რაიონში ნაკლები საკვები იფლანგება."
-        : "I save money every week, and it genuinely feels like less good food is going to waste in my neighborhood.",
-      name: isGeorgian ? "ნინო" : "Nino",
-      location: isGeorgian ? "ვაკე, თბილისი" : "Vake, Tbilisi",
-    },
-    {
-      quote: isGeorgian
-        ? "დღის ბოლოს დარჩენილი ცომეულის გაყიდვა ახლა ჩვენი ბიზნესის ჩვეულ ნაწილად იქცა."
-        : "Selling our end-of-day bakes has become a normal, easy part of closing up each night.",
-      name: isGeorgian ? "დავითი" : "Davit",
-      location: isGeorgian ? "საცხობის მფლობელი, საბურთალო" : "Saburtalo bakery owner",
-    },
-  ];
   const marqueeItems = isGeorgian
     ? [
         "დადასტურებული თბილისური ბიზნესები",
@@ -170,7 +154,7 @@ export default function Home() {
         "Pickup-only, zero delivery waste",
         "Secure code-based reservations",
         "Rated by real customers",
-        "Fresh Green Bags daily",
+        "Fresh Lunch Boxes daily",
       ];
   const stats = [
     {
@@ -245,7 +229,6 @@ export default function Home() {
       stats,
       steps,
       businessSolutions,
-      testimonials,
       marqueeItems,
     },
     offers,

@@ -68,7 +68,7 @@
     {
       "name": "Saved favorites",
       "short_name": "Favorites",
-      "description": "Jump back to Green Bags you've saved.",
+      "description": "Jump back to Lunch Boxes you've saved.",
       "url": "/favorites",
       "icons": [
         {

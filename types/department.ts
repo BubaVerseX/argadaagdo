@@ -4,7 +4,7 @@ export type Department = {
   name: string;
   is_default: boolean;
   has_staff_pin: boolean;
-  /** Tbilisi date on which "Today: no bags" was pressed; paused while it equals today. */
+  /** Tbilisi date on which "Today: no boxes" was pressed; paused while it equals today. */
   sales_paused_on: string | null;
   created_at?: string | null;
 };
@@ -19,7 +19,7 @@ export type BagTemplate = {
   size: "S" | "M" | "L";
   price: number | string;
   old_price: number | string | null;
-  /** Bags per day; null = sold until the department stops sales for the day. */
+  /** Boxes per day; null = sold until the department stops sales for the day. */
   daily_quantity: number | null;
   pickup_start: string;
   pickup_end: string;

@@ -15,7 +15,7 @@ HTML/JS, so the native shells don't bundle local web assets. Instead,
 the iOS/Android apps are a thin native wrapper (real app icon, splash
 screen, native APIs if ever needed) that loads the live deployed site
 directly. `capacitor.config.ts`'s `server.url` points at
-`https://argadaagdo-silk.vercel.app`.
+`https://argadaagdo.ge`.
 
 **Update `server.url` to the real domain once it's purchased and live**,
 then run `npx cap sync` again before the next native build.

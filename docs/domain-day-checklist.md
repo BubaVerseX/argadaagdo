@@ -11,7 +11,7 @@ step) rather than something to hand over wholesale.
 Every reference to the current URL in the repo was found with:
 
 ```
-grep -rn "argadaagdo-silk\.vercel\.app" --include="*.ts" --include="*.tsx" \
+grep -rn "argadaagdo-silk" --include="*.ts" --include="*.tsx" \
   --include="*.json" --include="*.md" --include="*.mjs" .
 ```
 
@@ -73,7 +73,7 @@ Supabase Dashboard → your project → **Authentication → URL Configuration**
 1. Update **Site URL** to `https://argadaagdo.ge`.
 2. Add `https://argadaagdo.ge/**` (and `https://www.argadaagdo.ge/**` if you
    kept both live) to **Redirect URLs**. Keep the existing
-   `https://argadaagdo-silk.vercel.app/**` entry too, at least for a
+   entry for the old Vercel address too, at least for a
    transition period — the Vercel URL keeps working after adding a custom
    domain, and you may still use it for local testing / the native app
    shell until Capacitor is repointed (step 5).
@@ -117,7 +117,7 @@ wraps the **live deployed site** (it can't be statically exported — see the
 comment in that file), so:
 
 1. Edit `capacitor.config.ts` → `server.url` → change from
-   `'https://argadaagdo-silk.vercel.app'` to `'https://argadaagdo.ge'`.
+   the old Vercel address to `'https://argadaagdo.ge'`.
    Also change the "Try again" link in `native-shell/offline.html` (the
    app's no-connection page) to the new domain.
 2. Run `npx cap sync` to regenerate the native-side copies of this config —
@@ -131,8 +131,8 @@ comment in that file), so:
    to build for submission (app binaries hardcode this URL at build time —
    changing it later means a new build + new store submission, unlike the
    web app which redeploys instantly). If you *have* since submitted an app
-   using the `.vercel.app` URL, this becomes a required update-and-resubmit.
-4. **Never redirect `argadaagdo-silk.vercel.app` to the new domain while
+   using the old Vercel URL, this becomes a required update-and-resubmit.
+4. **Never redirect the old Vercel address to the new domain while
    any app binary pointing at it is still installed.** The app treats any
    other host as external: a redirect would open Safari/Chrome at launch
    and leave the app blank. Changing origin also signs every app user out
@@ -141,7 +141,7 @@ comment in that file), so:
 ## 6. Update documentation references (cosmetic, do last)
 
 Not functionally required (nothing reads these at runtime) but keeps the
-repo trustworthy. Update the literal `argadaagdo-silk.vercel.app` mentions
+repo trustworthy. Update the literal old-address mentions
 in:
 
 - `PROJECT_CONTEXT.md` (the "What this project is" line, and the native app

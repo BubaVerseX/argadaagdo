@@ -36,7 +36,6 @@ export type HomeContent = {
   stats: Array<{ value?: string; label: string; text: string }>;
   steps: Array<{ label: string; title: string; text: string }>;
   businessSolutions: Array<{ title: string; text: string }>;
-  testimonials: Array<{ quote: string; name: string; location: string }>;
   marqueeItems: string[];
 };
 
@@ -65,7 +64,7 @@ export function AppHome({
   loading,
   errorMessage,
 }: AppHomeProps) {
-  const { copy, categoryLinks, stats, steps, businessSolutions, testimonials, marqueeItems } =
+  const { copy, categoryLinks, stats, steps, businessSolutions, marqueeItems } =
     content;
   const [heroOffer, ...moreOffers] = featuredOffers;
   const ratingFor = (offer: Offer) =>
@@ -293,27 +292,6 @@ export function AppHome({
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="py-10">
-        <div className="app-container grid gap-3 md:grid-cols-2">
-          {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="ui-card rounded-3xl p-6 sm:p-8">
-              <blockquote className="font-serif text-lg font-bold leading-[1.45] sm:text-xl">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-mint font-bold text-brand-forest">
-                  {testimonial.name.slice(0, 1).toUpperCase()}
-                </div>
-                <div className="text-sm text-body">
-                  <p className="font-bold text-cream">{testimonial.name}</p>
-                  <p>{testimonial.location}</p>
-                </div>
-              </figcaption>
-            </figure>
-          ))}
         </div>
       </section>
 

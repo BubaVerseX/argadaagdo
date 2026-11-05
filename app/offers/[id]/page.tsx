@@ -59,7 +59,7 @@ function toNumber(value: number | string | null | undefined) {
 
 function getUrgencyMessage(quantity: number, language: string) {
   if (quantity === 1) {
-    return language === "ka" ? "ბოლო ჩანთა ხელმისაწვდომია" : "Last one available";
+    return language === "ka" ? "ბოლო ლანჩ ბოქსი ხელმისაწვდომია" : "Last one available";
   }
 
   if (quantity > 1 && quantity <= 5) {
@@ -295,19 +295,19 @@ export default function OfferDetailPage() {
     ? [
         {
           question:
-            language === "ka" ? "ვინ ამზადებს ამ ჩანთას?" : "Who prepares this bag?",
+            language === "ka" ? "ვინ ამზადებს ამ ლანჩ ბოქსს?" : "Who prepares this box?",
           answer:
             language === "ka"
-              ? `${businessName} ამზადებს ამ მწვანე ჩანთას. ბიზნესის პროფილში შეგიძლია ნახო მისამართი, შეფასებები და აქტიური შეთავაზებები.`
-              : `${businessName} prepares this Green Bag. You can review the business profile, address, ratings and active offers before reserving.`,
+              ? `${businessName} ამზადებს ამ ლანჩ ბოქსს. ბიზნესის პროფილში შეგიძლია ნახო მისამართი, შეფასებები და აქტიური შეთავაზებები.`
+              : `${businessName} prepares this Lunch Box. You can review the business profile, address, ratings and active offers before reserving.`,
         },
         {
           question:
             language === "ka" ? "რამდენად ახალია საკვები?" : "How fresh is the food?",
           answer:
             language === "ka"
-              ? "მწვანე ჩანთები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ დროს, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
-              : "Green Bags are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
+              ? "ლანჩ ბოქსები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ დროს, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
+              : "Lunch Boxes are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
         },
         {
           question:
@@ -645,8 +645,8 @@ export default function OfferDetailPage() {
                     <p className="mt-3 leading-7 text-body">
                       {offer.description ||
                         (language === "ka"
-                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული მწვანე ჩანთა."
-                          : "A Green Bag prepared by the business from available food.")}
+                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული ლანჩ ბოქსი."
+                          : "A Lunch Box prepared by the business from available food.")}
                     </p>
 
                     <h3 className="mt-6 text-xl font-semibold">
@@ -660,13 +660,13 @@ export default function OfferDetailPage() {
                   <HelpCard
                     title={
                       language === "ka"
-                        ? "რა არის მწვანე ჩანთა?"
-                        : "What is a Green Bag?"
+                        ? "რა არის ლანჩ ბოქსი?"
+                        : "What is a Lunch Box?"
                     }
                     text={
                       language === "ka"
-                        ? "მწვანე ჩანთა არის დღის ბოლოს დარჩენილი ხარისხიანი პროდუქტი ფასდაკლებით — S, M ან L ზომის. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს, მაგრამ ბიზნესი, კატეგორია, ზომა, ფასი და წაღების დრო დაჯავშნამდე ნათელია."
-                        : "It is good surplus food at a discount, in a bag of size S, M or L. The exact contents can vary, but the business, category, size, price and pickup window are clear before you reserve."
+                        ? "ლანჩ ბოქსი არის დღის ბოლოს დარჩენილი ხარისხიანი პროდუქტი ფასდაკლებით — S, M ან L ზომის. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს, მაგრამ ბიზნესი, კატეგორია, ზომა, ფასი და წაღების დრო დაჯავშნამდე ნათელია."
+                        : "It is good surplus food at a discount, in a box of size S, M or L. The exact contents can vary, but the business, category, size, price and pickup window are clear before you reserve."
                     }
                   />
 

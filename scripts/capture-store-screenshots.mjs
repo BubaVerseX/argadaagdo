@@ -30,7 +30,7 @@ import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-const BASE_URL = "https://argadaagdo-silk.vercel.app";
+const BASE_URL = "https://argadaagdo.ge";
 const OUT_DIR = path.join(process.cwd(), "store-assets", "screenshots");
 
 // TEST-ONLY customer account, seeded specifically for capturing these

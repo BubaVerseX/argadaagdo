@@ -423,7 +423,7 @@ export default function OffersPage() {
 
   // Day sections only make sense for the default order; with an explicit
   // sort (price, discount, ...) splitting into Today/Tomorrow put e.g. the
-  // cheapest "tomorrow" bag after pricier "today" ones.
+  // cheapest "tomorrow" box after pricier "today" ones.
   const offerSections =
     offerSort === "recommended"
       ? [

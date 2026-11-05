@@ -41,7 +41,7 @@ export function PublicHome({
   loading,
   errorMessage,
 }: PublicHomeProps) {
-  const { copy, categoryLinks, stats, steps, businessSolutions, testimonials, marqueeItems } =
+  const { copy, categoryLinks, stats, steps, businessSolutions, marqueeItems } =
     content;
   const previewOffer = featuredOffers[0];
   const ratingFor = (offer: Offer) =>
@@ -250,22 +250,6 @@ export function PublicHome({
               </div>
             )}
           </div>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="app-container grid gap-4 md:grid-cols-2">
-          {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="ui-card m-0 p-[26px] sm:p-8">
-              <blockquote className="font-serif text-xl font-normal leading-[1.55]">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-5 text-sm text-body">
-                <p className="font-medium text-cream">{testimonial.name}</p>
-                <p>{testimonial.location}</p>
-              </figcaption>
-            </figure>
-          ))}
         </div>
       </section>
 

@@ -79,16 +79,16 @@ export function DepartmentsPanel({
           <h2 className="text-2xl font-semibold sm:text-3xl">
             {storePaused
               ? isGeorgian
-                ? "დღეს ჩანთები არ იყიდება"
-                : "No bags today"
+                ? "დღეს ლანჩ ბოქსები არ იყიდება"
+                : "No boxes today"
               : isGeorgian
-              ? "მწვანე ჩანთები იყიდება"
-              : "Green Bags on sale"}
+              ? "ლანჩ ბოქსები იყიდება"
+              : "Lunch Boxes on sale"}
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-body">
             {isGeorgian
-              ? "„დღეს ჩანთები არ არის“ აჩერებს ახალ გაყიდვებს დღევანდელი დღისთვის. უკვე გაყიდული ჩანთები რჩება და უნდა გაიცეს ან გაუქმდეს თანხის დაბრუნებით. ერთი შეხებით ისევ ჩართავ."
-              : "“Today: no bags” stops new sales for today. Bags already sold stay reserved and must be handed over or cancelled with a refund. One tap turns sales back on."}
+              ? "„დღეს ლანჩ ბოქსები არ არის“ აჩერებს ახალ გაყიდვებს დღევანდელი დღისთვის. უკვე გაყიდული ლანჩ ბოქსები რჩება და უნდა გაიცეს ან გაუქმდეს თანხის დაბრუნებით. ერთი შეხებით ისევ ჩართავ."
+              : "“Today: no boxes” stops new sales for today. Boxes already sold stay reserved and must be handed over or cancelled with a refund. One tap turns sales back on."}
           </p>
         </div>
         <button
@@ -104,8 +104,8 @@ export function DepartmentsPanel({
               ? "გაყიდვების ჩართვა"
               : "Turn sales back on"
             : isGeorgian
-            ? "დღეს ჩანთები არ არის"
-            : "Today: no bags"}
+            ? "დღეს ლანჩ ბოქსები არ არის"
+            : "Today: no boxes"}
         </button>
       </div>
 
@@ -119,10 +119,10 @@ export function DepartmentsPanel({
               {hasMultipleDepartments
                 ? isGeorgian
                   ? "თითოეულ დეპარტამენტს თავისი შაბლონები, გრაფიკი და სურვილისამებრ თანამშრომლის PIN აქვს."
-                  : "Each department has its own bag templates, schedule and an optional staff PIN."
+                  : "Each department has its own box templates, schedule and an optional staff PIN."
                 : isGeorgian
                 ? "პატარა მაღაზიას ერთი დეპარტამენტი ჰყოფნის. დაამატე დეპარტამენტები, თუ ცომეულს, ბოსტნეულსა და კულინარიას სხვადასხვა გუნდი გასცემს."
-                : "A small shop needs just this one. Add departments if different teams hand over bakery, produce or deli bags."}
+                : "A small shop needs just this one. Add departments if different teams hand over bakery, produce or deli boxes."}
             </p>
           </div>
         </div>
@@ -177,8 +177,8 @@ export function DepartmentsPanel({
                         ? "შაბლონი"
                         : "შაბლონი"
                       : templateCount === 1
-                      ? "bag template"
-                      : "bag templates"}
+                      ? "box template"
+                      : "box templates"}
                   </p>
 
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -306,8 +306,8 @@ export function DepartmentsPanel({
                       ? "ისევ ჩართვა"
                       : "Turn back on"
                     : isGeorgian
-                    ? "დღეს ჩანთები არ არის"
-                    : "Today: no bags"}
+                    ? "დღეს ლანჩ ბოქსები არ არის"
+                    : "Today: no boxes"}
                 </button>
               </div>
             );

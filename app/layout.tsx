@@ -27,7 +27,7 @@ import "./globals.css";
 const sessionHintScript = `try{for(var i=0;i<localStorage.length;i++){if(/^sb-.*-auth-token$/.test(localStorage.key(i))){document.documentElement.classList.add("has-session");break}}}catch(e){}`;
 
 const appDescription =
-  "Save money on Green Bags of food from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
+  "Save money on Lunch Boxes of food from verified local Tbilisi businesses. Reserve online, pick up in person, and help reduce food waste.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

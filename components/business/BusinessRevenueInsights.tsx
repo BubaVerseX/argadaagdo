@@ -120,8 +120,8 @@ export function BusinessRevenueInsights({
       title: isGeorgian ? "გადარჩენილი საკვები" : "Estimated Food Saved",
       value: `${analytics.estimatedFoodSavedKg} ${isGeorgian ? "კგ" : "kg"}`,
       helper: isGeorgian
-        ? "შეფასება: 1 კგ თითო გადარჩენილ ჩანთაზე"
-        : "Estimate: 1 kg per rescued bag",
+        ? "შეფასება: 1 კგ თითო გადარჩენილ ლანჩ ბოქსზე"
+        : "Estimate: 1 kg per rescued box",
       tone: "green",
     },
     {
@@ -133,15 +133,15 @@ export function BusinessRevenueInsights({
       tone: analytics.averageRating === "No ratings yet" ? "white" : "yellow",
     },
     {
-      title: isGeorgian ? "გაყიდული ჩანთები" : "Bags sold",
+      title: isGeorgian ? "გაყიდული ლანჩ ბოქსები" : "Boxes sold",
       value: analytics.boxesSold,
       helper: isGeorgian
-        ? "დაჯავშნილი, წაღებული და გამოუცხადებელი ჩანთები"
-        : "Reserved, collected and no-show bags",
+        ? "დაჯავშნილი, წაღებული და გამოუცხადებელი ლანჩ ბოქსები"
+        : "Reserved, collected and no-show boxes",
       tone: "green",
     },
     {
-      title: isGeorgian ? "დარჩენილი ჩანთები" : "Bags remaining",
+      title: isGeorgian ? "დარჩენილი ლანჩ ბოქსები" : "Boxes remaining",
       value: analytics.boxesRemaining,
       helper: isGeorgian
         ? "შეთავაზებებში ამჟამად დარჩენილი რაოდენობა"

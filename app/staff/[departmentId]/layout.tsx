@@ -3,7 +3,7 @@ import { buildPageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Staff pickups",
-  description: "Department staff page: confirm Green Bag pickups with the customer's code.",
+  description: "Department staff page: confirm Lunch Box pickups with the customer's code.",
   path: "/staff",
   index: false,
 });

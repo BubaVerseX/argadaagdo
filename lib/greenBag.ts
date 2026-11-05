@@ -23,7 +23,7 @@ export function formatWeekdays(days: number[], language: Language) {
     .join(" · ");
 }
 
-/** "Today: no bags" is stored as the Tbilisi date it was pressed on. */
+/** "Today: no boxes" is stored as the Tbilisi date it was pressed on. */
 export function isSalesPausedToday(value: string | null | undefined) {
   return Boolean(value) && value === getTbilisiDateKey();
 }
@@ -43,7 +43,7 @@ export function getStaffPageUrl(departmentId: number) {
   return new URL(`/staff/${departmentId}`, siteUrl).toString();
 }
 
-/** What customers see as the remaining count; "until stopped" bags show no number. */
+/** What customers see as the remaining count; "until stopped" boxes show no number. */
 export function formatBagsLeft(
   offer: { quantity?: number | null; unlimited_quantity?: boolean | null },
   language: Language
