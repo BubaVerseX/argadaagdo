@@ -293,8 +293,8 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Email is required.", "ელფოსტა სავალდებულოა."],
   ["Enter a valid email address.", "შეიყვანე სწორი ელფოსტის მისამართი."],
   [
-    "Password must be at least 6 characters.",
-    "პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს.",
+    "Password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number.",
+    "პაროლი: მინიმუმ 8 სიმბოლო, პატარა და დიდი ლათინური ასო და ციფრი.",
   ],
   [
     "Password cannot start or end with spaces.",
@@ -334,8 +334,8 @@ const georgianMessageEntries: Array<[string, string]> = [
     "პაროლის აღდგენის წერილი გაიგზავნა. გთხოვ, შეამოწმე შემოსულები.",
   ],
   [
-    "New password must be at least 6 characters.",
-    "ახალი პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს.",
+    "New password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number.",
+    "ახალი პაროლი: მინიმუმ 8 სიმბოლო, პატარა და დიდი ლათინური ასო და ციფრი.",
   ],
   [
     "New password cannot start or end with spaces.",
