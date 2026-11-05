@@ -1,6 +1,6 @@
 import type { Language } from "@/lib/i18n";
 
-// Impact estimate shown to customers and businesses. One Green Bag is counted
+// Impact estimate shown to customers and businesses. One Lunch Box is counted
 // as roughly 1 kg of food, and 1 kg of saved food as 2.7 kg of CO₂e avoided
 // (the figure used across food-rescue apps). Both are estimates, labelled as
 // such in the UI.
@@ -28,14 +28,14 @@ export function formatKg(value: number, language: Language) {
   return `${rounded} ${language === "ka" ? "კგ" : "kg"}`;
 }
 
-/** "You saved 12 bags ≈ 12 kg food ≈ 32.4 kg CO₂" */
+/** "You saved 12 boxes ≈ 12 kg food ≈ 32.4 kg CO₂" */
 export function formatImpactSentence(impact: Impact, language: Language, subject: "you" | "store") {
   const bagsWord =
     language === "ka"
-      ? "ჩანთა"
+      ? "ლანჩ ბოქსი"
       : impact.bags === 1
-      ? "bag"
-      : "bags";
+      ? "box"
+      : "boxes";
   if (language === "ka") {
     return `${subject === "you" ? "შენ გადაარჩინე" : "მაღაზიამ გადაარჩინა"} ${impact.bags} ${bagsWord} ≈ ${formatKg(impact.foodKg, language)} საკვები ≈ ${formatKg(impact.co2Kg, language)} CO₂`;
   }
@@ -121,7 +121,7 @@ export async function renderImpactShareImage(options: {
   context.fillStyle = "#F4EFE4";
   context.font = `600 48px ${fontFamily}`;
   context.fillText(
-    options.language === "ka" ? "მწვანე ჩანთა გადარჩენილია" : "Green Bags saved",
+    options.language === "ka" ? "ლანჩ ბოქსი გადარჩენილია" : "Lunch Boxes saved",
     80,
     570
   );

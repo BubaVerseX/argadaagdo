@@ -41,7 +41,7 @@ export function PublicHome({
   loading,
   errorMessage,
 }: PublicHomeProps) {
-  const { copy, categoryLinks, stats, steps, businessSolutions, testimonials, marqueeItems } =
+  const { copy, categoryLinks, stats, steps, businessSolutions, marqueeItems } =
     content;
   const previewOffer = featuredOffers[0];
   const ratingFor = (offer: Offer) =>
@@ -63,7 +63,7 @@ export function PublicHome({
             <p className="mt-5 max-w-[30rem] leading-[1.75] text-body">{copy.heroSubtitle}</p>
 
             <div className="mt-8 flex flex-wrap gap-2.5">
-              <Link href="/offers" className="premium-button px-[22px] py-3">
+              <Link href="/discover" className="premium-button px-[22px] py-3">
                 {copy.browseToday}
               </Link>
               <Link href="/business/register" className="premium-button-secondary px-[22px] py-3">
@@ -77,7 +77,7 @@ export function PublicHome({
                 {categoryLinks.map((category) => (
                   <Link
                     key={category}
-                    href={`/offers?category=${encodeURIComponent(category)}`}
+                    href={`/discover?category=${encodeURIComponent(category)}`}
                     className="flex min-h-11 min-w-11 items-center gap-2 text-sm text-body transition hover:text-cream"
                   >
                     <span
@@ -103,7 +103,7 @@ export function PublicHome({
                   priority
                 />
               ) : (
-                <Link href="/offers" className="block p-6">
+                <Link href="/discover" className="block p-6">
                   <p className="font-medium">{t("home.noSurpriseBags")}</p>
                   <p className="mt-1 text-sm text-body">{copy.localLabel}</p>
                 </Link>
@@ -207,7 +207,7 @@ export function PublicHome({
               <h2 className="mt-2 text-[1.875rem]">{t("offers.title")}</h2>
               <p className="mt-2 max-w-xl text-[15px] text-body">{t("offers.subtitle")}</p>
             </div>
-            <Link href="/offers" className="premium-button-secondary shrink-0 px-[18px] py-2.5">
+            <Link href="/discover" className="premium-button-secondary shrink-0 px-[18px] py-2.5">
               {t("common.browseOffers")}
             </Link>
           </div>
@@ -244,28 +244,12 @@ export function PublicHome({
                 <p className="mx-auto mt-2 max-w-lg text-[15px] text-body">
                   {t("home.publishLater")}
                 </p>
-                <Link href="/offers" className="premium-button mt-6 px-[22px] py-3">
+                <Link href="/discover" className="premium-button mt-6 px-[22px] py-3">
                   {t("common.browseOffers")}
                 </Link>
               </div>
             )}
           </div>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="app-container grid gap-4 md:grid-cols-2">
-          {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="ui-card m-0 p-[26px] sm:p-8">
-              <blockquote className="font-serif text-xl font-normal leading-[1.55]">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-5 text-sm text-body">
-                <p className="font-medium text-cream">{testimonial.name}</p>
-                <p>{testimonial.location}</p>
-              </figcaption>
-            </figure>
-          ))}
         </div>
       </section>
 
@@ -296,7 +280,7 @@ export function PublicHome({
               {copy.finalCtaText}
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-2.5">
-              <Link href="/offers" className="premium-button px-[22px] py-3">
+              <Link href="/discover" className="premium-button px-[22px] py-3">
                 {copy.browseToday}
               </Link>
               <Link href="/for-businesses" className="premium-button-secondary px-[22px] py-3">

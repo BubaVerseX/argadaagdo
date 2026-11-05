@@ -6,19 +6,12 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // has to point at an existing folder (native-shell/index.html) — Capacitor
 // only shows it briefly before handing off to `server.url`.
 //
-// Re-verified 2026-10-26 for the iOS 1.0.0 (1) build: `argadaagdo.ge` is
-// still NOT registered under the Vercel account (`vercel domains ls` shows
-// only blackseacomplex.ge and tryourcoach.app) and doesn't resolve
-// (`dig argadaagdo.ge` returns nothing). `argadaagdo-silk.vercel.app` is
-// confirmed the current production URL (HTTP 200) and is correctly what this
-// still points at. native-shell/offline.html hard-codes
-// the same URL for its "Try again" button — update both on domain day.
-//
-// TODO once the custom domain is purchased and live: update `server.url`
-// to the new domain instead of the Vercel preview URL below, then
-// regenerate this config, rebuild, and resubmit — app binaries hardcode
-// this URL at build time, native updates require a new store submission
-// (unlike the web app, which redeploys instantly).
+// App binaries hardcode `server.url` at build time, so changing it needs a new
+// store submission (the web app redeploys instantly). Builds up to 1.0.0 load
+// the old Vercel address: keep it serving the app and never redirect it to
+// argadaagdo.ge. The app treats any other host as external, so a redirect
+// would open the browser at launch and leave those builds blank.
+// native-shell/offline.html hard-codes the same URL for its "Try again" button.
 const config: CapacitorConfig = {
   appId: 'com.argadaagdo.app',
   appName: 'ArGadaagdo',
@@ -27,7 +20,7 @@ const config: CapacitorConfig = {
   // the remote page paints.
   backgroundColor: '#051f20',
   server: {
-    url: 'https://argadaagdo-silk.vercel.app',
+    url: 'https://argadaagdo.ge',
     androidScheme: 'https',
     // Shown when the remote site can't load (no network at launch, server
     // error) instead of a blank screen or the browser's error page.

@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/site";
 export const metadata: Metadata = buildPageMetadata({
   title: "About Us",
   description:
-    "How ArGadaagdo helps Tbilisi businesses sell surplus food as discounted Green Bags instead of throwing it away.",
+    "How ArGadaagdo helps Tbilisi businesses sell surplus food as discounted Lunch Boxes instead of throwing it away.",
   path: "/about",
 });
 

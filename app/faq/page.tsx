@@ -163,7 +163,7 @@ export default function FAQPage() {
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
-                href="/offers"
+                href="/discover"
                 className="premium-button px-6 py-3 text-center"
               >
                 {t("home.explore")}

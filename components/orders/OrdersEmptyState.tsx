@@ -39,7 +39,7 @@ export function OrdersEmptyState({ t }: OrdersEmptyStateProps) {
       </p>
 
       <Link
-        href="/offers"
+        href="/discover"
         className="premium-button mt-6 inline-block min-h-12 px-8 py-3 sm:py-4"
       >
         {t("common.browseOffers")}

@@ -180,7 +180,7 @@ export function buildTransactionalEmailTemplate(
   event: TransactionalEmailEvent,
   payload: TransactionalEmailPayload
 ): TransactionalEmailTemplate {
-  const offerTitle = clean(payload.offerTitle, "your Green Bag");
+  const offerTitle = clean(payload.offerTitle, "your Lunch Box");
   const businessName = clean(payload.businessName, "the business");
   const pickupWindow = clean(payload.pickupWindow, "the listed pickup window");
 
@@ -299,7 +299,7 @@ export function buildTransactionalEmailTemplate(
     case "business_approval": {
       const subject = `${businessName} is approved on ArGadaagdo`;
       const intro =
-        "Your business has been approved. You can now open the dashboard and publish your first Green Bag.";
+        "Your business has been approved. You can now open the dashboard and publish your first Lunch Box.";
       return {
         subject,
         preview: "Your business can now publish offers on ArGadaagdo.",
@@ -353,7 +353,7 @@ export function buildTransactionalEmailTemplate(
     case "pickup_reminder": {
       const subject = `Pickup reminder: ${offerTitle}`;
       const intro =
-        "Your pickup window is coming up. Bring your pickup code and collect your Green Bag on time.";
+        "Your pickup window is coming up. Bring your pickup code and collect your Lunch Box on time.";
       return {
         subject,
         preview: `Do not forget your pickup for ${offerTitle}.`,

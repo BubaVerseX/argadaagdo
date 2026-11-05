@@ -3,7 +3,7 @@ import { buildPageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Monthly report",
-  description: "Printable monthly Green Bag report for a business.",
+  description: "Printable monthly Lunch Box report for a business.",
   path: "/business/report",
   index: false,
 });

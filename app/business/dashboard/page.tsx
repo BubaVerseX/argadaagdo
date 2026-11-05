@@ -242,7 +242,7 @@ export default function BusinessDashboardPage() {
 
     const { data: myBusinesses, error: businessError } = await supabase
       .from("businesses")
-      // "*" so the dashboard keeps working whichever Green Bag migrations
+      // "*" so the dashboard keeps working whichever Lunch Box migrations
       // (sales_paused_on, platform_fee_rate) have been applied so far.
       .select("*")
       .eq("owner_id", userId)
@@ -348,7 +348,7 @@ export default function BusinessDashboardPage() {
       });
     }
     if (templateError) {
-      logAppError("Business dashboard failed to load bag templates", templateError, {
+      logAppError("Business dashboard failed to load box templates", templateError, {
         operation: "load_bag_templates",
         businessIds,
       });
@@ -752,7 +752,7 @@ export default function BusinessDashboardPage() {
     return publicUrl;
   }
 
-  // ---- Departments, "Today: no bags", staff PINs -----------------------------
+  // ---- Departments, "Today: no boxes", staff PINs -----------------------------
 
   async function uploadTemplateImage(file: File): Promise<string | null> {
     const selectedBusinessId = Number(businessId);
@@ -810,7 +810,7 @@ export default function BusinessDashboardPage() {
     setMessageTone(paused ? "warning" : "success");
     setMessage(
       paused
-        ? "No more bags today. Unsold offers are off sale; reserved bags stay and must be handed over or cancelled."
+        ? "No more boxes today. Unsold offers are off sale; reserved boxes stay and must be handed over or cancelled."
         : "Sales are back on. Paused offers are available again."
     );
     await loadDashboard();
@@ -945,7 +945,7 @@ export default function BusinessDashboardPage() {
     setMessage(Number(data || 0) > 0 ? "Locked staff devices were unlocked." : "No staff device was locked.");
   }
 
-  // ---- Bag templates ----------------------------------------------------------
+  // ---- Box templates ----------------------------------------------------------
 
   async function saveBagTemplate(input: BagTemplateInput, templateId: number | null) {
     if (!ownedBusinessIds.includes(input.business_id)) {
@@ -960,7 +960,7 @@ export default function BusinessDashboardPage() {
     const { data, error } = await query;
 
     if (error || !data) {
-      logAppError("Bag template save failed", error, {
+      logAppError("Box template save failed", error, {
         operation: templateId ? "update_bag_template" : "create_bag_template",
         businessId: input.business_id,
       });
@@ -972,8 +972,8 @@ export default function BusinessDashboardPage() {
     setMessageTone("success");
     setMessage(
       templateId
-        ? "Template updated. Tomorrow's bag will use the new details."
-        : "Template saved. Tomorrow's bag is created automatically at 19:00; use \"Publish for today\" to start now."
+        ? "Template updated. Tomorrow's box will use the new details."
+        : "Template saved. Tomorrow's box is created automatically at 19:00; use \"Publish for today\" to start now."
     );
     await loadDashboard();
     return true;
@@ -989,7 +989,7 @@ export default function BusinessDashboardPage() {
     setBusyTemplateId(null);
 
     if (error) {
-      logAppError("Bag template toggle failed", error, {
+      logAppError("Box template toggle failed", error, {
         operation: "toggle_bag_template",
         templateId: template.id,
       });
@@ -999,7 +999,7 @@ export default function BusinessDashboardPage() {
     }
 
     setMessageTone("success");
-    setMessage(template.active ? "Template paused. No new bags will be created from it." : "Template resumed.");
+    setMessage(template.active ? "Template paused. No new boxes will be created from it." : "Template resumed.");
     await loadDashboard();
   }
 
@@ -1023,7 +1023,7 @@ export default function BusinessDashboardPage() {
     setBusyTemplateId(null);
 
     if (error) {
-      logAppError("Bag template deletion failed", error, {
+      logAppError("Box template deletion failed", error, {
         operation: "delete_bag_template",
         templateId: template.id,
       });
@@ -1052,7 +1052,7 @@ export default function BusinessDashboardPage() {
         templateId: template.id,
       });
       setMessageTone("error");
-      setMessage("The bag could not be published. Please try again.");
+      setMessage("The box could not be published. Please try again.");
       return;
     }
 
@@ -1060,14 +1060,14 @@ export default function BusinessDashboardPage() {
       setMessageTone("warning");
       setMessage(
         day === "today"
-          ? "Nothing published: today's bag already exists, its pickup window has ended, this weekday is off, or sales are paused today."
-          : "Nothing published: tomorrow's bag already exists, or this weekday is off."
+          ? "Nothing published: today's box already exists, its pickup window has ended, this weekday is off, or sales are paused today."
+          : "Nothing published: tomorrow's box already exists, or this weekday is off."
       );
       return;
     }
 
     setMessageTone("success");
-    setMessage(day === "today" ? "Today's bag is on sale." : "Tomorrow's bag is published.");
+    setMessage(day === "today" ? "Today's box is on sale." : "Tomorrow's box is published.");
     notifyOfferPublished({
       offerTitle: template.title,
       businessName: selectedBusiness?.name,
@@ -1112,7 +1112,7 @@ export default function BusinessDashboardPage() {
     });
 
     if (titleResult.error) {
-      setMessage(titleResult.error || "Add an offer title. Example: Bakery Green Bag.");
+      setMessage(titleResult.error || "Add an offer title. Example: Bakery Lunch Box.");
       return;
     }
 
@@ -2138,8 +2138,8 @@ export default function BusinessDashboardPage() {
         ? "ლოგო ან შეთავაზების სურათი ატვირთულია"
         : "Logo or offer image uploaded",
       helper: isGeorgian
-        ? "გამოიყენე მკაფიო სურათები, რომ მომხმარებლებმა შენს მწვანე ჩანთებს ენდონ."
-        : "Use clear images so customers trust your Green Bags.",
+        ? "გამოიყენე მკაფიო სურათები, რომ მომხმარებლებმა შენს ლანჩ ბოქსებს ენდონ."
+        : "Use clear images so customers trust your Lunch Boxes.",
       complete: hasBusinessImage,
     },
     {
@@ -2182,8 +2182,8 @@ export default function BusinessDashboardPage() {
     {
       label: isGeorgian ? "შექმენი პირველი შეთავაზება" : "Create first offer",
       helper: isGeorgian
-        ? "გამოაქვეყნე რეალისტური მწვანე ჩანთა ფასითა და წაღების დროით."
-        : "Publish a realistic Green Bag with price and pickup time.",
+        ? "გამოაქვეყნე რეალისტური ლანჩ ბოქსი ფასითა და წაღების დროით."
+        : "Publish a realistic Lunch Box with price and pickup time.",
       complete: offers.length > 0,
       anchor: "#create-offer",
     },
@@ -2246,12 +2246,12 @@ export default function BusinessDashboardPage() {
       tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
     },
     {
-      title: isGeorgian ? "გაყიდული ჩანთები" : "Bags sold",
+      title: isGeorgian ? "გაყიდული ლანჩ ბოქსები" : "Boxes sold",
       value: businessAnalytics.boxesSold,
       tone: "green" as const,
     },
     {
-      title: isGeorgian ? "ხელმისაწვდომი ჩანთები" : "Bags available",
+      title: isGeorgian ? "ხელმისაწვდომი ლანჩ ბოქსები" : "Boxes available",
       value: businessAnalytics.boxesRemaining,
       tone: "neutral" as const,
     },
@@ -2368,10 +2368,10 @@ export default function BusinessDashboardPage() {
           {
             title: isGeorgian ? "მცირე რაოდენობა" : "Low quantity",
             text: isGeorgian
-              ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ჩანთა დარჩა.`
+              ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ლანჩ ბოქსი დარჩა.`
               : `${nearlySoldOutOffers.length} active ${
                   nearlySoldOutOffers.length === 1 ? "offer has" : "offers have"
-                } 2 or fewer bags left.`,
+                } 2 or fewer boxes left.`,
             className: "border border-warning-line bg-warning-soft text-cream",
           },
         ]

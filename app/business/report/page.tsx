@@ -25,7 +25,7 @@ function toNumber(value: number | string | null | undefined) {
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
-// Printable monthly report for one business: completed Green Bag pickups,
+// Printable monthly report for one business: completed Lunch Box pickups,
 // earnings and the food / CO₂ estimate. Opened from the dashboard's "PDF
 // report" button; the browser's Print → Save as PDF produces the file.
 function BusinessReport() {
@@ -177,7 +177,7 @@ function BusinessReport() {
 
             <section className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
-                { label: isGeorgian ? "წაღებული ჩანთა" : "Bags collected", value: String(impact.bags) },
+                { label: isGeorgian ? "წაღებული ლანჩ ბოქსი" : "Boxes collected", value: String(impact.bags) },
                 { label: isGeorgian ? "გადარჩენილი საკვები" : "Food saved", value: formatKg(impact.foodKg, language) },
                 { label: isGeorgian ? "თავიდან აცილებული CO₂" : "CO₂ avoided", value: formatKg(impact.co2Kg, language) },
                 { label: isGeorgian ? "ბიზნესის შემოსავალი" : "Business earnings", value: formatAnalyticsMoney(earnings) },
@@ -201,7 +201,7 @@ function BusinessReport() {
                   <tr className="border-b border-line text-left text-xs uppercase tracking-wide text-body">
                     <th className="py-2 pr-3">#</th>
                     <th className="py-2 pr-3">{isGeorgian ? "წაღება" : "Collected"}</th>
-                    <th className="py-2 pr-3">{isGeorgian ? "ჩანთა" : "Bag"}</th>
+                    <th className="py-2 pr-3">{isGeorgian ? "ლანჩ ბოქსი" : "Box"}</th>
                     <th className="py-2 pr-3 text-right">{isGeorgian ? "თანხა" : "Amount"}</th>
                     <th className="py-2 pr-3 text-right">{isGeorgian ? "საკომისიო" : "Fee"}</th>
                     <th className="py-2 text-right">{isGeorgian ? "ბიზნესს" : "To business"}</th>
@@ -211,7 +211,7 @@ function BusinessReport() {
                   {orders.length === 0 && (
                     <tr>
                       <td colSpan={6} className="py-6 text-center text-body">
-                        {isGeorgian ? "ამ თვეში წაღებული ჩანთები არ არის." : "No collected bags in this month."}
+                        {isGeorgian ? "ამ თვეში წაღებული ლანჩ ბოქსები არ არის." : "No collected boxes in this month."}
                       </td>
                     </tr>
                   )}
@@ -234,8 +234,8 @@ function BusinessReport() {
 
             <footer className="mt-8 text-xs leading-5 text-body">
               {isGeorgian
-                ? "შეფასება: 1 მწვანე ჩანთა ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂. თანხები შეკვეთებზე ჩაწერილი გადახდის მონაცემებიდანაა; ანაზღაურებამდე შეადარე ბანკის ამონაწერს."
-                : "Estimate: 1 Green Bag ≈ 1 kg of food ≈ 2.7 kg CO₂. Amounts come from the payment fields recorded on each order; reconcile with the bank statement before payout."}
+                ? "შეფასება: 1 ლანჩ ბოქსი ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂. თანხები შეკვეთებზე ჩაწერილი გადახდის მონაცემებიდანაა; ანაზღაურებამდე შეადარე ბანკის ამონაწერს."
+                : "Estimate: 1 Lunch Box ≈ 1 kg of food ≈ 2.7 kg CO₂. Amounts come from the payment fields recorded on each order; reconcile with the bank statement before payout."}
             </footer>
           </>
         )}

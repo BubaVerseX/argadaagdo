@@ -441,8 +441,8 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შეთავაზების გამოქვეყნებამდე აირჩიე დამტკიცებული ბიზნესი.",
   ],
   [
-    "Add an offer title. Example: Bakery Green Bag.",
-    "დაამატე შეთავაზების სათაური. მაგალითად: საცხობის მწვანე ჩანთა.",
+    "Add an offer title. Example: Bakery Lunch Box.",
+    "დაამატე შეთავაზების სათაური. მაგალითად: საცხობის ლანჩ ბოქსი.",
   ],
   [
     "Your business is not approved yet.",
@@ -616,14 +616,14 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შეკვეთა მოინიშნა სტატუსით „არ გამოცხადდა“.",
   ],
 
-  // Green Bag dashboard: departments, templates, staff PINs (app/business/dashboard/page.tsx).
+  // Lunch Box dashboard: departments, templates, staff PINs (app/business/dashboard/page.tsx).
   [
     "Sales could not be updated. Please try again.",
     "გაყიდვების განახლება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
-    "No more bags today. Unsold offers are off sale; reserved bags stay and must be handed over or cancelled.",
-    "დღეს ჩანთები აღარ იყიდება. გაუყიდავი შეთავაზებები მოხსნილია; დაჯავშნილი ჩანთები რჩება და უნდა გაიცეს ან გაუქმდეს.",
+    "No more boxes today. Unsold offers are off sale; reserved boxes stay and must be handed over or cancelled.",
+    "დღეს ლანჩ ბოქსები აღარ იყიდება. გაუყიდავი შეთავაზებები მოხსნილია; დაჯავშნილი ლანჩ ბოქსები რჩება და უნდა გაიცეს ან გაუქმდეს.",
   ],
   [
     "Sales are back on. Paused offers are available again.",
@@ -670,20 +670,20 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შაბლონი ვერ შეინახა. გადაამოწმე დეტალები და სცადე ხელახლა.",
   ],
   [
-    "Template updated. Tomorrow's bag will use the new details.",
-    "შაბლონი განახლდა. ხვალინდელი ჩანთა ახალ დეტალებს გამოიყენებს.",
+    "Template updated. Tomorrow's box will use the new details.",
+    "შაბლონი განახლდა. ხვალინდელი ლანჩ ბოქსი ახალ დეტალებს გამოიყენებს.",
   ],
   [
-    "Template saved. Tomorrow's bag is created automatically at 19:00; use \"Publish for today\" to start now.",
-    "შაბლონი შენახულია. ხვალინდელი ჩანთა 19:00-ზე ავტომატურად შეიქმნება; ახლავე დასაწყებად გამოიყენე „დღევანდელის გამოქვეყნება“.",
+    "Template saved. Tomorrow's box is created automatically at 19:00; use \"Publish for today\" to start now.",
+    "შაბლონი შენახულია. ხვალინდელი ლანჩ ბოქსი 19:00-ზე ავტომატურად შეიქმნება; ახლავე დასაწყებად გამოიყენე „დღევანდელის გამოქვეყნება“.",
   ],
   [
     "The template could not be updated. Please try again.",
     "შაბლონის განახლება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
-    "Template paused. No new bags will be created from it.",
-    "შაბლონი გაჩერებულია. მისგან ახალი ჩანთები აღარ შეიქმნება.",
+    "Template paused. No new boxes will be created from it.",
+    "შაბლონი გაჩერებულია. მისგან ახალი ლანჩ ბოქსები აღარ შეიქმნება.",
   ],
   [
     "Template resumed.",
@@ -698,24 +698,24 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შაბლონი წაიშალა.",
   ],
   [
-    "The bag could not be published. Please try again.",
-    "ჩანთის გამოქვეყნება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+    "The box could not be published. Please try again.",
+    "ლანჩ ბოქსის გამოქვეყნება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
-    "Nothing published: today's bag already exists, its pickup window has ended, this weekday is off, or sales are paused today.",
-    "არაფერი გამოქვეყნდა: დღევანდელი ჩანთა უკვე არსებობს, წაღების დრო დასრულდა, ეს დღე გამორთულია, ან გაყიდვები დღეს გაჩერებულია.",
+    "Nothing published: today's box already exists, its pickup window has ended, this weekday is off, or sales are paused today.",
+    "არაფერი გამოქვეყნდა: დღევანდელი ლანჩ ბოქსი უკვე არსებობს, წაღების დრო დასრულდა, ეს დღე გამორთულია, ან გაყიდვები დღეს გაჩერებულია.",
   ],
   [
-    "Nothing published: tomorrow's bag already exists, or this weekday is off.",
-    "არაფერი გამოქვეყნდა: ხვალინდელი ჩანთა უკვე არსებობს, ან ეს დღე გამორთულია.",
+    "Nothing published: tomorrow's box already exists, or this weekday is off.",
+    "არაფერი გამოქვეყნდა: ხვალინდელი ლანჩ ბოქსი უკვე არსებობს, ან ეს დღე გამორთულია.",
   ],
   [
-    "Today's bag is on sale.",
-    "დღევანდელი ჩანთა გაყიდვაშია.",
+    "Today's box is on sale.",
+    "დღევანდელი ლანჩ ბოქსი გაყიდვაშია.",
   ],
   [
-    "Tomorrow's bag is published.",
-    "ხვალინდელი ჩანთა გამოქვეყნდა.",
+    "Tomorrow's box is published.",
+    "ხვალინდელი ლანჩ ბოქსი გამოქვეყნდა.",
   ],
   [
     "Choose a business first.",

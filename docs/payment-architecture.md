@@ -20,7 +20,7 @@ for database compatibility.
 9. The server calls `finalize_provider_payment(...)`.
 10. Paid orders become `reserved` and receive a pickup code.
 
-The inventory hold prevents overselling the last available Green Bag. If the
+The inventory hold prevents overselling the last available Lunch Box. If the
 provider session fails, expires, is cancelled, or is refunded, inventory is
 restored through RPC logic exactly once.
 

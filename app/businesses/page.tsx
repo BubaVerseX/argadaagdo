@@ -193,8 +193,8 @@ export default function BusinessesPage() {
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-body md:text-lg">
               {isGeorgian
-                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც არ გადააგდოზე მწვანე ჩანთების გამოქვეყნების უფლება აქვთ."
-                : "Search bakeries, cafes, restaurants and shops that are approved to publish Green Bags on ArGadaagdo."}
+                ? "მოძებნე საცხობები, კაფეები, რესტორნები და მაღაზიები, რომლებსაც არ გადააგდოზე ლანჩ ბოქსების გამოქვეყნების უფლება აქვთ."
+                : "Search bakeries, cafes, restaurants and shops that are approved to publish Lunch Boxes on ArGadaagdo."}
             </p>
           </div>
 
@@ -338,7 +338,7 @@ export default function BusinessesPage() {
                   : "Try clearing filters or browsing offers directly. New verified businesses will appear here as the pilot grows."}
               </p>
               <Link
-                href="/offers"
+                href="/discover"
                 className="premium-button mt-5 inline-flex px-6 py-3"
               >
                 {t("common.browseOffers")}

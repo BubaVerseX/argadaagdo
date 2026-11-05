@@ -132,10 +132,10 @@ export default function BusinessProfilePage() {
     (isGeorgian
       ? `დადასტურებული ბიზნესი${
           business?.business_type ? ` (${business.business_type})` : ""
-        }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ მწვანე ჩანთებს გთავაზობს.`
+        }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ ლანჩ ბოქსებს გთავაზობს.`
       : `Verified ${
           business?.business_type || "food"
-        } business offering pickup-only Green Bags in Tbilisi.`);
+        } business offering pickup-only Lunch Boxes in Tbilisi.`);
   const completedPickupSignal =
     reviewCount > 0
       ? `${reviewCount}+`
@@ -150,7 +150,7 @@ export default function BusinessProfilePage() {
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <Link
-            href="/offers"
+            href="/discover"
             className="premium-button-secondary flex w-fit items-center gap-2 px-5 py-2.5"
           >
             <ArrowLeftIcon className="h-4 w-4" strokeWidth={1.8} />
@@ -381,7 +381,7 @@ export default function BusinessProfilePage() {
                       title={t("businessProfile.noActiveOffers")}
                       text={t("businessProfile.noActiveOffersHint")}
                       
-                      href="/offers"
+                      href="/discover"
                       actionLabel={t("common.browseOffers")}
                     />
                   )}

@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/site";
 export const metadata: Metadata = buildPageMetadata({
   title: "Frequently Asked Questions",
   description:
-    "Answers about Green Bags, reservations, pickup codes, cancellations and joining ArGadaagdo as a business.",
+    "Answers about Lunch Boxes, reservations, pickup codes, cancellations and joining ArGadaagdo as a business.",
   path: "/faq",
 });
 

@@ -96,8 +96,8 @@ export function BusinessOnboardingSections({
             title={isGeorgian ? "შექმენი შეთავაზებები" : "Create offers"}
             text={
               isGeorgian
-                ? "გამოაქვეყნე ერთი მკაფიო მწვანე ჩანთა ფასით, რაოდენობითა და წაღების დროით."
-                : "Publish one clear Green Bag with price, quantity and pickup time."
+                ? "გამოაქვეყნე ერთი მკაფიო ლანჩ ბოქსი ფასით, რაოდენობითა და წაღების დროით."
+                : "Publish one clear Lunch Box with price, quantity and pickup time."
             }
           />
           <HelpCard
@@ -105,8 +105,8 @@ export function BusinessOnboardingSections({
             title={isGeorgian ? "მიიღე ჯავშნები" : "Receive reservations"}
             text={
               isGeorgian
-                ? "მომხმარებლები ხელმისაწვდომ ჩანთებს ჯავშნიან და შენს პანელში ჩნდებიან."
-                : "Customers reserve available bags and appear in your dashboard."
+                ? "მომხმარებლები ხელმისაწვდომ ლანჩ ბოქსებს ჯავშნიან და შენს პანელში ჩნდებიან."
+                : "Customers reserve available boxes and appear in your dashboard."
             }
           />
           <HelpCard
@@ -131,8 +131,8 @@ export function BusinessOnboardingSections({
             title={isGeorgian ? "საუკეთესო პრაქტიკა" : "Best practice"}
             text={
               isGeorgian
-                ? "გამოიყენე რეალისტური სათაურები, მაგალითად „საცხობის მწვანე ჩანთა“, და წაღების დროები ზუსტად მიუთითე."
-                : "Use realistic titles like Bakery Green Bag and keep pickup windows accurate."
+                ? "გამოიყენე რეალისტური სათაურები, მაგალითად „საცხობის ლანჩ ბოქსი“, და წაღების დროები ზუსტად მიუთითე."
+                : "Use realistic titles like Bakery Lunch Box and keep pickup windows accurate."
             }
           />
         </div>

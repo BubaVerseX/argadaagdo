@@ -275,7 +275,7 @@ export function OrderCard({
                   onClick={() => onOpenCollect?.(order)}
                   className="premium-button cta-glow mt-4 min-h-12 w-full py-3"
                 >
-                  {isGeorgian ? "ჩანთა ხელშია? დაადასტურე წაღება" : "Got the bag? Confirm pickup"}
+                  {isGeorgian ? "ლანჩ ბოქსი ხელშია? დაადასტურე წაღება" : "Got the box? Confirm pickup"}
                 </button>
               )}
 

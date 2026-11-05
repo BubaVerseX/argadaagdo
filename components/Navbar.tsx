@@ -24,7 +24,6 @@ import {
   LogOutIcon,
   MoreHorizontalIcon,
   ReceiptIcon,
-  SearchIcon,
   ShieldIcon,
   StoreIcon,
   TagIcon,
@@ -143,6 +142,8 @@ export default function Navbar({
     // page's path; only the plain page link is the current page, otherwise
     // three tabs are highlighted and announced as current at once.
     if (href.includes("#")) return false;
+    // Offer pages open from the list on Discover.
+    if (href === "/discover" && pathname.startsWith("/offers/")) return true;
 
     const cleanHref = href;
     return (
@@ -166,13 +167,7 @@ export default function Navbar({
   // per-role tab list, so the two surfaces can never drift out of sync.
   const tabs: TabItem[] = (() => {
     const home: TabItem = { kind: "link", href: "/", label: t("nav.home"), Icon: HomeIcon };
-    const browse: TabItem = {
-      kind: "link",
-      href: "/offers",
-      label: t("nav.browse"),
-      shortLabel: t("nav.browseTab"),
-      Icon: SearchIcon,
-    };
+    const discover: TabItem = { kind: "link", href: "/discover", label: t("nav.discover"), Icon: MapPinIcon };
     const more: TabItem = {
       kind: "action",
       id: "more",
@@ -203,7 +198,7 @@ export default function Navbar({
     if (isAdmin) {
       return [
         home,
-        browse,
+        discover,
         { kind: "link", href: "/businesses", label: t("nav.businesses"), Icon: StoreIcon },
         { kind: "link", href: "/admin", label: t("nav.admin"), Icon: ShieldIcon },
         profile,
@@ -213,7 +208,7 @@ export default function Navbar({
     if (showCustomerNavigation) {
       return [
         home,
-        browse,
+        discover,
         { kind: "link", href: "/favorites", label: t("nav.favorites"), Icon: HeartIcon },
         { kind: "link", href: "/orders", label: t("nav.orders"), Icon: ReceiptIcon },
         profile,
@@ -225,8 +220,7 @@ export default function Navbar({
       // owned business yet) — keep it functional with what we know.
       return [
         home,
-        browse,
-        { kind: "link", href: "/discover", label: t("nav.discover"), Icon: MapPinIcon },
+        discover,
         more,
         profile,
       ];
@@ -234,10 +228,8 @@ export default function Navbar({
 
     return [
       home,
-      browse,
-      { kind: "link", href: "/discover", label: t("nav.discover"), Icon: MapPinIcon },
+      discover,
       more,
-      { kind: "link", href: "/login", label: t("nav.signIn"), Icon: UserIcon },
     ];
   })();
 
@@ -262,6 +254,7 @@ export default function Navbar({
         <div className={`hidden items-center gap-1 lg:flex ${isAppStyle ? "ui-card rounded-full p-1.5" : ""}`}>
           {tabs
             .filter((tabItem): tabItem is Extract<TabItem, { kind: "link" }> => tabItem.kind === "link")
+            .filter((tabItem) => tabItem.href !== "/profile")
             .map((tabItem) => {
               const active = isActivePath(tabItem.href);
               return (
@@ -340,13 +333,13 @@ export default function Navbar({
                 }`}
                 aria-haspopup="menu"
                 aria-expanded={accountMenu}
-                aria-label={accountMenu ? t("nav.closeAccount") : t("nav.openAccount")}
+                aria-label={t("nav.more")}
                 aria-controls="account-menu"
               >
                 {accountMenu ? (
                   <XIcon className="h-5 w-5" strokeWidth={1.8} />
                 ) : (
-                  <UserIcon className="h-5 w-5" strokeWidth={1.8} />
+                  <MoreHorizontalIcon className="h-5 w-5" strokeWidth={1.8} />
                 )}
               </button>
 
@@ -356,7 +349,7 @@ export default function Navbar({
                   role="menu"
                   className="ui-card absolute right-0 mt-3 max-h-[calc(100dvh-6rem)] w-72 overflow-y-auto overscroll-contain rounded-3xl p-3"
                 >
-                  {user ? (
+                  {user && (
                     <div className="px-3 py-2">
                       <p className="truncate text-sm font-semibold text-cream">
                         {user.email}
@@ -364,17 +357,6 @@ export default function Navbar({
                       <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
                         {role || t("nav.customerSection")}
                       </p>
-                    </div>
-                  ) : (
-                    <div className="px-3 py-2">
-                      <Link
-                        href="/login"
-                        onClick={() => setAccountMenu(false)}
-                        className="premium-button w-full"
-                        role="menuitem"
-                      >
-                        {t("nav.signIn")}
-                      </Link>
                     </div>
                   )}
 
@@ -530,6 +512,20 @@ export default function Navbar({
                 </div>
               )}
             </div>
+          )}
+
+          {!authReady ? (
+            <div className="ui-card h-11 w-11 rounded-full" />
+          ) : (
+            <Link
+              href={user ? "/profile" : "/login"}
+              onClick={closeAllMenus}
+              aria-label={user ? t("nav.profile") : t("nav.signIn")}
+              aria-current={ariaCurrent(user ? "/profile" : "/login")}
+              className="ui-card flex min-h-11 min-w-11 items-center justify-center rounded-full text-body transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+            >
+              <UserIcon className="h-5 w-5" strokeWidth={1.8} />
+            </Link>
           )}
         </div>
       </div>

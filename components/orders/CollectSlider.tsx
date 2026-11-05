@@ -30,7 +30,7 @@ function formatClock(date: Date, withSeconds: boolean) {
 }
 
 // Full-screen "Collected" slider, swiped in front of staff. Swiping to the end
-// calls collect_my_order; the confirmation shows the store, the bag, a live
+// calls collect_my_order; the confirmation shows the store, the box, a live
 // clock and a 2-minute Undo. A keyboard/assistive fallback button does the
 // same without dragging.
 export function CollectSlider({ order, language, onCollect, onUndo, onClose }: CollectSliderProps) {
@@ -262,8 +262,8 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
               </p>
               <p className="mt-4 text-sm leading-6 text-body">
                 {isGeorgian
-                  ? "გადაასრიალე თანამშრომლის თვალწინ, როცა ჩანთა ხელში გაქვს. 2 წუთის განმავლობაში გაუქმება შეგიძლია."
-                  : "Swipe in front of the staff once the bag is in your hands. You can undo for 2 minutes."}
+                  ? "გადაასრიალე თანამშრომლის თვალწინ, როცა ლანჩ ბოქსი ხელში გაქვს. 2 წუთის განმავლობაში გაუქმება შეგიძლია."
+                  : "Swipe in front of the staff once the box is in your hands. You can undo for 2 minutes."}
               </p>
             </div>
 

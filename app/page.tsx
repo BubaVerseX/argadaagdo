@@ -106,13 +106,13 @@ export default function Home() {
       ? "არ გადააგდო აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
       : "ArGadaagdo connects customers with cafes, bakeries and restaurants that have good food left at the end of the day.",
     categoriesLabel: isGeorgian ? "პოპულარული კატეგორიები" : "Popular categories",
-    browseToday: isGeorgian ? "შეთავაზებების ნახვა" : "Browse offers",
+    browseToday: isGeorgian ? "აღმოჩენა" : "Discover",
     listSurplus: isGeorgian ? "განათავსე ჭარბი საკვები" : "List your surplus",
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "დაათვალიერე თბილისის საყვარელი ბიზნესების მწვანე ჩანთები, სანამ გაქრება."
-      : "Spot Green Bags from real Tbilisi favorites before they're gone.",
+      ? "დაათვალიერე თბილისის ბიზნესების ლანჩ ბოქსები, სანამ გაქრება."
+      : "Spot Lunch Boxes from Tbilisi businesses before they're gone.",
     reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
     reserveText: isGeorgian
       ? "გადაიხადე უსაფრთხოდ ერთი შეხებით და მაშინვე მიიღე წაღების კოდი."
@@ -137,40 +137,22 @@ export default function Home() {
       ? "შენი შემდეგი გემრიელი კერძი უკვე გელოდება."
       : "Your next great meal is already waiting.",
     finalCtaText: isGeorgian
-      ? "შემოუერთდი თბილისელებს, რომლებიც უკვე ზოგავენ თანხას და გადაარჩენენ საკვებს — ან განათავსე ჭარბი საკვები და აქციე ის შემოსავლად."
-      : "Join the Tbilisi customers already saving money and rescuing food, or list your surplus and turn it into revenue.",
+      ? "იპოვე ლანჩ ბოქსები შენთან ახლოს, ან განათავსე ჭარბი საკვები და აქციე ის შემოსავლად."
+      : "Find Lunch Boxes near you, or list your surplus and turn it into revenue.",
     finalCtaSecondary: isGeorgian ? "დაამატე შენი ბიზნესი" : "List your business",
   };
-  const testimonials = [
-    {
-      quote: isGeorgian
-        ? "ყოველ კვირას ვზოგავ ფულს და ვამჩნევ, რომ ჩვენს რაიონში ნაკლები საკვები იფლანგება."
-        : "I save money every week, and it genuinely feels like less good food is going to waste in my neighborhood.",
-      name: isGeorgian ? "ნინო" : "Nino",
-      location: isGeorgian ? "ვაკე, თბილისი" : "Vake, Tbilisi",
-    },
-    {
-      quote: isGeorgian
-        ? "დღის ბოლოს დარჩენილი ცომეულის გაყიდვა ახლა ჩვენი ბიზნესის ჩვეულ ნაწილად იქცა."
-        : "Selling our end-of-day bakes has become a normal, easy part of closing up each night.",
-      name: isGeorgian ? "დავითი" : "Davit",
-      location: isGeorgian ? "საცხობის მფლობელი, საბურთალო" : "Saburtalo bakery owner",
-    },
-  ];
   const marqueeItems = isGeorgian
     ? [
         "დადასტურებული თბილისური ბიზნესები",
         "მხოლოდ ადგილზე წაღება",
         "დაცული ჯავშნები",
-        "ნამდვილი მომხმარებლების შეფასებები",
         "ყოველდღიური ახალი შეთავაზებები",
       ]
     : [
         "Verified Tbilisi businesses",
         "Pickup-only, zero delivery waste",
         "Secure code-based reservations",
-        "Rated by real customers",
-        "Fresh Green Bags daily",
+        "Fresh Lunch Boxes daily",
       ];
   const stats = [
     {
@@ -245,7 +227,6 @@ export default function Home() {
       stats,
       steps,
       businessSolutions,
-      testimonials,
       marqueeItems,
     },
     offers,

@@ -1,5 +1,5 @@
 export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://argadaagdo-silk.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://argadaagdo.ge";
 
 export function absoluteSiteUrl(path = "/") {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
@@ -44,3 +44,5 @@ export function buildPageMetadata({
     ...(index ? {} : { robots: { index: false, follow: false } }),
   };
 }
+
+export const appStoreUrl = "https://apps.apple.com/app/id6827484439";

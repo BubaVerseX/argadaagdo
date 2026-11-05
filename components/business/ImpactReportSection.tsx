@@ -28,7 +28,7 @@ function toNumber(value: number | string | null | undefined) {
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
-// Store impact ("saved N bags ≈ N kg ≈ CO₂") plus the monthly report chains
+// Store impact ("saved N boxes ≈ N kg ≈ CO₂") plus the monthly report chains
 // ask for: a CSV of completed pickups and a printable PDF page.
 export function ImpactReportSection({
   language,
@@ -64,7 +64,7 @@ export function ImpactReportSection({
         pickup_date: order.offers?.pickup_date || "",
         completed_at: order.completed_at || "",
         title: order.offers?.title || "",
-        bag: order.offers ? getGreenBagLabel(order.offers, "en") : "",
+        box: order.offers ? getGreenBagLabel(order.offers, "en") : "",
         amount_gel: toNumber(order.amount).toFixed(2),
         platform_fee_gel: toNumber(order.platform_fee).toFixed(2),
         business_amount_gel: toNumber(order.business_amount).toFixed(2),
@@ -113,7 +113,7 @@ export function ImpactReportSection({
           </label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
-              { label: isGeorgian ? "წაღებული ჩანთა" : "Bags collected", value: String(monthImpact.bags) },
+              { label: isGeorgian ? "წაღებული ლანჩ ბოქსი" : "Boxes collected", value: String(monthImpact.bags) },
               { label: isGeorgian ? "საკვები" : "Food saved", value: formatKg(monthImpact.foodKg, language) },
               { label: "CO₂", value: formatKg(monthImpact.co2Kg, language) },
               { label: isGeorgian ? "ბიზნესის შემოსავალი" : "Business earnings", value: formatAnalyticsMoney(monthEarnings) },
@@ -146,8 +146,8 @@ export function ImpactReportSection({
       </div>
       <p className="mt-3 text-xs leading-5 text-body">
         {isGeorgian
-          ? "PDF ანგარიში ახალ ჩანართში იხსნება; გამოიყენე „ბეჭდვა → შენახვა PDF-ად“. შეფასება: 1 ჩანთა ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂."
-          : "The PDF report opens in a new tab; use Print → Save as PDF. Estimate: 1 bag ≈ 1 kg of food ≈ 2.7 kg CO₂."}
+          ? "PDF ანგარიში ახალ ჩანართში იხსნება; გამოიყენე „ბეჭდვა → შენახვა PDF-ად“. შეფასება: 1 ლანჩ ბოქსი ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂."
+          : "The PDF report opens in a new tab; use Print → Save as PDF. Estimate: 1 box ≈ 1 kg of food ≈ 2.7 kg CO₂."}
       </p>
     </div>
   );

@@ -17,12 +17,12 @@ const customerQuestions = {
     {
       question: "How do reservations work?",
       answer:
-        "Choose an available Green Bag, review the pickup window, confirm the reservation, then find your pickup code in Orders.",
+        "Choose an available Lunch Box, review the pickup window, confirm the reservation, then find your pickup code in Orders.",
     },
     {
-      question: "What is a Green Bag?",
+      question: "What is a Lunch Box?",
       answer:
-        "A Green Bag contains good surplus food from a local business. The exact contents may vary, but the business, price and pickup time are always shown before reservation.",
+        "A Lunch Box contains good surplus food from a local business. The exact contents may vary, but the business, price and pickup time are always shown before reservation.",
     },
     {
       question: "Can I cancel?",
@@ -39,12 +39,12 @@ const customerQuestions = {
     {
       question: "როგორ მუშაობს დაჯავშნა?",
       answer:
-        "აირჩიე ხელმისაწვდომი მწვანე ჩანთა, გადაამოწმე წაღების დრო, დაადასტურე ჯავშანი და შემდეგ წაღების კოდი შეკვეთებში იპოვე.",
+        "აირჩიე ხელმისაწვდომი ლანჩ ბოქსი, გადაამოწმე წაღების დრო, დაადასტურე ჯავშანი და შემდეგ წაღების კოდი შეკვეთებში იპოვე.",
     },
     {
-      question: "რა არის მწვანე ჩანთა?",
+      question: "რა არის ლანჩ ბოქსი?",
       answer:
-        "მწვანე ჩანთაში ადგილობრივი ბიზნესის კარგი, დარჩენილი საკვებია. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ ბიზნესი, ფასი და წაღების დრო დაჯავშნამდე ყოველთვის ჩანს.",
+        "ლანჩ ბოქსში ადგილობრივი ბიზნესის კარგი, დარჩენილი საკვებია. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ ბიზნესი, ფასი და წაღების დრო დაჯავშნამდე ყოველთვის ჩანს.",
     },
     {
       question: "შემიძლია გაუქმება?",
@@ -74,7 +74,7 @@ const businessQuestions = {
     {
       question: "How do ratings work?",
       answer:
-        "Customers can rate a business after a completed pickup. Ratings help future customers choose trusted local places.",
+        "Customers can rate a business after a completed pickup. Ratings help other customers choose where to reserve.",
     },
   ],
   ka: [
@@ -91,7 +91,7 @@ const businessQuestions = {
     {
       question: "როგორ მუშაობს შეფასებები?",
       answer:
-        "მომხმარებლებს ბიზნესის შეფასება დასრულებული წაღების შემდეგ შეუძლიათ. შეფასებები მომავალ მომხმარებლებს სანდო ადგილობრივი ადგილების არჩევაში ეხმარება.",
+        "მომხმარებლებს ბიზნესის შეფასება დასრულებული წაღების შემდეგ შეუძლიათ. შეფასებები სხვა მომხმარებლებს ეხმარება, აირჩიონ, სად დაჯავშნონ.",
     },
   ],
 };
@@ -172,8 +172,8 @@ export default function SupportContent() {
               </h2>
               <p className="mt-3 leading-7 text-body">
                 {isGeorgian
-                  ? "დაიწყე აქედან, თუ არ ხარ დარწმუნებული, როგორ მუშაობს მწვანე ჩანთები, ჯავშნები, წაღება, გაუქმება ან შეფასებები."
-                  : "Start here if you are unsure how Green Bags, reservations, pickups, cancellations or ratings work."}
+                  ? "დაიწყე აქედან, თუ არ ხარ დარწმუნებული, როგორ მუშაობს ლანჩ ბოქსები, ჯავშნები, წაღება, გაუქმება ან შეფასებები."
+                  : "Start here if you are unsure how Lunch Boxes, reservations, pickups, cancellations or ratings work."}
               </p>
 
               <div className="mt-6 grid gap-6">

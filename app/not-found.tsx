@@ -26,7 +26,7 @@ export default function NotFound() {
           </p>
 
           <Link
-            href="/offers"
+            href="/discover"
             className="premium-button mt-7 inline-block min-h-12 w-full px-8 py-3 sm:mt-8 sm:w-auto sm:py-4"
           >
             {t("common.browseOffers")}

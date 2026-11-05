@@ -1,4 +1,4 @@
-# Green Bag deploy-day checklist
+# Lunch Box deploy-day checklist
 
 Branch `claude/green-bag`, PR #28. Run top to bottom on the day the founder
 says "deploy".
@@ -30,18 +30,18 @@ Database → Migrations ("staff_pin_status").
 All additive. The live app (`main`) ignores them; the App Review demo flow
 is unchanged. Verified on the preview: template → published offer →
 reserve → swipe-collect → dashboard shows collected → undo → verify by
-code → "Today: no bags" → staff PIN page.
+code → "Today: no boxes" → staff PIN page.
 
 ## 2. Merge PR #28 → `main` ✓ (production deployed `82d5296` on 2026-11-02)
 
 - Confirm Apple has finished reviewing iOS 1.0.0, or accept that the
-  reviewer will see the Green Bag naming (the demo bag title, the code flow
+  reviewer will see the Lunch Box naming (the demo box title, the code flow
   and the reviewer notes are unchanged, so the review steps still work).
 - Merge. Vercel deploys `main` automatically (about a minute).
 
 ## 3. Deploy checks (right after the merge)
 
-- Open `/business/dashboard` as the demo business: the "Green Bags on
+- Open `/business/dashboard` as the demo business: the "Lunch Boxes on
   sale" panel, the templates panel and the offer form with Size show up;
   no red notice.
 - Open `/orders` as the demo customer: orders load (this page now reads
@@ -50,7 +50,7 @@ code → "Today: no bags" → staff PIN page.
   (15:00 UTC). Check Vercel → Project → Settings → Cron Jobs lists it and
   that `CRON_SECRET` is set in Production.
 - Optional smoke test of the job: `curl -H "Authorization: Bearer $CRON_SECRET"
-  https://argadaagdo-silk.vercel.app/api/cron/publish-green-bags` → `{ ok: true }`.
+  https://argadaagdo.ge/api/cron/publish-green-bags` → `{ ok: true }`.
 
 ## 4. Migration 4 — `20261104081140_platform_fee_rate.sql` ✓ (applied 2026-11-04)
 
@@ -72,7 +72,7 @@ Dry-run was done on 2026-11-01 (rolled back): 9.00 GEL → 2.70 fee /
 Right after migration 4:
 
 ```sql
--- App Review demo bakery (business 14): 0 GEL bags, keep the fee at 0 so
+-- App Review demo bakery (business 14): 0 GEL boxes, keep the fee at 0 so
 -- the demo order rows stay all-zero.
 select public.set_business_platform_fee_rate(14, 0);
 -- Old Town Bakery test fixture (business 2), used for store screenshots:
@@ -96,10 +96,10 @@ orders keep the fee recorded on them.
 ## 7. Afterwards
 
 - Add the Georgian wording fixes to the store listings if they quote the
-  app (`docs/play-store-submission.md`, the iOS kit): "მწვანე ჩანთა",
+  app (`docs/play-store-submission.md`, the iOS kit): "ლანჩ ბოქსი",
   "წაღების დრო", "დადასტურებული ბიზნესები", "პლატფორმა".
 - Walk one real partner through: departments (only if they need them),
-  one template per bag size, "Publish for today", the staff link + PIN.
+  one template per box size, "Publish for today", the staff link + PIN.
 - Watch the first 19:00 cron run in Vercel → Logs; it reports
   `{ created: { "<today>": n, "<tomorrow>": m } }`.
 

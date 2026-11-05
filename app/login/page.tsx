@@ -337,7 +337,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/offers");
+    router.push("/discover");
     router.refresh();
   }
 

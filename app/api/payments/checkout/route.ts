@@ -105,7 +105,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // App Store review demo: 0 GEL bags exist only on the review demo
+    // App Store review demo: 0 GEL boxes exist only on the review demo
     // business and are reserved without a bank payment. The RPC accepts
     // only the registered reviewer logins (see
     // supabase/migrations/20261026121039_app_review_demo.sql).

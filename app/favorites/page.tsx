@@ -357,7 +357,7 @@ export default function FavoritesPage() {
             </p>
 
             <Link
-              href="/offers"
+              href="/discover"
               className="mt-6 premium-button px-8 py-3 sm:py-4"
             >
               {t("common.browseOffers")}

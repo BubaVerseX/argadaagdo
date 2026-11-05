@@ -6,8 +6,8 @@ import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
-// Daily Green Bag publisher (vercel.json, 15:00 UTC = 19:00 Tbilisi). Creates
-// tomorrow's offers from every active bag template, and catches up today's in
+// Daily Lunch Box publisher (vercel.json, 15:00 UTC = 19:00 Tbilisi). Creates
+// tomorrow's offers from every active box template, and catches up today's in
 // case a template was added after yesterday's run. publish_bag_templates is
 // idempotent: a template never gets two offers for the same date.
 export async function GET(request: Request) {
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
       });
 
       if (error) {
-        logger.error("Green Bag template publishing failed", {
+        logger.error("Lunch Box template publishing failed", {
           date,
           error: error.message,
         });
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ ok: true, created: results });
   } catch (error) {
-    logger.error("Green Bag template cron failed", { error });
+    logger.error("Lunch Box template cron failed", { error });
     return NextResponse.json(
       { ok: false, error: "Template publishing could not run." },
       { status: 500 }

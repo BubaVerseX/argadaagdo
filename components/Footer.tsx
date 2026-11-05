@@ -1,5 +1,6 @@
 "use client";
 
+import AppStoreLink from "@/components/AppStoreLink";
 import BrandMark from "@/components/BrandMark";
 import Link from "next/link";
 import { useLanguage } from "@/lib/useLanguage";
@@ -34,7 +35,6 @@ export default function Footer() {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
   const platformLinks = [
-    { href: "/offers", label: t("nav.offers") },
     { href: "/discover", label: t("nav.discover") },
     { href: "/businesses", label: t("nav.businesses") },
     { href: "/for-businesses", label: t("nav.forBusiness") },
@@ -85,6 +85,8 @@ export default function Footer() {
               </a>
             ))}
           </div>
+
+          <AppStoreLink />
         </div>
 
         <div>

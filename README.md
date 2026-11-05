@@ -1,7 +1,7 @@
 # ArGadaagdo
 
 ArGadaagdo is a pickup-only food-rescue marketplace for Tbilisi, Georgia.
-Local food businesses publish discounted Green Bags, customers reserve them
+Local food businesses publish discounted Lunch Boxes, customers reserve them
 online, and pickup codes make in-store collection clear and simple.
 
 The project is a production-demo MVP inspired by Too Good To Go. It includes
@@ -13,18 +13,18 @@ pages.
 
 Production beta URL:
 
-[https://argadaagdo-silk.vercel.app](https://argadaagdo-silk.vercel.app)
+[https://argadaagdo.ge](https://argadaagdo.ge)
 
 ## Core Features
 
 - Customer signup, login, persistent sessions, and protected routes
 - Business registration with admin approval
 - Business dashboard for offers, reservations, pickup verification, and reviews
-- Green Bags: category tag (Bakery, Fruit & veg, Dairy, Deli, Mixed) and size S / M / L
-- Departments per store with bag templates, daily auto-publish, "Today: no bags" and a PIN-protected staff page
+- Lunch Boxes: category tag (Bakery, Fruit & veg, Dairy, Deli, Mixed) and size S / M / L
+- Departments per store with box templates, daily auto-publish, "Today: no boxes" and a PIN-protected staff page
 - Swipe-to-collect on the customer's order (2-minute undo) next to the pickup-code fallback
 - Per-business platform commission (30% default, 0% for pilot partners) driving the TBC split
-- Impact numbers (bags, kg food, kg CO₂) with a share image, plus monthly CSV / PDF reports for businesses
+- Impact numbers (boxes, kg food, kg CO₂) with a share image, plus monthly CSV / PDF reports for businesses
 - Public marketplace with categories, sorting, favorites, and offer detail pages
 - TBC Bank checkout session preparation through server route handlers
 - Payment-first reservation flow through Supabase RPC functions
@@ -54,7 +54,7 @@ Production beta URL:
 
 1. A business creates an account and submits a business registration.
 2. An admin reviews and approves the business.
-3. The business sets up Green Bag templates (or a one-off offer); the daily job publishes tomorrow's bags.
+3. The business sets up Lunch Box templates (or a one-off offer); the daily job publishes tomorrow's boxes.
 4. A customer browses active offers and confirms a reservation.
 5. The payment RPC creates a pending order and payment hold while decreasing
    offer quantity atomically.
@@ -70,9 +70,9 @@ Production beta URL:
 | --- | --- |
 | `profiles` | User email, role, and reliability fields |
 | `businesses` | Business ownership, details, approval state, and profile data |
-| `offers` | Green Bags, size, category, department, prices, pickup windows, images, status, and quantity |
-| `departments` | Store departments: default flag, staff PIN flag, "Today: no bags" date |
-| `bag_templates` | Daily Green Bag templates: category, size, price, bags per day, pickup window, weekdays |
+| `offers` | Lunch Boxes, size, category, department, prices, pickup windows, images, status, and quantity |
+| `departments` | Store departments: default flag, staff PIN flag, "Today: no boxes" date |
+| `bag_templates` | Daily Lunch Box templates: category, size, price, boxes per day, pickup window, weekdays |
 | `orders` | Pending payment, reservation lifecycle, pickup codes, cancellation, and rating state |
 | `payments` | Provider payment state, fees, business amount, references, and refund state |
 | `business_ratings` | Customer ratings for completed pickups |
@@ -149,7 +149,7 @@ Required:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-or-publishable-key
-NEXT_PUBLIC_SITE_URL=https://argadaagdo-silk.vercel.app
+NEXT_PUBLIC_SITE_URL=https://argadaagdo.ge
 ```
 
 Server-only payment variables:
@@ -218,8 +218,8 @@ npm run build
   verification, and password reset emails.
 - Auth redirect URLs should include the production URL and local development
   URL, for example:
-  - `https://argadaagdo-silk.vercel.app`
-  - `https://argadaagdo-silk.vercel.app/login`
+  - `https://argadaagdo.ge`
+  - `https://argadaagdo.ge/login`
   - `http://localhost:3000`
   - `http://localhost:3000/login`
 
@@ -247,10 +247,10 @@ back successful reservations, cancellations, approvals, or pickups.
 ## Vercel Deployment Notes
 
 - Set all required environment variables in Vercel.
-- Use `NEXT_PUBLIC_SITE_URL=https://argadaagdo-silk.vercel.app` for canonical
+- Use `NEXT_PUBLIC_SITE_URL=https://argadaagdo.ge` for canonical
   metadata, sitemap, and robots URLs.
 - Configure the TBC Bank merchant callback URL as:
-  `https://argadaagdo-silk.vercel.app/api/payments/tbc/callback?secret=<TBC_CALLBACK_SECRET>`
+  `https://argadaagdo.ge/api/payments/tbc/callback?secret=<TBC_CALLBACK_SECRET>`
 - Configure successful and failed payment redirects to use the generated
   checkout session URLs returned by ArGadaagdo.
 - Set `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`,

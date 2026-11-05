@@ -36,7 +36,6 @@ export type HomeContent = {
   stats: Array<{ value?: string; label: string; text: string }>;
   steps: Array<{ label: string; title: string; text: string }>;
   businessSolutions: Array<{ title: string; text: string }>;
-  testimonials: Array<{ quote: string; name: string; location: string }>;
   marqueeItems: string[];
 };
 
@@ -65,7 +64,7 @@ export function AppHome({
   loading,
   errorMessage,
 }: AppHomeProps) {
-  const { copy, categoryLinks, stats, steps, businessSolutions, testimonials, marqueeItems } =
+  const { copy, categoryLinks, stats, steps, businessSolutions, marqueeItems } =
     content;
   const [heroOffer, ...moreOffers] = featuredOffers;
   const ratingFor = (offer: Offer) =>
@@ -109,7 +108,7 @@ export function AppHome({
                 {categoryLinks.map((category) => (
                   <Link
                     key={category}
-                    href={`/offers?category=${encodeURIComponent(category)}`}
+                    href={`/discover?category=${encodeURIComponent(category)}`}
                     className={`${getOfferCategoryTone(
                       category
                     )} flex min-h-11 flex-none items-center rounded-full bg-cat px-4 text-[13px] font-medium text-cat-ink transition hover:brightness-95`}
@@ -145,7 +144,7 @@ export function AppHome({
             {copy.heroSubtitle}
           </p>
           <div className="flex shrink-0 flex-col gap-2.5 sm:flex-row">
-            <Link href="/offers" className="premium-button rounded-[18px] px-6 py-3 font-bold">
+            <Link href="/discover" className="premium-button rounded-[18px] px-6 py-3 font-bold">
               {copy.browseToday}
             </Link>
             <Link
@@ -172,7 +171,7 @@ export function AppHome({
             </div>
 
             <Link
-              href="/offers"
+              href="/discover"
               className="inline-flex min-h-11 shrink-0 items-center self-start font-bold text-brand-forest underline-offset-4 hover:underline sm:self-auto"
             >
               {t("common.browseOffers")}
@@ -194,7 +193,7 @@ export function AppHome({
               <p className="mx-auto mt-3 max-w-lg leading-[1.55] text-body">
                 {t("home.publishLater")}
               </p>
-              <Link href="/offers" className="premium-button mt-6 px-7 py-3">
+              <Link href="/discover" className="premium-button mt-6 px-7 py-3">
                 {t("common.browseOffers")}
               </Link>
             </div>
@@ -296,27 +295,6 @@ export function AppHome({
         </div>
       </section>
 
-      <section className="py-10">
-        <div className="app-container grid gap-3 md:grid-cols-2">
-          {testimonials.map((testimonial) => (
-            <figure key={testimonial.name} className="ui-card rounded-3xl p-6 sm:p-8">
-              <blockquote className="font-serif text-lg font-bold leading-[1.45] sm:text-xl">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-mint font-bold text-brand-forest">
-                  {testimonial.name.slice(0, 1).toUpperCase()}
-                </div>
-                <div className="text-sm text-body">
-                  <p className="font-bold text-cream">{testimonial.name}</p>
-                  <p>{testimonial.location}</p>
-                </div>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
-
       <section className="py-6">
         <div className="trust-marquee">
           <div className="trust-marquee__track">
@@ -346,7 +324,7 @@ export function AppHome({
                 {copy.finalCtaText}
               </p>
               <div className="mt-6 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
-                <Link href="/offers" className="premium-button w-full rounded-[18px] px-7 py-3 font-bold sm:w-auto">
+                <Link href="/discover" className="premium-button w-full rounded-[18px] px-7 py-3 font-bold sm:w-auto">
                   {copy.browseToday}
                 </Link>
                 <Link href="/for-businesses" className="premium-button-secondary w-full rounded-[18px] px-7 py-3 sm:w-auto">

@@ -8,7 +8,7 @@ boring. During an incident, use this file before guessing.
 Primary runtime check:
 
 ```bash
-curl https://argadaagdo-silk.vercel.app/api/health
+curl https://argadaagdo.ge/api/health
 ```
 
 Detailed runtime check:
@@ -16,7 +16,7 @@ Detailed runtime check:
 ```bash
 curl \
   -H "Authorization: Bearer $HEALTH_CHECK_SECRET" \
-  https://argadaagdo-silk.vercel.app/api/health
+  https://argadaagdo.ge/api/health
 ```
 
 The health endpoint checks:
@@ -155,7 +155,7 @@ Before deployment:
 After deployment:
 
 - Open homepage
-- Open `/offers`
+- Open `/discover`
 - Open `/api/health`
 - Login as customer
 - Login as business
