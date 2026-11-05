@@ -106,7 +106,7 @@ export default function Home() {
       ? "არ გადააგდო აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
       : "ArGadaagdo connects customers with cafes, bakeries and restaurants that have good food left at the end of the day.",
     categoriesLabel: isGeorgian ? "პოპულარული კატეგორიები" : "Popular categories",
-    browseToday: isGeorgian ? "შეთავაზებების ნახვა" : "Browse offers",
+    browseToday: isGeorgian ? "აღმოჩენა" : "Discover",
     listSurplus: isGeorgian ? "განათავსე ჭარბი საკვები" : "List your surplus",
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
@@ -137,8 +137,8 @@ export default function Home() {
       ? "შენი შემდეგი გემრიელი კერძი უკვე გელოდება."
       : "Your next great meal is already waiting.",
     finalCtaText: isGeorgian
-      ? "შემოუერთდი თბილისელებს, რომლებიც უკვე ზოგავენ თანხას და გადაარჩენენ საკვებს — ან განათავსე ჭარბი საკვები და აქციე ის შემოსავლად."
-      : "Join the Tbilisi customers already saving money and rescuing food, or list your surplus and turn it into revenue.",
+      ? "იპოვე ლანჩ ბოქსები შენთან ახლოს, ან განათავსე ჭარბი საკვები და აქციე ის შემოსავლად."
+      : "Find Lunch Boxes near you, or list your surplus and turn it into revenue.",
     finalCtaSecondary: isGeorgian ? "დაამატე შენი ბიზნესი" : "List your business",
   };
   const marqueeItems = isGeorgian
@@ -146,14 +146,12 @@ export default function Home() {
         "დადასტურებული თბილისური ბიზნესები",
         "მხოლოდ ადგილზე წაღება",
         "დაცული ჯავშნები",
-        "ნამდვილი მომხმარებლების შეფასებები",
         "ყოველდღიური ახალი შეთავაზებები",
       ]
     : [
         "Verified Tbilisi businesses",
         "Pickup-only, zero delivery waste",
         "Secure code-based reservations",
-        "Rated by real customers",
         "Fresh Lunch Boxes daily",
       ];
   const stats = [

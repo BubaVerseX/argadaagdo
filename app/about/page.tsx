@@ -87,7 +87,7 @@ export default function AboutPage() {
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
-                href="/offers"
+                href="/discover"
                 className="premium-button-secondary px-6 py-3 text-center"
               >
                 {t("common.browseOffers")}

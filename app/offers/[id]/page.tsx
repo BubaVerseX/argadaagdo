@@ -351,7 +351,7 @@ export default function OfferDetailPage() {
 
           <div className="relative mx-auto flex max-w-6xl justify-center">
             <Link
-              href="/offers"
+              href="/discover"
               aria-label={t("offerDetail.back")}
               className="absolute left-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border"
             >

@@ -239,13 +239,13 @@ Business: argadaagdo.support+review.business@gmail.com / <PASSWORD>
 These two accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) "Demo surprise bag (free, App Review)". Reserving it takes no payment. The demo business and box are visible only to these accounts.
 
 STEPS
-1. Tap Sign In and sign in with the customer account.
-2. Browse > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. No payment page opens for the demo box.
+1. Tap the person icon (top right) and sign in with the customer account.
+2. Discover > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. No payment page opens for the demo box.
 3. Orders shows the reservation with its 6-digit Pickup Code. You can also cancel it there (allowed until 2 hours before pickup).
-4. Log out (account icon, top right > Logout) and sign in with the business account. On the Dashboard tab, scroll down to Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed, and the customer can then rate the business from Orders.
+4. Log out (... menu icon, top right > Logout) and sign in with the business account. On the Dashboard tab, scroll down to Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed, and the customer can then rate the business from Orders.
 
 ACCOUNT DELETION
-Account icon (top right) > Settings > Delete my account > type DELETE > confirm. Please test this with an account you register yourself: deletion is permanent and would remove the demo account for any further review.
+... menu icon (top right) > Settings > Delete my account > type DELETE > confirm. Please test this with an account you register yourself: deletion is permanent and would remove the demo account for any further review.
 
 OTHER NOTES
 - Live offers depend on partner businesses in Tbilisi, so a newly registered account may currently see no offers; the demo customer account always sees the demo box.

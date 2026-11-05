@@ -140,7 +140,7 @@ export default function ContactPage() {
                 {t("nav.faq")}
               </Link>
               <Link
-                href="/offers"
+                href="/discover"
                 className="premium-button px-6 py-3 text-center"
               >
                 {t("common.browseOffers")}

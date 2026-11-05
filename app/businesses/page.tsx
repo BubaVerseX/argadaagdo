@@ -338,7 +338,7 @@ export default function BusinessesPage() {
                   : "Try clearing filters or browsing offers directly. New verified businesses will appear here as the pilot grows."}
               </p>
               <Link
-                href="/offers"
+                href="/discover"
                 className="premium-button mt-5 inline-flex px-6 py-3"
               >
                 {t("common.browseOffers")}

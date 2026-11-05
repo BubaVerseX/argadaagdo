@@ -20,7 +20,6 @@ const translations = {
     "brand.tagline": "Food rescue marketplace",
 
     "nav.home": "Home",
-    "nav.exploreSection": "Explore",
     "nav.customerSection": "Customer",
     "nav.businessSection": "Business",
     "nav.adminSection": "Admin",
@@ -45,18 +44,14 @@ const translations = {
     "nav.signIn": "Sign in",
     "nav.openMenu": "Open menu",
     "nav.closeMenu": "Close menu",
-    "nav.browse": "Browse",
-    "nav.browseTab": "Browse",
     "nav.dashboardTab": "Dashboard",
     "nav.notifications": "Notifications",
     "nav.noNotifications": "No new notifications yet.",
-    "nav.openAccount": "Open account menu",
-    "nav.closeAccount": "Close account menu",
     "language.switcherLabel": "Choose language",
 
     "common.loading": "Loading...",
     "common.openMap": "Open map",
-    "common.browseOffers": "Browse offers",
+    "common.browseOffers": "Discover",
     "common.viewDetails": "View details",
     "common.continueCheckout": "Continue to checkout",
     "common.reserve": "Reserve",
@@ -95,7 +90,7 @@ const translations = {
     "home.title3": "Support local businesses.",
     "home.subtitle":
       "Find discounted Lunch Boxes from verified local businesses in Tbilisi. Reserve online, collect in person, save money and help reduce food waste.",
-    "home.explore": "Browse offers",
+    "home.explore": "Discover",
     "home.joinBusiness": "For businesses",
     "home.pickupOnly": "pickup only",
     "home.onlinePayment": "pilot reservations",
@@ -815,6 +810,7 @@ const translations = {
     "footer.platform": "Platform",
     "footer.tbilisiFirst": "Tbilisi first",
     "footer.reduceWaste": "Reduce food waste",
+    "footer.appStore": "Download on the App Store",
     "footer.reduceWasteGeorgia": "Reduce food waste in Georgia",
 
     "notFound.title": "Page not found",
@@ -827,20 +823,12 @@ const translations = {
     "offline.retry": "Try again",
     "offline.home": "Go to homepage",
 
-    "installApp.title": "Install ArGadaagdo",
-    "installApp.text":
-      "Add it to your home screen for quick access and offline browsing.",
-    "installApp.iosText":
-      "Tap the Share icon, then \"Add to Home Screen\" for quick access.",
-    "installApp.install": "Install",
-    "installApp.dismiss": "Not now",
   },
   ka: {
     "brand.name": "არ გადააგდო",
     "brand.tagline": "საკვების გადარჩენის პლატფორმა",
 
     "nav.home": "მთავარი",
-    "nav.exploreSection": "დათვალიერება",
     "nav.customerSection": "მომხმარებელი",
     "nav.businessSection": "ბიზნესი",
     "nav.adminSection": "ადმინი",
@@ -865,18 +853,14 @@ const translations = {
     "nav.signIn": "შესვლა",
     "nav.openMenu": "მენიუს გახსნა",
     "nav.closeMenu": "მენიუს დახურვა",
-    "nav.browse": "დათვალიერება",
-    "nav.browseTab": "ძიება",
     "nav.dashboardTab": "პანელი",
     "nav.notifications": "შეტყობინებები",
     "nav.noNotifications": "ახალი შეტყობინებები არ არის.",
-    "nav.openAccount": "ანგარიშის მენიუს გახსნა",
-    "nav.closeAccount": "ანგარიშის მენიუს დახურვა",
     "language.switcherLabel": "ენის არჩევა",
 
     "common.loading": "იტვირთება...",
     "common.openMap": "რუკის გახსნა",
-    "common.browseOffers": "შეთავაზებების ნახვა",
+    "common.browseOffers": "აღმოჩენა",
     "common.viewDetails": "დეტალების ნახვა",
     "common.continueCheckout": "გადახდაზე გადასვლა",
     "common.reserve": "დაჯავშნა",
@@ -915,7 +899,7 @@ const translations = {
     "home.title3": "მხარი დაუჭირე ადგილობრივ ბიზნესებს.",
     "home.subtitle":
       "იპოვე ფასდაკლებული ლანჩ ბოქსები თბილისის დადასტურებული ადგილობრივი ბიზნესებიდან. დაჯავშნე ონლაინ, წაიღე ადგილზე, დაზოგე თანხა და შეამცირე საკვების ნარჩენი.",
-    "home.explore": "შეთავაზებების ნახვა",
+    "home.explore": "აღმოჩენა",
     "home.joinBusiness": "ბიზნესებისთვის",
     "home.pickupOnly": "მხოლოდ წაღება",
     "home.onlinePayment": "პილოტური ჯავშნები",
@@ -1635,6 +1619,7 @@ const translations = {
     "footer.platform": "პლატფორმა",
     "footer.tbilisiFirst": "ჯერ თბილისი",
     "footer.reduceWaste": "საკვების ნარჩენის შემცირება",
+    "footer.appStore": "ჩამოტვირთე App Store-დან",
     "footer.reduceWasteGeorgia": "შევამციროთ საკვების ნარჩენი საქართველოში",
 
     "notFound.title": "გვერდი ვერ მოიძებნა",
@@ -1647,13 +1632,6 @@ const translations = {
     "offline.retry": "სცადე ხელახლა",
     "offline.home": "მთავარ გვერდზე გადასვლა",
 
-    "installApp.title": "დააინსტალირე არ გადააგდო",
-    "installApp.text":
-      "დაამატე მთავარ ეკრანზე სწრაფი წვდომისა და ოფლაინ დათვალიერებისთვის.",
-    "installApp.iosText":
-      "დააჭირე Share ხატულას, შემდეგ „დამატება მთავარ ეკრანზე“ სწრაფი წვდომისთვის.",
-    "installApp.install": "დაინსტალირება",
-    "installApp.dismiss": "არა ახლა",
   },
 } satisfies Record<Language, Record<string, string>>;
 

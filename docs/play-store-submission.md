@@ -261,11 +261,11 @@ ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Browsin
 
 The two demo accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) offer "Demo surprise bag (free, App Review)". Reserving it takes no payment and opens no bank page. Real offers depend on partner businesses and may be absent for newly registered accounts.
 
-CUSTOMER: Sign In with the customer account > Browse > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. The Orders tab shows the reservation with a 6-digit pickup code; it can be cancelled there.
+CUSTOMER: Tap the person icon (top right) and sign in with the customer account > Discover > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. The Orders tab shows the reservation with a 6-digit pickup code; it can be cancelled there.
 
-BUSINESS: account icon (top right) > Logout, then sign in with the business account > Dashboard > Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed and the customer can rate the business.
+BUSINESS: ... menu icon (top right) > Logout, then sign in with the business account > Dashboard > Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed and the customer can rate the business.
 
-ACCOUNT DELETION: account icon > Settings > Delete my account > type DELETE > confirm. Please test deletion with an account you register yourself; deleting a demo account breaks further review.
+ACCOUNT DELETION: ... menu icon (top right) > Settings > Delete my account > type DELETE > confirm. Please test deletion with an account you register yourself; deleting a demo account breaks further review.
 ```
 
 ### Content rating (IARC questionnaire)
@@ -320,7 +320,7 @@ create an account):
 |---|---|
 | Does your app allow users to create an account? | Yes, with email and password |
 | Deletion URL (web page where users can request deletion) | `https://argadaagdo.ge/privacy#delete-account` |
-| Does the in-app path let users delete their account? | Yes: account icon → Settings → Delete my account |
+| Does the in-app path let users delete their account? | Yes: ... menu icon → Settings → Delete my account |
 | Do you provide a way to request deletion of some data without deleting the account? | Yes, by email to `argadaagdo.support@gmail.com` (privacy page says so) |
 
 The `#delete-account` anchor was added to the privacy page in this branch

@@ -44,3 +44,5 @@ export function buildPageMetadata({
     ...(index ? {} : { robots: { index: false, follow: false } }),
   };
 }
+
+export const appStoreUrl = "https://apps.apple.com/app/id6827484439";

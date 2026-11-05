@@ -111,7 +111,7 @@ export default function CheckoutPage() {
     () =>
       Number.isFinite(offerId) && offerId > 0
         ? `/checkout/${offerId}`
-        : "/offers",
+        : "/discover",
     [offerId]
   );
 
@@ -348,7 +348,7 @@ export default function CheckoutPage() {
         <div className="mx-auto max-w-5xl">
           <div className="flex items-center gap-3">
             <Link
-              href="/offers"
+              href="/discover"
               aria-label={t("offerDetail.back")}
               className="ui-well flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-0 text-cream"
             >
@@ -655,7 +655,7 @@ export default function CheckoutPage() {
                 )}
 
                 <Link
-                  href="/offers"
+                  href="/discover"
                   className="premium-button-secondary mt-3 w-full px-6 py-3"
                 >
                   {t("offerDetail.back")}

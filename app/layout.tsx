@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import InstallAppPrompt from "@/components/InstallAppPrompt";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { siteUrl } from "@/lib/site";
@@ -113,7 +112,6 @@ export default function RootLayout({
         {children}
         <NotificationCenter />
         <ServiceWorkerRegistration />
-        <InstallAppPrompt />
       </body>
     </html>
   );

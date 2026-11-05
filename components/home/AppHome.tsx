@@ -108,7 +108,7 @@ export function AppHome({
                 {categoryLinks.map((category) => (
                   <Link
                     key={category}
-                    href={`/offers?category=${encodeURIComponent(category)}`}
+                    href={`/discover?category=${encodeURIComponent(category)}`}
                     className={`${getOfferCategoryTone(
                       category
                     )} flex min-h-11 flex-none items-center rounded-full bg-cat px-4 text-[13px] font-medium text-cat-ink transition hover:brightness-95`}
@@ -144,7 +144,7 @@ export function AppHome({
             {copy.heroSubtitle}
           </p>
           <div className="flex shrink-0 flex-col gap-2.5 sm:flex-row">
-            <Link href="/offers" className="premium-button rounded-[18px] px-6 py-3 font-bold">
+            <Link href="/discover" className="premium-button rounded-[18px] px-6 py-3 font-bold">
               {copy.browseToday}
             </Link>
             <Link
@@ -171,7 +171,7 @@ export function AppHome({
             </div>
 
             <Link
-              href="/offers"
+              href="/discover"
               className="inline-flex min-h-11 shrink-0 items-center self-start font-bold text-brand-forest underline-offset-4 hover:underline sm:self-auto"
             >
               {t("common.browseOffers")}
@@ -193,7 +193,7 @@ export function AppHome({
               <p className="mx-auto mt-3 max-w-lg leading-[1.55] text-body">
                 {t("home.publishLater")}
               </p>
-              <Link href="/offers" className="premium-button mt-6 px-7 py-3">
+              <Link href="/discover" className="premium-button mt-6 px-7 py-3">
                 {t("common.browseOffers")}
               </Link>
             </div>
@@ -324,7 +324,7 @@ export function AppHome({
                 {copy.finalCtaText}
               </p>
               <div className="mt-6 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
-                <Link href="/offers" className="premium-button w-full rounded-[18px] px-7 py-3 font-bold sm:w-auto">
+                <Link href="/discover" className="premium-button w-full rounded-[18px] px-7 py-3 font-bold sm:w-auto">
                   {copy.browseToday}
                 </Link>
                 <Link href="/for-businesses" className="premium-button-secondary w-full rounded-[18px] px-7 py-3 sm:w-auto">

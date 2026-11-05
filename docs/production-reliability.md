@@ -155,7 +155,7 @@ Before deployment:
 After deployment:
 
 - Open homepage
-- Open `/offers`
+- Open `/discover`
 - Open `/api/health`
 - Login as customer
 - Login as business

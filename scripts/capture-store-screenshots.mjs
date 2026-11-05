@@ -130,13 +130,6 @@ async function run() {
       hasTouch: profile.hasTouch,
       userAgent: profile.userAgent,
     });
-    // Suppress the "Install ArGadaagdo" PWA prompt (components/InstallAppPrompt.tsx)
-    // — it's real, useful in production, but it covers the content we're
-    // trying to photograph, and store screenshots should show the app, not
-    // an install nag.
-    await context.addInitScript(() => {
-      window.localStorage.setItem("argadaagdo-install-dismissed", "true");
-    });
 
     const page = await context.newPage();
 
@@ -152,7 +145,7 @@ async function run() {
     // The actual offer cards render well below the hero/filters, off the
     // first viewport, so scroll one into view rather than screenshotting
     // the top of the page.
-    await page.goto(BASE_URL + "/offers", { waitUntil: "networkidle" });
+    await page.goto(BASE_URL + "/discover", { waitUntil: "networkidle" });
     await waitForOffersToLoad(page);
     await page
       .getByRole("button", { name: "View details" })
