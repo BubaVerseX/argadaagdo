@@ -8,6 +8,10 @@ September preparation, kept for history; where they disagree, this section
 wins (in particular: screenshot sizes, listing copy and the Georgian
 localization note).
 
+**1.0.1 (build 6) update, 2026-11-06:** the app now asks for location
+(when in use, optional) and push notifications (optional). Sections 5, 6
+and 10 are updated for that; re-answer App Privacy before submitting 1.0.1.
+
 **No passwords are in this file — the repo is public.** The reviewer demo
 passwords were given to the founder directly. Reset them in Supabase
 Dashboard → Authentication → Users if lost.
@@ -199,8 +203,8 @@ User-generated content still rates 4+ under Apple's tiers.
   **No** for every type. No ads, no analytics, no tracking SDKs, so no
   App Tracking Transparency prompt.
 
-Declare these types; for each answer **Purpose: App Functionality**,
-**Linked to the user: Yes**, **Used for tracking: No**:
+Declare these types; unless the table says otherwise, answer **Purpose:
+App Functionality**, **Linked to the user: Yes**, **Used for tracking: No**:
 
 | Category | Type | Why |
 |---|---|---|
@@ -212,9 +216,21 @@ Declare these types; for each answer **Purpose: App Functionality**,
 | User Content | Other User Content | ratings and review comments |
 | Purchases | Purchase History | reservations and their payment status |
 | Identifiers | User ID | account ID |
+| Identifiers | Device ID | push token (APNs), stored with the account (`push_devices`) to send order/pickup reminders and new boxes from favourites; only if the user turns push on; removed on push off, sign-out or deletion |
+| Location | Coarse Location | **Linked: No.** Optional, when-in-use. See note below |
+
+Coarse Location, why declare it: the position is used only on the phone
+(sort by distance, show "you" on the map) and is never sent to our
+servers. But the map loads OpenFreeMap tiles for the visible area, so a
+third party sees the device IP and roughly where the user is looking.
+Declaring it (App Functionality, not linked, not tracking) is the
+conservative answer and matches what the reviewer sees. Precise Location
+is not declared: nothing precise leaves the device. Apple's form has no
+"optional" field; the permission prompt and the privacy policy say it is
+optional.
 
 Do **not** declare: Payment Info (card data is entered only on TBC Bank's
-page; the app never receives it), Location, Contacts, Usage Data,
+page; the app never receives it), Precise Location, Contacts, Usage Data,
 Diagnostics (no analytics or crash SDK), Browsing History, Search History.
 Business IBANs are given to us outside the app, so they aren't app-collected
 data.
@@ -225,10 +241,10 @@ data.
   `argadaagdo.support+review.customer@gmail.com`, password: the customer
   password you were given.
 - Contact: your name, phone and `argadaagdo.support@gmail.com`.
-- Notes (about 2,330 / 4,000 characters once the passwords are in — replace both `<PASSWORD>` placeholders):
+- Notes (about 2,600 / 4,000 characters once the passwords are in — replace both `<PASSWORD>` placeholders):
 
 ```
-ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Local bakeries, cafes and restaurants list "Lunch Boxes" of food they couldn't sell; customers reserve one in the app, pay by card, and collect it in person at the business by showing a 6-digit pickup code.
+ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Local bakeries, cafes and restaurants list "Lunch Boxes" of food they couldn't sell; customers reserve one in the app, pay by card, and collect it in person at the business by showing a pickup code.
 
 PAYMENTS AND IN-APP PURCHASE
 Customers pay for physical food that they collect in person at the business, so under guideline 3.1.3(e) the app takes card payments through TBC Bank's own checkout page (opened in an in-app Safari sheet) instead of In-App Purchase. The app sells no digital content, subscriptions or unlockable features.
@@ -238,19 +254,23 @@ Customer: argadaagdo.support+review.customer@gmail.com / <PASSWORD>
 Business: argadaagdo.support+review.business@gmail.com / <PASSWORD>
 These two accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) "Demo surprise bag (free, App Review)". Reserving it takes no payment. The demo business and box are visible only to these accounts.
 
-STEPS
-1. Tap the person icon (top right) and sign in with the customer account.
-2. Discover > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. No payment page opens for the demo box.
-3. Orders shows the reservation with its 6-digit Pickup Code. You can also cancel it there (allowed until 2 hours before pickup).
-4. Log out (... menu icon, top right > Logout) and sign in with the business account. On the Dashboard tab, scroll down to Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed, and the customer can then rate the business from Orders.
+STEPS (tab bar at the bottom: Nearby, Orders, Profile)
+1. Profile > Sign in with the customer account.
+2. Nearby > tap "Demo surprise bag (free, App Review)" > Reserve. Checkout shows the box, the price and one button, "Pay · ₾0.00". Tap it; no payment page opens for the demo box.
+3. Orders shows the reservation with its large pickup code. It can be cancelled there (until 2 hours before pickup).
+4. Profile > Settings > Sign out, then sign in with the business account. Profile > "Business panel" > under Pickups, tap "Enter code" next to the order > type the customer's code. The order is completed, and the customer can then rate the business from Orders.
 
 ACCOUNT DELETION
-... menu icon (top right) > Settings > Delete my account > type DELETE > confirm. Please test this with an account you register yourself: deletion is permanent and would remove the demo account for any further review.
+Profile > Settings > Delete account > type DELETE > confirm. Please test this with an account you register yourself: deletion is permanent and would remove the demo account for any further review.
+
+PERMISSIONS (both optional)
+- Location (when in use): used only on the device to sort boxes by distance and show you on the map. Everything works without it.
+- Notifications: asked after sign-in, for order and pickup reminders and new boxes from favourite places. Can be turned off in Profile > Settings.
 
 OTHER NOTES
 - Live offers depend on partner businesses in Tbilisi, so a newly registered account may currently see no offers; the demo customer account always sees the demo box.
 - Sign-in is email and password only, with no third-party login.
-- The app requests no device permissions (location, camera, contacts, notifications) and has no ads or tracking.
+- Reviews can be reported in the app; admins can hide them. No ads or tracking.
 - Support: argadaagdo.support@gmail.com
 ```
 
@@ -351,15 +371,15 @@ App → Bundle ID (explicit) `com.argadaagdo.app` → Register, then retry.
 ## 10. Rejection risks, most likely first
 
 1. **4.2 Minimum functionality.** The app is the website in a Capacitor
-   WebView. It's app-shaped (tab bar, accounts, reservations, pickup codes,
-   business dashboard, offline screen, in-app payment sheet), but Apple
-   sometimes rejects thin web wrappers. If that happens, the real fix is a
-   native feature such as push notifications for pickup reminders.
-2. **1.2 User-generated content.** Public review comments have no in-app
-   "report" button. If Apple asks, add a Report link to support and
-   explain that admins can remove reviews.
+   WebView, but 1.0.1 adds native push, native location, the share sheet
+   and an in-app payment sheet, which makes this much less likely.
+2. **5.1.1(iv) Permission requests.** The push pre-prompt must not steer
+   the user (Apple prefers one neutral "Continue" button before the system
+   dialog).
 3. **2.1 App completeness.** The demo box must be live during review
    (section 2), and the demo accounts must still exist.
+4. **App Privacy mismatch.** The label must include Device ID and Coarse
+   Location (section 5) before 1.0.1 goes to review.
 
 ---
 
@@ -663,6 +683,9 @@ Delete user) rather than raw SQL against `auth.users` — the dashboard
 action is the officially supported way to remove an auth user cleanly.
 
 ## 6. Privacy & permissions audit
+
+> Outdated since 1.0.1: the app now requests location (when in use) and
+> notifications. See section 5 of the 1.0.0/1.0.1 pack above.
 
 **Clean result — nothing to flag for App Review.**
 

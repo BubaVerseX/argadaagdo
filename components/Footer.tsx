@@ -86,7 +86,7 @@ function Footer() {
           </a>
 
           <div className="mt-6 flex items-center gap-2">
-            {socialLinks.map((social) => (
+            {socialLinks.filter((social) => social.href).map((social) => (
               <a
                 key={social.name}
                 href={social.href}

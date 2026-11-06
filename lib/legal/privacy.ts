@@ -14,7 +14,12 @@ import {
 // - SMS via ubill.ge (lib/sms/ubill.ts), email via Resend (lib/email/send.ts),
 //   payments via TBC (lib/payments/tbc.ts), no analytics/ads SDKs (package.json)
 // - device storage: Supabase session + "argadaagdo-language" (lib/useLanguage.ts),
-//   business draft (BusinessOnboardingWizard), native feed cache (lib/nativeData.ts)
+//   business draft (BusinessOnboardingWizard), native feed cache (lib/nativeData.ts),
+//   location choice (lib/location.ts), push flags (lib/push/client.ts),
+//   welcome-seen (lib/accountGate.ts)
+// - location stays on the device (lib/location.ts); map tiles from OpenFreeMap
+//   (lib/mapStyle.ts); address search via Nominatim (app/api/geocode/route.ts)
+// - push tokens: push_devices, removed on push off / app sign-out / deletion
 // - pickup codes readable only by the customer: get_my_pickup_codes()
 // The "delete-account" anchor is the account-deletion URL in the store listings.
 
@@ -53,9 +58,9 @@ export const privacyContent: Localized<PrivacyContent> = {
           "Businesses: business name, type, address and phone; legal name, identification code and legal form; the owner's full name; a phone number confirmed by SMS; a TBC Bank IBAN; a Public Registry extract; offers and offer photos.",
           "Support: the messages you send us.",
           "Technical data: our hosting providers keep standard server logs (such as IP address and browser or device type) to run and protect the service.",
-          "Push notifications: if you allow them, a token that lets Apple's or Google's notification service reach your device.",
+          "Push notifications: if you turn them on, your device's push token from Apple or Google, stored with your account. It's deleted when you turn push off, sign out in the app or delete your account.",
         ],
-        note: "We don't access your location or contacts, and we don't use advertising identifiers.",
+        note: "Location: if you allow it, your position is used only on your device, to sort boxes by distance and show you on the map. It isn't sent to our servers. Map images for the area on screen load from OpenFreeMap, which sees your IP address and that area. We don't access your contacts or use advertising identifiers.",
       },
       {
         title: "How we use it",
@@ -94,13 +99,16 @@ export const privacyContent: Localized<PrivacyContent> = {
           "TBC Bank: payments and refunds.",
           "ubill.ge: delivery of SMS verification codes.",
           "Resend: delivery of emails.",
-          "Apple and Google: delivery of push notifications, if you allow them.",
+          "Apple (APNs) and Google (Firebase Cloud Messaging): delivery of push notifications, if you turn them on.",
+          "OpenFreeMap: map images.",
+          "OpenStreetMap Foundation (Nominatim): address search when a business sets its location. Our server sends only the typed address.",
+          "Google (Gmail): our support inbox, which receives your support and privacy emails.",
         ],
       },
       {
         title: "International transfers",
         paragraphs: [
-          "Some of these providers are based outside Georgia, including in the United States. Each receives only the data it needs for its task and is bound by its own data protection commitments.",
+          "Some providers are outside Georgia, including companies in the United States. Each receives only the data its task needs. Where a provider offers them, we rely on its data processing terms and standard contractual safeguards.",
         ],
       },
       {
@@ -115,7 +123,7 @@ export const privacyContent: Localized<PrivacyContent> = {
       {
         title: "Storage on your device",
         paragraphs: [
-          "We don't use advertising or analytics cookies or trackers. We store only what the service needs on your device: your sign-in session, your language choice, a business application draft while you fill it in and, in the app, a short-lived copy of the offers list so it opens faster.",
+          "We don't use advertising or analytics cookies or trackers. We store only what the service needs on your device: your sign-in session, language, location choice (on or off, not your position), push settings (including whether we've already asked), whether you've seen the welcome screen, a business application draft while you fill it in and, in the app, a short-lived copy of the offers list so it opens faster.",
         ],
       },
       {
@@ -135,12 +143,12 @@ export const privacyContent: Localized<PrivacyContent> = {
         id: "delete-account",
         title: "Deleting your account",
         paragraphs: [
-          "You can delete your account at any time in the app: Settings → Delete account → Delete my account. First collect or cancel any active reservation. A business must first complete or resolve all of its reservations.",
+          "In the app: Profile → Settings → Delete account. On the website: Settings → Delete account. First collect or cancel any active reservation. A business must first complete or resolve all of its reservations.",
+          `No app? Email ${SUPPORT_EMAIL} from your account's email address with the subject "Delete my account". We delete the account within 30 days.`,
         ],
         bullets: [
-          "Deleted: your sign-in, email address, profile details (including your phone number) and favourites.",
-          "Your review comments are removed. Your star ratings stay in the business's average, with no link to you.",
-          "Order and payment records are kept for accounting, but no longer linked to you.",
+          "Deleted: your sign-in, email address, profile (including your phone number), favourites, push tokens and review comments.",
+          "Kept, no longer linked to you: order and payment records (for accounting) and your star ratings (in the business's average).",
           "Business accounts: the business and its offers are hidden; the owner's name, phone number and registry extract are deleted; the legal name, identification code and IBAN are kept for payout records.",
         ],
       },
@@ -186,9 +194,9 @@ export const privacyContent: Localized<PrivacyContent> = {
           "ბიზნესები: დასახელება, ტიპი, მისამართი და ტელეფონი; იურიდიული დასახელება, საიდენტიფიკაციო კოდი და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; SMS-ით დადასტურებული ტელეფონის ნომერი; TBC ბანკის IBAN; საჯარო რეესტრის ამონაწერი; შეთავაზებები და მათი ფოტოები.",
           "მხარდაჭერა: შეტყობინებები, რომლებსაც გვიგზავნი.",
           "ტექნიკური მონაცემები: ჰოსტინგის პროვაიდერები სერვისის მუშაობისა და დაცვისთვის ინახავენ სტანდარტულ სერვერულ ჩანაწერებს (მაგალითად, IP მისამართს, ბრაუზერის ან მოწყობილობის ტიპს).",
-          "Push-შეტყობინებები: თუ მათ დაუშვებ, მოწყობილობის ტოკენი, რომლითაც Apple-ის ან Google-ის შეტყობინებების სერვისი შენს მოწყობილობას პოულობს.",
+          "Push-შეტყობინებები: თუ მათ ჩართავ, შენი მოწყობილობის Push-ტოკენი Apple-ისგან ან Google-ისგან, რომელიც შენს ანგარიშთან ერთად ინახება. ის იშლება, როცა Push-ს გამორთავ, აპლიკაციიდან გამოხვალ ან ანგარიშს წაშლი.",
         ],
-        note: "შენს მდებარეობასა და კონტაქტებზე წვდომა არ გვაქვს და სარეკლამო იდენტიფიკატორებს არ ვიყენებთ.",
+        note: "მდებარეობა: თუ მას დაუშვებ, შენი ადგილმდებარეობა მხოლოდ შენს მოწყობილობაზე გამოიყენება — ბოქსების მანძილით დასალაგებლად და რუკაზე შენი ადგილის საჩვენებლად. ის ჩვენს სერვერებზე არ იგზავნება. ეკრანზე ნაჩვენები ტერიტორიის რუკა OpenFreeMap-იდან იტვირთება, ამიტომ OpenFreeMap ხედავს შენს IP მისამართს და რუკის ამ მონაკვეთს. შენს კონტაქტებზე წვდომა არ გვაქვს და სარეკლამო იდენტიფიკატორებს არ ვიყენებთ.",
       },
       {
         title: "როგორ ვიყენებთ მონაცემებს",
@@ -227,13 +235,16 @@ export const privacyContent: Localized<PrivacyContent> = {
           "TBC ბანკი: გადახდები და თანხის დაბრუნება.",
           "ubill.ge: SMS კოდების მიწოდება.",
           "Resend: ელფოსტის მიწოდება.",
-          "Apple და Google: Push-შეტყობინებების მიწოდება, თუ მათ დაუშვებ.",
+          "Apple (APNs) და Google (Firebase Cloud Messaging): Push-შეტყობინებების მიწოდება, თუ მათ ჩართავ.",
+          "OpenFreeMap: რუკის გამოსახულებები.",
+          "OpenStreetMap Foundation (Nominatim): მისამართის ძიება, როცა ბიზნესი თავის მდებარეობას უთითებს. ჩვენი სერვერი მხოლოდ შეყვანილ მისამართს აგზავნის.",
+          "Google (Gmail): მხარდაჭერის ელფოსტა, სადაც შენი მხარდაჭერისა და კონფიდენციალურობის მოთხოვნები შემოდის.",
         ],
       },
       {
         title: "მონაცემების საზღვარგარეთ გადაცემა",
         paragraphs: [
-          "ზოგიერთი პროვაიდერი საქართველოს გარეთ, მათ შორის აშშ-ში მდებარეობს. თითოეული მათგანი მხოლოდ იმ მონაცემებს იღებს, რაც მისი ამოცანისთვის აუცილებელია, და მონაცემთა დაცვის საკუთარი ვალდებულებებით არის შეზღუდული.",
+          "ზოგიერთი პროვაიდერი საქართველოს გარეთაა, მათ შორის აშშ-ის კომპანიები. თითოეული მხოლოდ იმ მონაცემებს იღებს, რაც მის ამოცანას სჭირდება. სადაც პროვაიდერი ამას გვთავაზობს, ვეყრდნობით მის მონაცემთა დამუშავების პირობებსა და სტანდარტულ სახელშეკრულებო გარანტიებს.",
         ],
       },
       {
@@ -248,7 +259,7 @@ export const privacyContent: Localized<PrivacyContent> = {
       {
         title: "რას ვინახავთ შენს მოწყობილობაზე",
         paragraphs: [
-          "სარეკლამო ან ანალიტიკურ ქუქი-ფაილებსა და ტრეკერებს არ ვიყენებთ. მოწყობილობაზე მხოლოდ ის ინახება, რაც სერვისის მუშაობას სჭირდება: ავტორიზაციის სესია, არჩეული ენა, ბიზნესის განაცხადის მონახაზი შევსების პროცესში და, აპლიკაციაში, შეთავაზებების სიის დროებითი ასლი, რომ სწრაფად გაიხსნას.",
+          "სარეკლამო ან ანალიტიკურ ქუქი-ფაილებსა და ტრეკერებს არ ვიყენებთ. მოწყობილობაზე მხოლოდ ის ინახება, რაც სერვისის მუშაობას სჭირდება: ავტორიზაციის სესია, არჩეული ენა, მდებარეობის არჩევანი (ჩართულია თუ არა, და არა თავად მდებარეობა), Push-შეტყობინებების პარამეტრები (მათ შორის, უკვე გკითხეთ თუ არა), ნახე თუ არა მისასალმებელი ეკრანი, ბიზნესის განაცხადის მონახაზი შევსების პროცესში და, აპლიკაციაში, შეთავაზებების სიის დროებითი ასლი, რომ სწრაფად გაიხსნას.",
         ],
       },
       {
@@ -268,12 +279,12 @@ export const privacyContent: Localized<PrivacyContent> = {
         id: "delete-account",
         title: "ანგარიშის წაშლა",
         paragraphs: [
-          "ანგარიშის წაშლა ნებისმიერ დროს შეგიძლია აპლიკაციაში: პარამეტრები → ანგარიშის წაშლა → ჩემი ანგარიშის წაშლა. მანამდე აქტიური ჯავშანი წაიღე ან გააუქმე. ბიზნესმა ჯერ ყველა მიმდინარე ჯავშანი უნდა დაასრულოს ან მოაგვაროს.",
+          "აპლიკაციაში: პროფილი → პარამეტრები → ანგარიშის წაშლა. ვებსაიტზე: პარამეტრები → ანგარიშის წაშლა. მანამდე აქტიური ჯავშანი წაიღე ან გააუქმე. ბიზნესმა ჯერ ყველა მიმდინარე ჯავშანი უნდა დაასრულოს ან მოაგვაროს.",
+          `აპლიკაცია არ გაქვს? მოგვწერე ${SUPPORT_EMAIL} მისამართზე იმ ელფოსტიდან, რომელზეც ანგარიში გაქვს, თემით „Delete my account“. ანგარიშს 30 დღის განმავლობაში წავშლით.`,
         ],
         bullets: [
-          "იშლება: ავტორიზაციის მონაცემები, ელფოსტა, პროფილის დეტალები (მათ შორის ტელეფონის ნომერი) და რჩეულები.",
-          "შენი კომენტარები იშლება. ვარსკვლავებით შეფასება ბიზნესის საშუალო ქულაში რჩება, შენთან კავშირის გარეშე.",
-          "შეკვეთებისა და გადახდების ჩანაწერები საბუღალტრო მიზნით ინახება, მაგრამ შენთან აღარ არის დაკავშირებული.",
+          "იშლება: ავტორიზაციის მონაცემები, ელფოსტა, პროფილი (მათ შორის ტელეფონის ნომერი), რჩეულები, Push-ტოკენები და შენი კომენტარები.",
+          "ინახება, მაგრამ შენთან აღარ არის დაკავშირებული: შეკვეთებისა და გადახდების ჩანაწერები (საბუღალტრო მიზნით) და ვარსკვლავებით შეფასებები (ბიზნესის საშუალო ქულაში).",
           "ბიზნეს ანგარიში: ბიზნესი და მისი შეთავაზებები იმალება; მფლობელის სახელი, ტელეფონის ნომერი და რეესტრის ამონაწერი იშლება; იურიდიული დასახელება, საიდენტიფიკაციო კოდი და IBAN ანგარიშსწორების ჩანაწერებისთვის ინახება.",
         ],
       },

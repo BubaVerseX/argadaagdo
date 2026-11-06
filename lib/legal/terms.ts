@@ -115,7 +115,7 @@ export const termsContent: Localized<TermsContent> = {
       {
         title: "Deleting your account",
         paragraphs: [
-          "You can delete your account at any time in Settings → Delete account. First collect or cancel any active reservation. Our Privacy Policy explains what happens to your data.",
+          "You can delete your account at any time in Settings → Delete account (in the app or on the website), or by email request. First collect or cancel any active reservation. Our Privacy Policy explains both ways and what happens to your data.",
         ],
       },
       {
@@ -228,7 +228,7 @@ export const termsContent: Localized<TermsContent> = {
       {
         title: "ანგარიშის წაშლა",
         paragraphs: [
-          "ანგარიშის წაშლა ნებისმიერ დროს შეგიძლია: პარამეტრები → ანგარიშის წაშლა. მანამდე აქტიური ჯავშანი წაიღე ან გააუქმე. რა ემართება შენს მონაცემებს, აღწერილია კონფიდენციალურობის პოლიტიკაში.",
+          "ანგარიშის წაშლა ნებისმიერ დროს შეგიძლია: პარამეტრები → ანგარიშის წაშლა (აპლიკაციაში ან ვებსაიტზე), ან ელფოსტით მოთხოვნით. მანამდე აქტიური ჯავშანი წაიღე ან გააუქმე. ორივე გზა და ის, რა ემართება შენს მონაცემებს, აღწერილია კონფიდენციალურობის პოლიტიკაში.",
         ],
       },
       {
