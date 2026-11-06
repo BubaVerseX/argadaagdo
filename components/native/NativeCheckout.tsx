@@ -29,7 +29,7 @@ import { getLoginRedirectUrl } from "@/lib/orders";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 

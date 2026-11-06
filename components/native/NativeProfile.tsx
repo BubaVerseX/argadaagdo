@@ -24,7 +24,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ComponentType } from "react";
 

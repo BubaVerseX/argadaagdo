@@ -40,7 +40,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 

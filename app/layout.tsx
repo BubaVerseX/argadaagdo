@@ -4,22 +4,10 @@ import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import { nativeBootScript } from "@/lib/nativeBoot";
 import { siteUrl } from "@/lib/site";
-// Self-hosted brand fonts. Noto Sans for text; Noto Serif for titles and business
-// names. Weight 300 and serif 400 are the calm website style, 700 the app style.
-import "@fontsource/noto-sans/latin-300.css";
-import "@fontsource/noto-sans-georgian/georgian-300.css";
-import "@fontsource/noto-serif/latin-400.css";
-import "@fontsource/noto-serif-georgian/georgian-400.css";
-import "@fontsource/noto-sans/latin-400.css";
-import "@fontsource/noto-sans/latin-500.css";
-import "@fontsource/noto-sans/latin-600.css";
-import "@fontsource/noto-sans-georgian/georgian-400.css";
-import "@fontsource/noto-sans-georgian/georgian-500.css";
-import "@fontsource/noto-sans-georgian/georgian-600.css";
-import "@fontsource/noto-sans/latin-700.css";
-import "@fontsource/noto-sans-georgian/georgian-700.css";
-import "@fontsource/noto-serif/latin-700.css";
-import "@fontsource/noto-serif-georgian/georgian-700.css";
+// Self-hosted brand fonts (app/fonts.css, files in public/fonts/v5). Noto Sans
+// for text; Noto Serif for titles and business names. Weight 300 and serif 400
+// are the calm website style, 700 the app style.
+import "./fonts.css";
 import "./globals.css";
 import "./native.css";
 
