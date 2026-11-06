@@ -36,6 +36,11 @@ import Link from "./AppLink";
 import NativeHero from "./NativeHero";
 import NativePlaces from "./NativePlaces";
 import NativeWelcome from "./NativeWelcome";
+import {
+  askForAccount,
+  hasSeenWelcome,
+  markWelcomeSeen,
+} from "@/lib/accountGate";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useMemo, useState } from "react";
 
@@ -133,7 +138,8 @@ function initialCategory(): OfferCategory | "all" {
 }
 
 // Nearby (the first tab): what's on today as a list, or by place (Map).
-// People who aren't signed in see the welcome screen here instead.
+// On the first app start, people who aren't signed in see the welcome screen
+// here; after that, guests browse Nearby (lib/accountGate.ts).
 export default function NativeHome({
   initialView = "list",
 }: {
@@ -142,6 +148,7 @@ export default function NativeHome({
   const { language, setLanguage, t } = useLanguage();
   const [view, setView] = useState<"list" | "map">(initialView);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [welcomed, setWelcomed] = useState(hasSeenWelcome);
 
   useEffect(() => {
     let active = true;
@@ -205,7 +212,16 @@ export default function NativeHome({
 
   // Until we know who's here: the plain ground, so neither screen flashes.
   if (signedIn === null) return <main className="native-main" />;
-  if (!signedIn) return <NativeWelcome />;
+  if (!signedIn && !welcomed) {
+    return (
+      <NativeWelcome
+        onStart={() => {
+          markWelcomeSeen();
+          setWelcomed(true);
+        }}
+      />
+    );
+  }
 
   const viewButton = (option: "list" | "map") => (
     <button
@@ -266,6 +282,12 @@ export default function NativeHome({
               {language === "ka" ? "KA" : "EN"}
             </button>
             <Link
+              onClick={(event) => {
+                if (!signedIn) {
+                  event.preventDefault();
+                  askForAccount("/notifications");
+                }
+              }}
               href="/notifications"
               aria-label={language === "ka" ? "შეტყობინებები" : "Notifications"}
               className="native-press flex h-9 w-9 items-center justify-center rounded-full bg-card text-brand-mint"
