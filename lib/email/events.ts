@@ -5,6 +5,7 @@ import {
 } from "@/lib/offerLifecycle";
 import { absoluteSiteUrl } from "@/lib/site";
 import { sendTransactionalEmail } from "@/lib/email/send";
+import { sendOrderPush } from "@/lib/push/notify";
 
 type SupabaseLikeClient = {
   from: (table: string) => {
@@ -204,6 +205,9 @@ export async function sendReservationConfirmationEmail(
   const order = await getOrderEmailContext(supabase, orderId);
   if (!order) return { ok: false, skipped: true, error: "order_not_found" };
 
+  // The app notification goes out with the email (lib/push/notify.ts).
+  await sendOrderPush(supabase, order, "confirmed");
+
   const profile = await getProfileById(supabase, order.user_id);
   if (!profile?.email) {
     return { ok: false, skipped: true, error: "customer_email_not_found" };
@@ -223,6 +227,9 @@ export async function sendReservationCancellationEmail(
 ) {
   const order = await getOrderEmailContext(supabase, orderId);
   if (!order) return { ok: false, skipped: true, error: "order_not_found" };
+
+  // The app notification goes out with the email (lib/push/notify.ts).
+  await sendOrderPush(supabase, order, "cancelled");
 
   const profile = await getProfileById(supabase, order.user_id);
   if (!profile?.email) {
@@ -365,6 +372,9 @@ export async function sendPickupReminderEmail(
 ) {
   const order = await getOrderEmailContext(supabase, orderId);
   if (!order) return { ok: false, skipped: true, error: "order_not_found" };
+
+  // The app notification goes out with the email (lib/push/notify.ts).
+  await sendOrderPush(supabase, order, "reminder");
 
   const profile = await getProfileById(supabase, order.user_id);
   if (!profile?.email) {
