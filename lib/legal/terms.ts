@@ -1,6 +1,7 @@
 import {
   MINIMUM_AGE,
   SUPPORT_EMAIL,
+  operatorDetails,
   operatorSentence,
   type ContentSection,
   type Localized,
@@ -130,6 +131,11 @@ export const termsContent: Localized<TermsContent> = {
           `These terms are governed by the laws of Georgia. Questions? Write to ${SUPPORT_EMAIL}.`,
         ],
       },
+      {
+        id: "operator",
+        title: "Operator details",
+        bullets: operatorDetails.en,
+      },
     ],
     helpTitle: "Need clarification?",
     helpText: "Read the FAQ or write to us. We're happy to explain.",
@@ -237,6 +243,11 @@ export const termsContent: Localized<TermsContent> = {
           "სერვისის განვითარებასთან ერთად ეს წესები შეიძლება განვაახლოთ. მოქმედი ვერსიის თარიღი ზემოთაა მითითებული, არსებითი ცვლილების შესახებ კი ძალაში შესვლამდე გაცნობებთ.",
           `ამ წესებზე ვრცელდება საქართველოს კანონმდებლობა. კითხვების შემთხვევაში მოგვწერე: ${SUPPORT_EMAIL}.`,
         ],
+      },
+      {
+        id: "operator",
+        title: "ოპერატორის მონაცემები",
+        bullets: operatorDetails.ka,
       },
     ],
     helpTitle: "გჭირდება განმარტება?",

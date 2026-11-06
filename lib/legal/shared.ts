@@ -24,31 +24,52 @@ export type FaqItem = {
 
 export const SUPPORT_EMAIL = "argadaagdo.support@gmail.com";
 
-// Who runs ArGadaagdo (confirmed by the owner on 6 Nov 2026). The ID code and
-// registered address are added once the owner sends them; empty = not shown.
-const OPERATOR_ID_CODE = "";
-const OPERATOR_ADDRESS: Localized<string> = { en: "", ka: "" };
+// Who runs ArGadaagdo (from the owner, 6 Nov 2026). Public pages show only the
+// name and "Tbilisi, Georgia"; the ID code and tax status appear only in the
+// Terms' operator section. Never publish the street address.
+export const OPERATOR_NAME: Localized<string> = {
+  en: "Individual Entrepreneur Bidzina Abesadze (ი/მ ბიძინა აბესაძე)",
+  ka: "ი/მ ბიძინა აბესაძე",
+};
+/** Short form for footers. */
+export const OPERATOR_SHORT: Localized<string> = {
+  en: "IE Bidzina Abesadze",
+  ka: "ი/მ ბიძინა აბესაძე",
+};
+export const OPERATOR_LOCATION: Localized<string> = {
+  en: "Tbilisi, Georgia",
+  ka: "თბილისი, საქართველო",
+};
+const OPERATOR_ID_CODE = "01027078110";
 
 export const MINIMUM_AGE = 18;
 
-/** One sentence naming the operator, for Terms and Privacy. */
+/** One sentence naming the operator (no ID code), for Privacy and Terms. */
 export function operatorSentence(language: Language) {
-  const address = OPERATOR_ADDRESS[language];
-  if (language === "ka") {
-    return (
-      "არ გადააგდოს მართავს ი/მ ბიძინა აბესაძე (ინდივიდუალური მეწარმე, საქართველო)" +
-      (OPERATOR_ID_CODE ? `, საიდენტიფიკაციო კოდი ${OPERATOR_ID_CODE}` : "") +
-      (address ? `, იურიდიული მისამართი: ${address}` : "") +
-      "."
-    );
-  }
-  return (
-    "ArGadaagdo is run by Individual Entrepreneur Bidzina Abesadze (ი/მ ბიძინა აბესაძე), registered in Georgia" +
-    (OPERATOR_ID_CODE ? `, identification code ${OPERATOR_ID_CODE}` : "") +
-    (address ? `, registered address: ${address}` : "") +
-    "."
-  );
+  return language === "ka"
+    ? `არ გადააგდოს მართავს ${OPERATOR_NAME.ka}, ინდივიდუალური მეწარმე (${OPERATOR_LOCATION.ka}).`
+    : `ArGadaagdo is run by ${OPERATOR_NAME.en}, ${OPERATOR_LOCATION.en}.`;
 }
+
+/** The Terms' operator section: the only place with the ID code. */
+export const operatorDetails: Localized<string[]> = {
+  en: [
+    `Operator: ${OPERATOR_NAME.en}`,
+    "Legal form: individual entrepreneur, registered in Georgia",
+    `Identification code: ${OPERATOR_ID_CODE}`,
+    "Tax status: small business status, granted by the Revenue Service of Georgia on 30 September 2026",
+    `Location: ${OPERATOR_LOCATION.en}`,
+    `Email: ${SUPPORT_EMAIL}`,
+  ],
+  ka: [
+    `ოპერატორი: ${OPERATOR_NAME.ka}`,
+    "სამართლებრივი ფორმა: ინდივიდუალური მეწარმე, რეგისტრირებული საქართველოში",
+    `საიდენტიფიკაციო კოდი: ${OPERATOR_ID_CODE}`,
+    "საგადასახადო სტატუსი: მცირე ბიზნესის სტატუსი, მინიჭებული შემოსავლების სამსახურის მიერ 2026 წლის 30 სექტემბერს",
+    `მდებარეობა: ${OPERATOR_LOCATION.ka}`,
+    `ელფოსტა: ${SUPPORT_EMAIL}`,
+  ],
+};
 
 export const LEGAL_LAST_UPDATED: Localized<string> = {
   en: "Last updated: 6 November 2026",

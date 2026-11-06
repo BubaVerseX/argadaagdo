@@ -1,4 +1,4 @@
-import type { ContentSection, Localized } from "@/lib/legal/shared";
+import { operatorSentence, type ContentSection, type Localized } from "@/lib/legal/shared";
 
 // Impact figures: lib/impact.ts (1 box ≈ 1 kg food ≈ 2.7 kg CO₂e, an estimate).
 
@@ -34,6 +34,7 @@ export const aboutContent: Localized<AboutContent> = {
         title: "Where we work",
         paragraphs: [
           "We operate in Tbilisi. Orders are pickup only, straight from the business; there's no delivery.",
+          operatorSentence("en"),
         ],
       },
       {
@@ -81,6 +82,7 @@ export const aboutContent: Localized<AboutContent> = {
         title: "სად ვმუშაობთ",
         paragraphs: [
           "ვმუშაობთ თბილისში. შეკვეთას პირდაპირ ბიზნესიდან წაიღებ; მიწოდების სერვისი არ გვაქვს.",
+          operatorSentence("ka"),
         ],
       },
       {

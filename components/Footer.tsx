@@ -7,11 +7,13 @@ import { businessHomeUrl } from "@/lib/businessArea";
 import BrandMark from "@/components/BrandMark";
 import Link from "next/link";
 import { useLanguage } from "@/lib/useLanguage";
+import { instagramUrl, xUrl } from "@/lib/appLinks";
+import { OPERATOR_LOCATION, OPERATOR_SHORT } from "@/lib/legal/shared";
 
 const socialLinks = [
   {
     name: "Instagram",
-    href: "https://www.instagram.com/argadaagdo/",
+    href: instagramUrl,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4.5 w-4.5">
         <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.6" />
@@ -22,7 +24,7 @@ const socialLinks = [
   },
   {
     name: "X (Twitter)",
-    href: "https://x.com/Przemos3k",
+    href: xUrl,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4.5 w-4.5">
         <path
@@ -35,7 +37,7 @@ const socialLinks = [
 ];
 
 function Footer() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const currentYear = new Date().getFullYear();
   const platformLinks = [
     { href: "/discover", label: t("nav.discover") },
@@ -133,7 +135,9 @@ function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-2 py-5 text-sm font-medium text-muted sm:px-4 md:flex-row md:items-center md:justify-between">
         {/* Pages are prerendered at build time, so the year can differ from
             the visitor's clock (e.g. a December build viewed in January). */}
-        <p suppressHydrationWarning>© ArGadaagdo {currentYear}</p>
+        <p suppressHydrationWarning>
+          © {currentYear} {OPERATOR_SHORT[language]} · {OPERATOR_LOCATION[language]}
+        </p>
         <p>{t("footer.reduceWasteGeorgia")}</p>
       </div>
     </footer>
