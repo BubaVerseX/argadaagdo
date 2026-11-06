@@ -1,5 +1,6 @@
 "use client";
 
+import { PhoneVerification } from "@/components/PhoneVerification";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
@@ -125,6 +126,7 @@ function CheckoutPage() {
   // inventory holds) while the auth check below is still awaiting.
   const payingRef = useRef(false);
   const [rulesAccepted, setRulesAccepted] = useState(false);
+  const [phoneRequired, setPhoneRequired] = useState(false);
   const [checkoutBlocked, setCheckoutBlocked] = useState(true);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
@@ -175,6 +177,13 @@ function CheckoutPage() {
       }
 
       setCheckoutBlocked(false);
+
+      // Off until the second verification migration is applied.
+      const { data: required } = await supabase.rpc(
+        "phone_verification_required"
+      );
+
+      if (isCurrent) setPhoneRequired(required === true);
     }
 
     async function loadInitialOffer() {
@@ -237,6 +246,12 @@ function CheckoutPage() {
       setMessage(
         "Please confirm that you understand the pickup and cancellation rules."
       );
+      return;
+    }
+
+    if (phoneRequired) {
+      setMessageTone("warning");
+      setMessage("Please verify your phone number before ordering.");
       return;
     }
 
@@ -610,6 +625,22 @@ function CheckoutPage() {
                     </Notice>
                   )}
 
+                  {phoneRequired && (
+                    <div className="ui-card rounded-2xl p-4">
+                      <h2 className="mb-3 font-semibold text-cream">
+                        {language === "ka"
+                          ? "დაადასტურე ტელეფონი"
+                          : "Confirm your phone"}
+                      </h2>
+                      <PhoneVerification
+                        onVerified={() => {
+                          setPhoneRequired(false);
+                          setMessage("");
+                        }}
+                      />
+                    </div>
+                  )}
+
                   <label className="ui-card flex items-start gap-3 rounded-2xl p-4 font-semibold text-cream">
                     <input
                       type="checkbox"
@@ -633,6 +664,7 @@ function CheckoutPage() {
                     paying ||
                     checkoutBlocked ||
                     !rulesAccepted ||
+                    phoneRequired ||
                     !isOfferReservable(offer)
                   }
                   className="premium-button w-full rounded-2xl px-6 py-3 font-bold disabled:cursor-not-allowed"

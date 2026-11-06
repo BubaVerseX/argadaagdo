@@ -41,8 +41,7 @@ export function PublicHome({
   loading,
   errorMessage,
 }: PublicHomeProps) {
-  const { copy, categoryLinks, stats, steps, businessSolutions, marqueeItems } =
-    content;
+  const { copy, categoryLinks, whyStats, steps, marqueeItems } = content;
   const previewOffer = featuredOffers[0];
   const ratingFor = (offer: Offer) =>
     getRatingLabel(ratingSummaries[offer.business_id], language);
@@ -65,9 +64,6 @@ export function PublicHome({
             <div className="mt-8 flex flex-wrap gap-2.5">
               <Link href="/discover" className="premium-button px-[22px] py-3">
                 {copy.browseToday}
-              </Link>
-              <Link href="/business/register" className="premium-button-secondary px-[22px] py-3">
-                {copy.listSurplus}
               </Link>
             </div>
 
@@ -127,19 +123,22 @@ export function PublicHome({
 
       <section className="pb-8 pt-16 lg:pt-[72px]">
         <div className="app-container">
-          <p className={eyebrowClass}>{copy.statsBadge}</p>
+          <h2 className="text-[1.875rem]">{copy.whyTitle}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {stats.map((item, index) => (
+            {whyStats.map((item, index) => (
               <div key={item.label} className="ui-card p-[26px]">
                 <span className={`accent-line ${accentClasses[index % accentClasses.length]}`} />
-                {item.value && (
-                  <p className="mt-[18px] font-serif text-3xl font-normal">{item.value}</p>
-                )}
-                <h3 className={`text-lg ${item.value ? "mt-2" : "mt-[18px]"}`}>{item.label}</h3>
-                <p className="mt-2 text-[15px] text-body">{item.text}</p>
+                <p className="mt-[18px] font-serif text-3xl font-normal">{item.value}</p>
+                <p className="mt-2 text-[15px] text-body">{item.label}</p>
               </div>
             ))}
           </div>
+          <Link
+            href="/mission"
+            className="mt-5 inline-flex min-h-11 items-center font-medium text-cream underline-offset-4 hover:underline"
+          >
+            {copy.missionLink}
+          </Link>
         </div>
       </section>
 
@@ -156,45 +155,6 @@ export function PublicHome({
                 <p className="text-[15px] text-body">{step.text}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="app-container">
-          <div className="theme-forest flex flex-wrap items-start gap-10 rounded-3xl bg-page p-7 sm:p-12">
-            <div className="min-w-0 flex-[1_1_22rem]">
-              <p className="text-[13px] tracking-[0.08em] text-muted">
-                {t("forBusinesses.problemBadge")}
-              </p>
-              <h2 className="mt-2.5 text-[1.875rem] leading-[1.35]">{t("forBusinesses.heroTitle")}</h2>
-              <p className="mt-3.5 max-w-md text-[15px] leading-[1.75] text-body">
-                {t("forBusinesses.problemText")}
-              </p>
-              <div className="mt-6 flex flex-wrap gap-2.5">
-                <Link href="/for-businesses" className="premium-button px-[22px] py-3">
-                  {copy.businessLearnMore}
-                </Link>
-                <Link href="/business/register" className="premium-button-secondary px-[22px] py-3">
-                  {t("home.registerBusiness")}
-                </Link>
-              </div>
-            </div>
-
-            <div className="min-w-0 flex-[1_1_20rem]">
-              {businessSolutions.map((item, index) => (
-                <div
-                  key={item.title}
-                  className={`flex gap-3.5 py-4 ${index < businessSolutions.length - 1 ? "border-b border-line" : ""}`}
-                >
-                  <span className="w-6 shrink-0 text-[13px] text-muted">{`0${index + 1}`}</span>
-                  <span className="min-w-0">
-                    <span className="block text-[15px] font-medium">{item.title}</span>
-                    <span className="block text-sm text-muted">{item.text}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -282,9 +242,6 @@ export function PublicHome({
             <div className="mt-7 flex flex-wrap justify-center gap-2.5">
               <Link href="/discover" className="premium-button px-[22px] py-3">
                 {copy.browseToday}
-              </Link>
-              <Link href="/for-businesses" className="premium-button-secondary px-[22px] py-3">
-                {copy.finalCtaSecondary}
               </Link>
             </div>
           </div>

@@ -10,6 +10,10 @@ import type { Language } from "@/lib/i18n";
 // the English output never changes and a message that is not listed here is
 // shown unchanged. Keep each English key identical to its source string.
 const georgianMessageEntries: Array<[string, string]> = [
+  [
+    "Please verify your phone number before ordering.",
+    "შეკვეთამდე დაადასტურე ტელეფონის ნომერი.",
+  ],
   // lib/errors.ts — generic fallback and known RPC errors.
   [
     "Something went wrong. Please try again in a moment.",

@@ -1,3 +1,4 @@
+import { LEGAL_FORMS } from "@/lib/verification";
 import { useState } from "react";
 import AnalyticsBarCard from "@/components/AnalyticsBarCard";
 import StatCard from "@/components/StatCard";
@@ -648,12 +649,139 @@ export function AdminModerationVisibility({
   );
 }
 
+export type BusinessVerificationReview = {
+  business_id: number;
+  legal_name: string | null;
+  id_code: string | null;
+  legal_form: string | null;
+  owner_full_name: string | null;
+  verified_phone: string | null;
+  phone_still_verified: boolean;
+  iban: string | null;
+  registry_extract_path: string | null;
+  submitted_at: string | null;
+  iban_holder_confirmed_at: string | null;
+  is_exempt: boolean;
+};
+
+const REGISTRY_CHECK_URL = "https://enreg.reestri.gov.ge";
+
+// Mirrors the database's approval guard, which is what actually enforces it.
+function isVerificationReady(verification: BusinessVerificationReview | undefined) {
+  if (!verification) return false;
+  if (verification.is_exempt) return true;
+
+  return Boolean(
+    verification.legal_name &&
+      verification.owner_full_name &&
+      verification.verified_phone &&
+      verification.iban &&
+      verification.registry_extract_path &&
+      verification.iban_holder_confirmed_at
+  );
+}
+
+function BusinessVerificationCard({
+  verification,
+  busy,
+  onConfirmIbanHolder,
+  onOpenExtract,
+}: {
+  verification: BusinessVerificationReview | undefined;
+  busy: boolean;
+  onConfirmIbanHolder: (confirmed: boolean) => void;
+  onOpenExtract: (path: string) => void;
+}) {
+  if (verification?.is_exempt) {
+    return (
+      <p className="mt-4 rounded-2xl bg-well p-4 text-sm font-semibold text-body">
+        Approved before verification existed, so no documents are required.
+      </p>
+    );
+  }
+
+  if (!verification?.legal_name) {
+    return (
+      <p className="mt-4 rounded-2xl bg-danger-soft p-4 text-sm font-semibold text-danger">
+        No verification details. This business can&apos;t be approved until the
+        owner completes the application.
+      </p>
+    );
+  }
+
+  const legalForm =
+    LEGAL_FORMS.find((form) => form.value === verification.legal_form)?.en ??
+    verification.legal_form;
+
+  return (
+    <div className="mt-4 rounded-2xl bg-well p-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint">
+        Verification
+      </p>
+      <div className="mt-3 grid gap-3 text-sm font-semibold text-body sm:grid-cols-2">
+        <BusinessDetail label="Legal name" value={verification.legal_name} />
+        <BusinessDetail label="Legal form" value={legalForm} />
+        <BusinessDetail label="Identification code" value={verification.id_code} />
+        <BusinessDetail label="Owner" value={verification.owner_full_name} />
+        <BusinessDetail
+          label={verification.phone_still_verified ? "Phone (SMS verified)" : "Phone (NOT verified)"}
+          value={verification.verified_phone ? `+${verification.verified_phone}` : null}
+        />
+        <BusinessDetail label="TBC IBAN" value={verification.iban} />
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <a
+          href={REGISTRY_CHECK_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="premium-button-secondary px-4 py-2 text-sm"
+        >
+          Registry check ↗
+        </a>
+        {verification.id_code && (
+          <button
+            type="button"
+            onClick={() => void navigator.clipboard?.writeText(verification.id_code || "")}
+            className="premium-button-secondary px-4 py-2 text-sm"
+          >
+            Copy ID code
+          </button>
+        )}
+        {verification.registry_extract_path && (
+          <button
+            type="button"
+            onClick={() => onOpenExtract(verification.registry_extract_path || "")}
+            className="premium-button-secondary px-4 py-2 text-sm"
+          >
+            Open registry extract
+          </button>
+        )}
+      </div>
+
+      <label className="mt-4 flex items-start gap-3 text-sm font-semibold text-cream">
+        <input
+          type="checkbox"
+          checked={Boolean(verification.iban_holder_confirmed_at)}
+          disabled={busy}
+          onChange={(event) => onConfirmIbanHolder(event.target.checked)}
+          className="mt-0.5 h-[22px] w-[22px] shrink-0 accent-mint"
+        />
+        I confirmed that the IBAN holder name matches the legal name.
+      </label>
+    </div>
+  );
+}
+
 export function PendingBusinesses({
   t,
   language,
   businesses,
   waitingCount,
   updatingBusinessId,
+  verifications,
+  onConfirmIbanHolder,
+  onOpenExtract,
   onApprove,
   onRequestChanges,
   onReject,
@@ -664,6 +792,9 @@ export function PendingBusinesses({
   /** Total pending businesses (the list itself is one page). */
   waitingCount?: number;
   updatingBusinessId: number | null;
+  verifications: Record<number, BusinessVerificationReview>;
+  onConfirmIbanHolder: (id: number, confirmed: boolean) => void;
+  onOpenExtract: (path: string) => void;
   onApprove: (id: number) => void;
   onRequestChanges: (id: number, reason: string) => void;
   onReject: (id: number, reason: string) => void;
@@ -778,6 +909,15 @@ export function PendingBusinesses({
                   value={formatDisplayDateTime(business.created_at, language)}
                 />
               </div>
+
+              <BusinessVerificationCard
+                verification={verifications[business.id]}
+                busy={updatingBusinessId !== null}
+                onConfirmIbanHolder={(confirmed) =>
+                  onConfirmIbanHolder(business.id, confirmed)
+                }
+                onOpenExtract={onOpenExtract}
+              />
             </div>
 
             <form
@@ -799,7 +939,10 @@ export function PendingBusinesses({
                 <button
                   type="button"
                   onClick={() => onApprove(business.id)}
-                  disabled={updatingBusinessId !== null}
+                  disabled={
+                    updatingBusinessId !== null ||
+                    !isVerificationReady(verifications[business.id])
+                  }
                   className="premium-button min-h-12 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {updatingBusinessId === business.id

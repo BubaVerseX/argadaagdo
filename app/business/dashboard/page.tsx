@@ -9,6 +9,8 @@ import { LoadingState } from "@/components/LoadingState";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
+import { isSalesPausedToday } from "@/lib/greenBag";
+import { BusinessQuickActions, type QuickPanel } from "@/components/business/BusinessQuickActions";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
 import { BusinessIntelligencePanel } from "@/components/business/BusinessIntelligencePanel";
@@ -59,7 +61,6 @@ import {
   buildOfferIntelligence,
 } from "@/lib/marketplaceIntelligence";
 import {
-  notifyBusinessRegistrationSubmitted,
   notifyOfferPublished,
   notifyPickupCompleted,
   notifyProfileUpdated,
@@ -125,9 +126,6 @@ function BusinessDashboardPage() {
 
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [approvedBusinesses, setApprovedBusinesses] = useState<Business[]>([]);
-  const [resubmittingBusinessId, setResubmittingBusinessId] = useState<
-    number | null
-  >(null);
   const [allOffers, setOffers] = useState<Offer[]>([]);
   const [allOrders, setOrders] = useState<Order[]>([]);
   const [allReviews, setReviews] = useState<Rating[]>([]);
@@ -137,6 +135,28 @@ function BusinessDashboardPage() {
   const [bagTemplates, setBagTemplates] = useState<BagTemplate[]>([]);
   const [departmentId, setDepartmentId] = useState("");
   const [departmentActionBusy, setDepartmentActionBusy] = useState(false);
+  const [quickPanel, setQuickPanel] = useState<QuickPanel>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  // The navbar links to sections by hash; open whatever holds them.
+  useEffect(() => {
+    function openHashTarget() {
+      const { hash } = window.location;
+
+      if (hash === "#business-reservations") setQuickPanel("collect");
+      if (hash === "#business-offers") setMoreOpen(true);
+      if (hash) {
+        window.setTimeout(() => {
+          document.querySelector(hash)?.scrollIntoView();
+        }, 0);
+      }
+    }
+
+    openHashTarget();
+    window.addEventListener("hashchange", openHashTarget);
+
+    return () => window.removeEventListener("hashchange", openHashTarget);
+  }, []);
   const [busyTemplateId, setBusyTemplateId] = useState<number | null>(null);
   const ensuredDefaultFor = useRef<Set<number>>(new Set());
 
@@ -529,81 +549,6 @@ function BusinessDashboardPage() {
         addressResult.error ||
         phoneResult.error,
     };
-  }
-
-  async function resubmitRejectedBusiness(
-    id: number,
-    details: BusinessDetailsDraft
-  ) {
-    if (resubmittingBusinessId !== null) return;
-
-    setMessage("");
-    setMessageTone("error");
-
-    const {
-      nameResult,
-      typeResult,
-      addressResult,
-      phoneResult,
-      validationError,
-    } = validateBusinessDetails(details);
-
-    if (validationError) {
-      setMessage(validationError);
-      return;
-    }
-
-    setResubmittingBusinessId(id);
-
-    // One update, so saving the edits and returning to Pending can't half-happen.
-    const { data, error } = await supabase
-      .from("businesses")
-      .update({
-        name: nameResult.value,
-        business_type: typeResult.value,
-        address: addressResult.value,
-        phone: phoneResult.value || null,
-        rejected_at: null,
-        rejection_reason: null,
-      })
-      .eq("id", id)
-      .select("*")
-      .maybeSingle();
-
-    setResubmittingBusinessId(null);
-
-    if (error || !data) {
-      logAppError(
-        "Business resubmission failed",
-        error || "No business row returned",
-        { operation: "resubmit_business", businessId: id }
-      );
-      setMessageTone("error");
-      setMessage("Your application could not be resubmitted. Please try again.");
-      return;
-    }
-
-    const updatedBusiness = data as Business;
-    setBusinesses((currentBusinesses) =>
-      currentBusinesses.map((business) =>
-        business.id === id ? updatedBusiness : business
-      )
-    );
-
-    // The profile form may already hold this business's old details; saving it
-    // later would undo the edits made here.
-    if (profileBusinessId === id) {
-      setProfileName(updatedBusiness.name || "");
-      setProfileType(updatedBusiness.business_type || "");
-      setProfileAddress(updatedBusiness.address || "");
-      setProfilePhone(updatedBusiness.phone || "");
-    }
-
-    setMessageTone("success");
-    setMessage("Application resubmitted. Waiting for admin approval.");
-    notifyBusinessRegistrationSubmitted({
-      businessName: updatedBusiness.name || "Business",
-    });
   }
 
   async function saveBusinessProfile(actionTime: number) {
@@ -2543,9 +2488,6 @@ function BusinessDashboardPage() {
         <BusinessDashboardHero
           t={t}
           businessName={dashboardBusinessName}
-          totalOffers={offers.length}
-          activeOffers={activeOffers.length}
-          reservedOrders={reservedOrders.length}
         />
 
         {message && (
@@ -2560,13 +2502,165 @@ function BusinessDashboardPage() {
           <RejectedBusinessCard
             key={business.id}
             business={business}
-            resubmitting={resubmittingBusinessId === business.id}
-            onResubmit={(id, details) =>
-              void resubmitRejectedBusiness(id, details)
-            }
           />
         ))}
 
+        {!canCreateOffers && rejectedBusinesses.length === 0 && (
+          <div className="mt-6 rounded-3xl bg-warning-soft p-5 sm:mt-8 sm:p-8">
+            <h2 className="text-xl font-semibold text-warning sm:text-2xl">
+              {businessStatusMessage}
+            </h2>
+            <p className="mt-3 font-medium text-warning">
+              {businesses.length === 0
+                ? isGeorgian
+                  ? "საკვების გადარჩენის შეთავაზებების გამოქვეყნებამდე შექმენი ბიზნესის პროფილი."
+                  : "Create a business profile before publishing food rescue offers."
+                : isGeorgian
+                ? "შენი ბიზნესი უკვე არსებობს, მაგრამ შეთავაზებების გამოქვეყნებამდე ის უნდა დამტკიცდეს."
+                : "Your business exists, but it must be approved before publishing offers."}
+            </p>
+          </div>
+        )}
+
+{selectedBusiness && canCreateOffers && (
+          <BusinessQuickActions
+            activePanel={quickPanel}
+            reservedCount={reservedOrders.length}
+            salesPaused={isSalesPausedToday(selectedBusiness.sales_paused_on)}
+            busy={departmentActionBusy}
+            onSelectPanel={setQuickPanel}
+            onToggleSales={() =>
+              void setSalesPaused(
+                null,
+                !isSalesPausedToday(selectedBusiness.sales_paused_on)
+              )
+            }
+          />
+        )}
+
+        {/* Kept mounted but hidden, so half-filled forms survive switching. */}
+        <div hidden={quickPanel !== "publish"}>
+          {selectedBusiness && canCreateOffers && (
+            <>
+            <BagTemplatesPanel
+              language={language}
+              business={selectedBusiness}
+              departments={selectedDepartments}
+              templates={selectedTemplates}
+              busyTemplateId={busyTemplateId}
+              onSave={saveBagTemplate}
+              onToggleActive={(template) => void toggleTemplateActive(template)}
+              onDelete={(template) => void deleteBagTemplate(template)}
+              onPublishNow={(template, day) => void publishTemplateNow(template, day)}
+              onUploadImage={uploadTemplateImage}
+            />
+            </>
+          )}
+
+        <OfferForm
+          t={t}
+          canCreateOffers={canCreateOffers}
+          businessStatusMessage={businessStatusMessage}
+          approvedBusinesses={approvedBusinesses}
+          businessId={businessId}
+          departments={selectedDepartments}
+          departmentId={effectiveDepartmentId}
+          onDepartmentIdChange={setDepartmentId}
+          title={title}
+          description={description}
+          category={category}
+          size={size}
+          price={price}
+          oldPrice={oldPrice}
+          quantity={quantity}
+          pickupDate={pickupDate}
+          pickupStart={pickupStart}
+          pickupEnd={pickupEnd}
+          imageFile={imageFile}
+          publishing={publishing}
+          guidance={firstOfferGuidance}
+          onBusinessIdChange={setBusinessId}
+          onTitleChange={setTitle}
+          onDescriptionChange={setDescription}
+          onCategoryChange={setCategory}
+          onSizeChange={setSize}
+          onPriceChange={setPrice}
+          onOldPriceChange={setOldPrice}
+          onQuantityChange={setQuantity}
+          onPickupDateChange={setPickupDate}
+          onPickupStartChange={setPickupStart}
+          onPickupEndChange={setPickupEnd}
+          onImageFileChange={handleImageFileChange}
+          imageInputKey={imageInputKey}
+          onCreateOffer={(actionTime) => void createOffer(actionTime)}
+        />
+
+        </div>
+
+        <div hidden={quickPanel !== "collect"}>
+        <div id="business-reservations" className="scroll-mt-24">
+        <ReservationList
+          t={t}
+          language={language}
+          orders={orders}
+          filteredOrders={paginatedReservations.items}
+          filteredOrderCount={filteredOrders.length}
+          reservationSummary={reservationSummary}
+          reservationFilter={reservationFilter}
+          reservationSearch={reservationSearch}
+          normalizedReservationSearch={normalizedReservationSearch}
+          updatingOrderId={updatingOrderId}
+          reservationPage={paginatedReservations.page}
+          reservationPageSize={DASHBOARD_RESERVATION_PAGE_SIZE}
+          onReservationSearchChange={(value) => {
+            setReservationSearch(value);
+            setReservationPage(1);
+          }}
+          onReservationFilterChange={(value) => {
+            setReservationFilter(value);
+            setReservationPage(1);
+          }}
+          onReservationPageChange={setReservationPage}
+          onOpenPickupVerification={openPickupVerification}
+          onMarkNoShow={(order) => void markNoShow(order)}
+        />
+        </div>
+
+        </div>
+
+        {pickupVerificationOrder && (
+          <PickupVerificationModal
+            t={t}
+            language={language}
+            order={pickupVerificationOrder}
+            code={pickupVerificationCode}
+            error={translateUserMessage(pickupVerificationError, language)}
+            updatingOrderId={updatingOrderId}
+            onCodeChange={(value) => {
+              setPickupVerificationCode(value);
+              setPickupVerificationError("");
+            }}
+            onClose={closePickupVerification}
+            onSubmit={() => void submitPickupVerification()}
+          />
+        )}
+
+        <button
+          type="button"
+          aria-expanded={moreOpen}
+          onClick={() => setMoreOpen((open) => !open)}
+          className="premium-button-secondary mt-6 w-full px-6 py-3"
+        >
+          {moreOpen
+            ? isGeorgian
+              ? "ნაკლები"
+              : "Less"
+            : isGeorgian
+              ? "მეტი"
+              : "More"}
+        </button>
+
+        <div hidden={!moreOpen}>
         <BusinessAlertsSection alerts={businessAlerts} />
 
         {selectedBusiness && !selectedBusiness.rejected_at && (
@@ -2623,25 +2717,8 @@ function BusinessDashboardPage() {
           recommendations={businessRecommendations}
         />
 
-        {!canCreateOffers && rejectedBusinesses.length === 0 && (
-          <div className="mt-6 rounded-3xl bg-warning-soft p-5 sm:mt-8 sm:p-8">
-            <h2 className="text-xl font-semibold text-warning sm:text-2xl">
-              {businessStatusMessage}
-            </h2>
-            <p className="mt-3 font-medium text-warning">
-              {businesses.length === 0
-                ? isGeorgian
-                  ? "საკვების გადარჩენის შეთავაზებების გამოქვეყნებამდე შექმენი ბიზნესის პროფილი."
-                  : "Create a business profile before publishing food rescue offers."
-                : isGeorgian
-                ? "შენი ბიზნესი უკვე არსებობს, მაგრამ შეთავაზებების გამოქვეყნებამდე ის უნდა დამტკიცდეს."
-                : "Your business exists, but it must be approved before publishing offers."}
-            </p>
-          </div>
-        )}
-
-        {selectedBusiness && canCreateOffers && (
-          <>
+          {selectedBusiness && canCreateOffers && (
+            <>
             <DepartmentsPanel
               language={language}
               business={selectedBusiness}
@@ -2658,58 +2735,8 @@ function BusinessDashboardPage() {
               onResetStaffLockouts={(department) => void resetStaffLockouts(department)}
             />
 
-            <BagTemplatesPanel
-              language={language}
-              business={selectedBusiness}
-              departments={selectedDepartments}
-              templates={selectedTemplates}
-              busyTemplateId={busyTemplateId}
-              onSave={saveBagTemplate}
-              onToggleActive={(template) => void toggleTemplateActive(template)}
-              onDelete={(template) => void deleteBagTemplate(template)}
-              onPublishNow={(template, day) => void publishTemplateNow(template, day)}
-              onUploadImage={uploadTemplateImage}
-            />
-          </>
-        )}
-
-        <OfferForm
-          t={t}
-          canCreateOffers={canCreateOffers}
-          businessStatusMessage={businessStatusMessage}
-          approvedBusinesses={approvedBusinesses}
-          businessId={businessId}
-          departments={selectedDepartments}
-          departmentId={effectiveDepartmentId}
-          onDepartmentIdChange={setDepartmentId}
-          title={title}
-          description={description}
-          category={category}
-          size={size}
-          price={price}
-          oldPrice={oldPrice}
-          quantity={quantity}
-          pickupDate={pickupDate}
-          pickupStart={pickupStart}
-          pickupEnd={pickupEnd}
-          imageFile={imageFile}
-          publishing={publishing}
-          guidance={firstOfferGuidance}
-          onBusinessIdChange={setBusinessId}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          onCategoryChange={setCategory}
-          onSizeChange={setSize}
-          onPriceChange={setPrice}
-          onOldPriceChange={setOldPrice}
-          onQuantityChange={setQuantity}
-          onPickupDateChange={setPickupDate}
-          onPickupStartChange={setPickupStart}
-          onPickupEndChange={setPickupEnd}
-          onImageFileChange={handleImageFileChange}
-          imageInputKey={imageInputKey}
-          onCreateOffer={(actionTime) => void createOffer(actionTime)}
-        />
+            </>
+          )}
 
         <div id="business-offers" className="scroll-mt-24">
           <FilterBar
@@ -2822,50 +2849,6 @@ function BusinessDashboardPage() {
           />
         </div>
 
-        <div id="business-reservations" className="scroll-mt-24">
-        <ReservationList
-          t={t}
-          language={language}
-          orders={orders}
-          filteredOrders={paginatedReservations.items}
-          filteredOrderCount={filteredOrders.length}
-          reservationSummary={reservationSummary}
-          reservationFilter={reservationFilter}
-          reservationSearch={reservationSearch}
-          normalizedReservationSearch={normalizedReservationSearch}
-          updatingOrderId={updatingOrderId}
-          reservationPage={paginatedReservations.page}
-          reservationPageSize={DASHBOARD_RESERVATION_PAGE_SIZE}
-          onReservationSearchChange={(value) => {
-            setReservationSearch(value);
-            setReservationPage(1);
-          }}
-          onReservationFilterChange={(value) => {
-            setReservationFilter(value);
-            setReservationPage(1);
-          }}
-          onReservationPageChange={setReservationPage}
-          onOpenPickupVerification={openPickupVerification}
-          onMarkNoShow={(order) => void markNoShow(order)}
-        />
-        </div>
-
-        {pickupVerificationOrder && (
-          <PickupVerificationModal
-            t={t}
-            language={language}
-            order={pickupVerificationOrder}
-            code={pickupVerificationCode}
-            error={translateUserMessage(pickupVerificationError, language)}
-            updatingOrderId={updatingOrderId}
-            onCodeChange={(value) => {
-              setPickupVerificationCode(value);
-              setPickupVerificationError("");
-            }}
-            onClose={closePickupVerification}
-            onSubmit={() => void submitPickupVerification()}
-          />
-        )}
 
         <BusinessReviews
           t={t}
@@ -2873,6 +2856,7 @@ function BusinessDashboardPage() {
           reviews={reviews}
           businessNameById={businessNameById}
         />
+        </div>
       </section>
     </main>
   );

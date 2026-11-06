@@ -1,3 +1,4 @@
+import { absoluteBusinessUrl } from "@/lib/businessArea";
 import { absoluteSiteUrl } from "@/lib/site";
 
 export type TransactionalEmailEvent =
@@ -308,14 +309,14 @@ export function buildTransactionalEmailTemplate(
           title: "Business approved",
           intro,
           details: renderDetail("Business", businessName),
-          actionUrl: payload.actionUrl || absoluteSiteUrl("/business/dashboard"),
+          actionUrl: payload.actionUrl || absoluteBusinessUrl("/business/dashboard"),
           actionLabel: payload.actionLabel || "Open dashboard",
         }),
         text: buildTextEmail({
           title: "Business approved",
           intro,
           details: [["Business", businessName]],
-          actionUrl: payload.actionUrl || absoluteSiteUrl("/business/dashboard"),
+          actionUrl: payload.actionUrl || absoluteBusinessUrl("/business/dashboard"),
         }),
       };
     }
@@ -328,7 +329,7 @@ export function buildTransactionalEmailTemplate(
       const intro = `ბიზნესის „${businessName}“ განაცხადი ვერ დავამტკიცეთ. გადახედე მიზეზს, გაასწორე დეტალები და პანელიდან ხელახლა გაგზავნე დასამტკიცებლად.`;
       const englishNote = `Your application for ${businessName} was not approved. Please read the reason, edit the details and resubmit from your dashboard.`;
       const preview = "განაცხადი არ დამტკიცდა. გადახედე მიზეზს და ხელახლა გაგზავნე.";
-      const actionUrl = payload.actionUrl || absoluteSiteUrl("/business/dashboard");
+      const actionUrl = payload.actionUrl || absoluteBusinessUrl("/business/dashboard");
       return {
         subject,
         preview,

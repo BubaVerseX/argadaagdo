@@ -3,6 +3,7 @@
 import { withNativeChrome } from "@/components/native/NativeSwitch";
 import { NoChrome } from "@/components/native/screens";
 import AppStoreLink from "@/components/AppStoreLink";
+import { businessHomeUrl } from "@/lib/businessArea";
 import BrandMark from "@/components/BrandMark";
 import Link from "next/link";
 import { useLanguage } from "@/lib/useLanguage";
@@ -39,11 +40,11 @@ function Footer() {
   const platformLinks = [
     { href: "/discover", label: t("nav.discover") },
     { href: "/businesses", label: t("nav.businesses") },
-    { href: "/for-businesses", label: t("nav.forBusiness") },
     { href: "/faq", label: t("nav.faq") },
   ];
   const companyLinks = [
     { href: "/about", label: t("nav.about") },
+    { href: "/mission", label: t("nav.mission") },
     { href: "/contact", label: t("nav.contact") },
     { href: "/support", label: t("nav.support") },
     { href: "/privacy", label: t("nav.privacy") },
@@ -65,12 +66,13 @@ function Footer() {
             {t("footer.reduceWasteGeorgia")}
           </p>
 
-          <Link
-            href="/for-businesses"
-            className="premium-button mt-6 px-6 py-3 text-sm"
+          {/* The only way from the customer site to the business area. */}
+          <a
+            href={businessHomeUrl()}
+            className="mt-4 inline-flex min-h-11 items-center text-sm text-body underline underline-offset-4 hover:text-cream"
           >
             {t("home.joinBusiness")}
-          </Link>
+          </a>
 
           <div className="mt-6 flex items-center gap-2">
             {socialLinks.map((social) => (

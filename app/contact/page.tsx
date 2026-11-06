@@ -89,13 +89,6 @@ export default function ContactPage() {
               <p className="mt-4 leading-7 text-body">
                 {t("contact.businessInquiriesText")}
               </p>
-
-              <Link
-                href="/business/register"
-                className="premium-button-secondary mt-6 w-full sm:w-auto"
-              >
-                {t("home.joinBusiness")}
-              </Link>
             </section>
           </div>
 

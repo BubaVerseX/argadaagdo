@@ -21,21 +21,19 @@ export type HomeContent = {
     heroAfter: string;
     heroSubtitle: string;
     browseToday: string;
-    listSurplus: string;
     categoriesLabel: string;
-    statsBadge: string;
+    whyTitle: string;
+    missionLink: string;
+    missionLine: string;
     howItWorksBadge: string;
     howItWorksTitle: string;
-    businessLearnMore: string;
     finalCtaBadge: string;
     finalCtaTitle: string;
     finalCtaText: string;
-    finalCtaSecondary: string;
   };
   categoryLinks: string[];
-  stats: Array<{ value?: string; label: string; text: string }>;
+  whyStats: Array<{ value: string; label: string }>;
   steps: Array<{ label: string; title: string; text: string }>;
-  businessSolutions: Array<{ title: string; text: string }>;
   marqueeItems: string[];
 };
 
@@ -50,7 +48,6 @@ type AppHomeProps = {
   errorMessage: string;
 };
 
-const statTones = ["cat-mixed", "cat-bakery", "cat-dairy"];
 const stepTones = ["cat-produce", "cat-bakery", "cat-deli"];
 
 /** The home screen for signed-in users, in the colourful app style (B3Home). */
@@ -64,7 +61,7 @@ export function AppHome({
   loading,
   errorMessage,
 }: AppHomeProps) {
-  const { copy, categoryLinks, stats, steps, businessSolutions, marqueeItems } =
+  const { copy, categoryLinks, steps, marqueeItems } =
     content;
   const [heroOffer, ...moreOffers] = featuredOffers;
   const ratingFor = (offer: Offer) =>
@@ -147,14 +144,17 @@ export function AppHome({
             <Link href="/discover" className="premium-button rounded-[18px] px-6 py-3 font-bold">
               {copy.browseToday}
             </Link>
-            <Link
-              href="/business/register"
-              className="premium-button-secondary rounded-[18px] px-6 py-3"
-            >
-              {copy.listSurplus}
-            </Link>
           </div>
         </div>
+      </section>
+
+      <section className="pt-5">
+        <p className="app-container text-sm text-body">
+          {copy.missionLine}{" "}
+          <Link href="/mission" className="inline-flex min-h-11 items-center font-bold text-brand-forest underline-offset-4 hover:underline">
+            {copy.missionLink}
+          </Link>
+        </p>
       </section>
 
       <section className="pb-10 pt-10">
@@ -218,28 +218,6 @@ export function AppHome({
 
       <section className="py-10">
         <div className="app-container">
-          <p className="text-xs font-medium text-body">{copy.statsBadge}</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {stats.map((item, index) => (
-              <div
-                key={item.label}
-                className={`${statTones[index % statTones.length]} rounded-3xl bg-cat p-6 text-cat-ink ${
-                  index === 0 ? "sm:col-span-2 lg:col-span-1" : ""
-                }`}
-              >
-                {item.value && <p className="mb-2 font-serif text-4xl font-bold">{item.value}</p>}
-                <p className={item.value ? "text-sm font-bold" : "font-serif text-xl font-bold"}>
-                  {item.label}
-                </p>
-                <p className="mt-1 text-sm leading-[1.55] text-cat-ink-2">{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10">
-        <div className="app-container">
           <p className="text-xs font-medium text-body">{copy.howItWorksBadge}</p>
           <h2 className="mt-1 font-serif text-2xl font-bold lg:text-3xl">{copy.howItWorksTitle}</h2>
           <div className="mt-5 grid gap-3 md:grid-cols-3">
@@ -255,42 +233,6 @@ export function AppHome({
                 <p className="mt-2 text-sm leading-[1.55] text-cat-ink-2">{step.text}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-10">
-        <div className="app-container">
-          <div className="theme-forest relative overflow-hidden rounded-[28px] bg-brand-forest p-6 sm:p-10 lg:p-14">
-            <LeafDecor className="-right-12 -top-10 h-64 w-64 text-brand-forest-2" />
-            <div className="relative grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-              <div>
-                <p className="text-xs font-medium text-body">{t("forBusinesses.problemBadge")}</p>
-                <h2 className="mt-2 font-serif text-3xl font-bold leading-[1.25] lg:text-4xl">
-                  {t("forBusinesses.heroTitle")}
-                </h2>
-                <p className="mt-4 max-w-lg text-sm leading-relaxed text-body sm:text-base">
-                  {t("forBusinesses.problemText")}
-                </p>
-                <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
-                  <Link href="/for-businesses" className="premium-button rounded-[18px] px-6 py-3 font-bold">
-                    {copy.businessLearnMore}
-                  </Link>
-                  <Link href="/business/register" className="premium-button-secondary rounded-[18px] px-6 py-3">
-                    {t("home.registerBusiness")}
-                  </Link>
-                </div>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                {businessSolutions.map((item) => (
-                  <div key={item.title} className="rounded-3xl bg-brand-forest-2 p-5">
-                    <h3 className="font-bold">{item.title}</h3>
-                    <p className="mt-1.5 text-sm leading-[1.55] text-body">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -326,9 +268,6 @@ export function AppHome({
               <div className="mt-6 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
                 <Link href="/discover" className="premium-button w-full rounded-[18px] px-7 py-3 font-bold sm:w-auto">
                   {copy.browseToday}
-                </Link>
-                <Link href="/for-businesses" className="premium-button-secondary w-full rounded-[18px] px-7 py-3 sm:w-auto">
-                  {copy.finalCtaSecondary}
                 </Link>
               </div>
             </div>

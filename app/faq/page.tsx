@@ -169,12 +169,6 @@ export default function FAQPage() {
                 {t("home.explore")}
               </Link>
               <Link
-                href="/business/register"
-                className="premium-button-secondary px-6 py-3 text-center"
-              >
-                {t("home.joinBusiness")}
-              </Link>
-              <Link
                 href="/contact"
                 className="premium-button px-6 py-3 text-center"
               >

@@ -1,510 +1,559 @@
 "use client";
 
+import { PhoneVerification } from "@/components/PhoneVerification";
+import {
+  BAG_SIZES,
+  getOfferCategoryLabel,
+  OFFER_CATEGORIES,
+  type BagSize,
+  type OfferCategory,
+} from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
-import { useEffect, useMemo, useState } from "react";
+import {
+  isValidIdCode,
+  isValidRegistryExtract,
+  isValidTbcIban,
+  LEGAL_FORMS,
+  normalizeIban,
+  type LegalForm,
+} from "@/lib/verification";
+import { useEffect, useState } from "react";
 
-const BUSINESS_REGISTRATION_DRAFT_KEY =
-  "argadaagdo-business-registration-draft";
+const DRAFT_KEY = "argadaagdo-business-registration-draft";
 
-type BusinessOnboardingWizardProps = {
+const BUSINESS_TYPES = ["Cafe", "Bakery", "Restaurant", "Supermarket", "Hotel", "Other"];
+
+const georgianBusinessTypes: Record<string, string> = {
+  Cafe: "კაფე",
+  Bakery: "საცხობი",
+  Restaurant: "რესტორანი",
+  Supermarket: "სუპერმარკეტი",
+  Hotel: "სასტუმრო",
+  Other: "სხვა",
+};
+
+export type CompanyDetails = {
   name: string;
   businessType: string;
   address: string;
-  phone: string;
-  submitting: boolean;
-  accessReady: boolean;
-  canRegister: boolean;
-  onNameChange: (value: string) => void;
-  onBusinessTypeChange: (value: string) => void;
-  onAddressChange: (value: string) => void;
-  onPhoneChange: (value: string) => void;
-  onSubmit: () => void;
+  legalName: string;
+  idCode: string;
+  legalForm: LegalForm;
+  ownerFullName: string;
 };
 
-type Draft = {
-  name?: string;
-  businessType?: string;
-  address?: string;
-  phone?: string;
-  description?: string;
-  imagePlan?: string;
-  step?: number;
+export type FirstBag = {
+  title: string;
+  category: OfferCategory;
+  size: BagSize;
+  price: string;
+  oldPrice: string;
+  dailyQuantity: string;
+  pickupStart: string;
+  pickupEnd: string;
 };
 
-const steps = [
-  {
-    title: "Business Information",
-    helper: "Tell us the name and type of business you want to onboard.",
-  },
-  {
-    title: "Location",
-    helper: "Add the pickup address customers should visit.",
-  },
-  {
-    title: "Contact",
-    helper: "Add a phone number admins can use during approval.",
-  },
-  {
-    title: "Business Description",
-    helper: "Prepare a short description for your public profile.",
-  },
-  {
-    title: "Images",
-    helper: "Prepare your logo or a clear storefront image for trust.",
-  },
-  {
-    title: "Preview",
-    helper: "Review the application before sending it to admin approval.",
-  },
-  {
-    title: "Submit",
-    helper: "Submit your business for review.",
-  },
-];
+export type BusinessApplication = {
+  company: CompanyDetails;
+  iban: string;
+  extractFile: File;
+  /** Null when the business already has a bag (a resubmitted application). */
+  firstBag: FirstBag | null;
+};
 
-// Same steps, in the same order, for Georgian.
-const georgianSteps: typeof steps = [
-  {
-    title: "ბიზნესის ინფორმაცია",
-    helper: "მოგვიყევი იმ ბიზნესის სახელი და ტიპი, რომლის დარეგისტრირებაც გინდა.",
-  },
-  {
-    title: "მდებარეობა",
-    helper: "დაამატე წაღების მისამართი, სადაც მომხმარებლები უნდა მოვიდნენ.",
-  },
-  {
-    title: "კონტაქტი",
-    helper: "დაამატე ტელეფონის ნომერი, რომლითაც ადმინი დამტკიცებისას დაგიკავშირდება.",
-  },
-  {
-    title: "ბიზნესის აღწერა",
-    helper: "მოამზადე მოკლე აღწერა საჯარო პროფილისთვის.",
-  },
-  {
-    title: "სურათები",
-    helper: "ნდობისთვის მოამზადე ლოგო ან ფასადის მკაფიო ფოტო.",
-  },
-  {
-    title: "გადახედვა",
-    helper: "გადახედე განაცხადს, სანამ ადმინს დასამტკიცებლად გაუგზავნი.",
-  },
-  {
-    title: "გაგზავნა",
-    helper: "გაგზავნე ბიზნესი განსახილველად.",
-  },
-];
-
-// Display labels for the business type options. The stored values stay in
-// English.
-const georgianBusinessTypeLabels = new Map<string, string>([
-  ["Cafe", "კაფე"],
-  ["Bakery", "საცხობი"],
-  ["Restaurant", "რესტორანი"],
-  ["Supermarket", "სუპერმარკეტი"],
-  ["Hotel", "სასტუმრო"],
-  ["Other", "სხვა"],
-]);
+const emptyCompany: CompanyDetails = {
+  name: "",
+  businessType: "Cafe",
+  address: "",
+  legalName: "",
+  idCode: "",
+  legalForm: "llc",
+  ownerFullName: "",
+};
 
 export function clearBusinessRegistrationDraft() {
   try {
-    window.localStorage.removeItem(BUSINESS_REGISTRATION_DRAFT_KEY);
+    window.localStorage.removeItem(DRAFT_KEY);
   } catch {
     // Storage can be unavailable (private mode, blocked site data).
   }
 }
 
-function readSavedDraft() {
-  if (typeof window === "undefined") return null;
-
+function readDraft(): Partial<CompanyDetails> | null {
   try {
-    const rawDraft = window.localStorage.getItem(
-      BUSINESS_REGISTRATION_DRAFT_KEY
-    );
-    return rawDraft ? (JSON.parse(rawDraft) as Draft) : null;
+    const saved = window.localStorage.getItem(DRAFT_KEY);
+    return saved ? (JSON.parse(saved) as Partial<CompanyDetails>) : null;
   } catch {
-    window.localStorage.removeItem(BUSINESS_REGISTRATION_DRAFT_KEY);
     return null;
   }
 }
 
+/**
+ * Four screens, one topic each: company, phone, payout, first bag. Nothing is
+ * sent until the last screen. Only the company details are saved on the device;
+ * the IBAN is never written to browser storage.
+ */
 export function BusinessOnboardingWizard({
-  name,
-  businessType,
-  address,
-  phone,
+  initialCompany,
+  phoneAlreadyVerified,
+  hasExistingBag,
   submitting,
-  accessReady,
-  canRegister,
-  onNameChange,
-  onBusinessTypeChange,
-  onAddressChange,
-  onPhoneChange,
   onSubmit,
-}: BusinessOnboardingWizardProps) {
-  const { language, t } = useLanguage();
+}: {
+  initialCompany: Partial<CompanyDetails> | null;
+  phoneAlreadyVerified: boolean;
+  hasExistingBag: boolean;
+  submitting: boolean;
+  onSubmit: (application: BusinessApplication) => void;
+}) {
+  const { language } = useLanguage();
   const isGeorgian = language === "ka";
-  const localizedSteps = isGeorgian ? georgianSteps : steps;
-  const businessTypeLabel = (value: string) =>
-    isGeorgian ? georgianBusinessTypeLabels.get(value) ?? value : value;
+  const text = (ka: string, en: string) => (isGeorgian ? ka : en);
+
   const [step, setStep] = useState(1);
-  const [description, setDescription] = useState("");
-  const [imagePlan, setImagePlan] = useState("");
-  const [draftMessage, setDraftMessage] = useState("");
+  const [error, setError] = useState("");
+  const [company, setCompany] = useState<CompanyDetails>({
+    ...emptyCompany,
+    ...initialCompany,
+  });
+  const [phoneVerified, setPhoneVerified] = useState(phoneAlreadyVerified);
+  const [iban, setIban] = useState("");
+  const [extractFile, setExtractFile] = useState<File | null>(null);
+  const [bag, setBag] = useState<FirstBag>({
+    title: isGeorgian ? "ლანჩ ბოქსი" : "Lunch Box",
+    category: "Bakery",
+    size: "M",
+    price: "",
+    oldPrice: "",
+    dailyQuantity: "5",
+    pickupStart: "19:00",
+    pickupEnd: "21:00",
+  });
 
-  // Restore the saved draft after mount: reading localStorage during render
-  // made the client's first render differ from the prerendered HTML.
+  // After mount: reading localStorage during render would break hydration.
   useEffect(() => {
-    const restoreTimer = window.setTimeout(() => {
-      const savedDraft = readSavedDraft();
-      if (!savedDraft) return;
+    if (initialCompany) return;
 
-      if (
-        savedDraft.step &&
-        savedDraft.step >= 1 &&
-        savedDraft.step <= steps.length
-      ) {
-        setStep(savedDraft.step);
-      }
-      if (savedDraft.description) setDescription(savedDraft.description);
-      if (savedDraft.imagePlan) setImagePlan(savedDraft.imagePlan);
-      if (savedDraft.name) onNameChange(savedDraft.name);
-      if (savedDraft.businessType) {
-        onBusinessTypeChange(savedDraft.businessType);
-      }
-      if (savedDraft.address) onAddressChange(savedDraft.address);
-      if (savedDraft.phone) onPhoneChange(savedDraft.phone);
+    const restoreTimer = window.setTimeout(() => {
+      const draft = readDraft();
+      if (draft) setCompany((current) => ({ ...current, ...draft }));
     }, 0);
 
     return () => window.clearTimeout(restoreTimer);
-    // Restore once on mount only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialCompany]);
 
-  const progress = useMemo(
-    () => Math.round((step / steps.length) * 100),
-    [step]
-  );
+  const steps = [
+    text("კომპანია", "Company"),
+    text("ტელეფონი", "Phone"),
+    text("ანგარიში", "Payout"),
+    text("პირველი ლანჩ ბოქსი", "First bag"),
+  ];
 
-  function saveDraft(showMessage = false) {
-    const draft: Draft = {
-      name,
-      businessType,
-      address,
-      phone,
-      description,
-      imagePlan,
-      step,
-    };
+  function updateCompany(field: keyof CompanyDetails, value: string) {
+    setCompany((current) => ({ ...current, [field]: value }));
+  }
 
-    try {
-      window.localStorage.setItem(
-        BUSINESS_REGISTRATION_DRAFT_KEY,
-        JSON.stringify(draft)
-      );
-    } catch {
+  function updateBag(field: keyof FirstBag, value: string) {
+    setBag((current) => ({ ...current, [field]: value }));
+  }
+
+  function validateStep() {
+    if (step === 1) {
+      if (
+        company.name.trim().length < 2 ||
+        company.address.trim().length < 5 ||
+        company.legalName.trim().length < 2 ||
+        company.ownerFullName.trim().length < 3
+      ) {
+        return text("შეავსე ყველა ველი.", "Please fill in every field.");
+      }
+
+      if (!isValidIdCode(company.idCode)) {
+        return text(
+          "საიდენტიფიკაციო კოდი უნდა იყოს 9 ან 11 ციფრი.",
+          "The identification code must have 9 or 11 digits."
+        );
+      }
+    }
+
+    if (step === 2 && !phoneVerified) {
+      return text("დაადასტურე ტელეფონის ნომერი.", "Please confirm your phone number.");
+    }
+
+    if (step === 3) {
+      if (!isValidTbcIban(iban)) {
+        return text(
+          "შეიყვანე სწორი TBC IBAN: GE, 2 ციფრი, TB, 16 ციფრი.",
+          "Enter a valid TBC IBAN: GE, 2 digits, TB, 16 digits."
+        );
+      }
+
+      if (!extractFile || !isValidRegistryExtract(extractFile)) {
+        return text(
+          "ატვირთე ამონაწერი: PDF ან JPG, მაქსიმუმ 10 მბ.",
+          "Upload the extract: PDF or JPG, up to 10 MB."
+        );
+      }
+    }
+
+    if (step === 4 && !hasExistingBag) {
+      const price = Number(bag.price);
+      const oldPrice = bag.oldPrice.trim() ? Number(bag.oldPrice) : null;
+      const quantity = Number(bag.dailyQuantity);
+
+      if (bag.title.trim().length < 3) {
+        return text("ლანჩ ბოქსის სახელი ძალიან მოკლეა.", "The bag name is too short.");
+      }
+
+      if (!(price > 0) || (oldPrice !== null && !(oldPrice > price))) {
+        return text(
+          "ფასი უნდა იყოს 0-ზე მეტი, ძველი ფასი კი ფასზე მეტი.",
+          "The price must be above 0, and the old price above the price."
+        );
+      }
+
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 500) {
+        return text("რაოდენობა: 1-დან 500-მდე.", "Bags per day: 1 to 500.");
+      }
+
+      if (!bag.pickupStart || !bag.pickupEnd || bag.pickupStart >= bag.pickupEnd) {
+        return text(
+          "წაღების დასასრული დაწყების შემდეგ უნდა იყოს.",
+          "Pickup must end after it starts."
+        );
+      }
+    }
+
+    return "";
+  }
+
+  function goNext() {
+    const validationError = validateStep();
+
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
-    if (showMessage) {
-      setDraftMessage(
-        isGeorgian
-          ? "პროგრესი ამ მოწყობილობაზე შეინახა."
-          : "Progress saved on this device."
-      );
+    setError("");
+
+    if (step === 1) {
+      try {
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify(company));
+      } catch {
+        // The draft is a convenience; the wizard works without it.
+      }
+    }
+
+    if (step < steps.length) {
+      setStep(step + 1);
+      return;
+    }
+
+    if (extractFile) {
+      onSubmit({
+        company,
+        iban: normalizeIban(iban),
+        extractFile,
+        firstBag: hasExistingBag ? null : bag,
+      });
     }
   }
 
-  function goToStep(nextStep: number) {
-    saveDraft(false);
-    setDraftMessage("");
-    setStep(Math.min(Math.max(nextStep, 1), steps.length));
-  }
-
-  function submitApplication() {
-    saveDraft(false);
-    onSubmit();
-  }
-
-  const currentStep = localizedSteps[step - 1];
+  const inputClass = "premium-input p-4 font-medium";
+  const labelClass = "grid gap-2 text-sm font-semibold text-body";
 
   return (
-    <div className="rounded-3xl bg-well p-5 sm:rounded-3xl sm:p-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint">
-            {isGeorgian ? (
-              <>
-                ნაბიჯი {step} / {steps.length}
-              </>
-            ) : (
-              <>
-                Step {step} of {steps.length}
-              </>
-            )}
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold text-cream">
-            {currentStep.title}
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-body">
-            {currentStep.helper}
-          </p>
-        </div>
+    <div className="ui-card rounded-3xl p-5 sm:p-8">
+      <p className="text-xs font-semibold uppercase tracking-widest text-mint">
+        {text(`ნაბიჯი ${step} / ${steps.length}`, `Step ${step} of ${steps.length}`)}
+      </p>
+      <h2 className="mt-2 text-2xl font-semibold text-cream">{steps[step - 1]}</h2>
 
-        <span className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-mint">
-          {progress}% {isGeorgian ? "დასრულებულია" : "complete"}
-        </span>
-      </div>
-
-      <div className="mt-5 h-2 overflow-hidden rounded-full bg-well">
+      <div
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={steps.length}
+        aria-valuenow={step}
+        aria-label={steps[step - 1]}
+        className="mt-4 h-2 overflow-hidden rounded-full bg-well"
+      >
         <div
           className="h-full rounded-full bg-mint transition-all"
-          style={{ width: `${progress}%` }}
+          style={{ width: `${(step / steps.length) * 100}%` }}
         />
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {localizedSteps.map((wizardStep, index) => (
-          <button
-            key={wizardStep.title}
-            type="button"
-            onClick={() => goToStep(index + 1)}
-            className={`min-h-11 rounded-2xl px-3 py-2 text-left text-xs font-semibold transition ${ step === index + 1
-                ? "ui-well text-mint"
-                : "ui-card text-body"
-            }`}
-          >
-            {index + 1}. {wizardStep.title}
-          </button>
-        ))}
-      </div>
-
-      <div className="ui-card mt-6 rounded-3xl p-4 sm:p-5">
+      <div className="mt-6 grid gap-4">
         {step === 1 && (
-          <div className="grid gap-4">
-            <label className="grid gap-2 text-sm font-semibold text-body">
-              {isGeorgian ? "ბიზნესის სახელი *" : "Business name *"}
+          <>
+            <label className={labelClass}>
+              {text("ბიზნესის სახელი", "Business name")}
               <input
-                value={name}
-                onChange={(event) => onNameChange(event.target.value)}
-                placeholder={
-                  isGeorgian
-                    ? "საცხობის, კაფეს ან რესტორნის სახელი"
-                    : "Bakery, cafe or restaurant name"
-                }
+                value={company.name}
+                onChange={(event) => updateCompany("name", event.target.value)}
                 maxLength={80}
-                className="premium-input p-4 font-medium"
+                className={inputClass}
               />
             </label>
-
-            <label className="grid gap-2 text-sm font-semibold text-body">
-              {isGeorgian ? "ბიზნესის ტიპი *" : "Business type *"}
+            <label className={labelClass}>
+              {text("ბიზნესის ტიპი", "Business type")}
               <select
-                value={businessType}
-                onChange={(event) => onBusinessTypeChange(event.target.value)}
-                className="premium-input p-4 font-medium"
+                value={company.businessType}
+                onChange={(event) => updateCompany("businessType", event.target.value)}
+                className={inputClass}
               >
-                <option value="Cafe">{businessTypeLabel("Cafe")}</option>
-                <option value="Bakery">{businessTypeLabel("Bakery")}</option>
-                <option value="Restaurant">
-                  {businessTypeLabel("Restaurant")}
-                </option>
-                <option value="Supermarket">
-                  {businessTypeLabel("Supermarket")}
-                </option>
-                <option value="Hotel">{businessTypeLabel("Hotel")}</option>
-                <option value="Other">{businessTypeLabel("Other")}</option>
+                {BUSINESS_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {isGeorgian ? georgianBusinessTypes[type] : type}
+                  </option>
+                ))}
               </select>
             </label>
-          </div>
+            <label className={labelClass}>
+              {text("წაღების მისამართი", "Pickup address")}
+              <input
+                value={company.address}
+                onChange={(event) => updateCompany("address", event.target.value)}
+                maxLength={160}
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              {text("იურიდიული სახელი", "Company legal name")}
+              <input
+                value={company.legalName}
+                onChange={(event) => updateCompany("legalName", event.target.value)}
+                maxLength={160}
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              {text("საიდენტიფიკაციო კოდი", "Identification code")}
+              <input
+                value={company.idCode}
+                onChange={(event) =>
+                  updateCompany("idCode", event.target.value.replace(/\D/g, ""))
+                }
+                inputMode="numeric"
+                maxLength={11}
+                className={inputClass}
+              />
+            </label>
+            <label className={labelClass}>
+              {text("სამართლებრივი ფორმა", "Legal form")}
+              <select
+                value={company.legalForm}
+                onChange={(event) => updateCompany("legalForm", event.target.value)}
+                className={inputClass}
+              >
+                {LEGAL_FORMS.map((form) => (
+                  <option key={form.value} value={form.value}>
+                    {isGeorgian ? form.ka : form.en}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={labelClass}>
+              {text("მფლობელის სრული სახელი", "Owner's full name")}
+              <input
+                value={company.ownerFullName}
+                onChange={(event) => updateCompany("ownerFullName", event.target.value)}
+                maxLength={120}
+                autoComplete="name"
+                className={inputClass}
+              />
+            </label>
+          </>
         )}
 
-        {step === 2 && (
-          <label className="grid gap-2 text-sm font-semibold text-body">
-            {isGeorgian ? "წაღების მისამართი *" : "Pickup address *"}
-            <input
-              value={address}
-              onChange={(event) => onAddressChange(event.target.value)}
-              placeholder={
-                isGeorgian ? "ქუჩის მისამართი თბილისში" : "Street address in Tbilisi"
-              }
-              maxLength={160}
-              className="premium-input p-4 font-medium"
+        {step === 2 &&
+          (phoneVerified ? (
+            <p className="rounded-2xl bg-well p-4 font-semibold text-mint">
+              {text("ტელეფონი დადასტურებულია ✓", "Phone confirmed ✓")}
+            </p>
+          ) : (
+            <PhoneVerification
+              onVerified={() => {
+                setPhoneVerified(true);
+                setError("");
+              }}
             />
-            <span className="font-semibold leading-6 text-body">
-              {isGeorgian
-                ? "მომხმარებლები ამ მისამართზე მოვლენ დაჯავშნილი ლანჩ ბოქსების წასაღებად."
-                : "Customers will use this address to collect reserved Lunch Boxes."}
-            </span>
-          </label>
-        )}
+          ))}
 
         {step === 3 && (
-          <label className="grid gap-2 text-sm font-semibold text-body">
-            {isGeorgian ? "ტელეფონის ნომერი *" : "Phone number *"}
-            <input
-              value={phone}
-              onChange={(event) => onPhoneChange(event.target.value)}
-              type="tel"
-              inputMode="tel"
-              placeholder="+995 ..."
-              maxLength={40}
-              className="premium-input p-4 font-medium"
-            />
-            <span className="font-semibold leading-6 text-body">
-              {isGeorgian
-                ? "ადმინმა შეიძლება ეს ნომერი გამოიყენოს, თუ დამტკიცებისას ბიზნესის დეტალების გადამოწმება დასჭირდება."
-                : "Admins may use this number if they need to verify business details during approval."}
-            </span>
-          </label>
+          <>
+            <label className={labelClass}>
+              TBC IBAN
+              <input
+                value={iban}
+                onChange={(event) => setIban(event.target.value.toUpperCase())}
+                placeholder="GE00TB0000000000000000"
+                maxLength={30}
+                autoComplete="off"
+                className={inputClass}
+              />
+              <span className="text-xs font-medium">
+                {text(
+                  "ანგარიშის მფლობელი უნდა ემთხვეოდეს იურიდიულ სახელს.",
+                  "The account holder must match the legal name."
+                )}
+              </span>
+            </label>
+            <label className={labelClass}>
+              {text("ამონაწერი საჯარო რეესტრიდან", "Public Registry extract")}
+              <input
+                type="file"
+                accept="application/pdf,image/jpeg"
+                onChange={(event) => setExtractFile(event.target.files?.[0] ?? null)}
+                className={inputClass}
+              />
+              <span className="text-xs font-medium">
+                {text(
+                  "PDF ან JPG, 10 მბ-მდე. მხოლოდ ადმინი ნახავს.",
+                  "PDF or JPG, up to 10 MB. Only our admins can see it."
+                )}
+              </span>
+            </label>
+          </>
         )}
 
-        {step === 4 && (
-          <label className="grid gap-2 text-sm font-semibold text-body">
-            {isGeorgian ? "მოკლე აღწერა" : "Short description"}
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder={
-                isGeorgian
-                  ? "მაგალითად: დღევანდელი დახურვისას დარჩენილი ახალი საცხობი პროდუქცია."
-                  : "Example: Fresh bakery items saved from today's closing stock."
-              }
-              maxLength={220}
-              rows={5}
-              className="premium-input p-4 font-medium"
-            />
-            <span className="font-semibold leading-6 text-body">
-              {isGeorgian
-                ? "ეს ამ ეტაპზე რეგისტრაციის პროგრესად ინახება. დამტკიცების შემდეგ პანელის პროფილის ინსტრუმენტებს გამოიყენებ."
-                : "This is saved as onboarding progress for now. You can use the dashboard profile tools after approval."}
-            </span>
-          </label>
-        )}
-
-        {step === 5 && (
-          <label className="grid gap-2 text-sm font-semibold text-body">
-            {isGeorgian ? "სურათების გეგმა" : "Image plan"}
-            <textarea
-              value={imagePlan}
-              onChange={(event) => setImagePlan(event.target.value)}
-              placeholder={
-                isGeorgian
-                  ? "მაგალითად: დამტკიცების შემდეგ ავტვირთავ ფასადის ფოტოს და შეთავაზებების მკაფიო სურათებს."
-                  : "Example: Upload storefront photo and clear offer images after approval."
-              }
-              maxLength={220}
-              rows={5}
-              className="premium-input p-4 font-medium"
-            />
-            <span className="font-semibold leading-6 text-body">
-              {isGeorgian
-                ? "ლოგო და შეთავაზებების სურათები დამტკიცების შემდეგ იმართება. ეს ნაბიჯი ბიზნესის პროფილის გაშვებამდე მომზადებაში გეხმარება."
-                : "Logo and offer images are managed after approval. This step helps prepare the business profile before launch."}
-            </span>
-          </label>
-        )}
-
-        {step === 6 && (
-          <div className="grid gap-3">
-            {(isGeorgian
-              ? [
-                  ["ბიზნესი", name || "არ არის მითითებული"],
-                  [
-                    "ტიპი",
-                    businessTypeLabel(businessType) || "არ არის მითითებული",
-                  ],
-                  ["მისამართი", address || "არ არის მითითებული"],
-                  ["ტელეფონი", phone || "არ არის მითითებული"],
-                  ["აღწერის მონახაზი", description || "ჯერ არ დამატებულა"],
-                  ["სურათები", imagePlan || "ჯერ არ დამატებულა"],
-                ]
-              : [
-                  ["Business", name || "Not provided"],
-                  ["Type", businessType || "Not provided"],
-                  ["Address", address || "Not provided"],
-                  ["Phone", phone || "Not provided"],
-                  ["Description draft", description || "Not added yet"],
-                  ["Images", imagePlan || "Not added yet"],
-                ]
-            ).map(([label, value]) => (
-              <div key={label} className="rounded-2xl bg-well p-4">
-                <p className="text-xs uppercase tracking-wide text-body">
-                  {label}
-                </p>
-                <p className="mt-1 break-words font-semibold text-cream">
-                  {value}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {step === 7 && (
-          <div className="rounded-2xl bg-well p-5">
-            <h3 className="text-xl font-semibold text-cream">
-              {isGeorgian ? "მზადაა განსახილველად" : "Ready for review"}
-            </h3>
-            <p className="mt-2 leading-7 text-body">
-              {isGeorgian
-                ? "გაგზავნე ბიზნესი ადმინის დასამტკიცებლად. დამტკიცების შემდეგ პანელიდან შეძლებ შეთავაზებების შექმნას და ჯავშნების მართვას."
-                : "Submit your business for admin approval. After approval, your dashboard will let you create offers and manage reservations."}
+        {step === 4 &&
+          (hasExistingBag ? (
+            <p className="rounded-2xl bg-well p-4 font-semibold text-mint">
+              {text("შენი პირველი ლანჩ ბოქსი უკვე შენახულია ✓", "Your first bag is already saved ✓")}
             </p>
-          </div>
-        )}
+          ) : (
+            <>
+              <label className={labelClass}>
+                {text("ლანჩ ბოქსის სახელი", "Bag name")}
+                <input
+                  value={bag.title}
+                  onChange={(event) => updateBag("title", event.target.value)}
+                  maxLength={120}
+                  className={inputClass}
+                />
+              </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className={labelClass}>
+                  {text("კატეგორია", "Category")}
+                  <select
+                    value={bag.category}
+                    onChange={(event) => updateBag("category", event.target.value)}
+                    className={inputClass}
+                  >
+                    {OFFER_CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {getOfferCategoryLabel(category, language)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className={labelClass}>
+                  {text("ზომა", "Size")}
+                  <select
+                    value={bag.size}
+                    onChange={(event) => updateBag("size", event.target.value)}
+                    className={inputClass}
+                  >
+                    {BAG_SIZES.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className={labelClass}>
+                  {text("ფასი (₾)", "Price (₾)")}
+                  <input
+                    value={bag.price}
+                    onChange={(event) => updateBag("price", event.target.value)}
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    inputMode="decimal"
+                    className={inputClass}
+                  />
+                </label>
+                <label className={labelClass}>
+                  {text("ძველი ფასი (₾, არასავალდებულო)", "Old price (₾, optional)")}
+                  <input
+                    value={bag.oldPrice}
+                    onChange={(event) => updateBag("oldPrice", event.target.value)}
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    inputMode="decimal"
+                    className={inputClass}
+                  />
+                </label>
+                <label className={labelClass}>
+                  {text("ლანჩ ბოქსი დღეში", "Bags per day")}
+                  <input
+                    value={bag.dailyQuantity}
+                    onChange={(event) => updateBag("dailyQuantity", event.target.value)}
+                    type="number"
+                    min="1"
+                    max="500"
+                    inputMode="numeric"
+                    className={inputClass}
+                  />
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className={labelClass}>
+                    {text("წაღება: დან", "Pickup from")}
+                    <input
+                      value={bag.pickupStart}
+                      onChange={(event) => updateBag("pickupStart", event.target.value)}
+                      type="time"
+                      className={inputClass}
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    {text("მდე", "to")}
+                    <input
+                      value={bag.pickupEnd}
+                      onChange={(event) => updateBag("pickupEnd", event.target.value)}
+                      type="time"
+                      className={inputClass}
+                    />
+                  </label>
+                </div>
+              </div>
+            </>
+          ))}
       </div>
 
-      {draftMessage && (
-        <p className="ui-card mt-4 rounded-2xl px-4 py-3 text-sm font-semibold text-mint">
-          {draftMessage}
+      {error && (
+        <p role="alert" className="mt-4 text-sm font-semibold text-danger">
+          {error}
         </p>
       )}
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         <button
           type="button"
-          onClick={() => saveDraft(true)}
-          className="premium-button-secondary px-6 py-3"
+          onClick={() => {
+            setError("");
+            setStep(Math.max(step - 1, 1));
+          }}
+          disabled={step === 1 || submitting}
+          className="premium-button-secondary px-6 py-3 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isGeorgian ? "პროგრესის შენახვა" : "Save Progress"}
+          {text("უკან", "Back")}
         </button>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={() => goToStep(step - 1)}
-            disabled={step === 1}
-            className="ui-card min-h-12 rounded-full px-6 py-3 font-semibold text-body transition disabled:cursor-not-allowed disabled:text-muted"
-          >
-            {isGeorgian ? "უკან" : "Back"}
-          </button>
-
-          {step < steps.length ? (
-            <button
-              type="button"
-              onClick={() => goToStep(step + 1)}
-              className="premium-button px-6 py-3"
-            >
-              {isGeorgian ? "გაგრძელება" : "Continue"}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={submitApplication}
-              disabled={submitting || !accessReady || !canRegister}
-              className="premium-button px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitting
-                ? t("businessRegister.submitting")
-                : !accessReady
-                ? isGeorgian
-                  ? "წვდომა მოწმდება..."
-                  : "Checking access..."
-                : isGeorgian
-                ? "ბიზნესის გაგზავნა"
-                : "Submit Business"}
-            </button>
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={goNext}
+          disabled={submitting || (step === 2 && !phoneVerified)}
+          className="premium-button px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {submitting
+            ? text("იგზავნება...", "Sending...")
+            : step < steps.length
+              ? text("გაგრძელება", "Continue")
+              : text("განაცხადის გაგზავნა", "Send application")}
+        </button>
       </div>
     </div>
   );

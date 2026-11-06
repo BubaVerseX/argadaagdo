@@ -102,46 +102,47 @@ function Home() {
   const categoryLinks: string[] = [...OFFER_CATEGORIES];
   const homepageCopy = {
     heroTitle: isGeorgian
-      ? "გადაარჩინე კარგი საკვები თბილისის ადგილობრივი ბიზნესებიდან."
-      : "Rescue great food from local Tbilisi businesses.",
+      ? "გადაარჩინე კარგი საკვები თბილისში."
+      : "Rescue great food in Tbilisi.",
     heroSubtitle: isGeorgian
-      ? "არ გადააგდო აკავშირებს მომხმარებლებს კაფეებთან, საცხობებთან და რესტორნებთან, რომლებსაც დღის ბოლოს დარჩენილი კარგი საკვები აქვთ."
-      : "ArGadaagdo connects customers with cafes, bakeries and restaurants that have good food left at the end of the day.",
+      ? "დღის ბოლოს დარჩენილი საკვები, ფასდაკლებით."
+      : "End-of-day food from local shops, at a discount.",
     categoriesLabel: isGeorgian ? "პოპულარული კატეგორიები" : "Popular categories",
     browseToday: isGeorgian ? "აღმოჩენა" : "Discover",
-    listSurplus: isGeorgian ? "განათავსე ჭარბი საკვები" : "List your surplus",
     localLabel: isGeorgian ? "თბილისის პილოტი" : "Tbilisi pilot",
     discoverTitle: isGeorgian ? "აღმოაჩინე" : "Discover",
     discoverText: isGeorgian
-      ? "დაათვალიერე თბილისის ბიზნესების ლანჩ ბოქსები, სანამ გაქრება."
-      : "Spot Lunch Boxes from Tbilisi businesses before they're gone.",
+      ? "ლანჩ ბოქსები შენთან ახლოს."
+      : "Lunch Boxes near you.",
     reserveTitle: isGeorgian ? "დაჯავშნე" : "Reserve",
     reserveText: isGeorgian
-      ? "გადაიხადე უსაფრთხოდ ერთი შეხებით და მაშინვე მიიღე წაღების კოდი."
-      : "Pay securely in a tap and get your pickup code instantly.",
+      ? "გადაიხადე და მიიღე კოდი."
+      : "Pay and get your pickup code.",
     collectTitle: isGeorgian ? "წაიღე" : "Collect",
     collectText: isGeorgian
-      ? "ეწვიე მითითებულ დროს, აჩვენე კოდი და ისიამოვნე საკვებით."
-      : "Swing by during the pickup window, show your code, and dig in.",
+      ? "მოდი დროულად და აჩვენე კოდი."
+      : "Come on time and show your code.",
     howItWorksBadge: isGeorgian ? "როგორ მუშაობს" : "How it works",
     howItWorksTitle: isGeorgian
-      ? "სამი ნაბიჯი შენს შემდეგ საუკეთესო შეთავაზებამდე."
-      : "Three steps to your next great deal.",
+      ? "სამი მარტივი ნაბიჯი."
+      : "Three simple steps.",
     launchBadge: isGeorgian
       ? "🇬🇪 უკვე ხელმისაწვდომია თბილისში"
       : "🇬🇪 Now live in Tbilisi",
     heroAccentPhrase: isGeorgian ? "კარგი საკვები" : "great food",
     reserveLabel: isGeorgian ? "დაჯავშნე" : "Reserve",
-    statsBadge: isGeorgian ? "გავლენა" : "Our impact",
-    businessLearnMore: isGeorgian ? "გაიგე, როგორ მუშაობს" : "See how it works",
+    whyTitle: isGeorgian ? "რატომ არის ეს მნიშვნელოვანი" : "Why it matters",
+    missionLink: isGeorgian ? "ჩვენი მისია →" : "Our mission →",
+    missionLine: isGeorgian
+      ? "ერთი ლანჩ ბოქსი ≈1 კგ საკვებს გადაარჩენს (შიდა შეფასება)."
+      : "One bag rescues ≈1 kg of food (internal estimate).",
     finalCtaBadge: isGeorgian ? "მზად ხარ, როცა მოისურვებ" : "Ready when you are",
     finalCtaTitle: isGeorgian
-      ? "შენი შემდეგი გემრიელი კერძი უკვე გელოდება."
-      : "Your next great meal is already waiting.",
+      ? "შენი შემდეგი კერძი გელოდება."
+      : "Your next meal is waiting.",
     finalCtaText: isGeorgian
-      ? "იპოვე ლანჩ ბოქსები შენთან ახლოს, ან განათავსე ჭარბი საკვები და აქციე ის შემოსავლად."
-      : "Find Lunch Boxes near you, or list your surplus and turn it into revenue.",
-    finalCtaSecondary: isGeorgian ? "დაამატე შენი ბიზნესი" : "List your business",
+      ? "დაჯავშნე ლანჩ ბოქსი შენთან ახლოს."
+      : "Reserve a Lunch Box near you.",
   };
   const marqueeItems = isGeorgian
     ? [
@@ -156,23 +157,22 @@ function Home() {
         "Secure code-based reservations",
         "Fresh Lunch Boxes daily",
       ];
-  const stats = [
+  const whyStats = [
     {
-      label: isGeorgian ? "მხოლოდ ადგილზე წაღება" : "Pickup-only, always",
-      text: isGeorgian
-        ? "არანაირი მიწოდების შეფუთვა და ზედმეტი ემისია — მხოლოდ საკვები, რომელსაც გადაყრის ნაცვლად ჭამენ."
-        : "No delivery packaging, no extra emissions — just food that gets eaten instead of thrown away.",
+      value: isGeorgian ? "1.05 მლრდ ტონა" : "1.05 bn tonnes",
+      label: isGeorgian ? "გადაიყარა მსოფლიოში, 2022" : "wasted worldwide, 2022",
     },
     {
-      label: t("forBusinesses.commissionTitle"),
-      text: t("forBusinesses.commissionText"),
+      value: isGeorgian ? "101 კგ" : "101 kg",
+      label: isGeorgian
+        ? "ერთ ადამიანზე / წელიწადში საქართველოში, შინამეურნეობები"
+        : "per person / year in Georgia, households",
     },
     {
-      value: isGeorgian ? "თბილისი" : "Tbilisi",
-      label: isGeorgian ? "საიდანაც ვიწყებთ" : "Where we're starting",
-      text: isGeorgian
-        ? "ყველა ბიზნესი ხელით მოწმდება გამოქვეყნებამდე — ვიწყებთ ერთი ქალაქიდან, გააზრებულად."
-        : "Every business is reviewed by hand before going live — starting local, on purpose.",
+      value: isGeorgian ? "≈1 კგ" : "≈1 kg",
+      label: isGeorgian
+        ? "ერთი ლანჩ ბოქსი გადაარჩენს (შიდა შეფასება)"
+        : "rescued by one bag (internal estimate)",
     },
   ];
   const steps = [
@@ -190,20 +190,6 @@ function Home() {
       label: "03",
       title: homepageCopy.collectTitle,
       text: homepageCopy.collectText,
-    },
-  ];
-  const businessSolutions = [
-    {
-      title: t("forBusinesses.solutionListTitle"),
-      text: t("forBusinesses.solutionListText"),
-    },
-    {
-      title: t("forBusinesses.solutionReachTitle"),
-      text: t("forBusinesses.solutionReachText"),
-    },
-    {
-      title: t("forBusinesses.solutionRecoverTitle"),
-      text: t("forBusinesses.solutionRecoverText"),
     },
   ];
 
@@ -226,9 +212,8 @@ function Home() {
         heroAfter: heroTitleAfter,
       },
       categoryLinks,
-      stats,
+      whyStats,
       steps,
-      businessSolutions,
       marqueeItems,
     },
     offers,

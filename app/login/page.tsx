@@ -1,8 +1,9 @@
 "use client";
 
+import { businessLoginUrl, businessSiteUrl, isBusinessHostname } from "@/lib/businessArea";
+import { isNativeApp } from "@/lib/native";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { StoreIcon, UserIcon } from "@/components/icons";
 import {
   getProfileById,
   isEmailConfirmed,
@@ -160,7 +161,15 @@ export default function LoginPage() {
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("customer");
+  // No account-type choice: each area creates its own kind of account.
+  const isBusinessArea = useSyncExternalStore(
+    subscribeToRedirectChanges,
+    () =>
+      isBusinessHostname(window.location.hostname) ||
+      Boolean(readRedirectPath()?.startsWith("/business")),
+    () => false
+  );
+  const role: UserRole = isBusinessArea ? "business" : "customer";
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
@@ -321,6 +330,30 @@ export default function LoginPage() {
         : "customer");
 
     setSubmitting(false);
+
+    // Each area signs in its own kind of account. Sessions aren't shared
+    // between hosts, so the person signs in again on the right one.
+    if (isBusinessHostname(window.location.hostname) && resolvedRole === "customer") {
+      await supabase.auth.signOut({ scope: "local" });
+      setMessageTone("warning");
+      setMessage(
+        isGeorgian
+          ? "ეს მომხმარებლის ანგარიშია. შედი მთავარ საიტზე."
+          : "This is a customer account. Please sign in on the main site."
+      );
+      return;
+    }
+
+    if (
+      businessSiteUrl &&
+      !isBusinessHostname(window.location.hostname) &&
+      !isNativeApp() &&
+      resolvedRole === "business"
+    ) {
+      await supabase.auth.signOut({ scope: "local" });
+      window.location.assign(`${businessSiteUrl}/login`);
+      return;
+    }
 
     if (!profile) {
       setMessageTone("warning");
@@ -487,39 +520,38 @@ export default function LoginPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
-          <div className="premium-surface rounded-3xl p-6 sm:rounded-3xl sm:p-8 md:p-12">
-            <p className="premium-badge px-4 py-2">
-              {t("login.title")}
-            </p>
+          {isBusinessArea ? (
+            <div className="theme-forest rounded-3xl bg-brand-forest p-6 sm:p-8 md:p-12">
+              <p className="premium-badge px-4 py-2">{t("login.business")}</p>
 
-            <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
-              {t("login.signIn")} · ArGadaagdo
-            </h1>
+              <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
+                {t("login.businessTitle")}
+              </h1>
 
-            <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
-              {t("home.subtitle")}
-            </p>
+              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
+                {t("login.forBusinessesText")}
+              </p>
+            </div>
+          ) : (
+            <div className="premium-surface rounded-3xl p-6 sm:rounded-3xl sm:p-8 md:p-12">
+              <p className="premium-badge px-4 py-2">{t("login.title")}</p>
 
-            <div className="mt-8 grid gap-4">
-              <div className="premium-card rounded-3xl p-5">
+              <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
+                {t("login.signIn")} · ArGadaagdo
+              </h1>
+
+              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
+                {t("home.subtitle")}
+              </p>
+
+              <div className="premium-card mt-8 rounded-3xl p-5">
                 <h3 className="text-xl font-semibold text-cream">
                   {t("login.forCustomers")}
                 </h3>
-                <p className="mt-2 text-body">
-                  {t("login.forCustomersText")}
-                </p>
-              </div>
-
-              <div className="premium-card rounded-3xl p-5">
-                <h3 className="text-xl font-semibold text-cream">
-                  {t("login.forBusinesses")}
-                </h3>
-                <p className="mt-2 text-body">
-                  {t("login.forBusinessesText")}
-                </p>
+                <p className="mt-2 text-body">{t("login.forCustomersText")}</p>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:p-10">
             <h2 className="text-2xl font-semibold text-cream sm:text-3xl">
@@ -707,55 +739,6 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {authMode === "signup" && (
-                <div>
-                  <p className="mb-3 font-semibold text-cream">
-                    {t("login.accountType")}
-                  </p>
-                  <p className="mb-4 text-sm leading-6 text-body">
-                    {t("login.accountTypeHint")}
-                  </p>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <button
-                      type="button"
-                      onClick={() => setRole("customer")}
-                      className={`rounded-2xl p-4 text-left font-semibold transition focus:outline-none focus:ring-2 focus:ring-mint ${ role === "customer"
-                          ? "ui-well text-cream"
-                          : "ui-card text-body"
-                      }`}
-                    >
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-widest text-mint">
-                        <UserIcon className="h-3 w-3" strokeWidth={2} />
-                        {t("login.customer")}
-                      </div>
-                      <p className="mt-2">{t("login.customer")}</p>
-                      <p className="mt-1 text-sm leading-5 text-body">
-                        {t("login.customerHint")}
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setRole("business")}
-                      className={`rounded-2xl p-4 text-left font-semibold transition focus:outline-none focus:ring-2 focus:ring-mint ${ role === "business"
-                          ? "ui-well text-cream"
-                          : "ui-card text-body"
-                      }`}
-                    >
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-widest text-mint">
-                        <StoreIcon className="h-3 w-3" strokeWidth={2} />
-                        {t("login.business")}
-                      </div>
-                      <p className="mt-2">{t("login.business")}</p>
-                      <p className="mt-1 text-sm leading-5 text-body">
-                        {t("login.businessHint")}
-                      </p>
-                    </button>
-                  </div>
-                </div>
-              )}
-
               <button
                 type="button"
                 onClick={authMode === "login" ? signIn : createAccount}
@@ -809,6 +792,17 @@ export default function LoginPage() {
                 <Notice tone={messageTone}>
                   {translateUserMessage(message, language)}
                 </Notice>
+              )}
+
+              {!isBusinessArea && (
+                <p className="text-center text-sm">
+                  <a
+                    href={businessLoginUrl}
+                    className="inline-flex min-h-11 items-center text-body underline underline-offset-4 transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                  >
+                    {t("login.businessLink")}
+                  </a>
+                </p>
               )}
             </div>
           </div>

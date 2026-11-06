@@ -35,6 +35,7 @@ const translations = {
     "nav.support": "Support",
     "nav.contact": "Contact",
     "nav.about": "About",
+    "nav.mission": "Our mission",
     "nav.privacy": "Privacy",
     "nav.terms": "Terms",
     "nav.profile": "Profile",
@@ -92,7 +93,7 @@ const translations = {
     "home.title2": "Rescue food.",
     "home.title3": "Support local businesses.",
     "home.subtitle":
-      "Find discounted Lunch Boxes from verified local businesses in Tbilisi. Reserve online, collect in person, save money and help reduce food waste.",
+      "Discounted Lunch Boxes in Tbilisi.",
     "home.explore": "Discover",
     "home.joinBusiness": "For businesses",
     "home.pickupOnly": "pickup only",
@@ -150,7 +151,7 @@ const translations = {
     "home.missionTitle": "Why ArGadaagdo?",
     "home.missionIntro": "Every day, good food goes unsold.",
     "home.missionText":
-      "ArGadaagdo helps local businesses in Tbilisi reduce food waste by offering surplus food at discounted prices.",
+      "Less waste, lower prices.",
     "home.missionCustomer": "Customers save money.",
     "home.missionBusiness": "Businesses earn from unsold food.",
     "home.missionWaste": "Less food ends up in the trash.",
@@ -163,9 +164,9 @@ const translations = {
       "ArGadaagdo is launching carefully with verified local businesses in Tbilisi.",
     "home.registerBusiness": "Register your business",
     "home.customerCtaBadge": "For customers",
-    "home.customerCtaTitle": "Looking for great food at a great price?",
+    "home.customerCtaTitle": "Great food, great price",
     "home.customerCtaText":
-      "Save money, reduce food waste and support local businesses by reserving discounted Lunch Boxes.",
+      "Save money and cut waste.",
     "home.finalCtaTitle": "Ready to rescue food?",
     "home.finalCtaText": "Browse today's Lunch Boxes.",
 
@@ -177,7 +178,7 @@ const translations = {
 
     "offers.badge": "Live offers in Tbilisi",
     "offers.title": "Rescue Lunch Boxes near you.",
-    "offers.subtitle": "Search live rescue deals, reserve online, and pick up in store.",
+    "offers.subtitle": "Search, reserve, pick up in store.",
     "offers.filterHint":
       "Use search, categories and sorting to find the right pickup window.",
     "offers.search": "Search food, business, address...",
@@ -199,7 +200,7 @@ const translations = {
     "offers.checkBackSoon": "Check back again soon for fresh Lunch Boxes.",
     "offers.surpriseBagTitle": "What is a Lunch Box?",
     "offers.surpriseBagText":
-      "A Lunch Box is a box of good surplus food at a discount, in size S, M or L. The exact items may vary, but every offer shows the business, category, size, price and pickup window before you reserve.",
+      "Surplus food at a discount, in S, M or L. Contents vary.",
     "offers.clearFilters": "Clear filters",
     "offers.backHome": "Back to Home",
     "offers.addFavorite": "Add to favorites",
@@ -239,7 +240,7 @@ const translations = {
       "You can cancel up to 2 hours before pickup if your plans change.",
     "offerDetail.ratingReminderTitle": "After pickup",
     "offerDetail.ratingReminderText":
-      "Ratings become available after collection and help other customers choose trusted businesses.",
+      "You can rate after pickup.",
     "offerDetail.noReviewsHint":
       "Reviews will appear here after customers complete pickups and rate this business.",
     "offerDetail.notFound": "Offer could not be loaded.",
@@ -261,9 +262,9 @@ const translations = {
       "This profile helps customers understand who prepares the Lunch Boxes.",
     "businessProfile.pickupOnlyTitle": "Pickup-only offers",
     "businessProfile.pickupOnlyText":
-      "Customers reserve online and collect directly from the business during the pickup window.",
+      "Reserve online, collect in store.",
     "businessProfile.reviewsIntro":
-      "Reviews come from customers after completed pickups and help future customers choose with confidence.",
+      "Reviews from completed pickups.",
     "businessProfile.noActiveOffers": "No active Lunch Boxes right now.",
     "businessProfile.noActiveOffersHint":
       "Check back later for fresh food rescue offers from this business.",
@@ -298,7 +299,7 @@ const translations = {
     "orders.emptyHint": "Reserve a Lunch Box and it will appear here.",
     "orders.educationTitle": "How orders work",
     "orders.educationText":
-      "After you reserve a Lunch Box, it will appear here together with your pickup code and collection details.",
+      "Reserved boxes and pickup codes appear here.",
     "orders.pickupCode": "Pickup code",
     "orders.showCode": "Show this code at pickup.",
     "orders.cancelPolicy": "You can cancel up to 2 hours before pickup for a full refund.",
@@ -320,7 +321,7 @@ const translations = {
       "Remember to collect your order during the pickup window. Bring your pickup code.",
     "orders.pickupInstructionTitle": "At pickup",
     "orders.pickupInstructionText":
-      "Open this page, show the pickup code to the business, and collect your Lunch Box during the pickup window.",
+      "Show your code at pickup.",
     "orders.statusGuideReservedTitle": "Reserved",
     "orders.statusGuideReservedText":
       "Your pickup code is active. Visit the business during the pickup window.",
@@ -344,7 +345,7 @@ const translations = {
 
     "favorites.badge": "Saved offers",
     "favorites.title": "Your favorite Lunch Boxes.",
-    "favorites.subtitle": "Keep interesting offers in one place and come back when you are ready to reserve.",
+    "favorites.subtitle": "Your saved offers in one place.",
     "favorites.saved": "Saved",
     "favorites.loading": "Loading your favorites...",
     "favorites.emptyTitle": "No saved offers yet",
@@ -360,14 +361,14 @@ const translations = {
       "This saved offer may have ended, sold out, or become unavailable.",
 
     "businessDashboard.title": "Manage offers and pickups.",
-    "businessDashboard.subtitle": "Publish Lunch Boxes, track reservations, and verify pickup codes when customers arrive.",
+    "businessDashboard.subtitle": "Publish bags and hand over orders.",
     "businessDashboard.welcome": "Welcome back",
     "businessDashboard.welcomeText":
       "Manage your offers, reservations and customer feedback from one place.",
     "businessDashboard.businessOwner": "Business owner",
     "businessDashboard.stats": "Business stats",
     "businessDashboard.statsIntro":
-      "A quick view of visibility, reservations, completed pickups and customer satisfaction.",
+      "Reservations, pickups, ratings.",
     "businessDashboard.emptyAnalytics":
       "Statistics will appear as customers interact with your offers.",
     "businessDashboard.createOffer": "Create offer",
@@ -418,7 +419,7 @@ const translations = {
     "businessOnboarding.badge": "Pilot onboarding",
     "businessOnboarding.welcomeTitle": "Welcome to ArGadaagdo.",
     "businessOnboarding.welcomeText":
-      "Create your first Lunch Box and start receiving reservations from customers in Tbilisi.",
+      "Create your first Lunch Box.",
     "businessOnboarding.createFirstBag": "Create your first Lunch Box",
     "businessOnboarding.workflowBadge": "Business guide",
     "businessOnboarding.workflowTitle": "How ArGadaagdo works",
@@ -449,7 +450,7 @@ const translations = {
     "businessOnboarding.recommendedTitleValue": "Bakery Lunch Box",
     "businessOnboarding.realExamplesTitle": "Realistic offer examples",
     "businessOnboarding.realExamplesText":
-      "Try names like Bakery Lunch Box, Dairy Lunch Box, or Deli Lunch Box so customers quickly understand the offer.",
+      "For example: Bakery Lunch Box.",
     "businessOnboarding.titleHelper":
       "Title: use a clear customer-friendly name, for example Bakery Lunch Box.",
     "businessOnboarding.quantityHelper":
@@ -457,15 +458,15 @@ const translations = {
     "businessOnboarding.pickupWindowHelper":
       "Pickup window: when customers can collect. A clear 1-2 hour window works best.",
     "businessOnboarding.offerValidationHint":
-      "Before publishing, check the title, category, price, quantity, pickup date, pickup time and image.",
+      "Check the details before publishing.",
     "businessOnboarding.reservationGuidanceTitle": "How reservations work",
     "businessOnboarding.reservationGuidanceText":
-      "Customers receive a pickup code after reservation. Verify the code before handing over food.",
+      "Check the code before handing over food.",
     "businessOnboarding.reservationCardHint":
-      "Each reservation card shows the customer's email, status, pickup time and the action needed to verify collection.",
+      "Each card shows customer, status and time.",
     "businessOnboarding.pickupVerificationTitle": "Pickup verification",
     "businessOnboarding.pickupVerificationText":
-      "Ask the customer for their pickup code before completing collection. Use the reservation card button to verify the code and complete the pickup.",
+      "Ask for the code and confirm on the card.",
     "businessOnboarding.pickupStepAskCode": "Ask for the customer code",
     "businessOnboarding.pickupStepEnterCode": "Enter it in the verification modal",
     "businessOnboarding.pickupStepComplete": "Complete pickup only after it matches",
@@ -487,7 +488,7 @@ const translations = {
     "login.signInTitle": "Sign in to ArGadaagdo",
     "login.signInHint": "Enter your email and password to continue.",
     "login.signUpTitle": "Create your account",
-    "login.signUpHint": "Choose how you want to use ArGadaagdo.",
+    "login.signUpHint": "Enter your email and a password.",
     "login.signInModeHelper": "Existing account",
     "login.signUpModeHelper": "New account",
     "login.alreadyHaveAccount": "Already have an account?",
@@ -504,13 +505,14 @@ const translations = {
     "login.businessHint": "Create and manage offers.",
     "login.forCustomers": "For customers",
     "login.forCustomersText": "Reserve discounted Lunch Boxes and collect them in person.",
-    "login.forBusinesses": "For businesses",
+    "login.businessTitle": "Business sign in",
+    "login.businessLink": "Are you a business? Sign in here",
     "login.forBusinessesText": "Create pickup-only offers and manage customer reservations.",
 
     "businessRegister.badge": "For local businesses",
     "businessRegister.title": "Register your food business",
     "businessRegister.subtitle":
-      "Join ArGadaagdo and sell leftover food as Lunch Boxes to customers in Tbilisi. After admin approval, you can publish offers from your dashboard.",
+      "4 steps. Then we review it.",
     "businessRegister.step1": "1. Submit business",
     "businessRegister.step1Text": "Add your name, type, address and phone number.",
     "businessRegister.step2": "2. Wait for approval",
@@ -526,7 +528,7 @@ const translations = {
     "businessRegister.requiredPhone": "Phone number for admin follow-up",
     "businessRegister.expectationsTitle": "What happens next",
     "businessRegister.expectationsText":
-      "Applications are reviewed manually during the pilot. After approval, your dashboard will let you create Lunch Boxes and manage pickups.",
+      "We review each application by hand.",
     "businessRegister.name": "Business name",
     "businessRegister.address": "Address in Tbilisi",
     "businessRegister.phone": "Phone number",
@@ -537,38 +539,38 @@ const translations = {
     "forBusinesses.metaBadge": "For businesses",
     "forBusinesses.heroTitle": "Your unsold food still has value.",
     "forBusinesses.heroSubtitle":
-      "List your surplus in minutes, reach new customers looking for a deal, and turn food that would go in the bin into revenue instead.",
+      "Sell your surplus food as bags.",
     "forBusinesses.heroCtaRegister": "Register your business",
     "forBusinesses.heroCtaContact": "Talk to us first",
     "forBusinesses.problemBadge": "The problem",
-    "forBusinesses.problemTitle": "Every closing time, good food gets thrown out.",
+    "forBusinesses.problemTitle": "Good food gets thrown out",
     "forBusinesses.problemText":
-      "Bakeries bake a little too much. Cafes over-prep. Restaurants end up with plates that never got ordered. At the end of the day it's usually binned, even though customers would happily pay for it at the right price.",
+      "End-of-day food often goes in the bin.",
     "forBusinesses.solutionBadge": "The solution",
     "forBusinesses.solutionTitle": "List it. Sell it.",
     "forBusinesses.solutionListTitle": "List in a minute",
     "forBusinesses.solutionListText":
-      "Set a price, a quantity and a pickup window from your dashboard. No photo studio and no long descriptions required.",
+      "Price, quantity, pickup time. That's it.",
     "forBusinesses.solutionReachTitle": "Reach new customers",
     "forBusinesses.solutionReachText":
-      "Lunch Boxes put your business in front of people actively looking for a deal nearby, many of whom have never walked through your door.",
+      "Reach new customers nearby.",
     "forBusinesses.solutionRecoverTitle": "Recover real revenue",
     "forBusinesses.solutionRecoverText":
-      "Instead of writing off unsold food as a pure loss, turn it into paid orders, reserved and paid for before the customer even arrives.",
+      "Prepaid orders instead of written-off food.",
     "forBusinesses.howBadge": "How it works",
-    "forBusinesses.howTitle": "From surplus to sold, in four steps",
+    "forBusinesses.howTitle": "From surplus to sold",
     "forBusinesses.howStep1Title": "Register your business",
     "forBusinesses.howStep1Text":
-      "Tell us who you are and where customers can pick up. Every business is reviewed before going live.",
+      "Your company and pickup location.",
     "forBusinesses.howStep2Title": "Publish a Lunch Box",
     "forBusinesses.howStep2Text":
-      "Add a price, a quantity and a pickup window whenever you have surplus, that morning, that afternoon, whenever it happens.",
+      "Price, quantity, pickup time.",
     "forBusinesses.howStep3Title": "Get reserved and paid",
     "forBusinesses.howStep3Text":
       "Customers pay online the moment they reserve. It lands in your dashboard immediately.",
     "forBusinesses.howStep4Title": "Hand it over",
     "forBusinesses.howStep4Text":
-      "The customer shows their pickup code, you confirm it in the dashboard, and you're done.",
+      "The customer shows a code; you confirm.",
     "forBusinesses.commissionBadge": "Pricing, in plain terms",
     "forBusinesses.commissionTitle": "No monthly fee.",
     "forBusinesses.commissionText": "You pay a commission only on boxes you sell.",
@@ -584,7 +586,7 @@ const translations = {
 
     "checkout.title": "Reservation confirmation",
     "checkout.subtitle":
-      "Review your order and complete secure online payment before pickup.",
+      "Review and pay.",
     "checkout.summary": "Reservation summary",
     "checkout.stepReservationTitle": "Reservation",
     "checkout.stepReservationText":
@@ -611,10 +613,10 @@ const translations = {
       "Online card payment via TBC Bank.",
     "checkout.paymentPreparationTitle": "Secure payment",
     "checkout.paymentPreparationText":
-      "You will be redirected to TBC Bank checkout. ArGadaagdo confirms the reservation only after payment succeeds.",
+      "You'll pay on TBC's page. Your reservation is confirmed after payment.",
     "checkout.futurePaymentTitle": "Payment safety",
     "checkout.futurePaymentText":
-      "If payment fails, is cancelled, or expires, the held quantity is released automatically.",
+      "If payment fails, the hold is released automatically.",
     "checkout.receiptTitle": "Receipt preview",
     "checkout.reservationIdAfterConfirmation":
       "Reservation ID appears after confirmation.",
@@ -653,12 +655,12 @@ const translations = {
     "faq.badge": "Trust center",
     "faq.title": "Questions about ArGadaagdo",
     "faq.subtitle":
-      "Clear answers for customers and businesses before using the food rescue marketplace.",
+      "Short answers.",
     "faq.trustLabel": "Reviewed businesses",
     "faq.trustText":
-      "Businesses are reviewed before approval so customers can reserve with more confidence.",
+      "We review businesses before approval.",
     "faq.pickupText":
-      "Every confirmed reservation creates a pickup code that customers show at the business.",
+      "Every reservation has a pickup code.",
     "faq.ratingText":
       "Customers can rate completed pickups, helping future customers choose confidently.",
     "faq.customers": "For customers",
@@ -684,7 +686,7 @@ const translations = {
       "After a completed pickup, customers can rate the business and optionally leave a review. Ratings help other customers discover reliable places.",
     "faq.business.join.question": "How do I join ArGadaagdo?",
     "faq.business.join.answer":
-      "Create an account, choose Business during signup, then submit your business details from the business registration page.",
+      "Open \"For businesses\" at the bottom of the site, create a business account and complete the 4 registration steps.",
     "faq.business.approval.question": "How does approval work?",
     "faq.business.approval.answer":
       "An admin reviews submitted businesses before they can publish offers. This keeps the marketplace safer and more trustworthy.",
@@ -702,25 +704,25 @@ const translations = {
       "ArGadaagdo exists to help businesses recover value from unsold food, help customers save money, and reduce food waste in Georgia.",
     "faq.ctaTitle": "Ready to try ArGadaagdo?",
     "faq.ctaText":
-      "Browse current offers as a customer or register your food business to start publishing Lunch Boxes.",
+      "Browse today's offers.",
 
     "contact.badge": "Contact & support",
     "contact.title": "Contact us",
     "contact.subtitle":
-      "Questions about an order? Need help with a reservation? Interested in joining as a business? We're happy to help.",
+      "Have a question? Write to us.",
     "contact.ordersTitle": "Questions about an order?",
     "contact.ordersText":
-      "Tell us what happened and include your order details so support can understand the issue quickly.",
+      "Tell us what happened and your order details.",
     "contact.reservationsTitle": "Need help with a reservation?",
     "contact.reservationsText":
       "We can help with pickup questions, cancellations and account access.",
     "contact.businessTitle": "Interested in joining as a business?",
     "contact.businessText":
-      "Local food businesses can contact us to learn how ArGadaagdo helps reduce waste and sell surplus food.",
+      "Run a food business? We'd love to hear from you.",
     "contact.supportEmailLabel": "Support email",
     "contact.emailTitle": "Reach ArGadaagdo support",
     "contact.emailText":
-      "For order, account, reservation, or business questions, email us and we will review your request.",
+      "Email us about anything.",
     "contact.businessInquiriesLabel": "Business inquiries",
     "contact.businessInquiriesTitle": "Reduce waste and sell surplus food",
     "contact.businessInquiriesText":
@@ -740,15 +742,15 @@ const translations = {
     "about.badge": "About ArGadaagdo",
     "about.title": "Reducing food waste in Georgia.",
     "about.subtitle":
-      "ArGadaagdo is a Georgian food rescue marketplace helping local businesses sell surplus food and helping customers discover discounted Lunch Boxes.",
+      "A Georgian marketplace for rescuing food.",
     "about.whatLabel": "What is ArGadaagdo?",
     "about.whatTitle": "A food rescue marketplace",
     "about.whatText":
-      "ArGadaagdo helps reduce food waste by connecting customers with local businesses that have surplus food available at discounted prices.",
+      "We connect you with shops that have food left over.",
     "about.launchAreaLabel": "Current launch area",
     "about.launchAreaTitle": "Tbilisi, Georgia",
     "about.launchAreaText":
-      "The first launch area is Tbilisi. The product is pickup-only while the marketplace grows carefully with local pilot businesses.",
+      "Starting in Tbilisi, pickup only.",
     "about.missionLabel": "Mission",
     "about.missionTitle": "Simple goals, real impact",
     "about.missionSaveFood": "Save food.",
@@ -756,15 +758,18 @@ const translations = {
     "about.missionSupportLocal": "Support local businesses.",
     "about.ctaTitle": "Join the food rescue movement",
     "about.ctaText":
-      "Browse current offers or contact ArGadaagdo if you want to learn more about the platform.",
+      "Discover offers or contact us.",
 
     "privacy.badge": "Privacy",
     "privacy.title": "Privacy Policy",
     "privacy.subtitle":
-      "How ArGadaagdo collects, uses, shares and deletes your information. Last updated: 26 October 2026.",
+      "How ArGadaagdo collects, uses, shares and deletes your information. Last updated: 5 November 2026.",
     "privacy.infoTitle": "What information we collect",
     "privacy.infoText":
       "Account: your email address and password (stored only as a secure hash by our sign-in provider). Profile details you choose to add: display name and phone number. Activity: reservations, pickup codes, order and payment status, cancellations, pickups and no-shows, favorites, and ratings and review comments. Businesses: business name, type, address, phone, offer details and offer photos, and the bank account (IBAN) used for payouts, which businesses give us directly. Support: the messages you send us. We don't access your location or contacts, we only receive photos that a business chooses to upload for its offers, and we use no advertising or analytics trackers.",
+    "privacy.verificationTitle": "Phone and business verification",
+    "privacy.verificationText":
+      "Customers: we require a mobile number, confirmed by an SMS code, before your first order, and one number can be used on one account only. The number and code are sent to our SMS provider, ubill.ge, only to deliver the code. Businesses: before approval we also collect the company's legal name, identification code and legal form, the owner's full name, a phone number confirmed by SMS, a TBC IBAN, and an extract from the Public Registry. The extract is kept in private storage that only our admins can read, and is used only to check the application. When you delete your account, your phone number, the owner's name and the extract are deleted; the company's legal name, identification code and IBAN are kept for payout records.",
     "privacy.accountTitle": "How we use it",
     "privacy.accountText":
       "To create and secure your account, show offers, take reservations and payments, let businesses verify pickups, send emails about your reservations (confirmations, pickup reminders, cancellations and refunds), keep the marketplace fair (for example a reliability score based on pickups, cancellations and no-shows), and answer support requests. We don't sell your information, show ads or track you across other apps and websites.",
@@ -822,7 +827,7 @@ const translations = {
     "offline.badge": "No connection",
     "offline.title": "You're offline",
     "offline.text":
-      "Looks like you've lost your internet connection. Pages you've already visited may still work — otherwise, reconnect and try again.",
+      "No internet. Reconnect and try again.",
     "offline.retry": "Try again",
     "offline.home": "Go to homepage",
 
@@ -845,6 +850,7 @@ const translations = {
     "nav.support": "მხარდაჭერა",
     "nav.contact": "კონტაქტი",
     "nav.about": "ჩვენ შესახებ",
+    "nav.mission": "ჩვენი მისია",
     "nav.privacy": "კონფიდენციალურობა",
     "nav.terms": "წესები",
     "nav.profile": "პროფილი",
@@ -902,7 +908,7 @@ const translations = {
     "home.title2": "გადაარჩინე საკვები.",
     "home.title3": "მხარი დაუჭირე ადგილობრივ ბიზნესებს.",
     "home.subtitle":
-      "იპოვე ფასდაკლებული ლანჩ ბოქსები თბილისის დადასტურებული ადგილობრივი ბიზნესებიდან. დაჯავშნე ონლაინ, წაიღე ადგილზე, დაზოგე თანხა და შეამცირე საკვების ნარჩენი.",
+      "ლანჩ ბოქსები ფასდაკლებით, თბილისში.",
     "home.explore": "აღმოჩენა",
     "home.joinBusiness": "ბიზნესებისთვის",
     "home.pickupOnly": "მხოლოდ წაღება",
@@ -960,7 +966,7 @@ const translations = {
     "home.missionTitle": "რატომ არ გადააგდო?",
     "home.missionIntro": "ყოველდღე კარგი საკვები გაუყიდავი რჩება.",
     "home.missionText":
-      "არ გადააგდო ეხმარება ადგილობრივ ბიზნესებს თბილისში, შეამცირონ საკვების ნარჩენი და შესთავაზონ დარჩენილი საკვები ფასდაკლებით.",
+      "ნაკლები ნარჩენი, დაბალი ფასი.",
     "home.missionCustomer": "მომხმარებლები ზოგავენ თანხას.",
     "home.missionBusiness": "ბიზნესები იღებენ შემოსავალს გაუყიდავი საკვებიდან.",
     "home.missionWaste": "ნაკლები საკვები ხვდება ნაგავში.",
@@ -973,9 +979,9 @@ const translations = {
       "არ გადააგდო ფრთხილად ეშვება დადასტურებულ ადგილობრივ ბიზნესებთან თბილისში.",
     "home.registerBusiness": "დაარეგისტრირე ბიზნესი",
     "home.customerCtaBadge": "მომხმარებლებისთვის",
-    "home.customerCtaTitle": "ეძებ კარგ საკვებს კარგ ფასად?",
+    "home.customerCtaTitle": "კარგი საკვები, კარგ ფასად",
     "home.customerCtaText":
-      "დაზოგე თანხა, შეამცირე საკვების ნარჩენი და მხარი დაუჭირე ადგილობრივ ბიზნესებს ფასდაკლებული ლანჩ ბოქსებით.",
+      "დაზოგე და შეამცირე ნარჩენი.",
     "home.finalCtaTitle": "მზად ხარ საკვების გადასარჩენად?",
     "home.finalCtaText": "დაათვალიერე დღევანდელი ლანჩ ბოქსები.",
 
@@ -987,7 +993,7 @@ const translations = {
 
     "offers.badge": "ცოცხალი შეთავაზებები თბილისში",
     "offers.title": "ლანჩ ბოქსები შენთან ახლოს.",
-    "offers.subtitle": "მოძებნე ცოცხალი შეთავაზებები, დაჯავშნე ონლაინ და წაიღე ადგილზე.",
+    "offers.subtitle": "მოძებნე, დაჯავშნე, წაიღე ადგილზე.",
     "offers.search": "მოძებნე საკვები, ბიზნესი, მისამართი...",
     "offers.reset": "გასუფთავება",
     "offers.allCategories": "ყველა კატეგორია",
@@ -1009,7 +1015,7 @@ const translations = {
     "offers.checkBackSoon": "ახალი ლანჩ ბოქსებისთვის მალე ისევ შეამოწმე.",
     "offers.surpriseBagTitle": "რა არის ლანჩ ბოქსი?",
     "offers.surpriseBagText":
-      "ლანჩ ბოქსი არის დღის ბოლოს დარჩენილი ხარისხიანი პროდუქტი ფასდაკლებით — S, M ან L ზომის. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ დაჯავშნამდე ყოველთვის ხედავ ბიზნესს, კატეგორიას, ზომას, ფასსა და წაღების დროს.",
+      "დარჩენილი საკვები ფასდაკლებით, S, M ან L. შემადგენლობა იცვლება.",
     "offers.clearFilters": "ფილტრების გასუფთავება",
     "offers.backHome": "მთავარზე დაბრუნება",
     "offers.addFavorite": "რჩეულებში დამატება",
@@ -1049,7 +1055,7 @@ const translations = {
       "თუ გეგმები შეგეცვლება, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე.",
     "offerDetail.ratingReminderTitle": "წაღების შემდეგ",
     "offerDetail.ratingReminderText":
-      "შეფასება ხელმისაწვდომი გახდება წაღების შემდეგ და სხვა მომხმარებლებს სანდო ბიზნესების არჩევაში ეხმარება.",
+      "შეფასება წაღების შემდეგ შეგეძლება.",
     "offerDetail.noReviewsHint":
       "შეფასებები აქ გამოჩნდება მას შემდეგ, რაც მომხმარებლები წაღებას დაასრულებენ და ბიზნესს შეაფასებენ.",
     "offerDetail.notFound": "შეთავაზება ვერ ჩაიტვირთა.",
@@ -1071,9 +1077,9 @@ const translations = {
       "ეს პროფილი მომხმარებლებს ეხმარება გაიგონ, ვინ ამზადებს ლანჩ ბოქსებს.",
     "businessProfile.pickupOnlyTitle": "მხოლოდ ადგილზე წაღება",
     "businessProfile.pickupOnlyText":
-      "მომხმარებლები ონლაინ ჯავშნიან და შეკვეთას ბიზნესიდან მითითებულ დროს იღებენ.",
+      "დაჯავშნე ონლაინ, წაიღე ადგილზე.",
     "businessProfile.reviewsIntro":
-      "შეფასებები მოდის დასრულებული წაღებების შემდეგ და მომავალ მომხმარებლებს ნდობით არჩევაში ეხმარება.",
+      "შეფასებები დასრულებული წაღებების შემდეგ.",
     "businessProfile.noActiveOffers": "ახლა აქტიური ლანჩ ბოქსები არ არის.",
     "businessProfile.noActiveOffersHint":
       "ამ ბიზნესის ახალი საკვების გადარჩენის შეთავაზებებისთვის მოგვიანებით შეამოწმე.",
@@ -1108,7 +1114,7 @@ const translations = {
     "orders.emptyHint": "დაჯავშნე ლანჩ ბოქსი და ის აქ გამოჩნდება.",
     "orders.educationTitle": "როგორ მუშაობს შეკვეთები",
     "orders.educationText":
-      "როცა ლანჩ ბოქსს დაჯავშნი, ის აქ გამოჩნდება წაღების კოდთან და შეკვეთის დეტალებთან ერთად.",
+      "დაჯავშნილი ლანჩ ბოქსები და კოდები აქ გამოჩნდება.",
     "orders.pickupCode": "წაღების კოდი",
     "orders.showCode": "აჩვენე ეს კოდი ადგილზე.",
     "orders.cancelPolicy": "გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე სრული დაბრუნებით.",
@@ -1130,7 +1136,7 @@ const translations = {
       "არ დაგავიწყდეს შეკვეთის წაღება მითითებულ დროს. თან გქონდეს წაღების კოდი.",
     "orders.pickupInstructionTitle": "წაღებისას",
     "orders.pickupInstructionText":
-      "გახსენი ეს გვერდი, აჩვენე წაღების კოდი ბიზნესს და აიღე ლანჩ ბოქსი მითითებულ დროს.",
+      "წაღებისას ბიზნესს აჩვენე კოდი.",
     "orders.statusGuideReservedTitle": "დაჯავშნილი",
     "orders.statusGuideReservedText":
       "შენი წაღების კოდი აქტიურია. ეწვიე ბიზნესს მითითებულ წაღების დროს.",
@@ -1154,7 +1160,7 @@ const translations = {
 
     "favorites.badge": "შენახული შეთავაზებები",
     "favorites.title": "შენი რჩეული ლანჩ ბოქსები.",
-    "favorites.subtitle": "შეინახე საინტერესო შეთავაზებები და დაუბრუნდი, როცა დაჯავშნას გადაწყვეტ.",
+    "favorites.subtitle": "შენი საყვარელი შეთავაზებები ერთად.",
     "favorites.saved": "შენახული",
     "favorites.loading": "რჩეულები იტვირთება...",
     "favorites.emptyTitle": "შენახული შეთავაზებები ჯერ არ არის",
@@ -1170,14 +1176,14 @@ const translations = {
       "ეს შენახული შეთავაზება შეიძლება დასრულდა, გაიყიდა ან აღარ არის ხელმისაწვდომი.",
 
     "businessDashboard.title": "მართე შეთავაზებები და წაღებები.",
-    "businessDashboard.subtitle": "გამოაქვეყნე ლანჩ ბოქსები, აკონტროლე ჯავშნები და გადაამოწმე წაღების კოდები.",
+    "businessDashboard.subtitle": "გამოაქვეყნე ლანჩ ბოქსები და გაეცი შეკვეთები.",
     "businessDashboard.welcome": "კეთილი დაბრუნება",
     "businessDashboard.welcomeText":
       "მართე შეთავაზებები, ჯავშნები და მომხმარებლის გამოხმაურება ერთ ადგილას.",
     "businessDashboard.businessOwner": "ბიზნესის მფლობელო",
     "businessDashboard.stats": "ბიზნეს სტატისტიკა",
     "businessDashboard.statsIntro":
-      "სწრაფი მიმოხილვა: ხილვადობა, ჯავშნები, დასრულებული წაღებები და მომხმარებლის კმაყოფილება.",
+      "ჯავშნები, წაღებები, შეფასებები.",
     "businessDashboard.emptyAnalytics":
       "სტატისტიკა გამოჩნდება, როცა მომხმარებლები შენს შეთავაზებებთან ურთიერთობას დაიწყებენ.",
     "businessDashboard.createOffer": "შეთავაზების შექმნა",
@@ -1226,7 +1232,7 @@ const translations = {
     "businessOnboarding.badge": "საპილოტე ონბორდინგი",
     "businessOnboarding.welcomeTitle": "კეთილი იყოს შენი მობრძანება არ გადააგდოში.",
     "businessOnboarding.welcomeText":
-      "შექმენი პირველი ლანჩ ბოქსი და დაიწყე ჯავშნების მიღება თბილისის მომხმარებლებისგან.",
+      "შექმენი პირველი ლანჩ ბოქსი.",
     "businessOnboarding.createFirstBag": "პირველი ლანჩ ბოქსის შექმნა",
     "businessOnboarding.workflowBadge": "ბიზნეს გზამკვლევი",
     "businessOnboarding.workflowTitle": "როგორ მუშაობს არ გადააგდო",
@@ -1257,7 +1263,7 @@ const translations = {
     "businessOnboarding.recommendedTitleValue": "საცხობის ლანჩ ბოქსი",
     "businessOnboarding.realExamplesTitle": "რეალისტური შეთავაზებების მაგალითები",
     "businessOnboarding.realExamplesText":
-      "გამოიყენე სახელები, როგორიცაა საცხობის ლანჩ ბოქსი, რძის ნაწარმის ლანჩ ბოქსი ან კულინარიის ლანჩ ბოქსი, რომ მომხმარებელმა შეთავაზება სწრაფად გაიგოს.",
+      "მაგალითად: საცხობის ლანჩ ბოქსი.",
     "businessOnboarding.titleHelper":
       "სათაური: გამოიყენე მკაფიო სახელი, მაგალითად საცხობის ლანჩ ბოქსი.",
     "businessOnboarding.quantityHelper":
@@ -1265,15 +1271,15 @@ const translations = {
     "businessOnboarding.pickupWindowHelper":
       "წაღების დრო: როდის შეუძლიათ მომხმარებლებს შეკვეთის წაღება. საუკეთესოა მკაფიო 1-2 საათიანი ვადა.",
     "businessOnboarding.offerValidationHint":
-      "გამოქვეყნებამდე გადაამოწმე სათაური, კატეგორია, ფასი, რაოდენობა, წაღების თარიღი, დრო და სურათი.",
+      "გამოქვეყნებამდე გადაამოწმე დეტალები.",
     "businessOnboarding.reservationGuidanceTitle": "როგორ მუშაობს ჯავშნები",
     "businessOnboarding.reservationGuidanceText":
-      "ჯავშნის შემდეგ მომხმარებელი იღებს წაღების კოდს. საკვების გადაცემამდე კოდი გადაამოწმე.",
+      "საკვების გადაცემამდე გადაამოწმე კოდი.",
     "businessOnboarding.reservationCardHint":
-      "ყოველი ჯავშნის ბარათი აჩვენებს მომხმარებლის ელფოსტას, სტატუსს, წაღების დროს და გადაცემის დასადასტურებელ მოქმედებას.",
+      "ბარათზე ჩანს კლიენტი, სტატუსი და დრო.",
     "businessOnboarding.pickupVerificationTitle": "წაღების შემოწმება",
     "businessOnboarding.pickupVerificationText":
-      "წაღების დასრულებამდე მომხმარებელს ჰკითხე წაღების კოდი. კოდის შესამოწმებლად და წაღების დასასრულებლად გამოიყენე ჯავშნის ბარათის ღილაკი.",
+      "ჰკითხე კოდი და დაადასტურე ბარათიდან.",
     "businessOnboarding.pickupStepAskCode": "ჰკითხე მომხმარებელს კოდი",
     "businessOnboarding.pickupStepEnterCode": "შეიყვანე კოდი შემოწმების ფანჯარაში",
     "businessOnboarding.pickupStepComplete": "დაასრულე წაღება მხოლოდ დამთხვევის შემდეგ",
@@ -1295,7 +1301,7 @@ const translations = {
     "login.signInTitle": "შედი არ გადააგდოში",
     "login.signInHint": "გასაგრძელებლად შეიყვანე ელფოსტა და პაროლი.",
     "login.signUpTitle": "შექმენი ანგარიში",
-    "login.signUpHint": "აირჩიე, როგორ გამოიყენებ არ გადააგდოს.",
+    "login.signUpHint": "შეიყვანე ელფოსტა და პაროლი.",
     "login.signInModeHelper": "არსებული ანგარიში",
     "login.signUpModeHelper": "ახალი ანგარიში",
     "login.alreadyHaveAccount": "უკვე გაქვს ანგარიში?",
@@ -1314,13 +1320,14 @@ const translations = {
     "login.businessHint": "შექმენი და მართე შეთავაზებები.",
     "login.forCustomers": "მომხმარებლებისთვის",
     "login.forCustomersText": "დაჯავშნე ფასდაკლებული ლანჩ ბოქსები და წაიღე ადგილზე.",
-    "login.forBusinesses": "ბიზნესებისთვის",
+    "login.businessTitle": "ბიზნესის შესვლა",
+    "login.businessLink": "ბიზნესი ხარ? შედი აქ",
     "login.forBusinessesText": "შექმენი ადგილზე წასაღები შეთავაზებები და მართე მომხმარებლის ჯავშნები.",
 
     "businessRegister.badge": "ადგილობრივი ბიზნესებისთვის",
     "businessRegister.title": "დაარეგისტრირე შენი კვების ბიზნესი",
     "businessRegister.subtitle":
-      "შემოუერთდი არ გადააგდოს და გაყიდე დარჩენილი საკვები ლანჩ ბოქსებად თბილისში. ადმინის დამტკიცების შემდეგ შეთავაზებებს პანელიდან გამოაქვეყნებ.",
+      "4 ნაბიჯი. შემდეგ ჩვენ ვამოწმებთ.",
     "businessRegister.step1": "1. გაგზავნე ბიზნესი",
     "businessRegister.step1Text": "დაამატე სახელი, ტიპი, მისამართი და ტელეფონი.",
     "businessRegister.step2": "2. დაელოდე დამტკიცებას",
@@ -1336,7 +1343,7 @@ const translations = {
     "businessRegister.requiredPhone": "ტელეფონის ნომერი ადმინთან კომუნიკაციისთვის",
     "businessRegister.expectationsTitle": "რა ხდება შემდეგ",
     "businessRegister.expectationsText":
-      "პილოტის პერიოდში განაცხადებს ხელით ვამოწმებთ. დამტკიცების შემდეგ პანელიდან ლანჩ ბოქსებს შექმნი და წაღებებს მართავ.",
+      "განაცხადს ხელით ვამოწმებთ.",
     "businessRegister.name": "ბიზნესის სახელი",
     "businessRegister.address": "მისამართი თბილისში",
     "businessRegister.phone": "ტელეფონის ნომერი",
@@ -1347,38 +1354,38 @@ const translations = {
     "forBusinesses.metaBadge": "ბიზნესებისთვის",
     "forBusinesses.heroTitle": "შენს გაუყიდავ საკვებს ჯერ კიდევ აქვს ღირებულება.",
     "forBusinesses.heroSubtitle":
-      "დაარეგისტრირე ჭარბი საკვები რამდენიმე წუთში, მიაღწიე ახალ მომხმარებლებს და გაუყიდავი საკვები დამატებით შემოსავლად აქციე.",
+      "გაყიდე დარჩენილი საკვები ლანჩ ბოქსებად.",
     "forBusinesses.heroCtaRegister": "დაარეგისტრირე ბიზნესი",
     "forBusinesses.heroCtaContact": "ჯერ დაგვიკავშირდი",
     "forBusinesses.problemBadge": "პრობლემა",
-    "forBusinesses.problemTitle": "ყოველ დახურვის დროს კარგი საკვები იყრება.",
+    "forBusinesses.problemTitle": "კარგი საკვები იყრება",
     "forBusinesses.problemText":
-      "საცხობები ცოტათი მეტს აცხობენ, კაფეები ჭარბად ამზადებენ, რესტორნებში კერძები შეკვეთის გარეშე რჩება. დღის ბოლოს ეს ჩვეულებრივ იყრება, მაშინ როცა მომხმარებლები სიამოვნებით გადაიხდიდნენ სწორ ფასად.",
+      "დღის ბოლოს დარჩენილი საკვები ხშირად იყრება.",
     "forBusinesses.solutionBadge": "გამოსავალი",
     "forBusinesses.solutionTitle": "დაარეგისტრირე, გაყიდე.",
     "forBusinesses.solutionListTitle": "დარეგისტრირდი წუთში",
     "forBusinesses.solutionListText":
-      "დააყენე ფასი, რაოდენობა და წაღების დრო პანელიდან. არც ფოტოსტუდია გჭირდება და არც გრძელი აღწერა.",
+      "ფასი, რაოდენობა, წაღების დრო. სულ ესაა.",
     "forBusinesses.solutionReachTitle": "მიაღწიე ახალ მომხმარებლებს",
     "forBusinesses.solutionReachText":
-      "ლანჩ ბოქსები შენს ბიზნესს უჩვენებს ადამიანებს, რომლებიც ახლომახლო ფასდაკლებას ეძებენ, ბევრი მათგანი აქამდე შენთან არასდროს ყოფილა.",
+      "გაგიცნობენ ახლომახლო მომხმარებლები.",
     "forBusinesses.solutionRecoverTitle": "დაიბრუნე რეალური შემოსავალი",
     "forBusinesses.solutionRecoverText":
-      "გაუყიდავი საკვების დანაკარგად ჩამოწერის ნაცვლად, გადააქციე ის გადახდილ შეკვეთად, რომელიც მომხმარებლის მისვლამდეა დაჯავშნილი და გადახდილი.",
+      "დანაკარგის ნაცვლად, წინასწარ გადახდილი შეკვეთები.",
     "forBusinesses.howBadge": "როგორ მუშაობს",
-    "forBusinesses.howTitle": "ჭარბი საკვებიდან გაყიდვამდე, ოთხ ნაბიჯში",
+    "forBusinesses.howTitle": "ჭარბი საკვებიდან გაყიდვამდე",
     "forBusinesses.howStep1Title": "დაარეგისტრირე ბიზნესი",
     "forBusinesses.howStep1Text":
-      "მოგვიყევი შენ შესახებ და სად შეძლებენ მომხმარებლები წაღებას. ყველა ბიზნესი მოწმდება გამოქვეყნებამდე.",
+      "შენი კომპანია და წაღების ადგილი.",
     "forBusinesses.howStep2Title": "გამოაქვეყნე ლანჩ ბოქსი",
     "forBusinesses.howStep2Text":
-      "დაამატე ფასი, რაოდენობა და წაღების დრო, როცა ჭარბი საკვები გაქვს — დილით, საღამოს, ნებისმიერ დროს.",
+      "ფასი, რაოდენობა, წაღების დრო.",
     "forBusinesses.howStep3Title": "მიიღე ჯავშანი და გადახდა",
     "forBusinesses.howStep3Text":
       "მომხმარებლები ონლაინ იხდიან ჯავშნისთანავე. ეს პანელში დაუყოვნებლივ გამოჩნდება.",
     "forBusinesses.howStep4Title": "გადაეცი შეკვეთა",
     "forBusinesses.howStep4Text":
-      "მომხმარებელი გიჩვენებს წაღების კოდს, შენ ადასტურებ პანელში და საქმე დასრულებულია.",
+      "კლიენტი აჩვენებს კოდს, შენ ადასტურებ.",
     "forBusinesses.commissionBadge": "ფასები, მარტივად",
     "forBusinesses.commissionTitle": "ყოველთვიური გადასახადის გარეშე.",
     "forBusinesses.commissionText": "საკომისიოს იხდი მხოლოდ გაყიდულ ლანჩ ბოქსზე.",
@@ -1394,7 +1401,7 @@ const translations = {
 
     "checkout.title": "ჯავშნის დადასტურება",
     "checkout.subtitle":
-      "გადაამოწმე შეკვეთა და წაღებამდე უსაფრთხო ონლაინ გადახდა დაასრულე.",
+      "გადაამოწმე და გადაიხადე.",
     "checkout.summary": "ჯავშნის შეჯამება",
     "checkout.stepReservationTitle": "ჯავშანი",
     "checkout.stepReservationText":
@@ -1421,10 +1428,10 @@ const translations = {
       "ონლაინ ბარათით გადახდა TBC Bank-ის მეშვეობით.",
     "checkout.paymentPreparationTitle": "უსაფრთხო გადახდა",
     "checkout.paymentPreparationText":
-      "გადახდის დასასრულებლად TBC Bank-ის checkout-ზე გადახვალ. არ გადააგდო ჯავშანს მხოლოდ წარმატებული გადახდის შემდეგ დაადასტურებს.",
+      "გადახდა TBC-ის გვერდზე. ჯავშანი დასტურდება გადახდის შემდეგ.",
     "checkout.futurePaymentTitle": "გადახდის უსაფრთხოება",
     "checkout.futurePaymentText":
-      "თუ გადახდა ვერ შესრულდა, გაუქმდა ან ვადა გაუვიდა, დაჭერილი რაოდენობა ავტომატურად გათავისუფლდება.",
+      "თუ გადახდა ვერ შესრულდა, ჯავშანი ავტომატურად იხსნება.",
     "checkout.receiptTitle": "ქვითრის წინასწარი ხედი",
     "checkout.reservationIdAfterConfirmation":
       "ჯავშნის ID დადასტურების შემდეგ გამოჩნდება.",
@@ -1463,12 +1470,12 @@ const translations = {
     "faq.badge": "ნდობის ცენტრი",
     "faq.title": "კითხვები არ გადააგდოს შესახებ",
     "faq.subtitle":
-      "მარტივი პასუხები მომხმარებლებისა და ბიზნესებისთვის საკვების გადარჩენის პლატფორმის გამოყენებამდე.",
+      "მოკლე პასუხები.",
     "faq.trustLabel": "შემოწმებული ბიზნესები",
     "faq.trustText":
-      "ბიზნესები დამტკიცებამდე მოწმდება, რომ მომხმარებლებმა მეტი ნდობით დაჯავშნონ.",
+      "ბიზნესებს დამტკიცებამდე ვამოწმებთ.",
     "faq.pickupText":
-      "ყოველი დადასტურებული ჯავშანი ქმნის წაღების კოდს, რომელსაც მომხმარებელი ბიზნესს აჩვენებს.",
+      "ყოველ ჯავშანს აქვს წაღების კოდი.",
     "faq.ratingText":
       "მომხმარებლებს შეუძლიათ დასრულებული წაღებების შეფასება, რაც სხვებს არჩევაში ეხმარება.",
     "faq.customers": "მომხმარებლებისთვის",
@@ -1491,10 +1498,10 @@ const translations = {
       "თუ დაჯავშნილ შეკვეთას წაღების დროს არ აიღებ, ეს შეიძლება გამოუცხადებლობად ჩაითვალოს. ეს ბიზნესებს არასანდო ჯავშნებისგან იცავს.",
     "faq.customer.ratings.question": "როგორ მუშაობს შეფასებები?",
     "faq.customer.ratings.answer":
-      "დასრულებული წაღების შემდეგ მომხმარებელს შეუძლია ბიზნესის შეფასება და სურვილისამებრ ტექსტური მიმოხილვის დატოვება. შეფასებები სხვებს სანდო ადგილების აღმოჩენაში ეხმარება.",
+      "დასრულებული წაღების შემდეგ მომხმარებელს შეუძლია ბიზნესის შეფასება და სურვილისამებრ ტექსტური მიმოხილვის დატოვება. შეფასებები სხვებს არჩევანის გაკეთებაში ეხმარება.",
     "faq.business.join.question": "როგორ შევუერთდე არ გადააგდოს?",
     "faq.business.join.answer":
-      "შექმენი ანგარიში, რეგისტრაციისას აირჩიე ბიზნესი და შემდეგ ბიზნესის რეგისტრაციის გვერდიდან გაგზავნე შენი ბიზნესის დეტალები.",
+      "გახსენი „ბიზნესებისთვის“ საიტის ქვედა ნაწილში, შექმენი ბიზნეს ანგარიში და გაიარე რეგისტრაციის 4 ნაბიჯი.",
     "faq.business.approval.question": "როგორ მუშაობს დამტკიცება?",
     "faq.business.approval.answer":
       "ადმინი ამოწმებს გაგზავნილ ბიზნესებს, სანამ ისინი შეთავაზებების გამოქვეყნებას შეძლებენ. ეს პლატფორმას უფრო უსაფრთხოს და სანდოს ხდის.",
@@ -1512,25 +1519,25 @@ const translations = {
       "არ გადააგდო ეხმარება ბიზნესებს გაუყიდავი საკვებიდან ღირებულების დაბრუნებაში, მომხმარებლებს თანხის დაზოგვაში და საქართველოში საკვების ნარჩენის შემცირებაში.",
     "faq.ctaTitle": "მზად ხარ არ გადააგდოს გამოსაცდელად?",
     "faq.ctaText":
-      "დაათვალიერე მიმდინარე შეთავაზებები როგორც მომხმარებელმა ან დაარეგისტრირე შენი კვების ბიზნესი ლანჩ ბოქსების გამოსაქვეყნებლად.",
+      "დაათვალიერე დღევანდელი შეთავაზებები.",
 
     "contact.badge": "კონტაქტი და მხარდაჭერა",
     "contact.title": "დაგვიკავშირდი",
     "contact.subtitle":
-      "შეკვეთაზე გაქვს კითხვა? ჯავშანში გჭირდება დახმარება? გინდა როგორც ბიზნესი შემოგვიერთდე? სიამოვნებით დაგეხმარებით.",
+      "კითხვა გაქვს? მოგვწერე.",
     "contact.ordersTitle": "შეკვეთაზე გაქვს კითხვა?",
     "contact.ordersText":
-      "მოგვწერე რა მოხდა და დაურთე შეკვეთის დეტალები, რომ მხარდაჭერამ საკითხი სწრაფად გაიგოს.",
+      "მოგვწერე რა მოხდა და შეკვეთის დეტალები.",
     "contact.reservationsTitle": "ჯავშანში გჭირდება დახმარება?",
     "contact.reservationsText":
       "დაგეხმარებით წაღების, გაუქმებისა და ანგარიშზე წვდომის საკითხებში.",
     "contact.businessTitle": "გინდა როგორც ბიზნესი შემოგვიერთდე?",
     "contact.businessText":
-      "ადგილობრივ კვების ბიზნესებს შეუძლიათ მოგვწერონ, რომ გაიგონ როგორ ეხმარება არ გადააგდო ნარჩენის შემცირებასა და დარჩენილი საკვების გაყიდვას.",
+      "ბიზნესი ხარ? სიამოვნებით გიპასუხებთ.",
     "contact.supportEmailLabel": "მხარდაჭერის ელფოსტა",
     "contact.emailTitle": "დაუკავშირდი არ გადააგდოს მხარდაჭერას",
     "contact.emailText":
-      "შეკვეთის, ანგარიშის, ჯავშნის ან ბიზნესის საკითხებზე მოგვწერე ელფოსტაზე და შენს მოთხოვნას გადავხედავთ.",
+      "ნებისმიერ საკითხზე მოგვწერე ელფოსტაზე.",
     "contact.businessInquiriesLabel": "ბიზნეს კითხვები",
     "contact.businessInquiriesTitle": "შეამცირე ნარჩენი და გაყიდე დარჩენილი საკვები",
     "contact.businessInquiriesText":
@@ -1550,15 +1557,15 @@ const translations = {
     "about.badge": "არ გადააგდოს შესახებ",
     "about.title": "საკვების ნარჩენის შემცირება საქართველოში.",
     "about.subtitle":
-      "არ გადააგდო არის ქართული საკვების გადარჩენის პლატფორმა, რომელიც ადგილობრივ ბიზნესებს დარჩენილი საკვების გაყიდვაში და მომხმარებლებს ფასდაკლებული ლანჩ ბოქსების აღმოჩენაში ეხმარება.",
+      "ქართული პლატფორმა საკვების გადასარჩენად.",
     "about.whatLabel": "რა არის არ გადააგდო?",
     "about.whatTitle": "საკვების გადარჩენის პლატფორმა",
     "about.whatText":
-      "არ გადააგდო ამცირებს საკვების ნარჩენს და აკავშირებს მომხმარებლებს ადგილობრივ ბიზნესებთან, რომლებსაც დარჩენილი საკვები ფასდაკლებით აქვთ ხელმისაწვდომი.",
+      "გაკავშირებთ ბიზნესებთან, რომლებსაც საკვები დარჩათ.",
     "about.launchAreaLabel": "ამჟამინდელი გაშვების არეალი",
     "about.launchAreaTitle": "თბილისი, საქართველო",
     "about.launchAreaText":
-      "პირველი გაშვების არეალი თბილისია. პროდუქტი ამ ეტაპზე მხოლოდ ადგილზე წაღებაზეა ორიენტირებული, სანამ პლატფორმა ადგილობრივ საპილოტე ბიზნესებთან ერთად იზრდება.",
+      "ვიწყებთ თბილისით, მხოლოდ ადგილზე წაღებით.",
     "about.missionLabel": "მისია",
     "about.missionTitle": "მარტივი მიზნები, რეალური გავლენა",
     "about.missionSaveFood": "გადაარჩინე საკვები.",
@@ -1566,15 +1573,18 @@ const translations = {
     "about.missionSupportLocal": "მხარი დაუჭირე ადგილობრივ ბიზნესებს.",
     "about.ctaTitle": "შემოუერთდი საკვების გადარჩენის მოძრაობას",
     "about.ctaText":
-      "დაათვალიერე მიმდინარე შეთავაზებები ან დაგვიკავშირდი, თუ პლატფორმაზე მეტის გაგება გინდა.",
+      "დაათვალიერე შეთავაზებები ან დაგვიკავშირდი.",
 
     "privacy.badge": "კონფიდენციალურობა",
     "privacy.title": "კონფიდენ\u00ADციალუ\u00ADრობის პოლიტიკა",
     "privacy.subtitle":
-      "როგორ აგროვებს, იყენებს, უზიარებს და შლის არ გადააგდო შენს ინფორმაციას. ბოლო განახლება: 2026 წლის 26 ოქტომბერი.",
+      "როგორ აგროვებს, იყენებს, უზიარებს და შლის არ გადააგდო შენს ინფორმაციას. ბოლო განახლება: 2026 წლის 5 ნოემბერი.",
     "privacy.infoTitle": "რა ინფორმაციას ვაგროვებთ",
     "privacy.infoText":
       "ანგარიში: შენი ელფოსტა და პაროლი (ავტორიზაციის პროვაიდერი მას მხოლოდ დაცული ჰეშის სახით ინახავს). პროფილის დეტალები, რომლებსაც თავად დაამატებ: სახელი და ტელეფონის ნომერი. აქტივობა: ჯავშნები, წაღების კოდები, შეკვეთისა და გადახდის სტატუსი, გაუქმებები, წაღებები და გამოუცხადებლობები, რჩეულები, შეფასებები და მიმოხილვის კომენტარები. ბიზნესები: ბიზნესის სახელი, ტიპი, მისამართი, ტელეფონი, შეთავაზებების დეტალები და ფოტოები, ასევე ანგარიშსწორებისთვის საბანკო ანგარიში (IBAN), რომელსაც ბიზნესი პირდაპირ გვაწვდის. მხარდაჭერა: შეტყობინებები, რომლებსაც გვიგზავნი. შენს მდებარეობასა და კონტაქტებზე წვდომა არ გვაქვს, ვიღებთ მხოლოდ იმ ფოტოებს, რომლებსაც ბიზნესი თავისი შეთავაზებისთვის ტვირთავს, და არ ვიყენებთ სარეკლამო ან ანალიტიკურ ტრეკერებს.",
+    "privacy.verificationTitle": "ტელეფონისა და ბიზნესის ვერიფიკაცია",
+    "privacy.verificationText":
+      "მომხმარებლები: პირველ შეკვეთამდე გვჭირდება მობილურის ნომერი, რომელიც SMS კოდით დასტურდება; ერთი ნომერი მხოლოდ ერთ ანგარიშზე გამოიყენება. ნომერი და კოდი გადაეცემა ჩვენს SMS პროვაიდერს, ubill.ge-ს, მხოლოდ კოდის მისაწოდებლად. ბიზნესები: დამტკიცებამდე ასევე ვაგროვებთ კომპანიის იურიდიულ სახელს, საიდენტიფიკაციო კოდს და სამართლებრივ ფორმას, მფლობელის სრულ სახელს, SMS-ით დადასტურებულ ტელეფონის ნომერს, TBC-ის IBAN-ს და ამონაწერს საჯარო რეესტრიდან. ამონაწერი ინახება დახურულ საცავში, რომელსაც მხოლოდ ჩვენი ადმინისტრატორები კითხულობენ, და გამოიყენება მხოლოდ განაცხადის შესამოწმებლად. ანგარიშის წაშლისას იშლება შენი ტელეფონის ნომერი, მფლობელის სახელი და ამონაწერი; კომპანიის იურიდიული სახელი, საიდენტიფიკაციო კოდი და IBAN ინახება ანგარიშსწორების ჩანაწერებისთვის.",
     "privacy.accountTitle": "როგორ ვიყენებთ მას",
     "privacy.accountText":
       "ანგარიშის შესაქმნელად და დასაცავად, შეთავაზებების საჩვენებლად, ჯავშნებისა და გადახდების მისაღებად, ბიზნესებისთვის წაღების გადასამოწმებლად, ჯავშნებთან დაკავშირებული წერილების გასაგზავნად (დადასტურება, წაღების შეხსენება, გაუქმება და თანხის დაბრუნება), პლატფორმის სამართლიანობის შესანარჩუნებლად (მაგალითად, სანდოობის ქულა წაღებების, გაუქმებებისა და გამოუცხადებლობების მიხედვით) და მხარდაჭერის მოთხოვნებზე პასუხისთვის. ჩვენ არ ვყიდით შენს ინფორმაციას, არ ვაჩვენებთ რეკლამას და არ გადევნებთ თვალს სხვა აპებსა და ვებსაიტებზე.",
@@ -1632,7 +1642,7 @@ const translations = {
     "offline.badge": "კავშირი არ არის",
     "offline.title": "ოფლაინ ხარ",
     "offline.text":
-      "როგორც ჩანს, ინტერნეტ კავშირი დაიკარგა. უკვე ნანახი გვერდები შეიძლება კვლავ იმუშაოს — სხვა შემთხვევაში შეამოწმე ინტერნეტ კავშირი და სცადე ხელახლა.",
+      "ინტერნეტი არ არის. შეამოწმე და სცადე ხელახლა.",
     "offline.retry": "სცადე ხელახლა",
     "offline.home": "მთავარ გვერდზე გადასვლა",
 
