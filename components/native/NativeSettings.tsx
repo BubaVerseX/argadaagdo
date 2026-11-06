@@ -17,6 +17,7 @@ import { getLoginRedirectUrl } from "@/lib/orders";
 import type { Session } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import NativeNameSetting from "@/components/profile/NativeNameSetting";
 import NativeTopBar from "./NativeTopBar";
 import PushDebug from "./PushDebug";
 import PushToggle from "./PushToggle";
@@ -183,6 +184,15 @@ export default function NativeSettings() {
               {session?.user.email || <span className="native-skeleton inline-block h-4 w-40 rounded" />}
             </span>
           </p>
+          {session && (
+            <NativeNameSetting
+              userId={session.user.id}
+              fallbackName={(session.user.user_metadata?.display_name as string | undefined) || ""}
+              isGeorgian={isGeorgian}
+              rowClass={rowClass}
+              fieldClass={field}
+            />
+          )}
           <button
             type="button"
             onClick={() => toggle("password")}

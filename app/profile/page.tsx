@@ -8,6 +8,8 @@ import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeProfileScreen } from "@/components/native/screens";
 import Notice from "@/components/Notice";
 import { ChevronRightIcon } from "@/components/icons";
+import ProfileAvatar from "@/components/profile/ProfileAvatar";
+import ProfileNameEditor from "@/components/profile/ProfileNameEditor";
 import {
   getConfirmedProfile,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
@@ -21,18 +23,20 @@ import {
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { notifyAccountUpdated } from "@/lib/notifications";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
+import { formatGeorgianPhone } from "@/lib/profileFields";
+import { loadMyIdentity, type MyIdentity } from "@/lib/profileIdentity";
 import { supabase } from "@/lib/supabase";
-import type { Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
-import { validateTextField } from "@/lib/validation";
 import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// Name and photo live in public.profiles (see lib/profileIdentity.ts); the
+// metadata keeps only the preferred language here. Old metadata display_name
+// is a read-only fallback.
 type EditableMetadata = {
   display_name?: string | null;
-  phone?: string | null;
   preferred_language?: string | null;
   role?: string | null;
   [key: string]: unknown;
@@ -48,9 +52,7 @@ function ProfilePage() {
   const { language, setLanguage } = useLanguage();
   const isGeorgian = language === "ka";
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [displayName, setDisplayName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [identity, setIdentity] = useState<MyIdentity | null>(null);
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [phoneRequired, setPhoneRequired] = useState(false);
   const [preferredLanguage, setPreferredLanguage] =
@@ -100,15 +102,20 @@ function ProfilePage() {
     const savedLanguage = getMetadataText(metadata, "preferred_language");
 
     setUser(profileResult.user);
-    setProfile(profileResult.profile);
     setPhoneVerified(
       Boolean(profileResult.user.phone_confirmed_at && profileResult.user.phone)
     );
     void supabase.rpc("phone_verification_required").then(({ data }) => {
       setPhoneRequired(data === true);
     });
-    setDisplayName(getMetadataText(metadata, "display_name"));
-    setPhone(getMetadataText(metadata, "phone"));
+    const loadedIdentity = await loadMyIdentity(profileResult.user.id);
+    setIdentity(
+      loadedIdentity || {
+        displayName: "",
+        displayNameChangedAt: null,
+        avatarPath: null,
+      }
+    );
     setPreferredLanguage(
       isSupportedLanguage(savedLanguage) ? savedLanguage : languageRef.current
     );
@@ -138,62 +145,31 @@ function ProfilePage() {
     };
   }, [loadProfile]);
 
-  async function saveProfile() {
-    if (!user || !profile || saving) return;
+  // The language saves as soon as it's picked; the name has its own save.
+  async function saveLanguage(nextLanguage: Language) {
+    if (!user || saving) return;
 
+    const previous = preferredLanguage;
+    setPreferredLanguage(nextLanguage);
     setMessage("");
-    setMessageTone("error");
-
-    const displayNameResult = validateTextField({
-      label: isGeorgian ? "საჩვენებელი სახელი" : "Display name",
-      value: displayName,
-      minLength: 2,
-      maxLength: 80,
-      required: false,
-      language,
-    });
-    const phoneResult = validateTextField({
-      label: isGeorgian ? "ტელეფონის ნომერი" : "Phone number",
-      value: phone,
-      minLength: 5,
-      maxLength: 40,
-      required: false,
-      language,
-    });
-
-    const validationError = displayNameResult.error || phoneResult.error;
-
-    if (validationError) {
-      setMessage(validationError);
-      return;
-    }
-
     setSaving(true);
 
     const currentMetadata = (user.user_metadata || {}) as EditableMetadata;
     const { data, error } = await supabase.auth.updateUser({
-      data: {
-        ...currentMetadata,
-        display_name: displayNameResult.value || null,
-        phone: phoneResult.value || null,
-        preferred_language: preferredLanguage,
-      },
+      data: { ...currentMetadata, preferred_language: nextLanguage },
     });
 
     setSaving(false);
 
     if (error || !data.user) {
+      setPreferredLanguage(previous);
       setMessageTone("error");
       setMessage("Account details could not be saved. Please try again.");
       return;
     }
 
     setUser(data.user);
-    setDisplayName(displayNameResult.value);
-    setPhone(phoneResult.value);
-    setLanguage(preferredLanguage);
-    setMessageTone("success");
-    setMessage("Account details saved.");
+    setLanguage(nextLanguage);
     notifyAccountUpdated();
   }
 
@@ -210,6 +186,8 @@ function ProfilePage() {
 
   const L = (ka: string, en: string) => (isGeorgian ? ka : en);
   const labelClass = "grid gap-1.5 text-sm font-semibold text-body";
+  const metadata = (user?.user_metadata || {}) as EditableMetadata;
+  const shownName = identity?.displayName || getMetadataText(metadata, "display_name");
 
   return (
     <main className="app-shell">
@@ -228,12 +206,34 @@ function ProfilePage() {
           )}
 
           <div className="grid gap-4 rounded-[22px] bg-card p-5">
-            <p className="truncate text-[15px] text-body">{user?.email}</p>
+            <div className="flex items-center gap-4">
+              {user && (
+                <ProfileAvatar
+                  userId={user.id}
+                  name={shownName}
+                  avatarPath={identity?.avatarPath}
+                  isGeorgian={isGeorgian}
+                  size={64}
+                  onChange={(avatarPath) =>
+                    setIdentity((current) => (current ? { ...current, avatarPath } : current))
+                  }
+                />
+              )}
+              <div className="min-w-0">
+                {shownName && (
+                  <p className="truncate text-lg font-semibold text-cream">{shownName}</p>
+                )}
+                <p className="truncate text-[15px] text-body">{user?.email}</p>
+              </div>
+            </div>
 
-            {phoneVerified && (
-              <p className="text-sm font-semibold text-mint">
-                {L("ტელეფონი დადასტურებულია ✓", "Phone confirmed ✓")}{" "}
-                {user?.phone ? `+${user.phone}` : ""}
+            {phoneVerified && user?.phone && (
+              <p className="flex items-center gap-2 text-sm">
+                <span className="font-semibold text-body">{L("ტელეფონი", "Phone")}</span>
+                <span className="font-semibold text-cream">{formatGeorgianPhone(user.phone)}</span>
+                <span className="text-mint" aria-label={L("დადასტურებულია", "Confirmed")}>
+                  ✓
+                </span>
               </p>
             )}
 
@@ -251,38 +251,32 @@ function ProfilePage() {
               </div>
             )}
 
-            <label className={labelClass}>
-              {L("სახელი", "Name")}
-              <input
-                value={displayName}
-                onChange={(event) => setDisplayName(event.target.value)}
-                maxLength={80}
-                placeholder={L("არასავალდებულო", "Optional")}
-                className="premium-input p-4 font-semibold"
+            {identity && (
+              <ProfileNameEditor
+                name={identity.displayName}
+                changedAt={identity.displayNameChangedAt}
+                isGeorgian={isGeorgian}
+                label={L("სახელი", "Name")}
+                inputClassName="premium-input p-4 font-semibold"
+                buttonClassName="premium-button w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                onSaved={(displayName, displayNameChangedAt) => {
+                  setIdentity((current) =>
+                    current ? { ...current, displayName, displayNameChangedAt } : current
+                  );
+                  notifyAccountUpdated();
+                }}
               />
-            </label>
-
-            <label className={labelClass}>
-              {L("ტელეფონი", "Phone")}
-              <input
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                type="tel"
-                inputMode="tel"
-                maxLength={40}
-                placeholder="+995 555 123 456"
-                className="premium-input p-4 font-semibold"
-              />
-            </label>
+            )}
 
             <label className={labelClass}>
               {L("ენა", "Language")}
               <select
                 value={preferredLanguage}
+                disabled={saving}
                 onChange={(event) => {
                   const nextLanguage = event.target.value;
                   if (isSupportedLanguage(nextLanguage)) {
-                    setPreferredLanguage(nextLanguage);
+                    void saveLanguage(nextLanguage);
                   }
                 }}
                 className="premium-input p-4 font-semibold"
@@ -294,15 +288,6 @@ function ProfilePage() {
                 ))}
               </select>
             </label>
-
-            <button
-              type="button"
-              onClick={saveProfile}
-              disabled={saving || !user || !profile}
-              className="premium-button w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {saving ? L("ინახება...", "Saving...") : L("შენახვა", "Save")}
-            </button>
           </div>
 
           <ImpactCard language={language} bags={completedPickups} subject="you" />

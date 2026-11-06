@@ -263,6 +263,13 @@ export const EditIcon = base(
   </>
 );
 
+export const CameraIcon = base(
+  <>
+    <path d="M4.5 8.5A1.5 1.5 0 0 1 6 7h2l1.5-2h5L16 7h2a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5Z" />
+    <circle cx="12" cy="12.5" r="3.2" />
+  </>
+);
+
 export const UploadIcon = base(
   <>
     <path d="M12 15.5V4.5M8 8.5 12 4.5l4 4" />

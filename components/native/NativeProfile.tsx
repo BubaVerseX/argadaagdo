@@ -28,7 +28,9 @@ import { shareImage, shareLink } from "@/lib/share";
 import { isNativeApp } from "@/lib/native";
 import { readPrivateMemory, writePrivateMemory } from "@/lib/nativeData";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
+import { loadMyIdentity, type MyIdentity } from "@/lib/profileIdentity";
 import { supabase } from "@/lib/supabase";
+import ProfileAvatar, { useCanPickAvatar } from "@/components/profile/ProfileAvatar";
 import type { OrderStatus } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import type { Session } from "@supabase/supabase-js";
@@ -82,14 +84,6 @@ async function loadSummary(userId: string): Promise<ProfileSummary> {
   };
 }
 
-function initials(name: string) {
-  const parts = name
-    .replace(/@.*/, "")
-    .split(/[\s._-]+/)
-    .filter(Boolean);
-  return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "A";
-}
-
 const INVITE_URL = "https://argadaagdo.ge";
 
 // Calm and personal: who you are, what you saved (with a plant that grows
@@ -107,6 +101,8 @@ export default function NativeProfile() {
   const [sharing, setSharing] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [toast, setToast] = useState("");
+  const [identity, setIdentity] = useState<MyIdentity | null>(null);
+  const canPickPhoto = useCanPickAvatar();
 
   useEffect(() => {
     let active = true;
@@ -118,6 +114,14 @@ export default function NativeProfile() {
       setSession(current);
       setReady(true);
       if (!current) return;
+
+      void loadMyIdentity(current.user.id).then(
+        (loaded) =>
+          active &&
+          setIdentity(
+            loaded || { displayName: "", displayNameChangedAt: null, avatarPath: null }
+          )
+      );
 
       if (!readPrivateMemory(MEMORY_KEY, current.user.id)) setSummary(null);
       const next = await loadSummary(current.user.id);
@@ -144,7 +148,9 @@ export default function NativeProfile() {
   );
 
   const metadata = session?.user.user_metadata || {};
+  // The name from public.profiles; the old metadata name only as a fallback.
   const name =
+    identity?.displayName ||
     (metadata.display_name as string | undefined) ||
     (metadata.full_name as string | undefined) ||
     session?.user.email?.split("@")[0] ||
@@ -295,16 +301,25 @@ export default function NativeProfile() {
             </div>
           ) : session ? (
             <div className="flex items-center gap-3">
-              <span
-                aria-hidden="true"
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-moss text-base font-semibold text-mint"
-              >
-                {initials(name)}
-              </span>
+              <ProfileAvatar
+                userId={session.user.id}
+                name={name}
+                avatarPath={identity?.avatarPath}
+                isGeorgian={isGeorgian}
+                size={56}
+                onChange={(avatarPath) =>
+                  setIdentity((current) => (current ? { ...current, avatarPath } : current))
+                }
+              />
               <div className="min-w-0">
                 <p className="truncate text-lg font-semibold leading-tight text-cream">
                   {firstName}
                 </p>
+                {canPickPhoto === false && (
+                  <p className="mt-0.5 text-[12px] text-body">
+                    {L("განაახლე აპი ფოტოსთვის", "Update the app to add a photo")}
+                  </p>
+                )}
               </div>
             </div>
           ) : (
