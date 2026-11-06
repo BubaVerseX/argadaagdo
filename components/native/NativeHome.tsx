@@ -93,7 +93,7 @@ function NativeOfferCard({
           <p className="mt-0.5 truncate text-[13px] text-cat-ink-2">
             {getOfferDateLabel(offer, language)}{" "}
             {formatPickupTimeRange(offer, language)}
-            {size ? ` · ${size}` : ""}
+            {size ? ` · ${language === "ka" ? "ზომა" : "Size"} ${size}` : ""}
             {rating && rating.rating_count > 0
               ? ` · ★ ${rating.average_rating.toFixed(1)}`
               : ""}

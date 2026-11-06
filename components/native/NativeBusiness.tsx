@@ -403,7 +403,7 @@ export default function NativeBusiness() {
               <div className="min-w-0 flex-1 pl-1">
                 <p className="truncate text-sm font-bold">
                   {getOfferCategoryLabel(offer.category, language)}
-                  {size ? ` · ${size}` : ""}
+                  {size ? ` · ${language === "ka" ? "ზომა" : "Size"} ${size}` : ""}
                 </p>
                 <p className="truncate text-[13px] text-cat-ink-2">
                   {formatMoney(offer.price)} ·{" "}

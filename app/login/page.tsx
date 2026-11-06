@@ -657,8 +657,8 @@ export default function LoginPage() {
                     </h3>
                     <p className="mt-2 text-sm leading-6 text-body">
                       {isGeorgian
-                        ? "გამოიყენე მინიმუმ 6 სიმბოლო. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
-                        : "Use at least 6 characters. Avoid passwords you use on other websites."}
+                        ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
+                        : "At least 8 characters, with a lowercase letter, an uppercase letter and a number. Avoid passwords you use on other websites."}
                     </p>
                   </div>
 
