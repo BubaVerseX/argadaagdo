@@ -33,4 +33,4 @@ export const nativeBootScript = `try{var c=window.Capacitor;if(c&&c.isNativePlat
   nativeFonts
 )}.forEach(function(u){var l=document.createElement("link");l.rel="preload";l.as="font";l.type="font/woff2";l.crossOrigin="anonymous";l.href=u;document.head.appendChild(l)});if(new RegExp(${JSON.stringify(
   nativeScreenPattern
-)}).test(p)&&!/[?&]full=1(&|$)/.test(location.search)){h.classList.add("native-screen");if(p==="/"||p==="/discover"){window.__nativeFeed=fetch("/api/native/feed").then(function(r){return r.ok?r.json():null}).catch(function(){return null})}}try{if(!localStorage.getItem("argadaagdo-language"))localStorage.setItem("argadaagdo-language","ka");if(localStorage.getItem("argadaagdo-tone")==="soft")h.classList.add("native-tone-soft")}catch(e){}}}catch(e){}`;
+)}).test(p)&&!/[?&]full=1(&|$)/.test(location.search)){h.classList.add("native-screen");if(p==="/"||p==="/discover"){window.__nativeFeed=fetch("/api/native/feed").then(function(r){return r.ok?r.json():null}).catch(function(){return null})}}try{if(!localStorage.getItem("argadaagdo-language"))localStorage.setItem("argadaagdo-language","ka")}catch(e){}}}catch(e){}`;

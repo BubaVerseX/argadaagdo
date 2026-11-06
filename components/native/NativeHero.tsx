@@ -24,11 +24,3 @@ export default function NativeHero({
     </div>
   );
 }
-
-/**
- * Preview only (two colour balances to choose from): true when the "less
- * green" version is on. Removed once one is chosen.
- */
-export function isSoftTone() {
-  return typeof document !== "undefined" && document.documentElement.classList.contains("native-tone-soft");
-}

@@ -40,7 +40,7 @@ import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState, type ComponentType } from "react";
 import Link from "./AppLink";
 import ImpactPlant, { LevelGlyph } from "./ImpactPlant";
-import NativeHero, { isSoftTone } from "./NativeHero";
+import NativeHero from "./NativeHero";
 
 type ProfileSummary = {
   role: string;
@@ -112,8 +112,6 @@ export default function NativeProfile() {
   const [sharing, setSharing] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [toast, setToast] = useState("");
-  // Preview of two colour balances; see NativeHero.
-  const [soft] = useState(isSoftTone);
 
   useEffect(() => {
     let active = true;
@@ -254,9 +252,7 @@ export default function NativeProfile() {
   const impactCard = (
     <section
       aria-label={L("ჩემი გავლენა", "My impact")}
-      className={`rounded-[22px] p-4 ${
-        soft ? "native-impact-soft" : "bg-card"
-      }`}
+      className="rounded-[22px] bg-card p-4"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -384,14 +380,12 @@ export default function NativeProfile() {
             </div>
           )}
         </header>
-        {session && !soft && <div className="mt-4">{impactCard}</div>}
+        {session && <div className="mt-4">{impactCard}</div>}
       </NativeHero>
 
       <div className="relative z-[1] grid gap-3 px-5">
         {session && (
           <>
-            {soft && impactCard}
-
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"

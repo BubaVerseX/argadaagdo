@@ -79,7 +79,7 @@ html.native-screen body:not(:has(.native-main))::after {
    --------------------------------------------------------------------- */
 html.native-app {
   color-scheme: light;
-  /* Version A ("a bit more green", the default): sage-tinted beige. */
+  /* Sage-tinted beige under deep green headers (chosen: version A). */
   --native-ground: linear-gradient(180deg, #e6eedc 0%, #eef3e6 28%, #f7f1e3 70%, #f3ecdb 100%);
   --hero: #0f3a32;
   --hero-leaf: #164a3f;
@@ -118,16 +118,6 @@ html.native-app body {
   background: var(--native-ground) fixed #f7f1e3;
 }
 
-/* Version B ("a bit less green"): lighter tint, shorter green, text-only
-   green details. Preview only, switched with localStorage until chosen. */
-html.native-app.native-tone-soft {
-  --native-ground: linear-gradient(180deg, #eef3e6 0%, #f7f1e3 45%, #f5efe0 100%);
-  --hero-wave-h: 1.5rem;
-  --hero-overlap: 0.25rem;
-  --chip-bg: transparent;
-  --chip-ink: #3b6b5c;
-}
-
 /* The status bar strip is deep green, like the headers (light icons). */
 html.native-app body::before {
   background: var(--hero);
@@ -158,12 +148,6 @@ html.native-app body::before {
   fill: var(--hero);
 }
 
-html.native-tone-soft .native-hero-leaf {
-  width: 160px;
-  height: 160px;
-  opacity: 0.7;
-}
-
 /* Content right under a green header tucks slightly into the wave. */
 .native-under-hero {
   margin-top: var(--hero-overlap);
@@ -178,11 +162,6 @@ html.native-tone-soft .native-hero-leaf {
   background: var(--chip-bg);
   color: var(--chip-ink);
   padding: 0.125rem 0.5rem;
-}
-
-html.native-tone-soft .native-time-chip {
-  padding-left: 0;
-  padding-right: 0;
 }
 
 /* The Help centre's title block turns into the green header in the app. */
@@ -367,12 +346,4 @@ html.native-app .photo-leaf-sm,
 html.native-app .photo-hero {
   background: var(--cat-soft, var(--well));
   background: color-mix(in srgb, var(--cat-soft, #efe7d3) 60%, #fbf7ee);
-}
-
-/* Version B: the impact card is a light sage-green card on the beige. */
-.native-impact-soft {
-  background: #e3efe4;
-  border: 1px solid rgba(15, 58, 50, 0.08);
-  --well: rgba(15, 58, 50, 0.08);
-  --moss: #cfe5d3;
 }
