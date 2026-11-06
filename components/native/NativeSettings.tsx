@@ -18,6 +18,7 @@ import type { Session } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NativeTopBar from "./NativeTopBar";
+import PushDebug from "./PushDebug";
 import PushToggle from "./PushToggle";
 
 const field =
@@ -281,6 +282,8 @@ export default function NativeSettings() {
             </div>
           )}
         </section>
+
+        <PushDebug />
       </div>
     </main>
   );

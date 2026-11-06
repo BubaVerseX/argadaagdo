@@ -17,7 +17,11 @@ function getPhoneErrorMessage(
       : "This number is already linked to another account.";
   }
 
-  if (text.includes("rate_limit") || text.includes("rate limit")) {
+  if (
+    text.includes("rate_limit") ||
+    text.includes("rate limit") ||
+    text.includes("too many")
+  ) {
     return isGeorgian
       ? "ძალიან ბევრი მცდელობა. მოიცადე ერთი წუთი."
       : "Too many attempts. Wait a minute and try again.";

@@ -1,5 +1,6 @@
 -- Business verification and phone verification, part 2 of 2 (2026-11-05).
--- STATUS: NOT applied to production. Ask the founder first.
+-- STATUS: applied to production (Frankfurt) on 2026-11-07 with the owner's OK,
+-- after the app's one-time phone step (components/PhoneGate.tsx) went live.
 --
 -- APPLY LAST, after 20261105120000 is applied, the app code is deployed and a
 -- real SMS has been received in production. From this point every customer
