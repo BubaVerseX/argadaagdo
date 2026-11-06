@@ -22,6 +22,8 @@ import type { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeSettingsScreen } from "@/components/native/screens";
 
 function formatAccountDate(value?: string | null, language: Language = "en") {
   if (!value) return language === "ka" ? "მიუწვდომელია" : "Not available";
@@ -115,7 +117,7 @@ const georgianEmailRecipientLabels: Record<
   admin: "ადმინებს",
 };
 
-export default function SettingsPage() {
+function SettingsPage() {
   const router = useRouter();
   const { language } = useLanguage();
   const isGeorgian = language === "ka";
@@ -587,3 +589,5 @@ export default function SettingsPage() {
     </main>
   );
 }
+
+export default withNativeScreen(SettingsPage, NativeSettingsScreen);

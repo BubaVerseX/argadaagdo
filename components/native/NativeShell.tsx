@@ -108,6 +108,8 @@ export default function NativeShell() {
       ? ordersTab.href
       : pathname === "/profile" ||
         pathname === "/settings" ||
+        pathname === "/payment" ||
+        pathname === "/notifications" ||
         pathname === "/favorites"
       ? "/profile"
       : "";

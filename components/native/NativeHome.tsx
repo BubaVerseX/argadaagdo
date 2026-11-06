@@ -1,7 +1,7 @@
 "use client";
 
 import { LeafDecor, WaveEdge } from "@/components/design/Decor";
-import { FilterIcon, LeafIcon, SearchIcon } from "@/components/icons";
+import { BellIcon, FilterIcon, LeafIcon, SearchIcon } from "@/components/icons";
 import OfferImage from "@/components/OfferImage";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
@@ -133,7 +133,7 @@ function initialCategory(): OfferCategory | "all" {
 }
 
 export default function NativeHome() {
-  const { language, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { feed, loading, failed, retry } = useNativeFeed();
   const [category, setCategory] = useState<OfferCategory | "all">(initialCategory);
   const [query, setQuery] = useState("");
@@ -184,9 +184,25 @@ export default function NativeHome() {
               fill="var(--brand-forest)"
             />
           </svg>
-          <h1 className="font-serif text-lg font-bold text-brand-ground">
+          <h1 className="min-w-0 flex-1 truncate font-serif text-lg font-bold text-brand-ground">
             {t("native.home.title")}
           </h1>
+          {/* The app's only language switch. */}
+          <button
+            type="button"
+            onClick={() => setLanguage(language === "ka" ? "en" : "ka")}
+            aria-label={language === "ka" ? "Switch to English" : "ქართულზე გადართვა"}
+            className="native-press flex h-10 min-w-10 items-center justify-center rounded-full bg-brand-forest-2 px-2.5 text-[13px] font-bold text-brand-mint"
+          >
+            {language === "ka" ? "KA" : "EN"}
+          </button>
+          <Link
+            href="/notifications"
+            aria-label={language === "ka" ? "შეტყობინებები" : "Notifications"}
+            className="native-press flex h-10 w-10 items-center justify-center rounded-full bg-brand-forest-2 text-brand-mint"
+          >
+            <BellIcon className="h-5 w-5" strokeWidth={2} />
+          </Link>
         </div>
 
         <div className="relative mt-3 flex h-12 items-center gap-2.5 rounded-[18px] bg-brand-ground pl-3.5 pr-1.5">

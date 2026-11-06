@@ -49,6 +49,10 @@ export const NativeOrdersScreen = lazyScreen(() => import("./NativeOrders"));
 export const NativeProfileScreen = lazyScreen(() => import("./NativeProfile"));
 export const NativeMapScreen = lazyScreen(() => import("./NativeMap"));
 export const NativeBusinessScreen = lazyScreen(() => import("./NativeBusiness"));
+export const NativeLoginScreen = lazyScreen(() => import("./NativeLogin"));
+export const NativeSettingsScreen = lazyScreen(() => import("./NativeSettings"));
+export const NativeNotificationsScreen = lazyScreen(() => import("./NativeNotifications"));
+export const NativePaymentScreen = lazyScreen(() => import("./NativePayment"));
 export const NativeSubpageBar = lazyScreen(() => import("./NativeSubpageBar"));
 export const NativeShell = lazyScreen(() => import("./NativeShell"));
 
@@ -65,6 +69,10 @@ if (typeof window !== "undefined" && isNativeApp()) {
   else if (path === "/profile") void NativeProfileScreen.preload();
   else if (path === "/map") void NativeMapScreen.preload();
   else if (path === "/business/dashboard") void NativeBusinessScreen.preload();
+  else if (path === "/login") void NativeLoginScreen.preload();
+  else if (path === "/settings") void NativeSettingsScreen.preload();
+  else if (path === "/notifications") void NativeNotificationsScreen.preload();
+  else if (path === "/payment") void NativePaymentScreen.preload();
   else void NativeSubpageBar.preload();
 }
 

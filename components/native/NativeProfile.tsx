@@ -1,85 +1,104 @@
 "use client";
 
-import { LeafDecor, WaveEdge } from "@/components/design/Decor";
 import {
   BellIcon,
   ChevronRightIcon,
-  HeartIcon,
+  InfoIcon,
   type IconProps,
   LayoutGridIcon,
-  LogOutIcon,
-  MailIcon,
-  InfoIcon,
+  ReceiptIcon,
   SettingsIcon,
   ShieldIcon,
-  StoreIcon,
-  UserIcon,
+  TagIcon,
 } from "@/components/icons";
-import { getProfileById, logoutUser } from "@/lib/auth";
-import {
-  languageShortNames,
-  supportedLanguages,
-  type TranslationKey,
-} from "@/lib/i18n";
+import { getProfileById } from "@/lib/auth";
+import { getAppVersionLabel, openExternal, socialLinks, supportEmail } from "@/lib/appLinks";
+import { calculateImpact, formatKg } from "@/lib/impact";
+import { readPrivateMemory, writePrivateMemory } from "@/lib/nativeData";
+import { isCollectedOrderStatus } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
-import type { Session } from "@supabase/supabase-js";
+import type { OrderStatus } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "./AppLink";
-import { useRouter } from "next/navigation";
+import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState, type ComponentType } from "react";
+import Link from "./AppLink";
 
-type Row = {
-  href: string;
-  labelKey: TranslationKey;
-  Icon: ComponentType<IconProps>;
+type ProfileSummary = {
+  role: string;
+  bags: number;
+  moneySaved: number;
 };
 
-function Rows({
-  rows,
-  t,
-}: {
-  rows: Row[];
-  t: (key: TranslationKey) => string;
-}) {
-  return (
-    <div className="overflow-hidden rounded-[22px] bg-card shadow-[var(--shadow-card)]">
-      {rows.map(({ href, labelKey, Icon }, index) => (
-        <Link
-          key={href}
-          href={href}
-          className={`flex min-h-14 items-center gap-3 px-4 font-medium ${
-            index > 0 ? "border-t border-line" : ""
-          }`}
-        >
-          <Icon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
-          <span className="min-w-0 flex-1 truncate">{t(labelKey)}</span>
-          <ChevronRightIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
-        </Link>
-      ))}
-    </div>
-  );
+type Row = { href: string; label: string; Icon: ComponentType<IconProps> };
+
+const MEMORY_KEY = "profile-summary";
+
+async function loadSummary(userId: string): Promise<ProfileSummary> {
+  const [profile, ordersResult] = await Promise.all([
+    getProfileById(userId, 2),
+    supabase
+      .from("orders")
+      .select("status, amount, offers(old_price)")
+      .eq("user_id", userId)
+      .order("id", { ascending: false })
+      .limit(500),
+  ]);
+
+  const collected = ((ordersResult.data || []) as unknown as {
+    status: OrderStatus;
+    amount: number | string | null;
+    offers: { old_price: number | string | null } | null;
+  }[]).filter((order) => isCollectedOrderStatus(order.status));
+
+  // Saved = the shop's usual price minus what was paid, when the shop gave one.
+  const moneySaved = collected.reduce((sum, order) => {
+    const paid = Number(order.amount);
+    const usual = Number(order.offers?.old_price);
+    return Number.isFinite(paid) && Number.isFinite(usual) && usual > paid
+      ? sum + (usual - paid)
+      : sum;
+  }, 0);
+
+  return {
+    role: profile?.role || "",
+    bags: collected.length,
+    moneySaved: Math.round(moneySaved),
+  };
 }
 
-// Everything the website header's menu held lives here, one tap from the bar.
+function initials(name: string) {
+  const parts = name.replace(/@.*/, "").split(/[\s._-]+/).filter(Boolean);
+  return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "A";
+}
+
+// Short and clean: who you are and what you saved, five rows, and a small
+// footer with the legal pages, support and the app version.
 export default function NativeProfile() {
-  const router = useRouter();
-  const { language, setLanguage, t } = useLanguage();
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
+  const L = (ka: string, en: string) => (isGeorgian ? ka : en);
   const [session, setSession] = useState<Session | null>(null);
-  const [role, setRole] = useState("");
   const [ready, setReady] = useState(false);
+  const [summary, setSummary] = useState<ProfileSummary | null>(() =>
+    readPrivateMemory<ProfileSummary>(MEMORY_KEY)
+  );
+  const [version, setVersion] = useState("");
 
   useEffect(() => {
     let active = true;
 
+    void getAppVersionLabel().then((label) => active && setVersion(label));
     void supabase.auth.getSession().then(async ({ data }) => {
       if (!active) return;
-      setSession(data.session);
+      const current = data.session;
+      setSession(current);
       setReady(true);
+      if (!current) return;
 
-      if (data.session) {
-        const profile = await getProfileById(data.session.user.id, 2);
-        if (active) setRole(profile?.role || "");
-      }
+      if (!readPrivateMemory(MEMORY_KEY, current.user.id)) setSummary(null);
+      const next = await loadSummary(current.user.id);
+      writePrivateMemory(MEMORY_KEY, current.user.id, next);
+      if (active) setSummary(next);
     });
 
     return () => {
@@ -87,117 +106,155 @@ export default function NativeProfile() {
     };
   }, []);
 
-  async function logout() {
-    await logoutUser();
-    setSession(null);
-    setRole("");
-    router.replace("/");
-    router.refresh();
-  }
-
-  const accountRows: Row[] = [
-    { href: "/profile?full=1", labelKey: "native.profile.account", Icon: UserIcon },
-    { href: "/favorites", labelKey: "nav.favorites", Icon: HeartIcon },
-    { href: "/settings", labelKey: "nav.settings", Icon: SettingsIcon },
-    ...(role === "business"
-      ? [{ href: "/business/dashboard", labelKey: "nav.dashboard", Icon: LayoutGridIcon } as Row]
-      : []),
-    ...(role === "admin"
-      ? [{ href: "/admin", labelKey: "nav.admin", Icon: ShieldIcon } as Row]
-      : []),
-  ];
-  const moreRows: Row[] = [
-    { href: "/businesses", labelKey: "nav.businesses", Icon: StoreIcon },
-    { href: "/for-businesses", labelKey: "nav.forBusiness", Icon: LayoutGridIcon },
-    { href: "/about", labelKey: "nav.about", Icon: InfoIcon },
-  ];
-  const helpRows: Row[] = [
-    { href: "/faq", labelKey: "nav.faq", Icon: InfoIcon },
-    { href: "/support", labelKey: "nav.support", Icon: InfoIcon },
-    { href: "/contact", labelKey: "nav.contact", Icon: MailIcon },
-    { href: "/privacy", labelKey: "nav.privacy", Icon: ShieldIcon },
-    { href: "/terms", labelKey: "nav.terms", Icon: ShieldIcon },
-  ];
-
-  const displayName =
-    (session?.user.user_metadata?.display_name as string | undefined) ||
-    session?.user.email ||
+  const metadata = session?.user.user_metadata || {};
+  const name =
+    (metadata.display_name as string | undefined) ||
+    (metadata.full_name as string | undefined) ||
+    session?.user.email?.split("@")[0] ||
     "";
+  const impact = calculateImpact(summary?.bags || 0);
+
+  const rows: Row[] = session
+    ? [
+        { href: "/orders", label: L("ჩემი შეკვეთები", "My orders"), Icon: ReceiptIcon },
+        { href: "/payment", label: L("გადახდა", "Payment"), Icon: TagIcon },
+        { href: "/notifications", label: L("შეტყობინებები", "Notifications"), Icon: BellIcon },
+        { href: "/support", label: L("დახმარება", "Help"), Icon: InfoIcon },
+        { href: "/settings", label: L("პარამეტრები", "Settings"), Icon: SettingsIcon },
+        ...(summary?.role === "business"
+          ? [{ href: "/business/dashboard", label: L("ბიზნეს პანელი", "Business panel"), Icon: LayoutGridIcon }]
+          : []),
+        ...(summary?.role === "admin"
+          ? [{ href: "/admin", label: L("ადმინი", "Admin"), Icon: ShieldIcon }]
+          : []),
+      ]
+    : [
+        { href: "/payment", label: L("გადახდა", "Payment"), Icon: TagIcon },
+        { href: "/support", label: L("დახმარება", "Help"), Icon: InfoIcon },
+      ];
+
+  const footerLinks = [
+    { href: "/terms", label: L("წესები", "Terms") },
+    { href: "/privacy", label: L("კონფიდენციალურობა", "Privacy") },
+    { href: "/faq", label: "FAQ" },
+    { href: "/about", label: L("ჩვენ შესახებ", "About") },
+    { href: "/contact", label: L("კონტაქტი", "Contact") },
+    { href: "/for-businesses", label: L("ბიზნესისთვის", "For businesses") },
+  ];
 
   return (
     <main className="native-main">
-      <header className="theme-forest relative overflow-hidden bg-brand-forest px-4 pb-3 pt-4">
-        <LeafDecor className="-right-10 -top-12 h-52 w-52 text-brand-forest-2" />
-        <h1 className="relative font-serif text-[1.625rem] font-bold text-brand-ground">
-          {t("nav.profile")}
-        </h1>
-        {!ready && (
-          <div className="relative mt-3 h-6 w-2/3 animate-pulse rounded-lg bg-brand-forest-2" />
-        )}
-        {ready && session && (
-          <p className="relative mt-1 truncate text-[15px] text-brand-mint">
-            {displayName}
-          </p>
-        )}
-        {ready && !session && (
-          <>
-            <p className="relative mt-1 text-[15px] text-brand-mint">
-              {t("native.profile.guest")}
-            </p>
-            <Link
-              href="/login"
-              className="native-press relative mt-3 flex min-h-[3.25rem] items-center justify-center rounded-2xl bg-brand-mint font-bold text-brand-forest"
+      <header className="px-5 pb-4 pt-5">
+        {!ready ? (
+          <div className="flex items-center gap-4">
+            <div className="native-skeleton h-16 w-16 rounded-full" />
+            <div className="native-skeleton h-6 w-40 rounded-lg" />
+          </div>
+        ) : session ? (
+          <div className="flex items-center gap-4">
+            <span
+              aria-hidden="true"
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-mint font-serif text-2xl font-bold text-ink"
             >
-              {t("nav.signIn")}
-            </Link>
-          </>
+              {initials(name)}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate font-serif text-2xl font-bold text-cream">{name}</p>
+              <p className="truncate text-sm text-body">{session.user.email}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-[24px] bg-card p-5">
+            <p className="font-serif text-2xl font-bold text-cream">
+              {L("გამარჯობა!", "Hello!")}
+            </p>
+            <p className="mt-1 text-sm leading-6 text-body">
+              {L(
+                "შედი, რომ დაჯავშნო ლანჩ ბოქსები და ნახო, რამდენი დაზოგე.",
+                "Sign in to reserve Lunch Boxes and see how much you've saved."
+              )}
+            </p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Link
+                href="/login?tab=signup"
+                className="native-press flex min-h-12 items-center justify-center rounded-2xl bg-mint text-[15px] font-bold text-ink"
+              >
+                {L("რეგისტრაცია", "Sign up")}
+              </Link>
+              <Link
+                href="/login?tab=signin"
+                className="native-press flex min-h-12 items-center justify-center rounded-2xl border border-line text-[15px] font-bold text-cream"
+              >
+                {L("შესვლა", "Sign in")}
+              </Link>
+            </div>
+          </div>
         )}
       </header>
-      <WaveEdge />
 
-      <section className="grid gap-3 px-4">
-        <div className="flex min-h-14 items-center justify-between gap-3 rounded-[22px] bg-card px-4 shadow-[var(--shadow-card)]">
-          <span className="font-medium">{t("native.profile.language")}</span>
-          <div className="flex rounded-full bg-well p-1">
-            {supportedLanguages.map((option) => (
-              <button
-                key={option}
-                type="button"
-                aria-pressed={language === option}
-                onClick={() => setLanguage(option)}
-                className={`min-h-9 rounded-full px-3 text-[13px] font-bold ${
-                  language === option
-                    ? "bg-brand-forest text-brand-ground"
-                    : "text-cream"
-                }`}
-              >
-                {languageShortNames[option]}
+      <div className="grid gap-3 px-5">
+        {session && (
+          <section
+            aria-label={L("შენი გავლენა", "Your impact")}
+            className="grid grid-cols-3 gap-2 rounded-[24px] bg-card p-3"
+          >
+            {[
+              { value: summary ? String(summary.bags) : "", label: L("ბოქსი", "boxes") },
+              { value: summary ? `${summary.moneySaved} ₾` : "", label: L("დაზოგე", "saved") },
+              {
+                value: summary ? formatKg(impact.co2Kg, language) : "",
+                label: L("CO₂ ნაკლები", "less CO₂"),
+              },
+            ].map((stat) => (
+              <div key={stat.label} className="rounded-2xl bg-well px-2 py-3 text-center">
+                {stat.value ? (
+                  <p className="font-serif text-xl font-bold text-mint">{stat.value}</p>
+                ) : (
+                  <div className="native-skeleton mx-auto h-7 w-12 rounded-lg" />
+                )}
+                <p className="mt-0.5 text-xs font-medium text-body">{stat.label}</p>
+              </div>
+            ))}
+          </section>
+        )}
+
+        <nav className="overflow-hidden rounded-[24px] bg-card">
+          {rows.map(({ href, label, Icon }, index) => (
+            <Link
+              key={href}
+              href={href}
+              className={`native-press flex min-h-14 items-center gap-3 px-4 font-medium text-cream ${
+                index > 0 ? "border-t border-line" : ""
+              }`}
+            >
+              <Icon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
+              <span className="min-w-0 flex-1 truncate">{label}</span>
+              <ChevronRightIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
+            </Link>
+          ))}
+        </nav>
+
+        <footer className="px-1 pb-2 pt-3 text-center text-xs leading-6 text-body">
+          <p className="flex flex-wrap justify-center gap-x-3">
+            {footerLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="underline-offset-2 hover:underline">
+                {link.label}
+              </Link>
+            ))}
+          </p>
+          <p className="mt-1 flex flex-wrap justify-center gap-x-3">
+            <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
+            {socialLinks.map((link) => (
+              <button key={link.href} type="button" onClick={() => openExternal(link.href)}>
+                {link.label}
               </button>
             ))}
-          </div>
-        </div>
-
-        {session && <Rows rows={accountRows} t={t} />}
-        <Rows rows={moreRows} t={t} />
-
-        <p className="flex min-h-14 items-center gap-3 rounded-[22px] bg-card px-4 font-medium shadow-[var(--shadow-card)]">
-          <BellIcon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
-          <span className="min-w-0 flex-1 truncate">{t("nav.noNotifications")}</span>
-        </p>
-
-        <Rows rows={helpRows} t={t} />
-
-        {session && (
-          <button
-            type="button"
-            onClick={() => void logout()}
-            className="native-press flex min-h-14 items-center justify-center gap-2 rounded-[22px] bg-well font-bold"
-          >
-            <LogOutIcon className="h-4 w-4" strokeWidth={2} />
-            {t("nav.logout")}
-          </button>
-        )}
-      </section>
+          </p>
+          <p className="mt-1 text-muted">
+            ArGadaagdo{version ? ` · ${L("ვერსია", "version")} ${version}` : ""}
+          </p>
+        </footer>
+      </div>
     </main>
   );
 }

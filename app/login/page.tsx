@@ -1,672 +1,166 @@
 "use client";
 
-import { businessLoginUrl, businessSiteUrl, isBusinessHostname } from "@/lib/businessArea";
-import { isNativeApp } from "@/lib/native";
+import { businessLoginUrl } from "@/lib/businessArea";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import {
-  getProfileById,
-  isEmailConfirmed,
-  SIGNUP_CONFIRM_EMAIL_MESSAGE,
-  SIGNUP_VERIFIED_EMAIL_MESSAGE,
-  VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
-} from "@/lib/auth";
+import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
 import { translateUserMessage } from "@/lib/messageTranslations";
-import { isValidEmail, normalizeEmail } from "@/lib/validation";
-import { supabase } from "@/lib/supabase";
-import type { TranslationKey } from "@/lib/i18n";
-import type { UserRole } from "@/lib/types";
-import { useLanguage } from "@/lib/useLanguage";
-import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore, type KeyboardEvent } from "react";
-
-type PasswordHelpMode = "none" | "forgot" | "reset";
-type PasswordHelpOverride = PasswordHelpMode | "hidden";
-
-// Same rule as Supabase Auth (min 8, a-z, A-Z, 0-9), so users get the
-// message here instead of a generic error from the server.
-function meetsPasswordRule(value: string) {
-  return (
-    value.length >= 8 &&
-    /[a-z]/.test(value) &&
-    /[A-Z]/.test(value) &&
-    /[0-9]/.test(value)
-  );
-}
-
-// The messages set on this page stay in English in state; the notice
-// translates them with translateUserMessage when rendering.
-function getAuthErrorMessage(message?: string) {
-  const normalizedMessage = (message || "").toLowerCase();
-
-  if (
-    normalizedMessage.includes("password should") ||
-    normalizedMessage.includes("weak password")
-  ) {
-    return "Password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number.";
-  }
-
-  if (normalizedMessage.includes("invalid login credentials")) {
-    return "Email or password is incorrect. Please try again.";
-  }
-
-  if (normalizedMessage.includes("email not confirmed")) {
-    return VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE;
-  }
-
-  if (
-    normalizedMessage.includes("already registered") ||
-    normalizedMessage.includes("user already registered")
-  ) {
-    return "This email may already have an account. Try signing in or checking your confirmation email.";
-  }
-
-  return "Authentication could not be completed. Please try again.";
-}
-
-function subscribeToRedirectChanges() {
-  return () => {};
-}
-
-function getSafeInternalRedirectPath(value: string | null) {
-  if (!value) return null;
-
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue.startsWith("/")) return null;
-  if (trimmedValue.startsWith("//")) return null;
-  // Browsers treat "\" like "/" and strip tabs/newlines, so "/\evil.com"
-  // or "/<tab>/evil.com" would resolve to another origin.
-  if (/[\\\u0000-\u001f\u007f]/.test(trimmedValue)) return null;
-
-  try {
-    const resolvedUrl = new URL(trimmedValue, window.location.origin);
-
-    if (resolvedUrl.origin !== window.location.origin) return null;
-
-    return `${resolvedUrl.pathname}${resolvedUrl.search}${resolvedUrl.hash}`;
-  } catch {
-    return null;
-  }
-}
-
-function readRedirectPath() {
-  if (typeof window === "undefined") return null;
-
-  const redirectPath = new URLSearchParams(window.location.search).get(
-    "redirect"
-  );
-
-  return getSafeInternalRedirectPath(redirectPath);
-}
-
-function subscribeToPasswordHelpModeChanges() {
-  return () => {};
-}
-
-function readPasswordHelpMode(): PasswordHelpMode {
-  if (typeof window === "undefined") return "none";
-
-  const params = new URLSearchParams(window.location.search);
-  const mode = params.get("mode");
-  const hash = window.location.hash.toLowerCase();
-
-  if (mode === "forgot-password") return "forgot";
-  if (mode === "reset-password" || hash.includes("type=recovery")) {
-    return "reset";
-  }
-
-  return "none";
-}
-
-function getRedirectMessage(
-  path: string | null,
-  t: (key: TranslationKey) => string
-) {
-  if (!path) return "";
-
-  if (path.startsWith("/checkout/")) {
-    return t("login.redirectCheckout");
-  }
-
-  if (path === "/orders" || path.startsWith("/orders?")) {
-    return t("login.redirectOrders");
-  }
-
-  if (path === "/favorites" || path.startsWith("/favorites?")) {
-    return t("login.redirectFavorites");
-  }
-
-  if (path === "/profile" || path === "/settings") {
-    return "Please sign in to manage your account settings.";
-  }
-
-  return "";
-}
-
-export default function LoginPage() {
-  const router = useRouter();
-  const { language, t } = useLanguage();
-  const isGeorgian = language === "ka";
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const redirectPath = useSyncExternalStore(
-    subscribeToRedirectChanges,
-    readRedirectPath,
-    () => null
-  );
-  const urlPasswordHelpMode = useSyncExternalStore(
-    subscribeToPasswordHelpModeChanges,
-    readPasswordHelpMode,
-    () => "none"
-  );
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  // No account-type choice: each area creates its own kind of account.
-  const isBusinessArea = useSyncExternalStore(
-    subscribeToRedirectChanges,
-    () =>
-      isBusinessHostname(window.location.hostname) ||
-      Boolean(readRedirectPath()?.startsWith("/business")),
-    () => false
-  );
-  const role: UserRole = isBusinessArea ? "business" : "customer";
-  const [message, setMessage] = useState("");
-  const [messageTone, setMessageTone] = useState<
-    "success" | "error" | "warning"
-  >("success");
-  const [submitting, setSubmitting] = useState(false);
-  const [resendingVerification, setResendingVerification] = useState(false);
-  const [passwordHelpMode, setPasswordHelpMode] =
-    useState<PasswordHelpOverride>("none");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const authModeOptions = [
-    {
-      value: "login" as const,
-      label: t("login.signIn"),
-      helper: t("login.signInModeHelper"),
-    },
-    {
-      value: "signup" as const,
-      label: t("login.signUp"),
-      helper: t("login.signUpModeHelper"),
-    },
-  ];
-  const effectivePasswordHelpMode =
-    passwordHelpMode === "hidden"
-      ? "none"
-      : passwordHelpMode === "none"
-        ? urlPasswordHelpMode
-        : passwordHelpMode;
-
-  async function createAccount() {
-    setMessage("");
-    setMessageTone("error");
-
-    const normalizedEmail = normalizeEmail(email);
-
-    if (!normalizedEmail) {
-      setMessage("Email is required.");
-      return;
-    }
-
-    if (!isValidEmail(normalizedEmail)) {
-      setMessage("Enter a valid email address.");
-      return;
-    }
-
-    if (!meetsPasswordRule(password)) {
-      setMessage(
-        "Password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number."
-      );
-      return;
-    }
-
-    if (password.trim() !== password) {
-      setMessage("Password cannot start or end with spaces.");
-      return;
-    }
-
-    setSubmitting(true);
-    setMessage("Creating account...");
-    setMessageTone("success");
-    setEmail(normalizedEmail);
-
-    const { data, error } = await supabase.auth.signUp({
-      email: normalizedEmail,
-      password,
-      options: {
-        data: { role },
-      },
-    });
-
-    if (error) {
-      setSubmitting(false);
-      setMessageTone("error");
-      setMessage(getAuthErrorMessage(error.message));
-      return;
-    }
-
-    if (data.session) {
-      await supabase.auth.signOut();
-    }
-
-    const signupUserIsVerified = isEmailConfirmed(data.user);
-
-    setSubmitting(false);
-    setMessageTone("success");
-    setMessage(
-      signupUserIsVerified
-        ? SIGNUP_VERIFIED_EMAIL_MESSAGE
-        : SIGNUP_CONFIRM_EMAIL_MESSAGE
-    );
-
-    if (signupUserIsVerified) {
-      setAuthMode("login");
-    }
-  }
-
-  // The page isn't a <form> (it hosts several flows), so Enter in the email
-  // or password field didn't submit.
-  function submitOnEnter(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key !== "Enter" || submitting) return;
-
-    event.preventDefault();
-    void (authMode === "login" ? signIn() : createAccount());
-  }
-
-  async function signIn() {
-    setMessage("");
-    setMessageTone("error");
-
-    const normalizedEmail = normalizeEmail(email);
-
-    if (!normalizedEmail) {
-      setMessage("Email is required.");
-      return;
-    }
-
-    if (!isValidEmail(normalizedEmail)) {
-      setMessage("Enter a valid email address.");
-      return;
-    }
-
-    if (!password.trim()) {
-      setMessage("Password is required.");
-      return;
-    }
-
-    setSubmitting(true);
-    setMessage("Signing in...");
-    setMessageTone("success");
-    setEmail(normalizedEmail);
-
-    const { data: authData, error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
-      password,
-    });
-
-    if (error) {
-      setSubmitting(false);
-      setMessageTone("error");
-      setMessage(getAuthErrorMessage(error.message));
-      return;
-    }
-
-    if (!authData.user || !isEmailConfirmed(authData.user)) {
-      await supabase.auth.signOut();
-      setSubmitting(false);
-      setMessageTone("warning");
-      setMessage(VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE);
-      return;
-    }
-
-    const profile = await getProfileById(authData.user.id, 4);
-    const metadataRole = authData.user.user_metadata?.role;
-    const resolvedRole =
-      profile?.role ||
-      (metadataRole === "business" || metadataRole === "customer"
-        ? metadataRole
-        : "customer");
-
-    setSubmitting(false);
-
-    // Each area signs in its own kind of account. Sessions aren't shared
-    // between hosts, so the person signs in again on the right one.
-    if (isBusinessHostname(window.location.hostname) && resolvedRole === "customer") {
-      await supabase.auth.signOut({ scope: "local" });
-      setMessageTone("warning");
-      setMessage(
-        isGeorgian
-          ? "ეს მომხმარებლის ანგარიშია. შედი მთავარ საიტზე."
-          : "This is a customer account. Please sign in on the main site."
-      );
-      return;
-    }
-
-    if (
-      businessSiteUrl &&
-      !isBusinessHostname(window.location.hostname) &&
-      !isNativeApp() &&
-      resolvedRole === "business"
-    ) {
-      await supabase.auth.signOut({ scope: "local" });
-      window.location.assign(`${businessSiteUrl}/login`);
-      return;
-    }
-
-    if (!profile) {
-      setMessageTone("warning");
-      setMessage(
-        "Signed in. Your profile is still being prepared, so dashboard links may appear after a refresh."
-      );
-    }
-
-    if (redirectPath) {
-      router.push(redirectPath);
-      router.refresh();
-      return;
-    }
-
-    if (resolvedRole === "admin") {
-      router.push("/admin");
-      router.refresh();
-      return;
-    }
-
-    if (resolvedRole === "business") {
-      const { data: ownedBusinesses } = await supabase
-        .from("businesses")
-        .select("id")
-        .eq("owner_id", authData.user.id)
-        .limit(1);
-
-      router.push(
-        ownedBusinesses && ownedBusinesses.length > 0
-          ? "/business/dashboard"
-          : "/business/register"
-      );
-      router.refresh();
-      return;
-    }
-
-    router.push("/discover");
-    router.refresh();
-  }
-
-  async function resendVerificationEmail() {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail) {
-      setMessageTone("warning");
-      setMessage("Enter your email address first, then request a new verification link.");
-      return;
-    }
-
-    setResendingVerification(true);
-    setMessageTone("success");
-    setMessage("Sending verification email...");
-
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: normalizedEmail,
-    });
-
-    setResendingVerification(false);
-
-    if (error) {
-      setMessageTone("error");
-      setMessage(
-        "Verification email could not be sent. Please wait a moment and try again."
-      );
-      return;
-    }
-
-    setMessageTone("success");
-    setMessage("Verification email sent. Please check your inbox and spam folder.");
-  }
-
-  async function requestPasswordReset() {
-    const normalizedEmail = normalizeEmail(email);
-
-    if (!normalizedEmail) {
-      setMessageTone("warning");
-      setMessage("Enter your email address first, then request a reset link.");
-      return;
-    }
-
-    if (!isValidEmail(normalizedEmail)) {
-      setMessageTone("error");
-      setMessage("Enter a valid email address.");
-      return;
-    }
-
-    setSubmitting(true);
-    setMessageTone("success");
-    setMessage("Sending password reset email...");
-    setEmail(normalizedEmail);
-
-    const redirectTo =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/login?mode=reset-password`
-        : undefined;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      normalizedEmail,
-      { redirectTo }
-    );
-
-    setSubmitting(false);
-
-    if (error) {
-      setMessageTone("error");
-      setMessage("Password reset email could not be sent. Please try again.");
-      return;
-    }
-
-    setMessageTone("success");
-    setMessage("Password reset email sent. Please check your inbox.");
-  }
-
-  async function updatePassword() {
-    setMessage("");
-    setMessageTone("error");
-
-    if (!meetsPasswordRule(newPassword)) {
-      setMessage(
-        "New password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number."
-      );
-      return;
-    }
-
-    if (newPassword.trim() !== newPassword) {
-      setMessage("New password cannot start or end with spaces.");
-      return;
-    }
-
-    if (newPassword !== confirmNewPassword) {
-      setMessage("Passwords do not match.");
-      return;
-    }
-
-    setSubmitting(true);
-    setMessageTone("success");
-    setMessage("Updating password...");
-
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
-
-    setSubmitting(false);
-
-    if (error) {
-      setMessageTone("error");
-      setMessage("Password could not be updated. Please request a new reset link.");
-      return;
-    }
-
-    setNewPassword("");
-    setConfirmNewPassword("");
-    setPasswordHelpMode("hidden");
-    setMessageTone("success");
-    setMessage("Password updated. You can continue using ArGadaagdo.");
-  }
-
-  const redirectMessage = getRedirectMessage(redirectPath, t);
+import { useAuthForm } from "@/lib/useAuthForm";
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeLoginScreen } from "@/components/native/screens";
+
+// Sign in and Create account are two clear tabs. Customer sign-up is the main
+// path; businesses have their own area (business.argadaagdo.ge).
+function LoginPage() {
+  const form = useAuthForm();
+  const {
+    authMode,
+    authModeOptions,
+    effectivePasswordHelpMode,
+    isBusinessArea,
+    isGeorgian,
+    language,
+    message,
+    messageTone,
+    redirectMessage,
+    submitting,
+    t,
+  } = form;
+  const isLogin = authMode === "login";
 
   return (
     <main className="app-shell theme-web">
       <Navbar variant="web" />
 
-      <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
+      <section className="px-4 py-5 sm:px-6 sm:py-10 md:px-12 md:py-14">
+        <div className="mx-auto grid max-w-md gap-8 md:max-w-6xl md:grid-cols-2 md:items-center">
           {isBusinessArea ? (
-            <div className="theme-forest rounded-3xl bg-brand-forest p-6 sm:p-8 md:p-12">
+            <div className="theme-forest hidden rounded-3xl bg-brand-forest p-12 md:block">
               <p className="premium-badge px-4 py-2">{t("login.business")}</p>
-
-              <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
+              <h1 className="mt-4 text-6xl font-semibold leading-tight text-cream">
                 {t("login.businessTitle")}
               </h1>
-
-              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
+              <p className="mt-5 text-lg leading-8 text-body">
                 {t("login.forBusinessesText")}
               </p>
             </div>
           ) : (
-            <div className="premium-surface rounded-3xl p-6 sm:rounded-3xl sm:p-8 md:p-12">
+            <div className="premium-surface hidden rounded-3xl p-12 md:block">
               <p className="premium-badge px-4 py-2">{t("login.title")}</p>
-
-              <h1 className="mt-4 text-3xl font-semibold leading-tight text-cream sm:text-4xl md:text-6xl">
-                {t("login.signIn")} · ArGadaagdo
-              </h1>
-
-              <p className="mt-4 text-base leading-7 text-body sm:mt-5 sm:text-lg sm:leading-8">
-                {t("home.subtitle")}
+              <p className="mt-4 text-6xl font-semibold leading-tight text-cream">
+                ArGadaagdo
               </p>
-
+              <p className="mt-5 text-lg leading-8 text-body">{t("home.subtitle")}</p>
               <div className="premium-card mt-8 rounded-3xl p-5">
-                <h3 className="text-xl font-semibold text-cream">
-                  {t("login.forCustomers")}
-                </h3>
+                <h3 className="text-xl font-semibold text-cream">{t("login.forCustomers")}</h3>
                 <p className="mt-2 text-body">{t("login.forCustomersText")}</p>
               </div>
             </div>
           )}
 
-          <div className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:p-10">
-            <h2 className="text-2xl font-semibold text-cream sm:text-3xl">
-              {authMode === "login"
-                ? t("login.signInTitle")
-                : t("login.signUpTitle")}
-            </h2>
-
-            <p className="mt-2 text-sm leading-6 text-body sm:text-base">
-              {authMode === "login"
-                ? t("login.signInHint")
-                : t("login.signUpHint")}
-            </p>
-
-            <div className="ui-well mt-6 grid gap-2 rounded-3xl p-2 sm:grid-cols-2">
+          <div className="premium-card rounded-3xl p-5 sm:p-8 md:p-10">
+            <div
+              role="tablist"
+              aria-label={t("login.title")}
+              className="grid grid-cols-2 gap-1 rounded-2xl bg-well p-1"
+            >
               {authModeOptions.map((option) => {
-                const isActive = authMode === option.value;
-
+                const active = authMode === option.value;
                 return (
                   <button
                     key={option.value}
                     type="button"
+                    role="tab"
+                    aria-selected={active}
                     onClick={() => {
-                      setMessage("");
-                      setAuthMode(option.value);
+                      form.setMessage("");
+                      form.setAuthMode(option.value);
                     }}
-                    className={`rounded-2xl px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-mint ${ isActive
-                        ? "ui-card text-mint"
-                        : "text-body hover:text-cream"
+                    className={`min-h-11 rounded-xl px-3 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
+                      active ? "bg-mint text-ink shadow-sm" : "text-body"
                     }`}
                   >
-                    <span className="block font-semibold">{option.label}</span>
-                    <span
-                      className={`mt-1 block text-sm font-semibold ${ isActive ? "text-mint/80" : "text-body"
-                      }`}
-                    >
-                      {option.helper}
-                    </span>
+                    {option.value === "signup" && !isBusinessArea
+                      ? isGeorgian
+                        ? "რეგისტრაცია"
+                        : "Create account"
+                      : option.label}
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-6 grid gap-4 sm:gap-5">
-              {authMode === "login" && redirectMessage && !message && (
+            <h1 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
+              {isLogin ? t("login.signInTitle") : t("login.signUpTitle")}
+            </h1>
+            <p className="mt-1 text-sm leading-6 text-body">
+              {isLogin ? t("login.signInHint") : t("login.signUpHint")}
+            </p>
+
+            <div className="mt-5 grid gap-3">
+              {isLogin && redirectMessage && !message && (
                 <Notice tone="warning">
                   {translateUserMessage(redirectMessage, language)}
                 </Notice>
               )}
 
               <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={submitOnEnter}
+                value={form.email}
+                onChange={(event) => form.setEmail(event.target.value)}
+                onKeyDown={form.submitOnEnter}
                 type="email"
                 autoComplete="email"
-                aria-label={
-                  isGeorgian ? "ელფოსტის მისამართი" : "Email address"
-                }
+                aria-label={isGeorgian ? "ელფოსტის მისამართი" : "Email address"}
                 placeholder={t("login.email")}
                 className="premium-input px-4 py-3"
               />
 
               <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={submitOnEnter}
+                value={form.password}
+                onChange={(event) => form.setPassword(event.target.value)}
+                onKeyDown={form.submitOnEnter}
                 type="password"
-                autoComplete={
-                  authMode === "login" ? "current-password" : "new-password"
-                }
+                autoComplete={isLogin ? "current-password" : "new-password"}
                 aria-label={t("login.password")}
                 placeholder={t("login.password")}
                 className="premium-input px-4 py-3"
               />
 
-              {authMode === "login" && (
-                <div className="flex flex-col gap-2 rounded-2xl bg-well px-4 py-3 text-sm font-semibold text-body sm:flex-row sm:items-center sm:justify-between sm:text-base">
-                  <span>
-                    {isGeorgian
-                      ? "შესვლასთან დაკავშირებით დახმარება გჭირდება?"
-                      : "Need help signing in?"}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMessage("");
-                      setPasswordHelpMode(
-                        effectivePasswordHelpMode === "forgot"
-                          ? "hidden"
-                          : "forgot"
-                      );
-                    }}
-                    className="flex min-h-11 items-center text-left font-semibold text-mint underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-mint sm:justify-end sm:text-right"
-                  >
-                    {isGeorgian ? "დაგავიწყდა პაროლი?" : "Forgot password?"}
-                  </button>
-                </div>
+              {!isLogin && (
+                <p className="-mt-1 text-xs leading-5 text-body">
+                  {isGeorgian
+                    ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი."
+                    : "At least 8 characters, with a lowercase and an uppercase letter and a number."}
+                </p>
               )}
 
-              {authMode === "login" && effectivePasswordHelpMode === "forgot" && (
-                <div className="ui-card rounded-3xl p-4">
-                  <h3 className="font-semibold text-cream">
-                    {isGeorgian ? "პაროლის აღდგენა" : "Reset password"}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-body">
+              {isLogin && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    form.setMessage("");
+                    form.setPasswordHelpMode(
+                      effectivePasswordHelpMode === "forgot" ? "hidden" : "forgot"
+                    );
+                  }}
+                  className="-mt-1 justify-self-end text-sm font-semibold text-mint underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                >
+                  {isGeorgian ? "დაგავიწყდა პაროლი?" : "Forgot password?"}
+                </button>
+              )}
+
+              {isLogin && effectivePasswordHelpMode === "forgot" && (
+                <div className="ui-card rounded-2xl p-4">
+                  <p className="text-sm leading-6 text-body">
                     {isGeorgian
-                      ? "ზემოთ შეიყვანე ანგარიშის ელფოსტა. თუ ანგარიში არსებობს, უსაფრთხო აღდგენის ბმულს გამოგიგზავნით."
-                      : "Enter your account email above. We will send a secure reset link if the account exists."}
+                      ? "ჩაწერე ანგარიშის ელფოსტა ზემოთ და გამოგიგზავნით აღდგენის ბმულს."
+                      : "Enter your account email above and we'll send you a reset link."}
                   </p>
                   <button
                     type="button"
-                    onClick={requestPasswordReset}
+                    onClick={form.requestPasswordReset}
                     disabled={submitting}
-                    className="premium-button mt-4 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="premium-button mt-3 w-full py-3 disabled:opacity-60"
                   >
                     {submitting
                       ? isGeorgian
@@ -679,54 +173,39 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {authMode === "login" && effectivePasswordHelpMode === "reset" && (
-                <div className="ui-card grid gap-4 rounded-3xl p-4">
-                  <div>
-                    <h3 className="font-semibold text-cream">
-                      {isGeorgian
-                        ? "აირჩიე ახალი პაროლი"
-                        : "Choose a new password"}
-                    </h3>
-                    <p className="mt-2 text-sm leading-6 text-body">
-                      {isGeorgian
-                        ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
-                        : "At least 8 characters, with a lowercase letter, an uppercase letter and a number. Avoid passwords you use on other websites."}
-                    </p>
-                  </div>
-
+              {isLogin && effectivePasswordHelpMode === "reset" && (
+                <div className="ui-card grid gap-3 rounded-2xl p-4">
+                  <h2 className="font-semibold text-cream">
+                    {isGeorgian ? "აირჩიე ახალი პაროლი" : "Choose a new password"}
+                  </h2>
+                  <p className="text-sm leading-6 text-body">
+                    {isGeorgian
+                      ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი."
+                      : "At least 8 characters, with a lowercase and an uppercase letter and a number."}
+                  </p>
                   <input
-                    value={newPassword}
-                    onChange={(event) => setNewPassword(event.target.value)}
+                    value={form.newPassword}
+                    onChange={(event) => form.setNewPassword(event.target.value)}
                     type="password"
+                    autoComplete="new-password"
                     aria-label={isGeorgian ? "ახალი პაროლი" : "New password"}
                     placeholder={isGeorgian ? "ახალი პაროლი" : "New password"}
                     className="premium-input p-4 font-medium"
                   />
-
                   <input
-                    value={confirmNewPassword}
-                    onChange={(event) =>
-                      setConfirmNewPassword(event.target.value)
-                    }
+                    value={form.confirmNewPassword}
+                    onChange={(event) => form.setConfirmNewPassword(event.target.value)}
                     type="password"
-                    aria-label={
-                      isGeorgian
-                        ? "გაიმეორე ახალი პაროლი"
-                        : "Confirm new password"
-                    }
-                    placeholder={
-                      isGeorgian
-                        ? "გაიმეორე ახალი პაროლი"
-                        : "Confirm new password"
-                    }
+                    autoComplete="new-password"
+                    aria-label={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
+                    placeholder={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
                     className="premium-input p-4 font-medium"
                   />
-
                   <button
                     type="button"
-                    onClick={updatePassword}
+                    onClick={form.updatePassword}
                     disabled={submitting}
-                    className="premium-button min-h-11 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="premium-button min-h-11 w-full py-3 disabled:opacity-60"
                   >
                     {submitting
                       ? isGeorgian
@@ -741,52 +220,16 @@ export default function LoginPage() {
 
               <button
                 type="button"
-                onClick={authMode === "login" ? signIn : createAccount}
+                onClick={isLogin ? form.signIn : form.createAccount}
                 disabled={submitting}
-                className="premium-button cta-glow w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
+                className="premium-button cta-glow mt-1 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
               >
-                {authMode === "login" ? t("login.signIn") : t("login.signUp")}
+                {isLogin
+                  ? t("login.signIn")
+                  : isGeorgian
+                  ? "ანგარიშის შექმნა"
+                  : "Create account"}
               </button>
-
-              <div className="rounded-2xl bg-well px-4 py-3 text-center text-sm font-semibold text-body sm:text-base">
-                {authMode === "login"
-                  ? t("login.dontHaveAccount")
-                  : t("login.alreadyHaveAccount")}{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMessage("");
-                    setAuthMode(authMode === "login" ? "signup" : "login");
-                  }}
-                  className="inline-flex min-h-11 items-center font-semibold text-mint underline-offset-4 transition hover:underline focus:outline-none focus:ring-2 focus:ring-mint"
-                >
-                  {authMode === "login"
-                    ? t("login.signUp")
-                    : t("login.signIn")}
-                </button>
-              </div>
-
-              {authMode === "login" && (
-                <div className="ui-card rounded-2xl px-4 py-3 text-center text-sm font-semibold text-cream sm:text-base">
-                  {isGeorgian
-                    ? "ელფოსტის დადასტურება გჭირდება?"
-                    : "Need to verify your email?"}{" "}
-                  <button
-                    type="button"
-                    onClick={resendVerificationEmail}
-                    disabled={resendingVerification || submitting}
-                    className="inline-flex min-h-11 items-center font-semibold text-mint underline-offset-4 transition hover:underline disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-mint"
-                  >
-                    {resendingVerification
-                      ? isGeorgian
-                        ? "იგზავნება..."
-                        : "Sending..."
-                      : isGeorgian
-                      ? "დადასტურების წერილის ხელახლა გაგზავნა"
-                      : "Resend verification email"}
-                  </button>
-                </div>
-              )}
 
               {message && (
                 <Notice tone={messageTone}>
@@ -794,15 +237,30 @@ export default function LoginPage() {
                 </Notice>
               )}
 
+              {message === VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE && (
+                <button
+                  type="button"
+                  onClick={form.resendVerificationEmail}
+                  disabled={form.resendingVerification || submitting}
+                  className="min-h-11 text-sm font-semibold text-mint underline underline-offset-4 disabled:opacity-60"
+                >
+                  {form.resendingVerification
+                    ? isGeorgian
+                      ? "იგზავნება..."
+                      : "Sending..."
+                    : isGeorgian
+                    ? "დადასტურების წერილის ხელახლა გაგზავნა"
+                    : "Resend confirmation email"}
+                </button>
+              )}
+
               {!isBusinessArea && (
-                <p className="text-center text-sm">
-                  <a
-                    href={businessLoginUrl}
-                    className="inline-flex min-h-11 items-center text-body underline underline-offset-4 transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
-                  >
-                    {t("login.businessLink")}
-                  </a>
-                </p>
+                <a
+                  href={`${businessLoginUrl}?tab=signup`}
+                  className="mt-1 inline-flex min-h-11 items-center justify-center text-sm font-semibold text-body underline-offset-4 hover:text-mint hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                >
+                  {isGeorgian ? "ბიზნესისთვის →" : "For businesses →"}
+                </a>
               )}
             </div>
           </div>
@@ -811,3 +269,5 @@ export default function LoginPage() {
     </main>
   );
 }
+
+export default withNativeScreen(LoginPage, NativeLoginScreen);
