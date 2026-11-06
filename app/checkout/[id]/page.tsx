@@ -1,6 +1,7 @@
 "use client";
 
-import { PhoneVerification } from "@/components/PhoneVerification";
+import PhoneGate from "@/components/PhoneGate";
+import { isPhoneRequiredError } from "@/lib/phoneGate";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
@@ -278,6 +279,11 @@ function CheckoutPage() {
     const paymentSession = await response.json().catch(() => null);
 
     if (!response.ok || !paymentSession?.redirectUrl) {
+      if (isPhoneRequiredError(paymentSession?.error)) {
+        setPhoneRequired(true);
+        setPaying(false);
+        return;
+      }
       setMessageTone("error");
       setMessage(
         getReservationErrorMessage(
@@ -401,11 +407,8 @@ function CheckoutPage() {
               </div>
 
               {phoneRequired && (
-                <div className="ui-card mt-3 rounded-2xl p-4">
-                  <h2 className="mb-3 font-semibold text-cream">
-                    {language === "ka" ? "დაადასტურე ტელეფონი" : "Confirm your phone"}
-                  </h2>
-                  <PhoneVerification
+                <div className="mt-3">
+                  <PhoneGate
                     onVerified={() => {
                       setPhoneRequired(false);
                       setMessage("");

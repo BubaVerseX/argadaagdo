@@ -1,5 +1,7 @@
 "use client";
 
+import PhoneGate from "@/components/PhoneGate";
+import { isPhoneRequiredError, needsPhoneVerification } from "@/lib/phoneGate";
 import { WaveEdge } from "@/components/design/Decor";
 import { ArrowLeftIcon } from "@/components/icons";
 import Notice from "@/components/Notice";
@@ -49,6 +51,8 @@ export default function NativeCheckout() {
   );
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(true);
+  // First reservation: confirm a phone by SMS once (lib/phoneGate.ts).
+  const [needsPhone, setNeedsPhone] = useState(false);
   const [paying, setPaying] = useState(false);
   const payingRef = useRef(false);
   const [message, setMessage] = useState("");
@@ -74,6 +78,9 @@ export default function NativeCheckout() {
       }
 
       setBlocked(false);
+      void needsPhoneVerification().then((required) => {
+        if (active) setNeedsPhone(required);
+      });
     });
 
     sweepExpiredOffersOnce();
@@ -169,6 +176,11 @@ export default function NativeCheckout() {
     const paymentSession = await response.json().catch(() => null);
 
     if (!response.ok || !paymentSession?.redirectUrl) {
+      if (isPhoneRequiredError(paymentSession?.error)) {
+        setNeedsPhone(true);
+        setPaying(false);
+        return;
+      }
       setMessageTone("error");
       setMessage(
         getUserErrorMessage(
@@ -244,6 +256,8 @@ export default function NativeCheckout() {
       <WaveEdge />
 
       <section className="grid gap-3 px-4">
+        {needsPhone && <PhoneGate onVerified={() => setNeedsPhone(false)} />}
+
         {!offer && loading && (
           <>
             <div className="native-skeleton h-[6.5rem] rounded-[26px]" />
@@ -323,7 +337,7 @@ export default function NativeCheckout() {
           <button
             type="button"
             onClick={() => void confirm()}
-            disabled={paying || blocked || !isOfferReservable(offer)}
+            disabled={paying || blocked || needsPhone || !isOfferReservable(offer)}
             className="native-press flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand-mint text-base font-bold text-brand-forest disabled:cursor-not-allowed disabled:bg-brand-forest-2 disabled:text-brand-mint"
           >
             {paying
