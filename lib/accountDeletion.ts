@@ -10,8 +10,10 @@ export function getDeleteConfirmWord(language: string) {
 }
 
 export function isDeleteConfirmed(text: string) {
-  const value = text.trim().toUpperCase();
-  return value === "DELETE" || value === "წაშლა";
+  const value = text.trim().normalize("NFC");
+  // Upper-case only the Latin word: toUpperCase() turns Georgian letters into
+  // Mtavruli capitals ("ᲬᲐᲨᲚᲐ"), so "წაშლა" would never match.
+  return value.toUpperCase() === "DELETE" || value === "წაშლა";
 }
 
 export type DeleteAccountResult =
