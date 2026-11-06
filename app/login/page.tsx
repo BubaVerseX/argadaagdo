@@ -7,6 +7,7 @@ import Notice from "@/components/Notice";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { useAuthForm } from "@/lib/useAuthForm";
+import EmailCodeStep from "@/components/EmailCodeStep";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeLoginScreen } from "@/components/native/screens";
 
@@ -60,6 +61,10 @@ function LoginPage() {
           )}
 
           <div className="premium-card rounded-3xl p-5 sm:p-8 md:p-10">
+            {form.codeEmail ? (
+              <EmailCodeStep form={form} tone="app" />
+            ) : (
+              <>
             <div
               role="tablist"
               aria-label={t("login.title")}
@@ -272,6 +277,8 @@ function LoginPage() {
                 </a>
               )}
             </div>
+              </>
+            )}
           </div>
         </div>
       </section>
