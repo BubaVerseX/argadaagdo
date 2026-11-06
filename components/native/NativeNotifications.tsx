@@ -54,6 +54,30 @@ type OrderRow = {
 type Source = { orders: OrderRow[]; favoriteBusinessIds: number[] };
 
 const MEMORY_KEY = "notifications";
+
+// Georgian month names by hand: some phones' browsers lack Georgian dates.
+const KA_MONTHS = ["იან", "თებ", "მარ", "აპრ", "მაი", "ივნ", "ივლ", "აგვ", "სექ", "ოქტ", "ნოე", "დეკ"];
+
+function formatInboxDate(value: string, language: "ka" | "en") {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Tbilisi",
+      day: "numeric",
+      month: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+      .formatToParts(new Date(value))
+      .map((part) => [part.type, part.value])
+  );
+  const month = Number(parts.month) - 1;
+  const name =
+    language === "ka"
+      ? KA_MONTHS[month]
+      : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month];
+  return `${Number(parts.day)} ${name}, ${parts.hour}:${parts.minute}`;
+}
 const DAY = 24 * 60 * 60 * 1000;
 
 // The inbox is built from what already happened to your orders and from new
@@ -102,7 +126,7 @@ function buildItems(source: Source, language: "ka" | "en"): Item[] {
         at: order.completed_at || order.created_at,
         href: "/orders",
         Icon: CheckCircleIcon,
-        title: L("წაღებულია — მადლობა!", "Picked up — thank you!"),
+        title: L("წაღებულია ✓", "Picked up ✓"),
         body: [title, place].filter(Boolean).join(" · "),
         fresh: false,
       });
@@ -177,12 +201,7 @@ export default function NativeNotifications() {
   }, [router]);
 
   const items = source ? buildItems(source, language) : null;
-  const dateFormat = new Intl.DateTimeFormat(language === "ka" ? "ka-GE" : "en-GB", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const formatDate = (value: string) => formatInboxDate(value, language);
 
   return (
     <main className="native-main native-main--bare">
@@ -223,7 +242,7 @@ export default function NativeNotifications() {
                     <span className="flex items-baseline justify-between gap-2">
                       <span className="truncate font-bold text-cream">{item.title}</span>
                       <span className="shrink-0 text-xs text-muted">
-                        {dateFormat.format(new Date(item.at))}
+                        {formatDate(item.at)}
                       </span>
                     </span>
                     <span className="mt-0.5 line-clamp-2 block text-sm leading-5 text-body">

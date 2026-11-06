@@ -430,7 +430,7 @@ export default function NativeOrders() {
   return (
     <main className="native-main">
       <header className="flex items-center justify-between gap-3 px-4 pb-1 pt-4">
-        <h1 className="font-serif text-[1.625rem] font-bold">{t("nav.orders")}</h1>
+        <h1 className="min-w-0 truncate whitespace-nowrap font-serif text-[1.25rem] font-bold min-[380px]:text-[1.5rem]">{t("nav.orders")}</h1>
         <div className="flex rounded-full bg-well p-1" role="tablist">
           {(["active", "history"] as const).map((option) => (
             <button

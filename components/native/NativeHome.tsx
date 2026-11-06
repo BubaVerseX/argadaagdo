@@ -65,6 +65,11 @@ function NativeOfferCard({
             −{discount}%
           </span>
         )}
+        {lowStock && (
+          <span className="absolute right-1 top-1 rounded-full bg-mint px-1.5 py-0.5 text-[11px] font-bold text-ink">
+            {t("native.left").replace("{n}", String(quantity))}
+          </span>
+        )}
       </div>
 
       <div className="min-w-0 flex-1">
@@ -76,26 +81,20 @@ function NativeOfferCard({
           {size ? ` · ${language === "ka" ? "ზომა" : "Size"} ${size}` : ""}
           {rating && rating.rating_count > 0 ? ` · ★ ${rating.average_rating.toFixed(1)}` : ""}
         </p>
-        <p className="mt-1 flex min-w-0 items-center gap-1 text-[13px] text-body">
-          <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-          <span className="min-w-0 truncate">
-            {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
-          </span>
-          {lowStock && (
-            <span className="ml-1 shrink-0 rounded-full bg-mint px-1.5 text-[11px] font-bold text-ink">
-              {t("native.left").replace("{n}", String(quantity))}
+        <div className="mt-1.5 flex items-end justify-between gap-2">
+          <p className="flex min-w-0 items-center gap-1 text-[13px] text-body">
+            <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+            <span className="min-w-0 truncate">
+              {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
             </span>
-          )}
-        </p>
-      </div>
-
-      <div className="shrink-0 self-end text-right">
-        {oldPrice !== null && (
-          <p className="text-xs leading-none text-muted line-through">{formatMoney(oldPrice)}</p>
-        )}
-        <p className="mt-0.5 whitespace-nowrap text-xl font-bold leading-tight text-mint">
-          {formatMoney(offer.price)}
-        </p>
+          </p>
+          <p className="shrink-0 whitespace-nowrap text-right leading-none">
+            {oldPrice !== null && (
+              <span className="mr-1.5 hidden text-xs text-muted line-through min-[380px]:inline">{formatMoney(oldPrice)}</span>
+            )}
+            <span className="text-lg font-bold text-mint">{formatMoney(offer.price)}</span>
+          </p>
+        </div>
       </div>
     </Link>
   );
