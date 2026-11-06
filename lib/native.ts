@@ -71,3 +71,19 @@ export function getNativeBrowser(): CapacitorBrowserPlugin | null {
     ? browser
     : null;
 }
+
+type NativeListenerHandle = { remove?: () => unknown } | null | undefined;
+
+/**
+ * Removes a Capacitor listener whatever shape addListener returned. In the
+ * real apps the native bridge returns the handle itself ({ remove }), not a
+ * Promise, so `.then()` on it throws (that broke push registration until
+ * 2026-11-07). Safe with both shapes, with undefined, and never throws.
+ */
+export function removeNativeListener(
+  handle: NativeListenerHandle | Promise<NativeListenerHandle>
+) {
+  void Promise.resolve(handle)
+    .then((listener) => listener?.remove?.())
+    .catch(() => undefined);
+}

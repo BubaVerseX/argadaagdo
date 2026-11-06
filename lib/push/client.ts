@@ -1,6 +1,6 @@
 "use client";
 
-import { isNativeApp } from "@/lib/native";
+import { isNativeApp, removeNativeListener } from "@/lib/native";
 import { supabase } from "@/lib/supabase";
 
 // Push notifications in the app (Capacitor Push Notifications plugin, which
@@ -14,10 +14,12 @@ type PushPlugin = {
   checkPermissions: () => Promise<{ receive: Permission }>;
   requestPermissions: () => Promise<{ receive: Permission }>;
   register: () => Promise<void>;
+  // The native bridge returns the handle itself ({ remove }), the web
+  // plugin a Promise of it: handle both (lib/push/client.ts removeListener).
   addListener: (
     event: "registration" | "registrationError" | "pushNotificationActionPerformed",
     callback: (payload: never) => void
-  ) => Promise<Listener>;
+  ) => Promise<Listener> | Listener;
 };
 
 type CapacitorGlobal = {
@@ -126,8 +128,8 @@ function currentLanguage() {
 // Resolves with the device token once the OS hands it over.
 function registerDevice(push: PushPlugin) {
   return new Promise<string>((resolve, reject) => {
-    const handles: Promise<Listener>[] = [];
-    const done = () => handles.forEach((handle) => void handle.then((h) => h.remove()));
+    const handles: (Promise<Listener> | Listener)[] = [];
+    const done = () => handles.forEach(removeNativeListener);
     const timer = window.setTimeout(() => {
       done();
       reject(new Error("timeout: no device token from the phone within 15 s"));
@@ -248,7 +250,7 @@ export function startPush(openPath: (path: string) => void) {
 
   void ensurePushRegistered({ refresh: true });
 
-  return () => void tapped.then((handle) => handle.remove());
+  return () => removeNativeListener(tapped);
 }
 
 /**
