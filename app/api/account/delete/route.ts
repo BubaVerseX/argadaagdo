@@ -163,6 +163,19 @@ export async function POST(request: Request) {
       (ownedBusinesses || []).map((business: { id: number }) => business.id)
     );
 
+    // The profile photo (private bucket, one file per person). Removing a
+    // file that isn't there is not an error.
+    const { error: avatarError } = await serviceClient.storage
+      .from("avatars")
+      .remove([`${user.id}/avatar.jpg`]);
+
+    if (avatarError && !/not.?found/i.test(avatarError.message)) {
+      logger.error("Profile photo could not be removed", {
+        userId: user.id,
+        error: avatarError.message,
+      });
+    }
+
     const { error: deleteError } = await serviceClient.auth.admin.deleteUser(
       user.id
     );

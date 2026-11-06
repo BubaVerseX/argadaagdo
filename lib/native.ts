@@ -15,6 +15,7 @@ type CapacitorBrowserPlugin = {
 
 type CapacitorGlobal = {
   isNativePlatform?: () => boolean;
+  getPlatform?: () => string;
   Plugins?: Record<string, unknown>;
 };
 
@@ -29,6 +30,31 @@ function getCapacitor(): CapacitorGlobal | null {
 
 export function isNativeApp() {
   return getCapacitor() !== null;
+}
+
+/**
+ * The installed app's platform and build number (CFBundleVersion on iOS,
+ * versionCode on Android); null on the website. `build` is null when the
+ * App plugin can't tell.
+ */
+export async function getNativeAppInfo(): Promise<{
+  platform: string;
+  build: string | null;
+} | null> {
+  const capacitor = getCapacitor();
+  if (!capacitor) return null;
+
+  const platform = capacitor.getPlatform?.() || "";
+  const app = capacitor.Plugins?.App as
+    | { getInfo?: () => Promise<{ build?: string }> }
+    | undefined;
+
+  try {
+    const info = await app?.getInfo?.();
+    return { platform, build: info?.build ?? null };
+  } catch {
+    return { platform, build: null };
+  }
 }
 
 // In-app browser (SFSafariViewController / Chrome Custom Tabs). Inside the
