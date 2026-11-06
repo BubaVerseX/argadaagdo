@@ -4,12 +4,14 @@ import { withNativeChrome } from "@/components/native/NativeSwitch";
 import { NativeSubpageBar } from "@/components/native/screens";
 import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { BusinessHostNavbar, LanguageToggle } from "@/components/business/BusinessHostChrome";
 import {
   getConfirmedProfile,
   getCurrentUser,
   isEmailConfirmed,
   logoutUser,
 } from "@/lib/auth";
+import { useHostKind } from "@/lib/useHostKind";
 import { useLanguage } from "@/lib/useLanguage";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
@@ -63,6 +65,11 @@ function Navbar({
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useLanguage();
+  const hostKind = useHostKind();
+  // Until the host is known (server render, hydration) links don't prefetch:
+  // on the business host these customer pages redirect to the other domain,
+  // and a cross-origin prefetch fails with a CORS error.
+  const prefetch = hostKind === "customer" ? undefined : false;
 
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState("");
@@ -230,6 +237,18 @@ function Navbar({
     ];
   })();
 
+  if (hostKind === "business") {
+    return (
+      <BusinessHostNavbar
+        authReady={authReady}
+        signedIn={Boolean(user)}
+        email={user?.email ?? null}
+        showDashboard={role === "business"}
+        onLogout={() => void handleLogout()}
+      />
+    );
+  }
+
   return (
     <nav
       data-web-chrome
@@ -239,12 +258,16 @@ function Navbar({
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <Link
+                prefetch={prefetch}
           href="/"
           onClick={closeAllMenus}
           className="flex min-h-11 items-center gap-3 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
           aria-label={t("brand.name")}
         >
-          <BrandMark tagline={t("brand.tagline")} />
+          <BrandMark
+            tagline={t("brand.tagline")}
+            nameClassName="text-[15px] font-semibold leading-none text-cream min-[400px]:text-lg sm:text-xl"
+          />
         </Link>
 
         {/* Desktop horizontal nav — ui-card pill row, mobile relies on
@@ -257,6 +280,7 @@ function Navbar({
               const active = isActivePath(tabItem.href);
               return (
                 <Link
+                prefetch={prefetch}
                   key={tabItem.href}
                   href={tabItem.href}
                   aria-current={ariaCurrent(tabItem.href)}
@@ -272,12 +296,15 @@ function Navbar({
             })}
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <div className="hidden lg:block">
             <LanguageSwitcher />
           </div>
+          <LanguageToggle className="lg:hidden" />
 
-          <div className="relative">
+          {/* The bell (no notifications yet) makes room for KA/EN on the
+              narrowest phones. */}
+          <div className="relative max-[379px]:hidden">
             <button
               type="button"
               onClick={() => {
@@ -345,13 +372,10 @@ function Navbar({
                     </div>
                   )}
 
-                  <div className="my-3 px-3 lg:hidden">
-                    <LanguageSwitcher />
-                  </div>
-
                   {user && (
                     <div className="grid gap-1 px-1">
                       <Link
+                prefetch={prefetch}
                         href="/profile"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -360,6 +384,7 @@ function Navbar({
                         {t("nav.profile")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/settings"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -369,6 +394,7 @@ function Navbar({
                       </Link>
                       {showBusinessDashboard && (
                         <Link
+                prefetch={prefetch}
                           href="/business/dashboard"
                           onClick={() => setAccountMenu(false)}
                           className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream lg:hidden"
@@ -379,6 +405,7 @@ function Navbar({
                       )}
                       {isAdmin && (
                         <Link
+                prefetch={prefetch}
                           href="/admin"
                           onClick={() => setAccountMenu(false)}
                           className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream lg:hidden"
@@ -407,6 +434,7 @@ function Navbar({
                   {moreExpanded && (
                     <div id="account-more-links" className="grid gap-1 px-1 pt-1">
                       <Link
+                prefetch={prefetch}
                         href="/discover"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -415,6 +443,7 @@ function Navbar({
                         {t("nav.discover")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/businesses"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -423,6 +452,7 @@ function Navbar({
                         {t("nav.businesses")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/faq"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -431,6 +461,7 @@ function Navbar({
                         {t("nav.faq")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/about"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -439,6 +470,7 @@ function Navbar({
                         {t("nav.about")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/contact"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -447,6 +479,7 @@ function Navbar({
                         {t("nav.contact")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/support"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -455,6 +488,7 @@ function Navbar({
                         {t("nav.support")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/privacy"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -463,6 +497,7 @@ function Navbar({
                         {t("nav.privacy")}
                       </Link>
                       <Link
+                prefetch={prefetch}
                         href="/terms"
                         onClick={() => setAccountMenu(false)}
                         className="flex min-h-11 items-center rounded-2xl px-3 text-sm font-semibold text-body transition hover:text-cream"
@@ -492,6 +527,7 @@ function Navbar({
             <div className="ui-card h-11 w-11 rounded-full" />
           ) : (
             <Link
+                prefetch={prefetch}
               href={user ? "/profile" : "/login"}
               onClick={closeAllMenus}
               aria-label={user ? t("nav.profile") : t("nav.signIn")}
@@ -528,6 +564,7 @@ function Navbar({
                 </button>
               ) : (
                 <Link
+                prefetch={prefetch}
                   key={key}
                   href={tabItem.href}
                   aria-current={ariaCurrent(tabItem.href)}
@@ -570,6 +607,7 @@ function Navbar({
 
             return (
               <Link
+                prefetch={prefetch}
                 key={key}
                 href={tabItem.href}
                 aria-current={ariaCurrent(tabItem.href)}

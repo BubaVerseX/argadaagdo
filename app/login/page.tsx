@@ -94,9 +94,15 @@ function LoginPage() {
             <h1 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
               {isLogin ? t("login.signInTitle") : t("login.signUpTitle")}
             </h1>
-            <p className="mt-1 text-sm leading-6 text-body">
-              {isLogin ? t("login.signInHint") : t("login.signUpHint")}
-            </p>
+            {isBusinessArea ? (
+              <p className="mt-1 text-sm font-semibold leading-6 text-mint">
+                {isGeorgian ? "ბიზნეს ანგარიში" : "Business account"}
+              </p>
+            ) : (
+              <p className="mt-1 text-sm leading-6 text-body">
+                {isLogin ? t("login.signInHint") : t("login.signUpHint")}
+              </p>
+            )}
 
             <div className="mt-5 grid gap-3">
               {isLogin && redirectMessage && !message && (

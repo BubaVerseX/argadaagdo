@@ -6,6 +6,8 @@ import AppStoreLink from "@/components/AppStoreLink";
 import { businessHomeUrl } from "@/lib/businessArea";
 import BrandMark from "@/components/BrandMark";
 import Link from "next/link";
+import { BusinessHostFooter } from "@/components/business/BusinessHostChrome";
+import { useHostKind } from "@/lib/useHostKind";
 import { useLanguage } from "@/lib/useLanguage";
 import { instagramUrl, xUrl } from "@/lib/appLinks";
 import { OPERATOR_LOCATION, OPERATOR_SHORT } from "@/lib/legal/shared";
@@ -38,7 +40,14 @@ const socialLinks = [
 
 function Footer() {
   const { language, t } = useLanguage();
+  const hostKind = useHostKind();
+  // No prefetch until the host is known: on the business host these pages
+  // redirect to the customer domain and the prefetch fails (CORS).
+  const prefetch = hostKind === "customer" ? undefined : false;
   const currentYear = new Date().getFullYear();
+
+  if (hostKind === "business") return <BusinessHostFooter />;
+
   const platformLinks = [
     { href: "/discover", label: t("nav.discover") },
     { href: "/businesses", label: t("nav.businesses") },
@@ -104,6 +113,7 @@ function Footer() {
             {platformLinks.map((link) => (
               <Link
                 key={link.href}
+                prefetch={prefetch}
                 href={link.href}
                 className="flex min-h-11 items-center rounded-lg transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
@@ -122,6 +132,7 @@ function Footer() {
             {companyLinks.map((link) => (
               <Link
                 key={link.href}
+                prefetch={prefetch}
                 href={link.href}
                 className="flex min-h-11 items-center rounded-lg transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
               >
