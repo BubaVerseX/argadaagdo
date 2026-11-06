@@ -12,7 +12,8 @@ import { isNativeScreenUrl } from "@/lib/nativeBoot";
 import { notifyNativeRouteChange } from "./NativeSwitch";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
+import { whenIdle } from "@/lib/whenIdle";
+import Link from "./AppLink";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useLayoutEffect, useState } from "react";
 
@@ -87,13 +88,16 @@ export default function NativeShell() {
     { href: "/profile", label: t("nav.profile"), Icon: UserIcon },
   ];
 
-  // Prefetching is on for these links by default; this also covers the route
-  // the bar hides on.
-  useEffect(() => {
-    for (const path of ["/", "/map", "/orders", "/profile"]) {
-      router.prefetch(path);
-    }
-  }, [router]);
+  // The tabs are prefetched once the first screen is up, never during it.
+  useEffect(
+    () =>
+      whenIdle(() => {
+        for (const path of ["/", "/map", "/orders", "/profile"]) {
+          router.prefetch(path);
+        }
+      }),
+    [router]
+  );
 
   const activeHref =
     pathname === "/" || pathname === "/discover"

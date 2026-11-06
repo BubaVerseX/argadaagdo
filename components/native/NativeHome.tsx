@@ -27,7 +27,7 @@ import {
   type RatingSummary,
 } from "@/lib/offerLifecycle";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useEffect, useMemo, useState } from "react";
 
 function NativeOfferCard({

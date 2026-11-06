@@ -5,7 +5,7 @@ import { createMapsSearchUrl } from "@/lib/maps";
 import { useNativeFeed, visibleOffers } from "@/lib/nativeData";
 import { getOfferCategoryTone } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useMemo } from "react";
 
 // There are no coordinates in the database, so this does not draw a map or

@@ -7,6 +7,7 @@ import {
   type RatingSummary,
 } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
+import { whenIdle } from "@/lib/whenIdle";
 import type { Offer, PublicBusinessReview } from "@/lib/types";
 import { useEffect, useState } from "react";
 
@@ -139,7 +140,7 @@ async function fetchSignedInOffers(): Promise<NativeOffer[] | null> {
 export function sweepExpiredOffersOnce() {
   if (expiryStarted) return;
   expiryStarted = true;
-  void processExpiredMarketplace();
+  whenIdle(() => void processExpiredMarketplace(), 4000);
 }
 
 /** Stale-while-revalidate: cached public offers at once, then the fresh ones. */
@@ -247,4 +248,30 @@ export function prefetchOfferDetail(offerId: number) {
   setTimeout(() => detailRequests.delete(offerId), 20_000);
 
   return request;
+}
+
+// Signed-in screens remember their last data in memory only (never storage),
+// per account, so switching tabs shows it at once while it refreshes. Signing
+// out clears it, and an entry for another account is never returned.
+const privateMemory = new Map<string, { userId: string; value: unknown }>();
+let privateMemoryWatch = false;
+
+function watchPrivateMemory() {
+  if (privateMemoryWatch || typeof window === "undefined") return;
+  privateMemoryWatch = true;
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") privateMemory.clear();
+  });
+}
+
+export function readPrivateMemory<T>(key: string, userId?: string | null): T | null {
+  watchPrivateMemory();
+  const entry = privateMemory.get(key);
+  if (!entry || (userId && entry.userId !== userId)) return null;
+  return entry.value as T;
+}
+
+export function writePrivateMemory<T>(key: string, userId: string, value: T) {
+  watchPrivateMemory();
+  privateMemory.set(key, { userId, value });
 }

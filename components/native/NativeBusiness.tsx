@@ -34,7 +34,7 @@ import { getLoginRedirectUrl } from "@/lib/orders";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
 import type { Business, Offer, Order } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 

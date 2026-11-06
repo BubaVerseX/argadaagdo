@@ -14,7 +14,11 @@ import {
 import { logAppError } from "@/lib/errors";
 import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
-import { sweepExpiredOffersOnce } from "@/lib/nativeData";
+import {
+  readPrivateMemory,
+  sweepExpiredOffersOnce,
+  writePrivateMemory,
+} from "@/lib/nativeData";
 import {
   notifyOrderCancelled,
   notifyPickupCompleted,
@@ -47,7 +51,7 @@ import type { Order, Profile } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import { validateTextField } from "@/lib/validation";
-import Link from "next/link";
+import Link from "./AppLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -89,9 +93,11 @@ export default function NativeOrders() {
   const router = useRouter();
   const { language, t } = useLanguage();
   useMinuteTick();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<Order[]>(
+    () => readPrivateMemory<Order[]>("orders") ?? []
+  );
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !readPrivateMemory("orders"));
   const [tab, setTab] = useState<"active" | "history">("active");
   const [openOrderId, setOpenOrderId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
@@ -136,12 +142,13 @@ export default function NativeOrders() {
       )
     );
 
-    setOrders(
-      ((data || []) as unknown as Order[]).map((order) => ({
-        ...order,
-        pickup_code: codes.get(order.id) ?? null,
-      }))
-    );
+    const nextOrders = ((data || []) as unknown as Order[]).map((order) => ({
+      ...order,
+      pickup_code: codes.get(order.id) ?? null,
+    }));
+
+    writePrivateMemory("orders", userId, nextOrders);
+    setOrders(nextOrders);
     setLoading(false);
   }
 
@@ -184,6 +191,12 @@ export default function NativeOrders() {
       }
 
       const userId = session.user.id;
+
+      // Remembered orders belong to another account: don't show them.
+      if (readPrivateMemory("orders") && !readPrivateMemory("orders", userId)) {
+        setOrders([]);
+        setLoading(true);
+      }
 
       sweepExpiredOffersOnce();
       void getProfileById(userId, 3).then((nextProfile) => {
