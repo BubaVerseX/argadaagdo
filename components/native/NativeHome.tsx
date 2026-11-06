@@ -377,11 +377,9 @@ export default function NativeHome({
             </Link>
           </div>
 
-          <h1 className="mt-5 font-serif text-[1.375rem] font-bold leading-snug text-cream">
-            {language === "ka"
-              ? "დღეს გადაარჩინე ლანჩ ბოქსი"
-              : "Rescue a Lunch Box today"}
-          </h1>
+          {/* No visible headline (owner's call): the header is just logo,
+              language, bell, search and the list/map switch. */}
+          <h1 className="sr-only">{language === "ka" ? "ახლოს" : "Nearby"}</h1>
 
           <div className="mt-3 flex h-[3.25rem] items-center gap-2.5 rounded-2xl bg-card pl-3.5 pr-1">
             <SearchIcon
