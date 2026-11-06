@@ -13,6 +13,7 @@ import {
 } from "@/components/icons";
 import { getProfileById } from "@/lib/auth";
 import { getAppVersionLabel, openExternal, socialLinks, supportEmail } from "@/lib/appLinks";
+import { OPERATOR_LOCATION, OPERATOR_SHORT } from "@/lib/legal/shared";
 import { calculateImpact, formatKg } from "@/lib/impact";
 import { readPrivateMemory, writePrivateMemory } from "@/lib/nativeData";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
@@ -251,7 +252,8 @@ export default function NativeProfile() {
             ))}
           </p>
           <p className="mt-1 text-muted">
-            ArGadaagdo{version ? ` · ${L("ვერსია", "version")} ${version}` : ""}
+            © {OPERATOR_SHORT[language]} · {OPERATOR_LOCATION[language]}
+            {version ? ` · ${L("ვერსია", "version")} ${version}` : ""}
           </p>
         </footer>
       </div>

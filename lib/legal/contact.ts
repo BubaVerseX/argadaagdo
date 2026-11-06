@@ -1,4 +1,4 @@
-import type { Localized } from "@/lib/legal/shared";
+import { operatorSentence, type Localized } from "@/lib/legal/shared";
 
 // Content for /contact and /support. The support address is SUPPORT_EMAIL in
 // lib/legal/shared.ts (argadaagdo.ge mail isn't set up, see PROJECT_CONTEXT.md).
@@ -60,7 +60,7 @@ export const contactContent: Localized<ContactContent> = {
     responseText: "We aim to reply to every message within 1–2 business days.",
     areaLabel: "Service area",
     areaTitle: "Tbilisi, Georgia",
-    areaText: "ArGadaagdo currently operates in Tbilisi. Orders are pickup only.",
+    areaText: `ArGadaagdo currently operates in Tbilisi. Orders are pickup only. ${operatorSentence("en")}`,
     footerTitle: "Looking for a quick answer?",
     footerText: "Most questions are already answered in our FAQ and Help Center.",
     faqLabel: "FAQ",
@@ -98,7 +98,7 @@ export const contactContent: Localized<ContactContent> = {
     responseText: "ვცდილობთ, ყველა წერილს 1–2 სამუშაო დღეში ვუპასუხოთ.",
     areaLabel: "მომსახურების არეალი",
     areaTitle: "თბილისი, საქართველო",
-    areaText: "არ გადააგდო ამჟამად თბილისში მუშაობს. შეკვეთას თავად წაიღებ.",
+    areaText: `არ გადააგდო ამჟამად თბილისში მუშაობს. შეკვეთას თავად წაიღებ. ${operatorSentence("ka")}`,
     footerTitle: "სწრაფი პასუხი გჭირდება?",
     footerText: "კითხვების უმეტესობაზე პასუხს ხშირად დასმულ კითხვებსა და დახმარების ცენტრში იპოვი.",
     faqLabel: "ხშირი კითხვები",
