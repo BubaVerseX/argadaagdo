@@ -311,6 +311,41 @@ export default function AdminPage() {
     setMessage(`Commission for this business set to ${percent}% for new reservations.`);
   }
 
+  async function setBusinessLocation(id: number, location: { latitude: number; longitude: number }) {
+    if (updatingBusinessId !== null) return false;
+
+    setUpdatingBusinessId(id);
+    const { error } = await supabase.rpc("set_business_location", {
+      p_business_id: id,
+      p_latitude: location.latitude,
+      p_longitude: location.longitude,
+    });
+    setUpdatingBusinessId(null);
+
+    if (error) {
+      logAppError("Business location update failed", error, {
+        operation: "set_business_location",
+        businessId: id,
+      });
+      setMessageTone("error");
+      setMessage(
+        error.message.includes("set_business_location")
+          ? "Map pins need the database update (20261106150000_business_location.sql) first."
+          : "The map pin could not be saved. Please try again."
+      );
+      return false;
+    }
+
+    setBusinesses((currentBusinesses) =>
+      currentBusinesses.map((business) =>
+        business.id === id ? { ...business, ...location } : business
+      )
+    );
+    setMessageTone("success");
+    setMessage("Map pin saved. It shows in the app within a minute.");
+    return true;
+  }
+
   const [businessVerifications, setBusinessVerifications] = useState<
     Record<number, BusinessVerificationReview>
   >({});
@@ -1699,6 +1734,8 @@ export default function AdminPage() {
               updatingBusinessId={updatingBusinessId}
               onMoveToPending={(id) => void moveToPending(id)}
               onSetFeeRate={(id, percent) => void setBusinessFeeRate(id, percent)}
+              onSetLocation={setBusinessLocation}
+              language={language}
             />
 
             <Pagination

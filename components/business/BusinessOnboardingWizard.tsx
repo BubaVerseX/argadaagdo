@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import type { LatLng } from "@/lib/location";
 import { PhoneVerification } from "@/components/PhoneVerification";
 import {
   BAG_SIZES,
@@ -18,6 +20,9 @@ import {
   type LegalForm,
 } from "@/lib/verification";
 import { useEffect, useState } from "react";
+
+// The map loads only when this step is on screen.
+const LocationPicker = dynamic(() => import("@/components/map/LocationPicker"), { ssr: false });
 
 const DRAFT_KEY = "argadaagdo-business-registration-draft";
 
@@ -40,6 +45,8 @@ export type CompanyDetails = {
   idCode: string;
   legalForm: LegalForm;
   ownerFullName: string;
+  /** Pickup pin for the app's map; optional, admin can set it later. */
+  location?: LatLng | null;
 };
 
 export type FirstBag = {
@@ -149,7 +156,7 @@ export function BusinessOnboardingWizard({
     text("პირველი ლანჩ ბოქსი", "First bag"),
   ];
 
-  function updateCompany(field: keyof CompanyDetails, value: string) {
+  function updateCompany(field: Exclude<keyof CompanyDetails, "location">, value: string) {
     setCompany((current) => ({ ...current, [field]: value }));
   }
 
@@ -319,6 +326,15 @@ export function BusinessOnboardingWizard({
                 className={inputClass}
               />
             </label>
+            <div className={labelClass}>
+              <span>{text("რუკაზე მონიშვნა", "Pin on the map")}</span>
+              <LocationPicker
+                value={company.location ?? null}
+                onChange={(location) => setCompany((current) => ({ ...current, location }))}
+                initialQuery={company.address}
+                language={language}
+              />
+            </div>
             <label className={labelClass}>
               {text("იურიდიული სახელი", "Company legal name")}
               <input
