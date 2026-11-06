@@ -2,6 +2,7 @@
 
 import { getAppVersionLabel } from "@/lib/appLinks";
 import { enablePush, getPushDiagnostics, logPush } from "@/lib/push/client";
+import { supabase } from "@/lib/supabase";
 import { useEffect, useRef, useState } from "react";
 
 type Diagnostics = Awaited<ReturnType<typeof getPushDiagnostics>>;
@@ -43,6 +44,20 @@ export default function PushDebug() {
     } catch (error) {
       logPush("debug panel threw", error);
     }
+    await refresh();
+    setBusy(false);
+  }
+
+  // Sends a real push to this account's devices (server route, 1 per minute).
+  async function sendTestPush() {
+    setBusy(true);
+    const { data: auth } = await supabase.auth.getSession();
+    const response = await fetch("/api/push/test", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${auth.session?.access_token || ""}` },
+    }).catch(() => null);
+    const result = (await response?.json().catch(() => null)) as Record<string, unknown> | null;
+    logPush(`test push: HTTP ${response?.status ?? "network error"} ${JSON.stringify(result)}`);
     await refresh();
     setBusy(false);
   }
@@ -102,6 +117,14 @@ export default function PushDebug() {
               className="min-h-11 rounded-xl bg-brand-mint px-3 text-xs font-semibold text-brand-forest disabled:opacity-60"
             >
               {busy ? "Trying… (up to 15 s)" : "Try turning on"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void sendTestPush()}
+              disabled={busy}
+              className="min-h-11 rounded-xl bg-brand-forest px-3 text-xs font-semibold text-brand-ground disabled:opacity-60"
+            >
+              Send test push
             </button>
             <button
               type="button"
