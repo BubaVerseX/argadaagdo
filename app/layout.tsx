@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import NativeRoot from "@/components/native/NativeRoot";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import { nativeBootScript } from "@/lib/nativeBoot";
 import { siteUrl } from "@/lib/site";
 // Self-hosted brand fonts. Noto Sans for text; Noto Serif for titles and business
 // names. Weight 300 and serif 400 are the calm website style, 700 the app style.
@@ -19,6 +21,7 @@ import "@fontsource/noto-sans-georgian/georgian-700.css";
 import "@fontsource/noto-serif/latin-700.css";
 import "@fontsource/noto-serif-georgian/georgian-700.css";
 import "./globals.css";
+import "./native.css";
 
 // Runs before first paint. It only checks that a stored session exists, so the
 // public home page stays hidden for a signed-in visitor until the app style
@@ -107,11 +110,13 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: sessionHintScript }} />
+        <script dangerouslySetInnerHTML={{ __html: nativeBootScript }} />
       </head>
       <body className="flex min-h-full flex-col">
         {children}
         <NotificationCenter />
         <ServiceWorkerRegistration />
+        <NativeRoot />
       </body>
     </html>
   );

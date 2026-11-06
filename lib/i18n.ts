@@ -1,3 +1,5 @@
+import { nativeTranslations } from "@/lib/i18nNative";
+
 export const supportedLanguages = ["en", "ka"] as const;
 
 export type Language = (typeof supportedLanguages)[number];
@@ -16,6 +18,7 @@ export const languageShortNames: Record<Language, string> = {
 
 const translations = {
   en: {
+    ...nativeTranslations.en,
     "brand.name": "ArGadaagdo",
     "brand.tagline": "Food rescue marketplace",
 
@@ -113,7 +116,7 @@ const translations = {
     "home.stats": "Pilot trust",
     "home.howItWorks": "How ArGadaagdo works",
     "home.howItWorksIntro":
-      "A simple pickup-only flow for discounted Lunch Boxes from trusted local businesses.",
+      "A simple pickup-only flow for discounted Lunch Boxes from local businesses.",
     "home.step1": "Step 1",
     "home.step1Text": "Browse Lunch Boxes of food from local businesses.",
     "home.step2": "Step 2",
@@ -830,6 +833,7 @@ const translations = {
 
   },
   ka: {
+    ...nativeTranslations.ka,
     "brand.name": "არ გადააგდო",
     "brand.tagline": "საკვების გადარჩენის პლატფორმა",
 
@@ -927,7 +931,7 @@ const translations = {
     "home.stats": "საპილოტე ნდობა",
     "home.howItWorks": "როგორ მუშაობს არ გადააგდო",
     "home.howItWorksIntro":
-      "მარტივი წაღების პროცესი ფასდაკლებული ლანჩ ბოქსებისთვის სანდო ადგილობრივი ბიზნესებიდან.",
+      "მარტივი წაღების პროცესი ფასდაკლებული ლანჩ ბოქსებისთვის ადგილობრივი ბიზნესებიდან.",
     "home.step1": "ნაბიჯი 1",
     "home.step1Text": "დაათვალიერე საკვების ლანჩ ბოქსები ადგილობრივი ბიზნესებიდან.",
     "home.step2": "ნაბიჯი 2",

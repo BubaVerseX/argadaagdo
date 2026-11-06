@@ -4,6 +4,8 @@ import { PhoneVerification } from "@/components/PhoneVerification";
 import Footer from "@/components/Footer";
 import { ImpactCard } from "@/components/ImpactCard";
 import Navbar from "@/components/Navbar";
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeProfileScreen } from "@/components/native/screens";
 import Notice from "@/components/Notice";
 import {
   getConfirmedProfile,
@@ -73,7 +75,7 @@ function getRoleLabel(role?: string | null, language: Language = "en") {
   return language === "ka" ? "მომხმარებელი" : "Customer";
 }
 
-export default function ProfilePage() {
+function ProfilePage() {
   const router = useRouter();
   const { language, setLanguage, t } = useLanguage();
   const isGeorgian = language === "ka";
@@ -594,3 +596,5 @@ export default function ProfilePage() {
     </main>
   );
 }
+
+export default withNativeScreen(ProfilePage, NativeProfileScreen);

@@ -3,6 +3,8 @@
 import { PhoneVerification } from "@/components/PhoneVerification";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeCheckoutScreen } from "@/components/native/screens";
 import { LoadingState } from "@/components/LoadingState";
 import OfferImage from "@/components/OfferImage";
 import { WaveEdge } from "@/components/design/Decor";
@@ -103,7 +105,7 @@ function getLoginRedirectUrl(path: string) {
   return `/login?redirect=${encodeURIComponent(path)}`;
 }
 
-export default function CheckoutPage() {
+function CheckoutPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const { language, t } = useLanguage();
@@ -700,3 +702,5 @@ export default function CheckoutPage() {
     </main>
   );
 }
+
+export default withNativeScreen(CheckoutPage, NativeCheckoutScreen);

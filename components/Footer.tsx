@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeChrome } from "@/components/native/NativeSwitch";
+import { NoChrome } from "@/components/native/screens";
 import AppStoreLink from "@/components/AppStoreLink";
 import { businessHomeUrl } from "@/lib/businessArea";
 import BrandMark from "@/components/BrandMark";
@@ -32,7 +34,7 @@ const socialLinks = [
   },
 ];
 
-export default function Footer() {
+function Footer() {
   const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
   const platformLinks = [
@@ -50,7 +52,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="mt-20 px-4 pb-8 sm:px-6 md:px-12">
+    <footer data-web-chrome className="mt-20 px-4 pb-8 sm:px-6 md:px-12">
       <div className="ui-card mx-auto grid max-w-7xl gap-8 rounded-[22px] px-6 py-8 sm:px-8 md:grid-cols-[1.3fr_0.7fr_0.7fr] md:py-10">
         <div>
           <BrandMark
@@ -137,3 +139,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default withNativeChrome(Footer, NoChrome);

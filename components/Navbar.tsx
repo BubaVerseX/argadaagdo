@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeChrome } from "@/components/native/NativeSwitch";
+import { NativeSubpageBar } from "@/components/native/screens";
 import BrandMark from "@/components/BrandMark";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
@@ -48,7 +50,7 @@ function isApprovedValue(value: boolean | string | null) {
   return value === true || String(value) === "true";
 }
 
-export default function Navbar({
+function Navbar({
   variant = "app",
   hideBottomNav = false,
 }: {
@@ -230,6 +232,7 @@ export default function Navbar({
 
   return (
     <nav
+      data-web-chrome
       className={`theme-forest sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-page px-4 py-3 sm:px-5 md:px-10 ${
         isAppStyle ? "" : "border-b border-line"
       }`}
@@ -584,3 +587,5 @@ export default function Navbar({
     </nav>
   );
 }
+
+export default withNativeChrome(Navbar, NativeSubpageBar);

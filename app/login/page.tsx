@@ -23,10 +23,28 @@ import { useState, useSyncExternalStore, type KeyboardEvent } from "react";
 type PasswordHelpMode = "none" | "forgot" | "reset";
 type PasswordHelpOverride = PasswordHelpMode | "hidden";
 
+// Same rule as Supabase Auth (min 8, a-z, A-Z, 0-9), so users get the
+// message here instead of a generic error from the server.
+function meetsPasswordRule(value: string) {
+  return (
+    value.length >= 8 &&
+    /[a-z]/.test(value) &&
+    /[A-Z]/.test(value) &&
+    /[0-9]/.test(value)
+  );
+}
+
 // The messages set on this page stay in English in state; the notice
 // translates them with translateUserMessage when rendering.
 function getAuthErrorMessage(message?: string) {
   const normalizedMessage = (message || "").toLowerCase();
+
+  if (
+    normalizedMessage.includes("password should") ||
+    normalizedMessage.includes("weak password")
+  ) {
+    return "Password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number.";
+  }
 
   if (normalizedMessage.includes("invalid login credentials")) {
     return "Email or password is incorrect. Please try again.";
@@ -197,8 +215,10 @@ export default function LoginPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setMessage("Password must be at least 6 characters.");
+    if (!meetsPasswordRule(password)) {
+      setMessage(
+        "Password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number."
+      );
       return;
     }
 
@@ -452,8 +472,10 @@ export default function LoginPage() {
     setMessage("");
     setMessageTone("error");
 
-    if (newPassword.length < 6) {
-      setMessage("New password must be at least 6 characters.");
+    if (!meetsPasswordRule(newPassword)) {
+      setMessage(
+        "New password needs at least 8 characters, with a lowercase letter, an uppercase letter and a number."
+      );
       return;
     }
 
@@ -667,8 +689,8 @@ export default function LoginPage() {
                     </h3>
                     <p className="mt-2 text-sm leading-6 text-body">
                       {isGeorgian
-                        ? "გამოიყენე მინიმუმ 6 სიმბოლო. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
-                        : "Use at least 6 characters. Avoid passwords you use on other websites."}
+                        ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი. ნუ გამოიყენებ პაროლს, რომელსაც სხვა საიტებზე იყენებ."
+                        : "At least 8 characters, with a lowercase letter, an uppercase letter and a number. Avoid passwords you use on other websites."}
                     </p>
                   </div>
 

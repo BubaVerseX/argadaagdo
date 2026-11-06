@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeHomeScreen } from "@/components/native/screens";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
@@ -88,7 +90,7 @@ function matchesPriceFilter(offer: Offer, priceFilter: PriceFilter) {
   return true;
 }
 
-export default function DiscoverClient() {
+function DiscoverClient() {
   const router = useRouter();
   const { language, t } = useLanguage();
   const isGeorgian = language === "ka";
@@ -1007,3 +1009,5 @@ export default function DiscoverClient() {
     </main>
   );
 }
+
+export default withNativeScreen(DiscoverClient, NativeHomeScreen);
