@@ -24,13 +24,18 @@ export async function GET(request: Request) {
   const requestId = getRequestId(request);
 
   try {
-    const report = await runProductionHealthChecks({
-      includeDetails: isDetailedHealthAuthorized(request),
-    });
+    const detailed = isDetailedHealthAuthorized(request);
+    const report = await runProductionHealthChecks({ includeDetails: detailed });
 
     logHealthReport(report, requestId);
 
-    return NextResponse.json(report, {
+    // Without the secret, only the overall status: no version, region or
+    // configuration hints for strangers.
+    const body = detailed
+      ? report
+      : { app: report.app, status: report.status, timestamp: report.timestamp };
+
+    return NextResponse.json(body, {
       status: report.status === "error" ? 503 : 200,
       headers: {
         "Cache-Control": "no-store, max-age=0",

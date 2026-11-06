@@ -9,17 +9,36 @@ import { createUserScopedSupabaseClient } from "@/lib/supabaseServer";
 
 const USER_AGENT = "ArGadaagdo/1.0 (+https://argadaagdo.ge; argadaagdo.support@gmail.com)";
 const cache = new Map<string, { at: number; results: GeocodeResult[] }>();
-let lastRequestAt = 0;
+// Requests to Nominatim go out one after another, at most one a second, even
+// when several arrive at once (a shared promise chain, not a racy timestamp).
+let queue: Promise<void> = Promise.resolve();
+function nominatimSlot() {
+  const slot = queue.then(() => new Promise<void>((resolve) => setTimeout(resolve, 1100)));
+  const ready = queue;
+  queue = slot;
+  return ready;
+}
 
 export type GeocodeResult = { label: string; latitude: number; longitude: number };
 
 export async function GET(request: Request) {
   const accessToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   if (!accessToken) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  const userClient = createUserScopedSupabaseClient(accessToken);
   const {
     data: { user },
-  } = await createUserScopedSupabaseClient(accessToken).auth.getUser(accessToken);
+  } = await userClient.auth.getUser(accessToken);
   if (!user) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+
+  // Only businesses (placing their pickup pin) and admins need address search.
+  const { data: profile } = await userClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (profile?.role !== "business" && profile?.role !== "admin") {
+    return NextResponse.json({ error: "Not available for this account." }, { status: 403 });
+  }
 
   const url = new URL(request.url);
   const query = (url.searchParams.get("q") || "").trim().slice(0, 200);
@@ -33,9 +52,7 @@ export async function GET(request: Request) {
   }
 
   // Nominatim allows one request a second.
-  const wait = lastRequestAt + 1100 - Date.now();
-  if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
-  lastRequestAt = Date.now();
+  await nominatimSlot();
 
   const search = new URL("https://nominatim.openstreetmap.org/search");
   search.searchParams.set("q", query);
