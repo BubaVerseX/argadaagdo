@@ -2,49 +2,18 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { businessAreaUrl } from "@/lib/businessArea";
+import { forBusinessesContent } from "@/lib/legal/forBusinesses";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 
+// Registration lives in the business area (business.argadaagdo.ge once
+// NEXT_PUBLIC_BUSINESS_SITE_URL is set; same host until then).
+const registerHref = businessAreaUrl("/business/register");
+
 export default function ForBusinessesPage() {
-  const { t } = useLanguage();
-
-  const solutions = [
-    {
-      title: t("forBusinesses.solutionListTitle"),
-      text: t("forBusinesses.solutionListText"),
-    },
-    {
-      title: t("forBusinesses.solutionReachTitle"),
-      text: t("forBusinesses.solutionReachText"),
-    },
-    {
-      title: t("forBusinesses.solutionRecoverTitle"),
-      text: t("forBusinesses.solutionRecoverText"),
-    },
-  ];
-
-  const howSteps = [
-    {
-      label: "01",
-      title: t("forBusinesses.howStep1Title"),
-      text: t("forBusinesses.howStep1Text"),
-    },
-    {
-      label: "02",
-      title: t("forBusinesses.howStep2Title"),
-      text: t("forBusinesses.howStep2Text"),
-    },
-    {
-      label: "03",
-      title: t("forBusinesses.howStep3Title"),
-      text: t("forBusinesses.howStep3Text"),
-    },
-    {
-      label: "04",
-      title: t("forBusinesses.howStep4Title"),
-      text: t("forBusinesses.howStep4Text"),
-    },
-  ];
+  const { language } = useLanguage();
+  const content = forBusinessesContent[language];
 
   return (
     <main className="app-shell theme-web">
@@ -55,42 +24,42 @@ export default function ForBusinessesPage() {
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="min-w-0 max-w-2xl">
               <p className="ui-card inline-flex rounded-full px-4 py-2 text-sm text-body">
-                {t("forBusinesses.metaBadge")}
+                {content.heroBadge}
               </p>
 
               <h1 className="mt-7 text-balance break-words text-[2.25rem] font-semibold leading-[1.2] text-cream min-[360px]:text-[2.75rem] sm:text-[3.25rem] lg:text-[3.5rem]">
-                {t("forBusinesses.heroTitle")}
+                {content.heroTitle}
               </h1>
 
               <p className="mt-6 max-w-xl text-pretty text-base leading-[1.55] text-body sm:text-lg">
-                {t("forBusinesses.heroSubtitle")}
+                {content.heroSubtitle}
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link href="/business/register" className="premium-button px-8 py-3.5">
-                  {t("forBusinesses.heroCtaRegister")}
+                <Link href={registerHref} className="premium-button px-8 py-3.5">
+                  {content.registerLabel}
                 </Link>
                 <Link
                   href="/contact"
                   className="premium-button-secondary px-8 py-3.5"
                 >
-                  {t("forBusinesses.heroCtaContact")}
+                  {content.talkLabel}
                 </Link>
               </div>
             </div>
 
             <div className="rounded-[22px] hero-surface p-8 text-cream shadow-[var(--shadow-card)] sm:p-10">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
-                {t("forBusinesses.commissionBadge")}
+                {content.pricingBadge}
               </p>
               <p className="mt-4 font-serif text-2xl leading-[1.35] sm:text-3xl">
-                {t("forBusinesses.commissionTitle")}
+                {content.pricingTitle}
               </p>
               <p className="mt-3 leading-[1.55] text-body-light">
-                {t("forBusinesses.commissionText")}
+                {content.pricingText}
               </p>
               <p className="mt-6 border-t border-line pt-5 text-sm leading-[1.55] text-body-light">
-                {t("forBusinesses.commissionNoSaleText")}
+                {content.pricingNote}
               </p>
             </div>
           </div>
@@ -99,41 +68,20 @@ export default function ForBusinessesPage() {
 
       <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-12">
         <div className="premium-container">
-          <div className="ui-card rounded-[22px] p-8 sm:p-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
-              {t("forBusinesses.problemBadge")}
-            </p>
-            <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight text-cream sm:text-4xl">
-              {t("forBusinesses.problemTitle")}
-            </h2>
-            <p className="mt-4 max-w-2xl leading-[1.55] text-body">
-              {t("forBusinesses.problemText")}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-12">
-        <div className="premium-container">
           <p className="text-xs uppercase tracking-[0.24em] text-body">
-            {t("forBusinesses.solutionBadge")}
+            {content.benefitsBadge}
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl font-semibold text-cream sm:text-5xl">
-            {t("forBusinesses.solutionTitle")}
+            {content.benefitsTitle}
           </h2>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {solutions.map((item) => (
-              <div
-                key={item.title}
-                className="ui-card rounded-[22px] p-7"
-              >
+            {content.benefits.map((item) => (
+              <div key={item.title} className="ui-card rounded-[22px] p-7">
                 <h3 className="text-xl font-semibold text-cream">
                   {item.title}
                 </h3>
-                <p className="mt-3 leading-[1.55] text-body">
-                  {item.text}
-                </p>
+                <p className="mt-3 leading-[1.55] text-body">{item.text}</p>
               </div>
             ))}
           </div>
@@ -143,57 +91,56 @@ export default function ForBusinessesPage() {
       <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-12">
         <div className="premium-container">
           <p className="text-xs uppercase tracking-[0.24em] text-body">
-            {t("forBusinesses.howBadge")}
+            {content.howBadge}
           </p>
           <h2 className="mt-3 max-w-2xl text-3xl font-semibold text-cream sm:text-5xl">
-            {t("forBusinesses.howTitle")}
+            {content.howTitle}
           </h2>
 
-          <div className="mt-10 grid gap-10 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
-            {howSteps.map((step) => (
-              <div key={step.label}>
+          <ol className="mt-10 grid gap-10 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
+            {content.howSteps.map((step, index) => (
+              <li key={step.title}>
                 <p className="text-sm tracking-[0.1em] text-body">
-                  {step.label}
+                  {String(index + 1).padStart(2, "0")}
                 </p>
                 <h3 className="mt-4 text-xl font-semibold text-cream">
                   {step.title}
                 </h3>
-                <p className="mt-3 leading-[1.55] text-body">
-                  {step.text}
-                </p>
-              </div>
+                <p className="mt-3 leading-[1.55] text-body">{step.text}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-12">
-        <div className="premium-container">
-          <div className="rounded-[22px] hero-surface p-8 text-cream shadow-[var(--shadow-card)] sm:p-10 lg:p-14">
-            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
-                  {t("forBusinesses.commissionBadge")}
-                </p>
-                <h2 className="mt-4 text-3xl font-semibold leading-tight sm:text-4xl">
-                  {t("forBusinesses.commissionTitle")}
-                </h2>
-                <p className="mt-5 max-w-lg leading-[1.55] text-body-light">
-                  {t("forBusinesses.commissionText")}
-                </p>
-              </div>
+        <div className="premium-container grid gap-6 lg:grid-cols-2">
+          <div className="ui-card rounded-[22px] p-8 sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
+              {content.needBadge}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight text-cream">
+              {content.needTitle}
+            </h2>
+            <ul className="mt-6 grid list-disc gap-2 pl-5 leading-[1.55] text-body marker:text-mint">
+              {content.needItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
 
-              <div>
-                <div className="rounded-[1.5rem] bg-brand-forest-2 p-6">
-                  <p className="text-lg font-semibold">
-                    {t("forBusinesses.commissionNoSale")}
-                  </p>
-                  <p className="mt-2 text-sm leading-[1.55] text-body-light">
-                    {t("forBusinesses.commissionNoSaleText")}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="rounded-[22px] hero-surface p-8 text-cream shadow-[var(--shadow-card)] sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-mint">
+              {content.paidBadge}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold leading-tight">
+              {content.paidTitle}
+            </h2>
+            <ul className="mt-6 grid list-disc gap-2 pl-5 leading-[1.55] text-body-light marker:text-mint">
+              {content.paidItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -202,23 +149,23 @@ export default function ForBusinessesPage() {
         <div className="premium-container">
           <div className="ui-card rounded-[22px] p-10 text-center sm:p-14">
             <h2 className="mx-auto max-w-2xl text-4xl font-semibold leading-tight text-cream sm:text-5xl">
-              {t("forBusinesses.ctaTitle")}
+              {content.ctaTitle}
             </h2>
             <p className="mx-auto mt-5 max-w-xl leading-[1.55] text-body">
-              {t("forBusinesses.ctaText")}
+              {content.ctaText}
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link href="/business/register" className="premium-button px-8 py-3.5">
-                {t("forBusinesses.ctaRegister")}
+              <Link href={registerHref} className="premium-button px-8 py-3.5">
+                {content.registerLabel}
               </Link>
               <span className="text-sm font-semibold text-body">
-                {t("forBusinesses.ctaQuestions")}{" "}
+                {content.ctaQuestions}{" "}
                 <Link
                   href="/contact"
                   className="text-mint underline-offset-2 hover:underline"
                 >
-                  {t("forBusinesses.ctaContact")}
+                  {content.ctaContact}
                 </Link>
               </span>
             </div>

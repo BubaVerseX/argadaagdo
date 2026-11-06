@@ -2,28 +2,14 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { contactContent } from "@/lib/legal/contact";
+import { SUPPORT_EMAIL } from "@/lib/legal/shared";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 
-const supportEmail = "argadaagdo.support@gmail.com";
-
 export default function ContactPage() {
-  const { t } = useLanguage();
-
-  const supportCards = [
-    {
-      title: t("contact.ordersTitle"),
-      text: t("contact.ordersText"),
-    },
-    {
-      title: t("contact.reservationsTitle"),
-      text: t("contact.reservationsText"),
-    },
-    {
-      title: t("contact.businessTitle"),
-      text: t("contact.businessText"),
-    },
-  ];
+  const { language } = useLanguage();
+  const content = contactContent[language];
 
   return (
     <main className="app-shell theme-web">
@@ -31,112 +17,101 @@ export default function ContactPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:p-12">
             <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-              {t("contact.badge")}
+              {content.badge}
             </p>
-            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
-              {t("contact.title")}
+            <h1 className="mt-3 break-words text-3xl font-semibold sm:text-4xl md:text-6xl">
+              {content.title}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
-              {t("contact.subtitle")}
+              {content.intro}
             </p>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-3">
-            {supportCards.map((card) => (
+          <section className="mt-6 rounded-3xl ui-card p-5 sm:p-8">
+            <p className="text-sm font-semibold uppercase tracking-widest text-mint">
+              {content.emailLabel}
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-cream">
+              {content.emailTitle}
+            </h2>
+            <p className="mt-4 leading-7 text-body">{content.emailText}</p>
+
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="mt-6 premium-button w-full break-all px-6 py-3 text-center sm:w-auto"
+            >
+              {SUPPORT_EMAIL}
+            </a>
+
+            <p className="mt-6 font-semibold text-cream">
+              {content.includeTitle}
+            </p>
+            <ul className="mt-3 grid list-disc gap-2 pl-5 leading-7 text-body marker:text-mint">
+              {content.includeItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            {content.topics.map((topic) => (
               <div
-                key={card.title}
+                key={topic.title}
                 className="premium-card rounded-3xl p-5 sm:p-6"
               >
                 <h2 className="text-xl font-semibold text-cream">
-                  {card.title}
+                  {topic.title}
                 </h2>
-                <p className="mt-3 leading-7 text-body">
-                  {card.text}
-                </p>
+                <p className="mt-3 leading-7 text-body">{topic.text}</p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-6 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <section className="rounded-3xl ui-card p-5 sm:p-8">
-              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                {t("contact.supportEmailLabel")}
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold text-cream">
-                {t("contact.emailTitle")}
-              </h2>
-              <p className="mt-4 leading-7 text-body">
-                {t("contact.emailText")}
-              </p>
-
-              <a
-                href={`mailto:${supportEmail}`}
-                className="mt-6 premium-button w-full px-6 py-3 text-center sm:w-auto"
-              >
-                {supportEmail}
-              </a>
-            </section>
-
-            <section className="rounded-3xl ui-card p-5 sm:p-8">
-              <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                {t("contact.businessInquiriesLabel")}
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold text-cream">
-                {t("contact.businessInquiriesTitle")}
-              </h2>
-              <p className="mt-4 leading-7 text-body">
-                {t("contact.businessInquiriesText")}
-              </p>
-            </section>
           </div>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <section className="premium-card rounded-3xl p-5 sm:p-6">
               <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                {t("contact.responseTimeLabel")}
+                {content.responseLabel}
               </p>
               <h2 className="mt-3 text-2xl font-semibold text-cream">
-                {t("contact.responseTimeTitle")}
+                {content.responseTitle}
               </h2>
               <p className="mt-3 leading-7 text-body">
-                {t("contact.responseTimeText")}
+                {content.responseText}
               </p>
             </section>
 
             <section className="premium-card rounded-3xl p-5 sm:p-6">
               <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                {t("contact.serviceAreaLabel")}
+                {content.areaLabel}
               </p>
               <h2 className="mt-3 text-2xl font-semibold text-cream">
-                {t("contact.serviceAreaTitle")}
+                {content.areaTitle}
               </h2>
-              <p className="mt-3 leading-7 text-body">
-                {t("contact.serviceAreaText")}
-              </p>
+              <p className="mt-3 leading-7 text-body">{content.areaText}</p>
             </section>
           </div>
 
           <div className="mt-6 rounded-3xl ui-card p-5 text-center sm:p-8">
             <h2 className="text-2xl font-semibold text-cream">
-              {t("contact.footerTitle")}
+              {content.footerTitle}
             </h2>
             <p className="mx-auto mt-3 max-w-2xl leading-7 text-body">
-              {t("contact.footerText")}
+              {content.footerText}
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 href="/faq"
                 className="premium-button-secondary px-6 py-3 text-center"
               >
-                {t("nav.faq")}
+                {content.faqLabel}
               </Link>
               <Link
-                href="/discover"
+                href="/support"
                 className="premium-button px-6 py-3 text-center"
               >
-                {t("common.browseOffers")}
+                {content.helpCenterLabel}
               </Link>
             </div>
           </div>

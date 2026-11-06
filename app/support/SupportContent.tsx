@@ -7,98 +7,20 @@ import { HelpCard } from "@/components/help/HelpCard";
 import { InfoBanner } from "@/components/help/InfoBanner";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { MapPinIcon, ReceiptIcon } from "@/components/icons";
+import { supportContent } from "@/lib/legal/contact";
+import { faqContent, pickFaqItems } from "@/lib/legal/faq";
+import { SUPPORT_EMAIL } from "@/lib/legal/shared";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 
-const supportEmail = "argadaagdo.support@gmail.com";
-
-const customerQuestions = {
-  en: [
-    {
-      question: "How do reservations work?",
-      answer:
-        "Choose an available Lunch Box, review the pickup window, confirm the reservation, then find your pickup code in Orders.",
-    },
-    {
-      question: "What is a Lunch Box?",
-      answer:
-        "A Lunch Box contains good surplus food from a local business. The exact contents may vary, but the business, price and pickup time are always shown before reservation.",
-    },
-    {
-      question: "Can I cancel?",
-      answer:
-        "You can cancel from Orders up to 2 hours before pickup. After that, the cancellation window may be closed.",
-    },
-    {
-      question: "What if I miss pickup?",
-      answer:
-        "If you do not collect during the pickup window, the order may be marked as missed pickup so businesses are protected from unreliable reservations.",
-    },
-  ],
-  ka: [
-    {
-      question: "როგორ მუშაობს დაჯავშნა?",
-      answer:
-        "აირჩიე ხელმისაწვდომი ლანჩ ბოქსი, გადაამოწმე წაღების დრო, დაადასტურე ჯავშანი და შემდეგ წაღების კოდი შეკვეთებში იპოვე.",
-    },
-    {
-      question: "რა არის ლანჩ ბოქსი?",
-      answer:
-        "ლანჩ ბოქსში ადგილობრივი ბიზნესის კარგი, დარჩენილი საკვებია. ზუსტი შემადგენლობა შეიძლება განსხვავდებოდეს, მაგრამ ბიზნესი, ფასი და წაღების დრო დაჯავშნამდე ყოველთვის ჩანს.",
-    },
-    {
-      question: "შემიძლია გაუქმება?",
-      answer:
-        "გაუქმება შეკვეთების გვერდიდან შეგიძლია წაღებამდე 2 საათით ადრე. ამის შემდეგ გაუქმების ვადა შეიძლება დახურული იყოს.",
-    },
-    {
-      question: "რა მოხდება, თუ წაღებას გამოვტოვებ?",
-      answer:
-        "თუ შეკვეთას წაღების დროს არ წაიღებ, ის შეიძლება გამოტოვებულ წაღებად მოინიშნოს, რათა ბიზნესები არასანდო ჯავშნებისგან იყვნენ დაცული.",
-    },
-  ],
-};
-
-const businessQuestions = {
-  en: [
-    {
-      question: "How do businesses join?",
-      answer:
-        "Create a business account, submit your business details, and wait for admin approval before publishing offers.",
-    },
-    {
-      question: "How do pickups work for businesses?",
-      answer:
-        "Ask the customer for their pickup code, enter it in the dashboard, and complete the pickup only when the code matches.",
-    },
-    {
-      question: "How do ratings work?",
-      answer:
-        "Customers can rate a business after a completed pickup. Ratings help other customers choose where to reserve.",
-    },
-  ],
-  ka: [
-    {
-      question: "როგორ უერთდებიან ბიზნესები?",
-      answer:
-        "შექმენი ბიზნეს ანგარიში, გაგზავნე ბიზნესის მონაცემები და შეთავაზებების გამოქვეყნებამდე დაელოდე ადმინის დამტკიცებას.",
-    },
-    {
-      question: "როგორ მუშაობს წაღება ბიზნესებისთვის?",
-      answer:
-        "ჰკითხე მომხმარებელს წაღების კოდი, შეიყვანე ის პანელში და წაღება მხოლოდ მაშინ დაასრულე, როცა კოდი ემთხვევა.",
-    },
-    {
-      question: "როგორ მუშაობს შეფასებები?",
-      answer:
-        "მომხმარებლებს ბიზნესის შეფასება დასრულებული წაღების შემდეგ შეუძლიათ. შეფასებები სხვა მომხმარებლებს ეხმარება, აირჩიონ, სად დაჯავშნონ.",
-    },
-  ],
-};
+// The full answers live in lib/legal/faq.ts; this page shows the most asked.
+const customerQuestionIds = ["reserve", "pickup", "cancel", "miss", "problem"];
+const businessQuestionIds = ["join", "cost", "handover"];
 
 export default function SupportContent() {
   const { language, t } = useLanguage();
-  const isGeorgian = language === "ka";
+  const content = supportContent[language];
+  const faqGroups = faqContent[language].groups;
 
   return (
     <main className="app-shell theme-web">
@@ -106,19 +28,15 @@ export default function SupportContent() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:p-12">
             <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-              {isGeorgian ? "მხარდაჭერის ცენტრი" : "Support Center"}
+              {content.badge}
             </p>
-            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl md:text-6xl">
-              {isGeorgian
-                ? "დახმარება ჯავშნებში, წაღებაში და ბიზნესებისთვის."
-                : "Help for reservations, pickups and businesses."}
+            <h1 className="mt-3 break-words text-3xl font-semibold sm:text-4xl md:text-6xl">
+              {content.title}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
-              {isGeorgian
-                ? "მკაფიო პასუხები მომხმარებლებისა და ბიზნესებისთვის, რომლებიც არ გადააგდოს თბილისის პილოტის დროს იყენებენ."
-                : "Clear answers for customers and businesses using ArGadaagdo during the Tbilisi pilot."}
+              {content.intro}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <TrustBadge label={t("home.trustVerified")} />
@@ -127,108 +45,83 @@ export default function SupportContent() {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:mt-8 md:grid-cols-2">
             <HelpCard
               icon={<ReceiptIcon className="h-5 w-5" strokeWidth={1.8} />}
-              title={isGeorgian ? "დახმარება ჯავშნებში" : "Reservation help"}
-              text={
-                isGeorgian
-                  ? "იპოვე წაღების კოდი, გაიგე გაუქმების ვადები და რა ხდება დაჯავშნის შემდეგ."
-                  : "Find your pickup code, understand cancellation windows, and know what happens after you reserve."
-              }
+              title={content.ordersCard.title}
+              text={content.ordersCard.text}
               href="/orders"
-              actionLabel={isGeorgian ? "შეკვეთების ნახვა" : "View Orders"}
+              actionLabel={content.ordersCard.action}
             />
             <HelpCard
               icon={<MapPinIcon className="h-5 w-5" strokeWidth={1.8} />}
-              title={isGeorgian ? "დახმარება წაღებაში" : "Pickup help"}
-              text={
-                isGeorgian
-                  ? "მიდი წაღების დროს, აჩვენე წაღების კოდი და შეკვეთა პირდაპირ ბიზნესიდან წაიღე."
-                  : "Arrive during the pickup window, show your pickup code, and collect directly from the business."
-              }
-              href="/faq"
-              actionLabel={isGeorgian ? "FAQ-ის წაკითხვა" : "Read FAQ"}
+              title={content.pickupCard.title}
+              text={content.pickupCard.text}
+              href="/faq#pickup"
+              actionLabel={content.pickupCard.action}
             />
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
             <section className="rounded-3xl ui-card p-5 sm:p-8">
               <h2 className="text-2xl font-semibold sm:text-3xl">
-                {isGeorgian
-                  ? "ხშირად დასმული კითხვები"
-                  : "Frequently Asked Questions"}
+                {content.faqTitle}
               </h2>
-              <p className="mt-3 leading-7 text-body">
-                {isGeorgian
-                  ? "დაიწყე აქედან, თუ არ ხარ დარწმუნებული, როგორ მუშაობს ლანჩ ბოქსები, ჯავშნები, წაღება, გაუქმება ან შეფასებები."
-                  : "Start here if you are unsure how Lunch Boxes, reservations, pickups, cancellations or ratings work."}
-              </p>
+              <p className="mt-3 leading-7 text-body">{content.faqIntro}</p>
 
               <div className="mt-6 grid gap-6">
                 <div>
                   <h3 className="mb-3 text-lg font-semibold text-mint">
-                    {isGeorgian ? "მომხმარებლები" : "Customers"}
+                    {content.customersLabel}
                   </h3>
-                  <FAQAccordion items={customerQuestions[language]} />
+                  <FAQAccordion
+                    items={pickFaqItems(faqGroups, customerQuestionIds)}
+                  />
                 </div>
                 <div>
                   <h3 className="mb-3 text-lg font-semibold text-mint">
-                    {t("nav.businesses")}
+                    {content.businessesLabel}
                   </h3>
-                  <FAQAccordion items={businessQuestions[language]} />
+                  <FAQAccordion
+                    items={pickFaqItems(faqGroups, businessQuestionIds)}
+                  />
                 </div>
               </div>
             </section>
 
-            <div className="grid gap-6">
+            <div className="grid content-start gap-6">
               <InfoBanner
-                title={t("contact.cta")}
-                text={
-                  isGeorgian
-                    ? "გამოგვიგზავნე ანგარიშის ელფოსტა, შეკვეთის დეტალები და მოკლე განმარტება, რომ უფრო სწრაფად დაგეხმაროთ."
-                    : "Send us the account email, order details and a short explanation so we can help faster."
-                }
+                title={content.contactTitle}
+                text={content.contactText}
                 tone="white"
               >
                 <a
-                  href={`mailto:${supportEmail}`}
-                  className="premium-button w-full px-6 py-3 text-center sm:w-auto"
+                  href={`mailto:${SUPPORT_EMAIL}`}
+                  className="premium-button w-full break-all px-6 py-3 text-center sm:w-auto"
                 >
-                  {supportEmail}
+                  {SUPPORT_EMAIL}
                 </a>
               </InfoBanner>
 
               <InfoBanner
-                title={isGeorgian ? "სასწრაფო კონტაქტი" : "Emergency contact"}
-                text={
-                  isGeorgian
-                    ? "პილოტის ეტაპზე სასწრაფო ოპერაციული საკითხები მხარდაჭერას გაუგზავნე და წერილის თემაში მიუთითე URGENT."
-                    : "For the pilot phase, urgent operational issues should be sent to support with URGENT in the subject line."
-                }
+                title={content.urgentTitle}
+                text={content.urgentText}
                 tone="yellow"
               />
 
-              <InfoBanner
-                title={isGeorgian ? "მეტი დეტალი გჭირდება?" : "Need more detail?"}
-                text={
-                  isGeorgian
-                    ? "FAQ-ისა და კონტაქტის გვერდებზე მომხმარებლებისა და ბიზნესების მხარდაჭერის სრული ინფორმაციაა."
-                    : "The FAQ and Contact pages include the full customer and business support notes."
-                }
-              >
+              <InfoBanner title={content.moreTitle} text={content.moreText}>
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <Link
                     href="/faq"
                     className="premium-button min-h-11 px-5 py-2.5 text-center"
                   >
-                    {isGeorgian ? "FAQ-ის გახსნა" : "Open FAQ"}
+                    {content.openFaqLabel}
                   </Link>
                   <Link
                     href="/contact"
                     className="premium-button-secondary min-h-11 px-5 py-2.5 text-center"
                   >
-                    {t("contact.title")}
+                    {content.contactPageLabel}
                   </Link>
                 </div>
               </InfoBanner>

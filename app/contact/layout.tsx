@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/lib/site";
 export const metadata: Metadata = buildPageMetadata({
   title: "Contact",
   description:
-    "Get in touch with the ArGadaagdo team about orders, business partnerships or the Tbilisi pilot.",
+    "Get in touch with the ArGadaagdo team about orders, refunds or business partnerships.",
   path: "/contact",
 });
 
