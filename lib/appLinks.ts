@@ -11,10 +11,62 @@ const xHandle = (process.env.NEXT_PUBLIC_X_HANDLE || "").replace(/^@/, "").trim(
 export const instagramUrl = `https://www.instagram.com/${encodeURIComponent(instagramHandle)}/`;
 export const xUrl = `https://x.com/${encodeURIComponent(xHandle)}`;
 
-export const socialLinks = [
-  { label: "Instagram", href: instagramUrl },
-  { label: "X", href: xUrl },
+export type SocialLink = { label: string; href: string; appUrl: string };
+
+export const socialLinks: SocialLink[] = [
+  {
+    label: "Instagram",
+    href: instagramUrl,
+    appUrl: `instagram://user?username=${encodeURIComponent(instagramHandle)}`,
+  },
+  {
+    label: "X",
+    href: xUrl,
+    appUrl: `twitter://user?screen_name=${encodeURIComponent(xHandle)}`,
+  },
 ];
+
+/**
+ * In the app: opens the profile in the installed Instagram / X app, and in the
+ * in-app browser when that app isn't installed (the shell hands the app link
+ * to the system, which fails silently, so "we never left" means "not
+ * installed"). On the website: a new tab.
+ */
+export function openSocial(link: SocialLink) {
+  if (!isNativeApp()) {
+    window.open(link.href, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  let left = false;
+  const markLeft = () => {
+    if (document.hidden) left = true;
+  };
+  const app = (window as unknown as {
+    Capacitor?: {
+      Plugins?: {
+        App?: {
+          addListener?: (
+            event: "appStateChange",
+            callback: (state: { isActive: boolean }) => void
+          ) => Promise<{ remove: () => Promise<void> }>;
+        };
+      };
+    };
+  }).Capacitor?.Plugins?.App;
+  const appListener = app?.addListener?.("appStateChange", (state) => {
+    if (!state.isActive) left = true;
+  });
+  document.addEventListener("visibilitychange", markLeft);
+
+  window.setTimeout(() => {
+    document.removeEventListener("visibilitychange", markLeft);
+    void appListener?.then((handle) => handle.remove());
+    if (!left) openExternal(link.href);
+  }, 1500);
+
+  window.location.href = link.appUrl;
+}
 
 export const supportEmail = SUPPORT_EMAIL;
 

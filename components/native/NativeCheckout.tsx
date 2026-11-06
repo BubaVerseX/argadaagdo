@@ -236,16 +236,16 @@ export default function NativeCheckout() {
 
   return (
     <main className="native-main">
-      <header className="theme-forest bg-brand-forest px-4 pb-2 pt-3">
+      <header className="px-4 pb-2 pt-3">
         <div className="flex items-center gap-3">
           <Link
             href={offer ? `/offers/${offer.id}` : "/"}
             aria-label={t("native.back")}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-forest-2 text-brand-ground"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-card text-cream"
           >
-            <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
+            <ArrowLeftIcon className="h-[18px] w-[18px]" strokeWidth={2} />
           </Link>
-          <h1 className="font-serif text-[1.375rem] font-bold text-brand-ground">
+          <h1 className="text-[17px] font-semibold text-cream">
             {t("native.checkout.title")}
           </h1>
         </div>

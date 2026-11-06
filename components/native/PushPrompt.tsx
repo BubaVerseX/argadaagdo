@@ -82,15 +82,15 @@ export default function PushPrompt() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="push-prompt-title"
-        className="native-sheet w-full rounded-t-[28px] bg-card px-6 pb-[calc(1.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] pt-6 text-center"
+        className="native-sheet w-full rounded-t-[28px] bg-[#fbf7ee] px-6 pb-[calc(1.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] pt-6 text-center"
       >
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint text-ink">
-          <BellIcon className="h-7 w-7" strokeWidth={2} />
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-moss text-mint">
+          <BellIcon className="h-6 w-6" strokeWidth={1.8} />
         </span>
-        <h2 id="push-prompt-title" className="mt-4 font-serif text-2xl font-bold text-cream">
+        <h2 id="push-prompt-title" className="mt-4 text-lg font-semibold text-cream">
           {L("ჩავრთოთ შეტყობინებები?", "Allow notifications?")}
         </h2>
-        <p className="mt-2 text-[15px] leading-6 text-body">
+        <p className="mt-1 text-sm leading-6 text-body">
           {L(
             "შეგახსენებთ წაღებას და გეტყვით, როცა რჩეულ ადგილას ახალი ბოქსი გამოჩნდება.",
             "We'll remind you about your pickup and tell you when a favourite place has new boxes."
@@ -100,14 +100,14 @@ export default function PushPrompt() {
           type="button"
           onClick={() => void allow()}
           disabled={busy}
-          className="native-press mt-6 flex min-h-14 w-full items-center justify-center rounded-2xl bg-mint text-[16px] font-bold text-ink disabled:opacity-60"
+          className="native-press mt-5 flex min-h-12 w-full items-center justify-center rounded-2xl bg-brand-forest text-[15px] font-semibold text-brand-ground disabled:opacity-60"
         >
           {L("დაშვება", "Allow")}
         </button>
         <button
           type="button"
           onClick={later}
-          className="mt-2 min-h-12 w-full text-[15px] font-bold text-body"
+          className="mt-1 min-h-11 w-full text-sm font-medium text-body"
         >
           {L("ახლა არა", "Not now")}
         </button>

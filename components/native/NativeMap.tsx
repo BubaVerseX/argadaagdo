@@ -42,7 +42,7 @@ export default function NativeMap() {
   return (
     <main className="native-main">
       <header className="px-4 pb-1 pt-4">
-        <h1 className="font-serif text-[1.625rem] font-bold">
+        <h1 className="font-serif text-[1.25rem] font-bold">
           {t("native.map.title")}
         </h1>
         <p className="mt-0.5 text-sm text-body">{t("native.map.note")}</p>

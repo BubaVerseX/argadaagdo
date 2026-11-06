@@ -13,7 +13,14 @@ import { useLanguage } from "@/lib/useLanguage";
 import { useEffect, useState } from "react";
 
 /** The push notification switch (Settings, and on top of Notifications). */
-export default function PushToggle({ compact = false }: { compact?: boolean }) {
+export default function PushToggle({
+  compact = false,
+  heading,
+}: {
+  compact?: boolean;
+  /** Small label shown above the switch, only when the switch shows. */
+  heading?: string;
+}) {
   const { language } = useLanguage();
   const L = (ka: string, en: string) => (language === "ka" ? ka : en);
   const [supported, setSupported] = useState(false);
@@ -30,11 +37,19 @@ export default function PushToggle({ compact = false }: { compact?: boolean }) {
       method: "POST",
       headers: { Authorization: `Bearer ${data.session?.access_token || ""}` },
     }).catch(() => null);
-    const result = (await response?.json().catch(() => null)) as { sent?: number } | null;
+    const result = (await response?.json().catch(() => null)) as {
+      sent?: number;
+    } | null;
     setTestNote(
       response?.ok && result?.sent
-        ? L("გაიგზავნა — რამდენიმე წამში მოვა.", "Sent — it should arrive in a few seconds.")
-        : L("ჯერ ვერ გაიგზავნა. სცადე მოგვიანებით.", "Couldn't send yet. Please try again later.")
+        ? L(
+            "გაიგზავნა — რამდენიმე წამში მოვა.",
+            "Sent — it should arrive in a few seconds."
+          )
+        : L(
+            "ჯერ ვერ გაიგზავნა. სცადე მოგვიანებით.",
+            "Couldn't send yet. Please try again later."
+          )
     );
   }
 
@@ -43,7 +58,10 @@ export default function PushToggle({ compact = false }: { compact?: boolean }) {
     void (async () => {
       const ok = await isPushSupported();
       if (!active || !ok) return;
-      const [isOn, permission] = await Promise.all([isPushOn(), getPushPermission()]);
+      const [isOn, permission] = await Promise.all([
+        isPushOn(),
+        getPushPermission(),
+      ]);
       if (!active) return;
       setSupported(true);
       setOn(isOn);
@@ -72,54 +90,72 @@ export default function PushToggle({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <section className="rounded-[24px] bg-card px-4 py-3">
-      <div className="flex min-h-11 items-center gap-3">
-        <BellIcon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
-        <div className="min-w-0 flex-1">
-          <p className="font-medium text-cream">{L("შეტყობინებები", "Notifications")}</p>
-          <p className="text-xs leading-5 text-body">
+    <>
+      {heading && (
+        <h2 className="px-1 pt-2 text-xs font-medium text-body">{heading}</h2>
+      )}
+      <section className="rounded-[22px] bg-card px-4 py-2.5">
+        <div className="flex min-h-11 items-center gap-3">
+          <BellIcon
+            className="h-[18px] w-[18px] shrink-0 text-sage"
+            strokeWidth={1.8}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-[15px] text-cream">
+              {L("შეტყობინებები", "Notifications")}
+            </p>
+            <p className="text-xs leading-5 text-body">
+              {L(
+                "დადასტურება, წაღების შეხსენება, ახალი ბოქსები",
+                "Confirmations, pickup reminders, new boxes"
+              )}
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={on}
+            aria-label={L("შეტყობინებები", "Notifications")}
+            disabled={busy || (denied && !on)}
+            onClick={() => void toggle()}
+            className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+              on ? "bg-mint" : "bg-[rgba(15,58,50,0.16)]"
+            }`}
+          >
+            <span
+              className={`absolute left-0 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+                on ? "translate-x-7" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
+        {denied && !on && (
+          <p className="mt-2 text-xs leading-5 text-body">
             {L(
-              "დადასტურება, წაღების შეხსენება, ახალი ბოქსები",
-              "Confirmations, pickup reminders, new boxes"
+              "შეტყობინებები ტელეფონის პარამეტრებშია გამორთული: Settings → ArGadaagdo → Notifications.",
+              "Notifications are off in your phone settings: Settings → ArGadaagdo → Notifications."
             )}
           </p>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={on}
-          aria-label={L("შეტყობინებები", "Notifications")}
-          disabled={busy || (denied && !on)}
-          onClick={() => void toggle()}
-          className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
-            on ? "bg-mint" : "bg-well"
-          }`}
-        >
-          <span
-            className={`absolute left-0 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-              on ? "translate-x-7" : "translate-x-1"
-            }`}
-          />
-        </button>
-      </div>
-      {denied && !on && (
-        <p className="mt-2 text-xs leading-5 text-body">
-          {L(
-            "შეტყობინებები ტელეფონის პარამეტრებშია გამორთული: Settings → ArGadaagdo → Notifications.",
-            "Notifications are off in your phone settings: Settings → ArGadaagdo → Notifications."
-          )}
-        </p>
-      )}
-      {on && !compact && (
-        <button type="button" onClick={() => void sendTest()} className="mt-1 text-xs font-bold text-mint">
-          {testNote || L("სატესტო შეტყობინების გაგზავნა", "Send me a test notification")}
-        </button>
-      )}
-      {failed && (
-        <p className="mt-2 text-xs leading-5 text-danger">
-          {L("ვერ ჩაირთო. სცადე მოგვიანებით.", "Couldn't turn them on. Please try again later.")}
-        </p>
-      )}
-    </section>
+        )}
+        {on && !compact && (
+          <button
+            type="button"
+            onClick={() => void sendTest()}
+            className="mt-1 text-xs font-bold text-mint"
+          >
+            {testNote ||
+              L("სატესტო შეტყობინების გაგზავნა", "Send me a test notification")}
+          </button>
+        )}
+        {failed && (
+          <p className="mt-2 text-xs leading-5 text-danger">
+            {L(
+              "ვერ ჩაირთო. სცადე მოგვიანებით.",
+              "Couldn't turn them on. Please try again later."
+            )}
+          </p>
+        )}
+      </section>
+    </>
   );
 }

@@ -136,18 +136,20 @@ export default function NativeSettings() {
   }
 
   const rowClass =
-    "native-press flex min-h-14 w-full items-center gap-3 px-4 text-left font-medium text-cream";
+    "native-press flex min-h-[3.25rem] w-full items-center gap-3 px-4 text-left text-[15px] text-cream";
+  const label = "px-1 pt-2 text-xs font-medium text-body";
 
   return (
     <main className="native-main native-main--bare">
       <NativeTopBar title={L("პარამეტრები", "Settings")} />
 
-      <div className="grid gap-3 px-5 pb-8">
+      <div className="grid gap-2 px-5 pb-8">
         {note && <Notice tone={note.tone}>{note.text}</Notice>}
 
-        <section className="overflow-hidden rounded-[24px] bg-card">
-          <p className="flex min-h-14 items-center gap-3 px-4 text-cream">
-            <MailIcon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
+        <h2 className={label}>{L("ანგარიში", "Account")}</h2>
+        <section className="overflow-hidden rounded-[22px] bg-card">
+          <p className="flex min-h-[3.25rem] items-center gap-3 px-4 text-[15px] text-cream">
+            <MailIcon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
             <span className="min-w-0 flex-1 truncate">
               {session?.user.email || <span className="native-skeleton inline-block h-4 w-40 rounded" />}
             </span>
@@ -158,7 +160,7 @@ export default function NativeSettings() {
             aria-expanded={panel === "password"}
             className={`${rowClass} border-t border-line`}
           >
-            <LockIcon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
+            <LockIcon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
             <span className="flex-1">{L("პაროლის შეცვლა", "Change password")}</span>
             <ChevronRightIcon
               className={`h-4 w-4 text-muted transition-transform ${panel === "password" ? "rotate-90" : ""}`}
@@ -189,7 +191,7 @@ export default function NativeSettings() {
                 type="button"
                 onClick={() => void changePassword()}
                 disabled={busy}
-                className="native-press min-h-12 rounded-2xl bg-mint font-bold text-ink disabled:opacity-60"
+                className="native-press min-h-11 rounded-2xl bg-brand-forest text-sm font-semibold text-brand-ground disabled:opacity-60"
               >
                 {L("შენახვა", "Save")}
               </button>
@@ -197,25 +199,21 @@ export default function NativeSettings() {
           )}
         </section>
 
-        <PushToggle />
+        <PushToggle heading={L("შეტყობინებები", "Notifications")} />
 
-        <button
-          type="button"
-          onClick={() => void signOut()}
-          className="native-press flex min-h-14 items-center justify-center gap-2 rounded-[24px] bg-card font-bold text-cream"
-        >
-          <LogOutIcon className="h-4 w-4" strokeWidth={2} />
-          {L("გასვლა", "Sign out")}
-        </button>
-
-        <section className="overflow-hidden rounded-[24px] bg-card">
+        <div className="h-2" aria-hidden="true" />
+        <section className="overflow-hidden rounded-[22px] bg-card">
+          <button type="button" onClick={() => void signOut()} className={rowClass}>
+            <LogOutIcon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
+            <span className="flex-1">{L("გასვლა", "Sign out")}</span>
+          </button>
           <button
             type="button"
             onClick={() => toggle("delete")}
             aria-expanded={panel === "delete"}
-            className={`${rowClass} text-danger`}
+            className={`${rowClass} border-t border-line text-danger`}
           >
-            <TrashIcon className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+            <TrashIcon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
             <span className="flex-1">{L("ანგარიშის წაშლა", "Delete account")}</span>
           </button>
           {panel === "delete" && (
@@ -239,7 +237,7 @@ export default function NativeSettings() {
                 type="button"
                 onClick={() => void deleteAccount()}
                 disabled={busy || deleteWord.trim().toUpperCase() !== confirmWord.toUpperCase()}
-                className="native-press min-h-12 rounded-2xl bg-danger-solid font-bold text-white disabled:opacity-50"
+                className="native-press min-h-11 rounded-2xl bg-danger-solid text-sm font-semibold text-white disabled:opacity-50"
               >
                 {busy ? L("იშლება...", "Deleting...") : L("სამუდამოდ წაშლა", "Delete for good")}
               </button>

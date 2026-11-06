@@ -320,3 +320,28 @@ export const PackageIcon = base(
     <path d="M12 12v8" />
   </>
 );
+
+export const ShareIcon = base(
+  <>
+    <path d="M12 15V3.5" />
+    <path d="m7.5 8 4.5-4.5L16.5 8" />
+    <path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5" />
+  </>
+);
+
+export const UserPlusIcon = base(
+  <>
+    <circle cx="10" cy="8.5" r="3.5" />
+    <path d="M3.5 20c1.2-3.4 3.6-5 6.5-5s5.3 1.6 6.5 5" />
+    <path d="M19 8v6" />
+    <path d="M16 11h6" />
+  </>
+);
+
+export const HelpCircleIcon = base(
+  <>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.6 9.3a2.5 2.5 0 0 1 4.8 1c0 1.7-2.4 2.2-2.4 3.6" />
+    <path d="M12 17.2h.01" />
+  </>
+);

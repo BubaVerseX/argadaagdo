@@ -91,6 +91,19 @@ export default function NativeShell() {
     { href: "/profile", label: t("nav.profile"), Icon: UserIcon },
   ];
 
+  // The app is beige now: dark status-bar icons. Installed builds were made for
+  // the dark green app, so switch at runtime; the beige strip behind the
+  // status bar only appears once the switch worked (app/native.css).
+  useEffect(() => {
+    const bars = (window as unknown as {
+      Capacitor?: { Plugins?: { SystemBars?: { setStyle?: (options: { style: string }) => Promise<void> } } };
+    }).Capacitor?.Plugins?.SystemBars;
+    void bars
+      ?.setStyle?.({ style: "LIGHT" })
+      .then(() => document.documentElement.classList.add("native-light-bars"))
+      .catch(() => undefined);
+  }, []);
+
   // Notification taps open their screen; a registered device refreshes its token.
   useEffect(() => startPush((path) => router.push(path)), [router]);
 
