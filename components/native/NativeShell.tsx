@@ -13,6 +13,8 @@ import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { whenIdle } from "@/lib/whenIdle";
 import { startPush } from "@/lib/push/client";
+import AccountSheet from "./AccountSheet";
+import { askForAccount } from "@/lib/accountGate";
 import NativeBackground from "./NativeBackground";
 import PushPrompt from "./PushPrompt";
 import Link from "./AppLink";
@@ -39,12 +41,13 @@ function ScreenClassSync() {
   return null;
 }
 
-/** The floating bottom bar: Home, Map, Orders, Profile. */
+/** The floating bottom bar: Nearby, Orders, Profile. Guests get the account sheet for the last two. */
 export default function NativeShell() {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useLanguage();
   const [role, setRole] = useState("");
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   // A store's second tab is its panel. The role only changes that one link, and
   // the dashboard itself still checks it.
@@ -52,6 +55,7 @@ export default function NativeShell() {
     let active = true;
 
     async function loadRole(userId: string | undefined) {
+      if (active) setSignedIn(Boolean(userId));
       const profile = userId ? await getProfileById(userId, 1) : null;
       if (active) setRole(profile?.role || "");
     }
@@ -135,6 +139,7 @@ export default function NativeShell() {
       </Suspense>
       <NativeBackground />
       <PushPrompt />
+      <AccountSheet />
 
       {!HIDE_BAR.test(pathname) && (
         <nav
@@ -149,6 +154,13 @@ export default function NativeShell() {
                 <Link
                   key={href}
                   href={href}
+                  onClick={(event) => {
+                    // Guests browse Nearby freely; Orders and Profile need an account.
+                    if (href !== "/" && signedIn === false) {
+                      event.preventDefault();
+                      askForAccount(href);
+                    }
+                  }}
                   aria-label={label}
                   aria-current={active ? "page" : undefined}
                   className={`flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-2xl text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-mint ${

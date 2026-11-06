@@ -41,8 +41,9 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "./AppLink";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { askForAccount } from "@/lib/accountGate";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -63,7 +64,6 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export default function NativeOffer() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const { language, t } = useLanguage();
   const offerId = Number(params.id);
   const reporterId = useReviewReporterId();
@@ -73,6 +73,8 @@ export default function NativeOffer() {
     getCachedOffer(offerId)
   );
   const [isFavorite, setIsFavorite] = useState(false);
+  // Guests browse offers; reserving and saving ask for an account.
+  const [guest, setGuest] = useState(false);
   const [favoriteBusy, setFavoriteBusy] = useState(false);
   const favoriteInFlight = useRef(false);
   const [notice, setNotice] = useState<{
@@ -90,7 +92,10 @@ export default function NativeOffer() {
 
     // Favorite state is per user and reads from the stored session only.
     void supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) return;
+      if (!session) {
+        if (active) setGuest(true);
+        return;
+      }
       const { data } = await supabase
         .from("favorites")
         .select("id")
@@ -119,7 +124,7 @@ export default function NativeOffer() {
       const authResult = await getConfirmedUser();
 
       if (authResult.status === "signed_out") {
-        router.push(`/login?redirect=${encodeURIComponent(`/offers/${offer.id}`)}`);
+        askForAccount(`/offers/${offer.id}`);
         return;
       }
 
@@ -385,6 +390,12 @@ export default function NativeOffer() {
         {reservable ? (
           <Link
             href={`/checkout/${offer.id}`}
+            onClick={(event) => {
+              if (guest) {
+                event.preventDefault();
+                askForAccount(`/checkout/${offer.id}`);
+              }
+            }}
             className="native-press flex min-h-[3.25rem] flex-1 items-center justify-center rounded-2xl bg-brand-mint text-base font-bold text-brand-forest"
           >
             {t("native.offer.reserve")}
