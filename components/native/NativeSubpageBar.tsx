@@ -37,7 +37,7 @@ export default function NativeSubpageBar() {
           else router.replace("/");
         }}
         aria-label={t("native.back")}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-card text-cream"
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-card text-cream"
       >
         <ArrowLeftIcon className="h-[18px] w-[18px]" strokeWidth={2} />
       </button>

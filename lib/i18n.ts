@@ -59,7 +59,6 @@ const translations = {
     "common.openMap": "Open map",
     "common.browseOffers": "Discover",
     "common.viewDetails": "View details",
-    "common.continueCheckout": "Continue to checkout",
     "common.reserve": "Reserve",
     "common.cancel": "Cancel",
     "common.remove": "Remove",
@@ -104,7 +103,6 @@ const translations = {
     "home.trustEasyPickup": "Easy pickup",
     "home.trustLocalBusinesses": "Local businesses",
     "home.trustFoodRescue": "Food rescue",
-    "home.trustVerifiedBusinesses": "Verified businesses",
     "home.trustEasyPickupProcess": "Easy pickup process",
     "home.trustReduceFoodWaste": "Reduce food waste",
     "home.trustPickupOnlyMarketplace": "Pickup-only marketplace",
@@ -113,7 +111,6 @@ const translations = {
     "home.trustSecureReservationFlow": "Secure reservation flow",
     "home.trustLocalTbilisiBusinesses": "Local Tbilisi businesses",
     "home.featuredOffer": "Featured offer",
-    "home.featuredOffers": "Featured offers",
     "home.topBusinesses": "Top-rated businesses",
     "home.stats": "Pilot trust",
     "home.howItWorks": "How ArGadaagdo works",
@@ -127,7 +124,6 @@ const translations = {
     "home.step3Text": "Pick it up during the pickup window.",
     "home.step4": "Step 4",
     "home.step4Text": "Enjoy great food and help reduce waste.",
-    "home.trustBadge": "Trust & safety",
     "home.trustTitle": "Reviewed local businesses",
     "home.trustMessage":
       "All businesses are reviewed before being approved on ArGadaagdo.",
@@ -178,9 +174,7 @@ const translations = {
     "customerOnboarding.stepCollect": "Collect during pickup time.",
     "customerOnboarding.stepEnjoy": "Enjoy great food at a lower price.",
 
-    "offers.badge": "Live offers in Tbilisi",
     "offers.title": "Rescue Lunch Boxes near you.",
-    "offers.subtitle": "Search, reserve, pick up in store.",
     "offers.filterHint":
       "Use search, categories and sorting to find the right pickup window.",
     "offers.search": "Search food, business, address...",
@@ -190,62 +184,31 @@ const translations = {
     "offers.sortLowest": "Lowest price",
     "offers.sortHighest": "Highest price",
     "offers.availableOnly": "Available only",
-    "offers.boxesLeft": "Boxes left",
     "offers.tbilisiPilot": "Tbilisi pilot",
     "offers.heading": "Food rescue offers",
     "offers.matches": "matches your filters.",
-    "offers.noOffers": "No offers available right now.",
     "offers.noMatching": "No matching offers",
-    "offers.noOffersHint":
-      "Businesses usually publish Lunch Boxes later in the day.",
-    "offers.noMatchingHint": "Try changing the category, price sort, or availability filter.",
-    "offers.checkBackSoon": "Check back again soon for fresh Lunch Boxes.",
-    "offers.surpriseBagTitle": "What is a Lunch Box?",
-    "offers.surpriseBagText":
-      "Surplus food at a discount, in S, M or L. Contents vary.",
     "offers.clearFilters": "Clear filters",
-    "offers.backHome": "Back to Home",
     "offers.addFavorite": "Add to favorites",
     "offers.removeFavorite": "Remove from favorites",
-    "offers.updatingFavorite": "Updating...",
 
     "offerDetail.back": "Back to offers",
-    "offerDetail.title": "Offer details",
-    "offerDetail.about": "About this Lunch Box",
     "offerDetail.allergens": "Allergens",
     "offerDetail.allergensAsk": "Ask the business during pickup.",
-    "offerDetail.businessProfile": "Business profile",
     "offerDetail.reviewsTitle": "Customer reviews",
     "offerDetail.savings": "You save",
     "offerDetail.noSavingsListed": "Not listed",
-    "offerDetail.notListed": "Not listed",
     "offerDetail.pickupDate": "Pickup date",
     "offerDetail.pickupTime": "Pickup time",
-    "offerDetail.reviewSummary": "Review summary",
-    "offerDetail.urgencyHint": "Reserve before this Lunch Box sells out.",
-    "offerDetail.pickupInfoTitle": "Pickup information",
-    "offerDetail.pickupVisit": "Visit during the pickup window",
-    "offerDetail.pickupCode": "Show your pickup code",
-    "offerDetail.pickupCodeHint":
-      "Your code appears in Orders after the reservation is confirmed.",
-    "offerDetail.pickupCollect": "Collect your order",
-    "offerDetail.pickupCollectHint":
-      "The business verifies your code and marks the pickup completed.",
-    "offerDetail.afterReservationTitle": "What happens after reservation?",
     "offerDetail.afterReservationOrder": "Your reservation appears in Orders.",
     "offerDetail.afterReservationCode": "You receive a pickup code.",
     "offerDetail.afterReservationVisit": "Visit during pickup time.",
     "offerDetail.afterReservationShowCode":
       "Show the pickup code to collect your order.",
     "offerDetail.cancellationReminderTitle": "Cancellation reminder",
-    "offerDetail.cancellationReminderText":
-      "You can cancel up to 2 hours before pickup if your plans change.",
-    "offerDetail.ratingReminderTitle": "After pickup",
     "offerDetail.ratingReminderText":
       "You can rate after pickup.",
-    "offerDetail.noReviewsHint":
-      "Reviews will appear here after customers complete pickups and rate this business.",
-    "offerDetail.notFound": "Offer could not be loaded.",
+    "offerDetail.notFound": "This box is no longer available.",
 
     "businessProfile.back": "Back to offers",
     "businessProfile.title": "Business profile",
@@ -272,7 +235,7 @@ const translations = {
       "Check back later for fresh food rescue offers from this business.",
     "businessProfile.noReviewsHint":
       "Reviews will appear here after customers complete pickups and rate this business.",
-    "businessProfile.notFound": "Business could not be loaded.",
+    "businessProfile.notFound": "This business could not be found.",
 
     "reviewReport.link": "Report",
     "reviewReport.title": "What's wrong with this review?",
@@ -289,41 +252,12 @@ const translations = {
     "reviewReport.alreadyReported": "You've already reported this review.",
     "reviewReport.failed": "Your report could not be sent. Please try again.",
 
-    "orders.title": "Your orders",
-    "orders.subtitle": "Show your pickup code at the business during pickup time.",
     "orders.reserved": "Reserved",
     "orders.collected": "Collected",
     "orders.cancelled": "Cancelled",
-    "orders.reliability": "Reliability",
-    "orders.status": "Status",
-    "orders.loading": "Loading orders...",
-    "orders.emptyTitle": "No orders yet",
-    "orders.emptyHint": "Reserve a Lunch Box and it will appear here.",
-    "orders.educationTitle": "How orders work",
-    "orders.educationText":
-      "Reserved boxes and pickup codes appear here.",
     "orders.pickupCode": "Pickup code",
-    "orders.showCode": "Show this code at pickup.",
     "orders.cancelPolicy": "You can cancel up to 2 hours before pickup for a full refund.",
-    "orders.pickupReminder": "Pickup reminder",
-    "orders.pickupDate": "Pickup date",
-    "orders.pickupTime": "Pickup time",
     "orders.pickupUnavailable": "Pickup details unavailable",
-    "orders.businessName": "Business name",
-    "orders.businessAddress": "Business address",
-    "orders.cancelAvailable": "You can cancel until 2 hours before pickup.",
-    "orders.cancelUnavailable": "Cancellation window has closed.",
-    "orders.ratingBeforePickup": "Ratings become available after collection.",
-    "orders.ratingAvailable":
-      "Your order was collected. You can now rate this business.",
-    "orders.ratingEducationTitle": "Ratings become available after pickup.",
-    "orders.ratingEducationText":
-      "Help other customers by sharing your experience.",
-    "orders.activePickupReminder":
-      "Remember to collect your order during the pickup window. Bring your pickup code.",
-    "orders.pickupInstructionTitle": "At pickup",
-    "orders.pickupInstructionText":
-      "Show your code at pickup.",
     "orders.statusGuideReservedTitle": "Reserved",
     "orders.statusGuideReservedText":
       "Your pickup code is active. Visit the business during the pickup window.",
@@ -334,12 +268,6 @@ const translations = {
     "orders.statusGuideCancelledText":
       "Cancelled or refunded reservations remain here for your history.",
     "orders.reviewThanks": "Thank you for your review.",
-    "orders.collectedMessage": "This order was collected.",
-    "orders.cancelledMessage": "This reservation was cancelled.",
-    "orders.noShowMessage": "This pickup was missed.",
-    "orders.expiredMessage": "The pickup window has passed.",
-    "orders.pickupCodeAvailable": "Pickup code available.",
-    "orders.cancelReservation": "Cancel reservation",
     "orders.ratePickup": "Rate this pickup",
     "orders.reviewPlaceholder": "Optional review for the business",
     "orders.reviewLabel": "Write your review",
@@ -498,7 +426,6 @@ const translations = {
     "login.redirectCheckout": "Please sign in to reserve this offer.",
     "login.redirectOrders": "Please sign in to view your orders.",
     "login.redirectFavorites": "Please sign in to view your saved offers.",
-    "login.accountType": "Account type",
     "login.accountTypeHint":
       "Choose Customer if you want to reserve food offers. Choose Business if you will publish offers for a cafe, bakery, restaurant or shop.",
     "login.customer": "Customer",
@@ -586,61 +513,18 @@ const translations = {
     "forBusinesses.ctaQuestions": "Have questions first?",
     "forBusinesses.ctaContact": "Contact us",
 
-    "checkout.title": "Reservation confirmation",
-    "checkout.subtitle":
-      "Review and pay.",
-    "checkout.summary": "Reservation summary",
-    "checkout.stepReservationTitle": "Reservation",
-    "checkout.stepReservationText":
-      "Review the offer, pickup time and cancellation rules.",
-    "checkout.stepPaymentTitle": "Payment",
-    "checkout.stepPaymentText":
-      "Complete secure online payment through TBC Bank before the reservation is finalized.",
-    "checkout.stepPickupTitle": "Pickup",
-    "checkout.stepPickupText":
-      "After confirmation, use your pickup code during the pickup window.",
     "checkout.rescueBox": "Lunch Box",
-    "checkout.offerTitle": "Offer",
-    "checkout.businessName": "Business",
-    "checkout.pickupDate": "Pickup date",
-    "checkout.pickupWindow": "Pickup window",
-    "checkout.price": "Price",
-    "checkout.quantityRemaining": "Quantity remaining",
-    "checkout.cancellationPolicy": "Cancellation policy",
     "checkout.noShowWarning": "No-show warning",
     "checkout.noShowText": "If you do not pick up your order, it may count as a no-show.",
-    "checkout.regularPrice": "Regular price",
-    "checkout.paymentMethod": "Payment method",
-    "checkout.pilotReservationMethod":
-      "Online card payment via TBC Bank.",
-    "checkout.paymentPreparationTitle": "Secure payment",
-    "checkout.paymentPreparationText":
-      "You'll pay on TBC's page. Your reservation is confirmed after payment.",
-    "checkout.futurePaymentTitle": "Payment safety",
-    "checkout.futurePaymentText":
-      "If payment fails, the hold is released automatically.",
-    "checkout.receiptTitle": "Receipt preview",
-    "checkout.reservationIdAfterConfirmation":
-      "Reservation ID appears after confirmation.",
-    "checkout.paymentReferenceFuture":
-      "Payment reference appears after bank confirmation.",
-    "checkout.rules": "I understand the pickup and cancellation rules.",
-    "checkout.payReserve": "Pay and reserve",
     "checkout.reserving": "Creating secure checkout...",
     "checkout.successMessage":
       "Reservation confirmed. Your pickup code is in Orders.",
-    "checkout.address": "Address",
     "checkout.afterConfirmation": "After confirmation",
     "checkout.ordersReminder":
       "Your reservation will appear in Orders after confirmation.",
-    "checkout.cancelReminder": "You can cancel up to 2 hours before pickup.",
     "checkout.ratingReminder":
       "After pickup, you can rate your experience and help other customers.",
-    "checkout.trustTitle": "Why you can reserve with confidence",
-    "checkout.trustVerifiedBusiness": "Verified business",
     "checkout.trustSecureReservation": "Secure reservation",
-    "checkout.trustPickupCode": "Pickup code verification",
-    "checkout.trustCustomerRatings": "Customer ratings",
     "checkout.pickupGuideBadge": "Pickup guide",
     "checkout.pickupGuideTitle": "How pickup works",
     "checkout.pickupGuideIntro":
@@ -874,7 +758,6 @@ const translations = {
     "common.openMap": "რუკის გახსნა",
     "common.browseOffers": "აღმოჩენა",
     "common.viewDetails": "დეტალების ნახვა",
-    "common.continueCheckout": "გადახდაზე გადასვლა",
     "common.reserve": "დაჯავშნა",
     "common.cancel": "გაუქმება",
     "common.remove": "წაშლა",
@@ -919,7 +802,6 @@ const translations = {
     "home.trustEasyPickup": "მარტივი წაღება",
     "home.trustLocalBusinesses": "ადგილობრივი ბიზნესები",
     "home.trustFoodRescue": "საკვების გადარჩენა",
-    "home.trustVerifiedBusinesses": "დადასტურებული ბიზნესები",
     "home.trustEasyPickupProcess": "მარტივი წაღების პროცესი",
     "home.trustReduceFoodWaste": "საკვების ნარჩენის შემცირება",
     "home.trustPickupOnlyMarketplace": "მხოლოდ ადგილზე წაღების პლატფორმა",
@@ -928,7 +810,6 @@ const translations = {
     "home.trustSecureReservationFlow": "უსაფრთხო ჯავშნის პროცესი",
     "home.trustLocalTbilisiBusinesses": "ადგილობრივი თბილისის ბიზნესები",
     "home.featuredOffer": "რჩეული შეთავაზება",
-    "home.featuredOffers": "რჩეული შეთავაზებები",
     "home.topBusinesses": "ყველაზე მაღალი შეფასების ბიზნესები",
     "home.stats": "საპილოტე ნდობა",
     "home.howItWorks": "როგორ მუშაობს არ გადააგდო",
@@ -942,7 +823,6 @@ const translations = {
     "home.step3Text": "წაიღე შეკვეთა მითითებულ წაღების დროს.",
     "home.step4": "ნაბიჯი 4",
     "home.step4Text": "ისიამოვნე კარგი საკვებით და დაეხმარე ნარჩენის შემცირებას.",
-    "home.trustBadge": "ნდობა და უსაფრთხოება",
     "home.trustTitle": "შემოწმებული ადგილობრივი ბიზნესები",
     "home.trustMessage":
       "ყველა ბიზნესი მოწმდება, სანამ არ გადააგდოზე დამტკიცდება.",
@@ -993,9 +873,7 @@ const translations = {
     "customerOnboarding.stepCollect": "წაიღე მითითებულ დროს.",
     "customerOnboarding.stepEnjoy": "ისიამოვნე კარგი საკვებით უკეთეს ფასად.",
 
-    "offers.badge": "ცოცხალი შეთავაზებები თბილისში",
     "offers.title": "ლანჩ ბოქსები შენთან ახლოს.",
-    "offers.subtitle": "მოძებნე, დაჯავშნე, წაიღე ადგილზე.",
     "offers.search": "მოძებნე საკვები, ბიზნესი, მისამართი...",
     "offers.reset": "გასუფთავება",
     "offers.allCategories": "ყველა კატეგორია",
@@ -1003,64 +881,33 @@ const translations = {
     "offers.sortLowest": "დაბალი ფასი",
     "offers.sortHighest": "მაღალი ფასი",
     "offers.availableOnly": "მხოლოდ ხელმისაწვდომი",
-    "offers.boxesLeft": "დარჩენილი ლანჩ ბოქსები",
     "offers.filterHint":
       "გამოიყენე ძიება, კატეგორიები და დალაგება სასურველი წაღების ფანჯრის საპოვნელად.",
     "offers.tbilisiPilot": "თბილისის პილოტი",
     "offers.heading": "საკვების გადარჩენის შეთავაზებები",
     "offers.matches": "ემთხვევა ფილტრებს.",
-    "offers.noOffers": "ახლა აქტიური შეთავაზებები არ არის.",
     "offers.noMatching": "შესაბამისი შეთავაზება არ არის",
-    "offers.noOffersHint":
-      "ბიზნესები ლანჩ ბოქსებს ხშირად დღის მეორე ნახევარში აქვეყნებენ.",
-    "offers.noMatchingHint": "სცადე კატეგორიის, ფასის ან ხელმისაწვდომობის ფილტრის შეცვლა.",
-    "offers.checkBackSoon": "ახალი ლანჩ ბოქსებისთვის მალე ისევ შეამოწმე.",
-    "offers.surpriseBagTitle": "რა არის ლანჩ ბოქსი?",
-    "offers.surpriseBagText":
-      "დარჩენილი საკვები ფასდაკლებით, S, M ან L. შემადგენლობა იცვლება.",
     "offers.clearFilters": "ფილტრების გასუფთავება",
-    "offers.backHome": "მთავარზე დაბრუნება",
     "offers.addFavorite": "რჩეულებში დამატება",
     "offers.removeFavorite": "რჩეულებიდან წაშლა",
-    "offers.updatingFavorite": "ახლდება...",
 
     "offerDetail.back": "შეთავაზებებზე დაბრუნება",
-    "offerDetail.title": "შეთავაზების დეტალები",
-    "offerDetail.about": "ამ ლანჩ ბოქსის შესახებ",
     "offerDetail.allergens": "ალერგენები",
     "offerDetail.allergensAsk": "ალერგენების შესახებ ჰკითხე ბიზნესს წაღებისას.",
-    "offerDetail.businessProfile": "ბიზნეს პროფილი",
     "offerDetail.reviewsTitle": "მომხმარებლის შეფასებები",
     "offerDetail.savings": "ზოგავ",
     "offerDetail.noSavingsListed": "მითითებული არ არის",
-    "offerDetail.notListed": "მითითებული არ არის",
     "offerDetail.pickupDate": "წაღების თარიღი",
     "offerDetail.pickupTime": "წაღების დრო",
-    "offerDetail.reviewSummary": "შეფასებების შეჯამება",
-    "offerDetail.urgencyHint": "დაჯავშნე, სანამ ეს ლანჩ ბოქსი გაიყიდება.",
-    "offerDetail.pickupInfoTitle": "წაღების ინფორმაცია",
-    "offerDetail.pickupVisit": "ეწვიე მითითებულ წაღების დროს",
-    "offerDetail.pickupCode": "აჩვენე წაღების კოდი",
-    "offerDetail.pickupCodeHint":
-      "კოდი შეკვეთებში გამოჩნდება ჯავშნის დადასტურების შემდეგ.",
-    "offerDetail.pickupCollect": "მიიღე შეკვეთა",
-    "offerDetail.pickupCollectHint":
-      "ბიზნესი ამოწმებს კოდს და წაღებას დასრულებულად მონიშნავს.",
-    "offerDetail.afterReservationTitle": "რა ხდება ჯავშნის შემდეგ?",
     "offerDetail.afterReservationOrder": "ჯავშანი შეკვეთებში გამოჩნდება.",
     "offerDetail.afterReservationCode": "მიიღებ წაღების კოდს.",
     "offerDetail.afterReservationVisit": "ეწვიე ბიზნესს წაღების დროს.",
     "offerDetail.afterReservationShowCode":
       "შეკვეთის მისაღებად აჩვენე წაღების კოდი.",
     "offerDetail.cancellationReminderTitle": "გაუქმების შეხსენება",
-    "offerDetail.cancellationReminderText":
-      "თუ გეგმები შეგეცვლება, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე.",
-    "offerDetail.ratingReminderTitle": "წაღების შემდეგ",
     "offerDetail.ratingReminderText":
       "შეფასება წაღების შემდეგ შეგეძლება.",
-    "offerDetail.noReviewsHint":
-      "შეფასებები აქ გამოჩნდება მას შემდეგ, რაც მომხმარებლები წაღებას დაასრულებენ და ბიზნესს შეაფასებენ.",
-    "offerDetail.notFound": "შეთავაზება ვერ ჩაიტვირთა.",
+    "offerDetail.notFound": "ეს ბოქსი აღარ არის ხელმისაწვდომი.",
 
     "businessProfile.back": "შეთავაზებებზე დაბრუნება",
     "businessProfile.title": "ბიზნეს პროფილი",
@@ -1087,7 +934,7 @@ const translations = {
       "ამ ბიზნესის ახალი საკვების გადარჩენის შეთავაზებებისთვის მოგვიანებით შეამოწმე.",
     "businessProfile.noReviewsHint":
       "შეფასებები აქ გამოჩნდება მას შემდეგ, რაც მომხმარებლები წაღებას დაასრულებენ და ბიზნესს შეაფასებენ.",
-    "businessProfile.notFound": "ბიზნესი ვერ ჩაიტვირთა.",
+    "businessProfile.notFound": "ეს ბიზნესი ვერ მოიძებნა.",
 
     "reviewReport.link": "დაარეპორტე",
     "reviewReport.title": "რა პრობლემაა ამ შეფასებასთან?",
@@ -1104,41 +951,12 @@ const translations = {
     "reviewReport.alreadyReported": "ეს შეფასება უკვე დაარეპორტე.",
     "reviewReport.failed": "რეპორტი ვერ გაიგზავნა. გთხოვ, სცადე ხელახლა.",
 
-    "orders.title": "შენი შეკვეთები",
-    "orders.subtitle": "წაღების დროს ბიზნესს აჩვენე შენი კოდი.",
     "orders.reserved": "დაჯავშნილი",
     "orders.collected": "წაღებული",
     "orders.cancelled": "გაუქმებული",
-    "orders.reliability": "სანდოობა",
-    "orders.status": "სტატუსი",
-    "orders.loading": "შეკვეთები იტვირთება...",
-    "orders.emptyTitle": "შეკვეთები ჯერ არ არის",
-    "orders.emptyHint": "დაჯავშნე ლანჩ ბოქსი და ის აქ გამოჩნდება.",
-    "orders.educationTitle": "როგორ მუშაობს შეკვეთები",
-    "orders.educationText":
-      "დაჯავშნილი ლანჩ ბოქსები და კოდები აქ გამოჩნდება.",
     "orders.pickupCode": "წაღების კოდი",
-    "orders.showCode": "აჩვენე ეს კოდი ადგილზე.",
     "orders.cancelPolicy": "გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე სრული დაბრუნებით.",
-    "orders.pickupReminder": "წაღების შეხსენება",
-    "orders.pickupDate": "წაღების თარიღი",
-    "orders.pickupTime": "წაღების დრო",
     "orders.pickupUnavailable": "წაღების ინფორმაცია მიუწვდომელია",
-    "orders.businessName": "ბიზნესის სახელი",
-    "orders.businessAddress": "ბიზნესის მისამართი",
-    "orders.cancelAvailable": "გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე.",
-    "orders.cancelUnavailable": "გაუქმების ვადა დახურულია.",
-    "orders.ratingBeforePickup": "შეფასება ხელმისაწვდომი გახდება წაღების შემდეგ.",
-    "orders.ratingAvailable":
-      "შეკვეთა წაღებულია. ახლა შეგიძლია, ეს ბიზნესი შეაფასო.",
-    "orders.ratingEducationTitle": "შეფასება ხელმისაწვდომი გახდება წაღების შემდეგ.",
-    "orders.ratingEducationText":
-      "გაუზიარე შენი გამოცდილება და დაეხმარე სხვა მომხმარებლებს.",
-    "orders.activePickupReminder":
-      "არ დაგავიწყდეს შეკვეთის წაღება მითითებულ დროს. თან გქონდეს წაღების კოდი.",
-    "orders.pickupInstructionTitle": "წაღებისას",
-    "orders.pickupInstructionText":
-      "წაღებისას ბიზნესს აჩვენე კოდი.",
     "orders.statusGuideReservedTitle": "დაჯავშნილი",
     "orders.statusGuideReservedText":
       "შენი წაღების კოდი აქტიურია. ეწვიე ბიზნესს მითითებულ წაღების დროს.",
@@ -1149,12 +967,6 @@ const translations = {
     "orders.statusGuideCancelledText":
       "გაუქმებული ან დაბრუნებული ჯავშნები ისტორიაში რჩება.",
     "orders.reviewThanks": "მადლობა შეფასებისთვის.",
-    "orders.collectedMessage": "ეს შეკვეთა წაღებულია.",
-    "orders.cancelledMessage": "ეს ჯავშანი გაუქმებულია.",
-    "orders.noShowMessage": "ეს წაღება გამოტოვებულია.",
-    "orders.expiredMessage": "წაღების დრო დასრულებულია.",
-    "orders.pickupCodeAvailable": "წაღების კოდი ხელმისაწვდომია.",
-    "orders.cancelReservation": "ჯავშნის გაუქმება",
     "orders.ratePickup": "შეაფასე წაღება",
     "orders.reviewPlaceholder": "შეფასების ტექსტი ბიზნესისთვის (არასავალდებულო)",
     "orders.reviewLabel": "დაწერე შენი შეფასება",
@@ -1313,7 +1125,6 @@ const translations = {
     "login.redirectOrders": "შეკვეთების სანახავად, გთხოვ, შეხვიდე ანგარიშში.",
     "login.redirectFavorites":
       "შენახული შეთავაზებების სანახავად, გთხოვ, შეხვიდე ანგარიშში.",
-    "login.accountType": "ანგარიშის ტიპი",
     "login.accountTypeHint":
       "აირჩიე მომხმარებელი, თუ საკვების შეთავაზებების დაჯავშნა გინდა. აირჩიე ბიზნესი, თუ კაფეს, საცხობის, რესტორნის ან მაღაზიის შეთავაზებებს გამოაქვეყნებ.",
     "login.customer": "მომხმარებელი",
@@ -1401,61 +1212,18 @@ const translations = {
     "forBusinesses.ctaQuestions": "გაქვს კითხვები?",
     "forBusinesses.ctaContact": "დაგვიკავშირდი",
 
-    "checkout.title": "ჯავშნის დადასტურება",
-    "checkout.subtitle":
-      "გადაამოწმე და გადაიხადე.",
-    "checkout.summary": "ჯავშნის შეჯამება",
-    "checkout.stepReservationTitle": "ჯავშანი",
-    "checkout.stepReservationText":
-      "გადაამოწმე შეთავაზება, წაღების დრო და გაუქმების წესები.",
-    "checkout.stepPaymentTitle": "გადახდა",
-    "checkout.stepPaymentText":
-      "ჯავშნის დასასრულებლად TBC Bank-ის მეშვეობით უსაფრთხო ონლაინ გადახდა დაასრულე.",
-    "checkout.stepPickupTitle": "წაღება",
-    "checkout.stepPickupText":
-      "დადასტურების შემდეგ გამოიყენე წაღების კოდი მითითებულ დროს.",
     "checkout.rescueBox": "ლანჩ ბოქსი",
-    "checkout.offerTitle": "შეთავაზება",
-    "checkout.businessName": "ბიზნესი",
-    "checkout.pickupDate": "წაღების თარიღი",
-    "checkout.pickupWindow": "წაღების დრო",
-    "checkout.price": "ფასი",
-    "checkout.quantityRemaining": "დარჩენილი რაოდენობა",
-    "checkout.cancellationPolicy": "გაუქმების წესი",
     "checkout.noShowWarning": "გაფრთხილება გამოუცხადებლობაზე",
     "checkout.noShowText": "თუ შეკვეთას არ წაიღებ, ეს შეიძლება გამოუცხადებლობად ჩაითვალოს.",
-    "checkout.regularPrice": "სტანდარტული ფასი",
-    "checkout.paymentMethod": "გადახდის მეთოდი",
-    "checkout.pilotReservationMethod":
-      "ონლაინ ბარათით გადახდა TBC Bank-ის მეშვეობით.",
-    "checkout.paymentPreparationTitle": "უსაფრთხო გადახდა",
-    "checkout.paymentPreparationText":
-      "გადახდა TBC-ის გვერდზე. ჯავშანი დასტურდება გადახდის შემდეგ.",
-    "checkout.futurePaymentTitle": "გადახდის უსაფრთხოება",
-    "checkout.futurePaymentText":
-      "თუ გადახდა ვერ შესრულდა, ჯავშანი ავტომატურად იხსნება.",
-    "checkout.receiptTitle": "ქვითრის წინასწარი ხედი",
-    "checkout.reservationIdAfterConfirmation":
-      "ჯავშნის ID დადასტურების შემდეგ გამოჩნდება.",
-    "checkout.paymentReferenceFuture":
-      "გადახდის იდენტიფიკატორი ბანკის დადასტურების შემდეგ გამოჩნდება.",
-    "checkout.rules": "გავეცანი წაღებისა და გაუქმების წესებს.",
-    "checkout.payReserve": "გადახდა და დაჯავშნა",
     "checkout.reserving": "უსაფრთხო გადახდა მზადდება...",
     "checkout.successMessage":
       "ჯავშანი დადასტურდა. წაღების კოდი შეკვეთებშია.",
-    "checkout.address": "მისამართი",
     "checkout.afterConfirmation": "დადასტურების შემდეგ",
     "checkout.ordersReminder":
       "დადასტურების შემდეგ შენი ჯავშანი შეკვეთებში გამოჩნდება.",
-    "checkout.cancelReminder": "შეგიძლია გააუქმო წაღებამდე 2 საათით ადრე.",
     "checkout.ratingReminder":
       "წაღების შემდეგ შეგიძლია შეაფასო გამოცდილება და სხვა მომხმარებლებს დაეხმარო.",
-    "checkout.trustTitle": "რატომ შეგიძლია დაჯავშნა ნდობით",
-    "checkout.trustVerifiedBusiness": "დადასტურებული ბიზნესი",
     "checkout.trustSecureReservation": "უსაფრთხო ჯავშანი",
-    "checkout.trustPickupCode": "წაღების კოდის შემოწმება",
-    "checkout.trustCustomerRatings": "მომხმარებლების შეფასებები",
     "checkout.pickupGuideBadge": "წაღების გზამკვლევი",
     "checkout.pickupGuideTitle": "როგორ მუშაობს წაღება",
     "checkout.pickupGuideIntro":

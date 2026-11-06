@@ -139,7 +139,7 @@ export default function NativeFavorites() {
                 type="button"
                 onClick={() => void remove(favorite)}
                 aria-label={L("რჩეულებიდან წაშლა", "Remove from favourites")}
-                className="native-press flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-mint"
+                className="native-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-mint"
               >
                 <HeartIcon className="h-[18px] w-[18px]" fill="currentColor" strokeWidth={1.8} />
               </button>

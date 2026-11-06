@@ -5,16 +5,12 @@ import { NativeOfferScreen } from "@/components/native/screens";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
-import { FAQAccordion } from "@/components/help/FAQAccordion";
 import { LeafDecor, WaveEdge } from "@/components/design/Decor";
-import { HelpCard } from "@/components/help/HelpCard";
 import {
   ReviewReportControl,
   useReviewReporterId,
 } from "@/components/reviews/ReviewReportControl";
-import { SupportLink } from "@/components/help/SupportLink";
-import { TrustBadge } from "@/components/help/TrustBadge";
-import { ArrowLeftIcon, ClockIcon, HeartIcon, MapPinIcon, StoreIcon } from "@/components/icons";
+import { ArrowLeftIcon, ChevronDownIcon, ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
 import {
   getConfirmedUser,
   getProfileById,
@@ -27,7 +23,6 @@ import { formatBagsLeft } from "@/lib/greenBag";
 import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
-  formatPickupWindow,
   formatPickupTimeRange,
   formatReviewDate,
   getDiscountPercent,
@@ -50,25 +45,9 @@ type OfferDetail = Offer & {
   businesses?: Business | null;
 };
 
-function isApprovedBusiness(value: boolean | string | null | undefined) {
-  return value === true || String(value) === "true";
-}
-
 function toNumber(value: number | string | null | undefined) {
   const numberValue = Number(value || 0);
   return Number.isFinite(numberValue) ? numberValue : 0;
-}
-
-function getUrgencyMessage(quantity: number, language: string) {
-  if (quantity === 1) {
-    return language === "ka" ? "ბოლო ლანჩ ბოქსი ხელმისაწვდომია" : "Last one available";
-  }
-
-  if (quantity > 1 && quantity <= 5) {
-    return language === "ka" ? `მხოლოდ ${quantity} დარჩა` : `Only ${quantity} left`;
-  }
-
-  return "";
 }
 
 function OfferDetailPage() {
@@ -105,12 +84,13 @@ function OfferDetailPage() {
         return;
       }
 
-      await processExpiredMarketplace();
+      // Tidies expired offers in the background; the read below does not wait.
+      void processExpiredMarketplace();
 
       const [{ data, error }, summaries] = await Promise.all([
         supabase
           .from("offers")
-          .select("*, businesses(id, owner_id, name, business_type, address, phone, approved)")
+          .select("*, businesses(id, name, business_type, address, phone, approved)")
           .eq("id", offerId)
           .maybeSingle(),
         loadBusinessRatingSummaries(),
@@ -276,131 +256,77 @@ function OfferDetailPage() {
   const reservable = offer ? isOfferReservable(offer) : false;
   const currentPrice = offer ? toNumber(offer.price) : 0;
   const originalPrice = offer ? toNumber(offer.old_price) : 0;
-  const savingsAmount =
-    originalPrice > currentPrice ? originalPrice - currentPrice : 0;
-  const quantity = Number(offer?.quantity || 0);
-  const urgencyMessage =
-    offer && reservable ? getUrgencyMessage(quantity, language) : "";
   const reviewCount = rating?.rating_count || reviews.length;
   const averageRating =
     rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
-  const verifiedBusiness = isApprovedBusiness(offer?.businesses?.approved);
   const businessName = offer?.businesses?.name || t("common.business");
   const categoryTone = getOfferCategoryTone(offer?.category);
   const discountPercent = offer ? getDiscountPercent(offer) : null;
-  const trustItems = [
-    t("home.trustVerifiedBusinesses"),
-    t("home.trustPickupCodeVerification"),
-    t("home.trustCustomerRatings"),
-  ];
-  const confidenceQuestions = offer
-    ? [
-        {
-          question:
-            language === "ka" ? "ვინ ამზადებს ამ ლანჩ ბოქსს?" : "Who prepares this box?",
-          answer:
-            language === "ka"
-              ? `${businessName} ამზადებს ამ ლანჩ ბოქსს. ბიზნესის პროფილში შეგიძლია ნახო მისამართი, შეფასებები და აქტიური შეთავაზებები.`
-              : `${businessName} prepares this Lunch Box. You can review the business profile, address, ratings and active offers before reserving.`,
-        },
-        {
-          question:
-            language === "ka" ? "რამდენად ახალია საკვები?" : "How fresh is the food?",
-          answer:
-            language === "ka"
-              ? "ლანჩ ბოქსები მზადდება იმავე დღის კარგი დარჩენილი საკვებიდან. წაიღე მითითებულ დროს, რომ საკვები საუკეთესო მდგომარეობაში მიიღო."
-              : "Lunch Boxes are prepared from good surplus food for the listed pickup day. Collect during the pickup window so the food is still at its best.",
-        },
-        {
-          question:
-            language === "ka" ? "როგორ მუშაობს წაღება?" : "How does pickup work?",
-          answer:
-            language === "ka"
-              ? "დადასტურების შემდეგ შეკვეთა „შეკვეთების“ გვერდზე გამოჩნდება. ბიზნესში მისვლისას აჩვენე წაღების კოდი და თანამშრომელი კოდს გადაამოწმებს."
-              : "After confirmation, your order appears in Orders. Visit the business during the pickup window and show your pickup code for verification.",
-        },
-        {
-          question: language === "ka" ? "როდის ვიხდი?" : "When do I pay?",
-          answer:
-            language === "ka"
-              ? "გადახდის გვერდზე თანხას TBC Bank-ის მეშვეობით იხდი. ჯავშანი დადასტურდება მხოლოდ წარმატებული გადახდის შემდეგ."
-              : "Payment is completed through TBC Bank checkout. Your reservation is confirmed only after payment succeeds.",
-        },
-        {
-          question:
-            language === "ka"
-              ? "რა მოხდება, თუ ვერ წავიღებ?"
-              : "What happens if I cannot collect?",
-          answer:
-            language === "ka"
-              ? "თუ გეგმები შეიცვალა, გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე. თუ წაღების დროს არ მიხვალ, შეკვეთა შეიძლება გამოტოვებულ წაღებად ჩაითვალოს."
-              : "If plans change, cancel up to 2 hours before pickup. If you miss the pickup window, the order may be marked as a missed pickup.",
-        },
-      ]
-    : [];
 
   return (
     <main className="app-shell">
       <Navbar hideBottomNav />
 
-      <div className={categoryTone}>
-        <section className="relative overflow-hidden bg-cat px-4 pb-2 pt-4">
-          <span
-            aria-hidden="true"
-            className="absolute -left-16 top-8 h-64 w-64 rounded-full bg-cat-soft"
-          />
-          <LeafDecor className="-right-8 -top-6 h-48 w-48 text-cat-soft lg:right-[12%] lg:h-72 lg:w-72" />
+      {!message && (
+        <div className={categoryTone}>
+          <section className="relative overflow-hidden bg-cat px-4 pb-2 pt-4">
+            <span
+              aria-hidden="true"
+              className="absolute -left-16 top-8 h-64 w-64 rounded-full bg-cat-soft"
+            />
+            <LeafDecor className="-right-8 -top-6 h-48 w-48 text-cat-soft lg:right-[12%] lg:h-72 lg:w-72" />
 
-          <div className="relative mx-auto flex max-w-6xl justify-center">
-            <Link
-              href="/discover"
-              aria-label={t("offerDetail.back")}
-              className="absolute left-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border"
-            >
-              <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
-            </Link>
-
-            {offer && (
-              <button
-                type="button"
-                onClick={() => void toggleFavorite()}
-                disabled={favoriteUpdating}
-                aria-label={
-                  isFavorite
-                    ? `${t("offers.removeFavorite")} - ${offer.title}`
-                    : `${t("offers.addFavorite")} - ${offer.title}`
-                }
-                aria-pressed={isFavorite}
-                className="absolute right-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border focus:outline-none focus-visible:ring-2 focus-visible:ring-mint disabled:cursor-not-allowed disabled:opacity-60"
+            <div className="relative mx-auto flex max-w-6xl justify-center">
+              <Link
+                href="/discover"
+                aria-label={t("offerDetail.back")}
+                className="absolute left-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border"
               >
-                <HeartIcon className="h-5 w-5" strokeWidth={2} filled={isFavorite} />
-              </button>
-            )}
+                <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
+              </Link>
 
-            <div className="relative mt-3 h-44 w-44 sm:h-60 sm:w-60">
-              <div className="photo-hero relative isolate h-full w-full overflow-hidden">
-                {offer ? (
-                  <OfferImage
-                    src={offer.image_url}
-                    alt={offer.title}
-                    sizes="240px"
-                    priority
-                  />
-                ) : (
-                  <div className="photo-fallback h-full w-full" />
+              {offer && (
+                <button
+                  type="button"
+                  onClick={() => void toggleFavorite()}
+                  disabled={favoriteUpdating}
+                  aria-label={
+                    isFavorite
+                      ? `${t("offers.removeFavorite")} - ${offer.title}`
+                      : `${t("offers.addFavorite")} - ${offer.title}`
+                  }
+                  aria-pressed={isFavorite}
+                  className="absolute right-0 top-0 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink transition hover:bg-brand-border focus:outline-none focus-visible:ring-2 focus-visible:ring-mint disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <HeartIcon className="h-5 w-5" strokeWidth={2} filled={isFavorite} />
+                </button>
+              )}
+
+              <div className="relative mt-3 h-44 w-44 sm:h-60 sm:w-60">
+                <div className="photo-hero relative isolate h-full w-full overflow-hidden">
+                  {offer ? (
+                    <OfferImage
+                      src={offer.image_url}
+                      alt={offer.title}
+                      sizes="240px"
+                      priority
+                    />
+                  ) : (
+                    <div className="photo-fallback h-full w-full" />
+                  )}
+                </div>
+
+                {discountPercent !== null && (
+                  <div className="discount-sticker pointer-events-none absolute -bottom-3 -right-8 h-[4.625rem] w-[4.625rem] border-4 border-brand-ground text-[1.0625rem]">
+                    −{discountPercent}%
+                  </div>
                 )}
               </div>
-
-              {discountPercent !== null && (
-                <div className="discount-sticker pointer-events-none absolute -bottom-3 -right-8 h-[4.625rem] w-[4.625rem] border-4 border-brand-ground text-[1.0625rem]">
-                  −{discountPercent}%
-                </div>
-              )}
             </div>
-          </div>
-        </section>
-        <WaveEdge fill="var(--cat)" />
-      </div>
+          </section>
+          <WaveEdge fill="var(--cat)" />
+        </div>
+      )}
 
       <section className="px-4 pb-6 pt-2 sm:px-6 md:px-12">
         <div className="mx-auto max-w-6xl">
@@ -412,382 +338,98 @@ function OfferDetailPage() {
           )}
 
           {!loading && message && (
-            <div className="mt-6">
-              <Notice tone="error">{message}</Notice>
+            <div className="mt-8 rounded-[22px] bg-well p-8 text-center">
+              <p className="font-serif text-xl font-bold">{message}</p>
+              <Link
+                href="/discover"
+                className="premium-button mt-5 w-full rounded-2xl px-6 py-3 font-bold sm:w-auto"
+              >
+                {t("native.orders.emptyAction")}
+              </Link>
             </div>
           )}
 
           {!loading && offer && (
-            <>
-              <div>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-mint">
-                      {t("offerDetail.title")}
-                    </p>
-                    <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide text-mint">
-                      {offerCategory}
+            <div className="mx-auto max-w-xl pb-24 lg:pb-0">
+              <h1 className="font-serif text-2xl font-bold leading-[1.25] sm:text-4xl">
+                {offer.title}
+              </h1>
+              <Link
+                href={`/businesses/${offer.business_id}`}
+                className="mt-1 block truncate text-sm text-body transition hover:text-mint"
+              >
+                {[businessName, offer.businesses?.address].filter(Boolean).join(" · ")}
+              </Link>
+
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <p className="flex items-baseline gap-2">
+                  <span className="text-3xl font-semibold text-mint">
+                    {formatMoney(offer.price)}
+                  </span>
+                  {originalPrice > currentPrice && (
+                    <span className="text-sm text-body line-through">
+                      {formatMoney(offer.old_price)}
                     </span>
-                    {verifiedBusiness && (
-                      <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide text-mint">
-                        {t("businessProfile.verified")}
-                      </span>
-                    )}
-                  </div>
-
-                  <h1 className="mt-3 font-serif text-2xl font-bold leading-[1.25] sm:text-4xl">
-                    {offer.title}
-                  </h1>
-
-                  <Link
-                    href={`/businesses/${offer.business_id}`}
-                    className="mt-3 inline-flex min-h-11 items-center font-semibold text-cream transition hover:text-mint"
-                  >
-                    {offer.businesses?.name || t("common.business")}
-                  </Link>
-
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="ui-card rounded-3xl p-5">
-                      <p className="text-sm text-body">
-                        {t("common.price")}
-                      </p>
-                      <p className="mt-2 text-4xl font-semibold text-mint">
-                        {formatMoney(offer.price)}
-                      </p>
-                      <p className="mt-2 text-sm text-body">
-                        {t("checkout.regularPrice")}:{" "}
-                        {originalPrice > currentPrice ? (
-                          <span className="line-through">
-                            {formatMoney(offer.old_price)}
-                          </span>
-                        ) : (
-                          t("offerDetail.notListed")
-                        )}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-mint">
-                        {t("offerDetail.savings")}:{" "}
-                        {savingsAmount > 0
-                          ? formatMoney(savingsAmount)
-                          : t("offerDetail.noSavingsListed")}
-                      </p>
-                    </div>
-
-                    <div className="premium-muted-card rounded-3xl p-5">
-                      <p className="text-sm text-body">
-                        {t("offerDetail.pickupDate")}
-                      </p>
-                      <p className="mt-2 text-2xl font-semibold text-cream">
-                        {getOfferDateLabel(offer, language)}
-                      </p>
-                      <p className="mt-1 text-sm text-body">
-                        {formatPickupTimeRange(offer, language)}
-                      </p>
-                    </div>
-
-                    <div className="ui-card rounded-3xl p-5">
-                      <p className="text-sm text-body">
-                        {t("offerDetail.reviewSummary")}
-                      </p>
-                      <p className="mt-2 text-2xl font-semibold text-cream">
-                        {averageRating ? `${averageRating}/5` : t("common.noReviews")}
-                      </p>
-                      <p className="mt-1 text-sm text-body">
-                        {reviewCount > 0
-                          ? `${reviewCount} ${t("common.reviews")}`
-                          : t("common.noReviews")}
-                      </p>
-                    </div>
-
-                    <div className="ui-card rounded-3xl p-5">
-                      <p className="text-sm text-body">
-                        {t("common.quantity")}
-                      </p>
-                      <p className="mt-2 text-3xl font-semibold text-mint">
-                        {formatBagsLeft(offer, language)}
-                      </p>
-                      <p className="mt-1 text-sm text-body">
-                        {offer.unlimited_quantity
-                          ? language === "ka"
-                            ? "იყიდება, სანამ ბიზნესი არ გააჩერებს"
-                            : "On sale until the business stops for today"
-                          : t("offers.boxesLeft")}
-                      </p>
-                    </div>
-                  </div>
-
-                  {urgencyMessage && (
-                    <div className="ui-card mt-4 rounded-3xl p-4">
-                      <p className="font-semibold text-cream">
-                        {urgencyMessage}
-                      </p>
-                      <p className="mt-1 text-sm text-body">
-                        {t("offerDetail.urgencyHint")}
-                      </p>
-                    </div>
                   )}
+                </p>
+                <p className="flex items-center gap-1.5 rounded-full bg-well px-3 py-1.5 font-semibold text-cream">
+                  <ClockIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
+                  {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
+                </p>
+              </div>
 
-                  <div className="ui-card mt-4 rounded-3xl p-4">
-                    <p className="font-semibold text-cream">
-                      {t("offerDetail.afterReservationTitle")}
-                    </p>
-                    <div className="relative mt-3 grid grid-cols-3 gap-2">
-                      <svg
-                        viewBox="0 0 270 24"
-                        preserveAspectRatio="none"
-                        fill="none"
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-x-[16%] top-2 h-6 w-[68%]"
-                      >
-                        <path
-                          d="M0 12 C45 -4 90 28 135 12 C180 -4 225 28 270 12"
-                          stroke="var(--brand-forest)"
-                          strokeWidth="2"
-                          strokeDasharray="5 6"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </svg>
-                      {[
-                        { label: t("offerDetail.pickupCode"), tone: "cat-mixed" },
-                        { label: t("offerDetail.pickupVisit"), tone: "cat-bakery" },
-                        { label: t("offerDetail.ratingReminderTitle"), tone: "cat-deli" },
-                      ].map((step, index) => (
-                        <div key={step.label} className="relative min-w-0 text-center">
-                          <div
-                            className={`${step.tone} mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-cat font-bold text-cat-ink`}
-                          >
-                            {index + 1}
-                          </div>
-                          <p className="mt-1.5 text-xs font-medium text-cream">{step.label}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-body">
-                      {t("offerDetail.cancellationReminderText")}
-                    </p>
-                  </div>
+              {favoriteMessage && (
+                <div className="mt-4">
+                  <Notice tone={favoriteMessageTone}>
+                    {translateUserMessage(favoriteMessage, language)}
+                  </Notice>
+                </div>
+              )}
 
-                  <div className="mt-4 rounded-3xl bg-well p-4">
-                    <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                      {t("home.trustBadge")}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {trustItems.map((item) => (
-                        <TrustBadge
-                          key={item}
-                          label={item}
-                        />
-                      ))}
-                    </div>
-                    <div className="mt-4">
-                      <SupportLink
-                        label={
-                          language === "ka"
-                            ? "გჭირდება დახმარება დაჯავშნამდე?"
-                            : "Need help before reserving?"
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  {favoriteMessage && (
-                    <div className="mt-4">
-                      <Notice tone={favoriteMessageTone}>
-                        {translateUserMessage(favoriteMessage, language)}
-                      </Notice>
-                    </div>
-                  )}
-
+              <details className="group mt-5 rounded-[22px] bg-well">
+                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 font-semibold text-cream [&::-webkit-details-marker]:hidden">
+                  {t("native.offer.details")}
+                  <ChevronDownIcon
+                    className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
+                    strokeWidth={2}
+                  />
+                </summary>
+                <div className="grid gap-3 px-5 pb-5 leading-7 text-body">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-mint">
+                    {offerCategory} · {formatBagsLeft(offer, language)}
+                  </p>
+                  {offer.description && <p>{offer.description}</p>}
+                  <p>
+                    <span className="font-semibold text-cream">
+                      {t("offerDetail.allergens")}:{" "}
+                    </span>
+                    {offer.allergens || t("offerDetail.allergensAsk")}
+                  </p>
+                  <p>{t("native.offer.contents")}</p>
                   <a
                     href={mapsUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="premium-button-secondary mt-5 w-full px-6 py-3 sm:w-auto"
+                    className="inline-flex min-h-11 items-center gap-2 font-semibold text-cream hover:text-mint"
                   >
+                    <MapPinIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} />
                     {t("common.openMap")}
                   </a>
-
-                  <div className="theme-forest fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 flex items-center gap-3.5 rounded-3xl bg-page py-3 pl-[18px] pr-3 lg:static lg:mt-5 lg:max-w-xl">
-                    <div className="min-w-0">
-                      <p className="text-[1.375rem] font-bold leading-tight text-cream">
-                        {formatMoney(offer.price)}
-                      </p>
-                      <p className="text-xs text-mint">
-                        {t("offerDetail.savings")}:{" "}
-                        {savingsAmount > 0
-                          ? formatMoney(savingsAmount)
-                          : t("offerDetail.noSavingsListed")}
-                      </p>
-                    </div>
-
-                    {reservable ? (
-                      <Link
-                        href={`/checkout/${offer.id}`}
-                        className="premium-button min-w-0 flex-1 rounded-2xl px-4 py-3 text-center font-bold"
-                      >
-                        {t("common.continueCheckout")}
-                      </Link>
-                    ) : (
-                      <button
-                        disabled
-                        className="premium-button min-w-0 flex-1 rounded-2xl px-4 py-3 font-bold"
-                      >
-                        {t("common.unavailable")}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-                <div className="grid gap-6">
-                  <div className="premium-card rounded-[22px] p-5 sm:p-8">
-                    <h2 className="font-serif text-2xl font-bold">
-                      {t("offerDetail.about")}
-                    </h2>
-                    <p className="mt-3 leading-7 text-body">
-                      {offer.description ||
-                        (language === "ka"
-                          ? "ბიზნესის მიერ ხელმისაწვდომი საკვებიდან მომზადებული ლანჩ ბოქსი."
-                          : "A Lunch Box prepared by the business from available food.")}
-                    </p>
-
-                    <h3 className="mt-6 text-xl font-semibold">
-                      {t("offerDetail.allergens")}
-                    </h3>
-                    <p className="mt-2 text-body">
-                      {offer.allergens || t("offerDetail.allergensAsk")}
-                    </p>
-                  </div>
-
-                  <HelpCard
-                    title={
-                      language === "ka"
-                        ? "რა არის ლანჩ ბოქსი?"
-                        : "What is a Lunch Box?"
-                    }
-                    text={
-                      language === "ka"
-                        ? "ლანჩ ბოქსი არის დღის ბოლოს დარჩენილი ხარისხიანი პროდუქტი ფასდაკლებით — S, M ან L ზომის. ზუსტი შემადგენლობა შეიძლება იცვლებოდეს, მაგრამ ბიზნესი, კატეგორია, ზომა, ფასი და წაღების დრო დაჯავშნამდე ნათელია."
-                        : "It is good surplus food at a discount, in a box of size S, M or L. The exact contents can vary, but the business, category, size, price and pickup window are clear before you reserve."
-                    }
-                  />
-
-                  <div className="premium-card rounded-[22px] p-5 sm:p-8">
-                    <h2 className="font-serif text-2xl font-bold">
-                      {language === "ka"
-                        ? "კითხვები დაჯავშნამდე"
-                        : "Questions before you reserve"}
-                    </h2>
-                    <p className="mt-3 leading-7 text-body">
-                      {language === "ka"
-                        ? "მოკლე პასუხები ყველაზე მნიშვნელოვან საკითხებზე."
-                        : "Short answers to the most important customer questions."}
-                    </p>
-                    <div className="mt-5">
-                      <FAQAccordion items={confidenceQuestions} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-6">
-                  <div className="ui-card rounded-[22px] p-5 sm:p-8">
-                    <h2 className="font-serif text-2xl font-bold">
-                      {t("offerDetail.pickupInfoTitle")}
-                    </h2>
-                    <div className="mt-5 grid gap-3">
-                      <div className="premium-muted-card rounded-3xl p-4">
-                        <p className="flex items-center gap-2 font-semibold text-cream">
-                          <ClockIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
-                          {t("offerDetail.pickupVisit")}
-                        </p>
-                        <p className="mt-1 text-body">
-                          {formatPickupWindow(offer, language)}
-                        </p>
-                      </div>
-                      <div className="premium-muted-card rounded-3xl p-4">
-                        <p className="font-semibold text-cream">
-                          {t("offerDetail.pickupCode")}
-                        </p>
-                        <p className="mt-1 text-body">
-                          {t("offerDetail.pickupCodeHint")}
-                        </p>
-                      </div>
-                      <div className="premium-muted-card rounded-3xl p-4">
-                        <p className="font-semibold text-cream">
-                          {t("offerDetail.pickupCollect")}
-                        </p>
-                        <p className="mt-1 text-body">
-                          {t("offerDetail.pickupCollectHint")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="premium-card rounded-[22px] p-5 sm:p-8">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-serif text-2xl font-bold">
-                        {t("offerDetail.businessProfile")}
-                      </h2>
-                      {verifiedBusiness && (
-                        <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cream">
-                          {t("businessProfile.verified")}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-3 flex items-center gap-2 font-semibold text-cream">
-                      <StoreIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
-                      {offer.businesses?.business_type || t("common.food")}
-                    </p>
-                    <p className="mt-2 flex items-center gap-2 text-body">
-                      <MapPinIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
-                      {offer.businesses?.address ||
-                        t("common.addressUnavailable")}
-                    </p>
-                    {verifiedBusiness && (
-                      <p className="mt-4 rounded-3xl bg-well p-4 leading-7 text-body">
-                        {t("businessProfile.trustMessage")}
-                      </p>
-                    )}
-                    <Link
-                      href={`/businesses/${offer.business_id}`}
-                      className="premium-button mt-5 px-5 py-2.5"
-                    >
-                      {t("businessProfile.title")}
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              <div className="premium-card mt-6 rounded-[22px] p-5 sm:p-8">
-                <h2 className="font-serif text-2xl font-bold">
-                  {t("offerDetail.reviewsTitle")}
-                </h2>
-
-                <div className="mt-5 grid gap-4">
-                  {reviews.length === 0 && (
-                    <div className="rounded-3xl bg-well p-6">
-                      <p className="text-lg font-semibold text-cream">
-                        {t("common.noReviews")}
-                      </p>
-                      <p className="mt-2 leading-7 text-body">
-                        {t("offerDetail.noReviewsHint")}
-                      </p>
-                    </div>
-                  )}
-
+                  <p className="font-semibold text-cream">
+                    {averageRating
+                      ? `${t("offerDetail.reviewsTitle")} · ★ ${averageRating} (${reviewCount})`
+                      : t("offerDetail.reviewsTitle")}
+                  </p>
+                  {reviews.length === 0 && <p>{t("common.noReviews")}</p>}
                   {reviews.map((review) => (
-                    <div key={review.id} className="rounded-3xl bg-well p-5">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-semibold text-cream">
-                          {review.rating}/5
-                        </p>
-                        {formatReviewDate(review.created_at, language) && (
-                          <p className="text-sm text-body">
-                            {formatReviewDate(review.created_at, language)}
-                          </p>
-                        )}
-                      </div>
-                      <p className="mt-2 text-body">
+                    <div key={review.id} className="rounded-2xl bg-page p-4">
+                      <p className="flex justify-between gap-3 font-semibold text-cream">
+                        <span>★ {review.rating}</span>
+                        <span className="text-sm font-normal text-body">
+                          {formatReviewDate(review.created_at, language)}
+                        </span>
+                      </p>
+                      <p className="mt-1">
                         {review.review?.trim() || t("common.noWrittenReview")}
                       </p>
                       <ReviewReportControl
@@ -796,9 +438,33 @@ function OfferDetailPage() {
                       />
                     </div>
                   ))}
+                  <Link
+                    href="/support"
+                    className="inline-flex min-h-11 items-center font-semibold text-cream hover:text-mint"
+                  >
+                    {t("native.offer.help")}
+                  </Link>
                 </div>
+              </details>
+
+              <div className="theme-forest fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 flex items-center rounded-3xl bg-page p-3 lg:static lg:mt-5">
+                {reservable ? (
+                  <Link
+                    href={`/checkout/${offer.id}`}
+                    className="premium-button min-w-0 flex-1 rounded-2xl px-4 py-3 text-center font-bold"
+                  >
+                    {t("native.offer.reserve")}
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="premium-button min-w-0 flex-1 rounded-2xl px-4 py-3 font-bold"
+                  >
+                    {t("common.unavailable")}
+                  </button>
+                )}
               </div>
-            </>
+            </div>
           )}
         </div>
       </section>

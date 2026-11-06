@@ -2,6 +2,11 @@
 
 import Notice from "@/components/Notice";
 import { ChevronRightIcon, LockIcon, LogOutIcon, MailIcon, TrashIcon } from "@/components/icons";
+import {
+  deleteMyAccount,
+  getDeleteConfirmWord,
+  isDeleteConfirmed,
+} from "@/lib/accountDeletion";
 import { logoutUser } from "@/lib/auth";
 import { disablePush } from "@/lib/push/client";
 import { supabase } from "@/lib/supabase";
@@ -27,12 +32,13 @@ export default function NativeSettings() {
   const L = (ka: string, en: string) => (isGeorgian ? ka : en);
   const [session, setSession] = useState<Session | null>(null);
   const [panel, setPanel] = useState<"none" | "password" | "delete">("none");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
   const [repeat, setRepeat] = useState("");
   const [deleteWord, setDeleteWord] = useState("");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ tone: "success" | "error"; text: string } | null>(null);
-  const confirmWord = L("წაშლა", "DELETE");
+  const confirmWord = getDeleteConfirmWord(language);
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -50,6 +56,13 @@ export default function NativeSettings() {
   }
 
   async function changePassword() {
+    if (!currentPassword) {
+      setNote({
+        tone: "error",
+        text: L("ჩაწერე ახლანდელი პაროლი.", "Enter your current password."),
+      });
+      return;
+    }
     if (!meetsPasswordRule(password) || password.trim() !== password) {
       setNote({
         tone: "error",
@@ -65,7 +78,34 @@ export default function NativeSettings() {
       return;
     }
 
+    const email = session?.user.email;
+    if (!email) {
+      setNote({
+        tone: "error",
+        text: L(
+          "პაროლი ვერ შეიცვალა. სცადე ხელახლა.",
+          "The password couldn't be changed. Please try again."
+        ),
+      });
+      return;
+    }
+
     setBusy(true);
+    // Supabase doesn't ask for the old password: check it here first.
+    const { error: currentError } = await supabase.auth.signInWithPassword({
+      email,
+      password: currentPassword,
+    });
+
+    if (currentError) {
+      setBusy(false);
+      setNote({
+        tone: "error",
+        text: L("ახლანდელი პაროლი არასწორია.", "Your current password is wrong."),
+      });
+      return;
+    }
+
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
 
@@ -80,6 +120,7 @@ export default function NativeSettings() {
       return;
     }
 
+    setCurrentPassword("");
     setPassword("");
     setRepeat("");
     setPanel("none");
@@ -87,44 +128,31 @@ export default function NativeSettings() {
   }
 
   async function deleteAccount() {
-    if (deleteWord.trim().toUpperCase() !== confirmWord.toUpperCase() || busy) return;
+    if (!isDeleteConfirmed(deleteWord) || busy) return;
 
     setBusy(true);
     setNote(null);
-    const { data } = await supabase.auth.getSession();
+    const result = await deleteMyAccount();
 
-    if (!data.session?.access_token) {
+    if (result.status === "signed_out") {
       router.replace(getLoginRedirectUrl("/settings"));
       return;
     }
 
-    const response = await fetch("/api/account/delete", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${data.session.access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ confirm: true }),
-    }).catch(() => null);
-
-    if (!response?.ok) {
-      const result = await response?.json().catch(() => null);
+    if (result.status === "error") {
       setBusy(false);
       setNote({
         tone: "error",
-        text:
-          typeof result?.error === "string"
-            ? translateUserMessage(result.error, language)
-            : L(
-                "ანგარიში ვერ წაიშალა. სცადე ხელახლა ან მოგვწერე.",
-                "Your account couldn't be deleted. Please try again or contact support."
-              ),
+        text: result.error
+          ? translateUserMessage(result.error, language)
+          : L(
+              "ანგარიში ვერ წაიშალა. სცადე ხელახლა ან მოგვწერე.",
+              "Your account couldn't be deleted. Please try again or contact support."
+            ),
       });
       return;
     }
 
-    await disablePush({ turnedOff: false });
-    await supabase.auth.signOut().catch(() => undefined);
     router.replace("/?account=deleted");
   }
 
@@ -169,6 +197,15 @@ export default function NativeSettings() {
           </button>
           {panel === "password" && (
             <div className="grid gap-3 border-t border-line p-4">
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(event) => setCurrentPassword(event.target.value)}
+                placeholder={L("ახლანდელი პაროლი", "Current password")}
+                aria-label={L("ახლანდელი პაროლი", "Current password")}
+                className={field}
+              />
               <input
                 type="password"
                 autoComplete="new-password"
@@ -236,7 +273,7 @@ export default function NativeSettings() {
               <button
                 type="button"
                 onClick={() => void deleteAccount()}
-                disabled={busy || deleteWord.trim().toUpperCase() !== confirmWord.toUpperCase()}
+                disabled={busy || !isDeleteConfirmed(deleteWord)}
                 className="native-press min-h-11 rounded-2xl bg-danger-solid text-sm font-semibold text-white disabled:opacity-50"
               >
                 {busy ? L("იშლება...", "Deleting...") : L("სამუდამოდ წაშლა", "Delete for good")}

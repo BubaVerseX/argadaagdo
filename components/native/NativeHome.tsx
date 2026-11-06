@@ -53,6 +53,7 @@ import {
   hasSeenWelcome,
   markWelcomeSeen,
 } from "@/lib/accountGate";
+import { formatBusinessType } from "@/lib/businessTypes";
 import { supabase } from "@/lib/supabase";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
@@ -172,13 +173,19 @@ export default function NativeHome({
   const [userLocation, setUserLocation] = useState<LatLng | null>(null);
   const [locationChoice, setLocationChoiceState] = useState(getLocationChoice);
   const [locating, setLocating] = useState(false);
+  // Set once the stored-permission check is done (so "on but revoked" shows the off line).
+  const [locationChecked, setLocationChecked] = useState(false);
+  // The person tapped "Turn on" but the phone said no: point to Settings.
+  const [locationBlocked, setLocationBlocked] = useState(false);
 
   // Nearest first, only with the person's OK (asked in a small card below).
   useEffect(() => {
     let active = true;
-    void getLocationIfAllowed().then(
-      (location) => active && location && setUserLocation(location)
-    );
+    void getLocationIfAllowed().then((location) => {
+      if (!active) return;
+      if (location) setUserLocation(location);
+      setLocationChecked(true);
+    });
     return () => {
       active = false;
     };
@@ -190,6 +197,7 @@ export default function NativeHome({
     setLocating(false);
     setLocationChoice(location ? "on" : "off");
     setLocationChoiceState(location ? "on" : "off");
+    setLocationBlocked(!location);
     if (location) setUserLocation(location);
   }
 
@@ -252,6 +260,9 @@ export default function NativeHome({
       offer.title,
       offer.businesses?.name,
       offer.businesses?.business_type,
+      formatBusinessType(offer.businesses?.business_type, "ka"),
+      getOfferCategoryLabel(normalizeOfferCategory(offer.category), "ka"),
+      getOfferCategoryLabel(normalizeOfferCategory(offer.category), "en"),
     ]
       .filter(Boolean)
       .some((text) => text!.toLocaleLowerCase().includes(normalizedQuery));
@@ -276,6 +287,9 @@ export default function NativeHome({
         .map((item) => item.offer)
     : filtered;
   const nothingAtAll = !loading && !failed && offers.length === 0;
+  const locationOff =
+    !userLocation &&
+    (locationChoice === "off" || (locationChoice === "on" && locationChecked));
 
   // Until we know who's here: the plain ground, so neither screen flashes.
   if (signedIn === null) return <main className="native-main" />;
@@ -305,7 +319,7 @@ export default function NativeHome({
           : "Map"
       }
       onClick={() => setView(option)}
-      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+      className={`flex h-11 w-11 items-center justify-center rounded-full ${
         view === option ? "bg-brand-mint text-brand-forest" : "text-body"
       }`}
     >
@@ -344,7 +358,7 @@ export default function NativeHome({
               aria-label={
                 language === "ka" ? "Switch to English" : "ქართულზე გადართვა"
               }
-              className="native-press flex h-9 min-w-9 items-center justify-center rounded-full bg-card px-2.5 text-xs font-semibold text-brand-mint"
+              className="native-press flex h-11 min-w-11 items-center justify-center rounded-full bg-card px-3 text-xs font-semibold text-brand-mint"
             >
               {language === "ka" ? "KA" : "EN"}
             </button>
@@ -357,7 +371,7 @@ export default function NativeHome({
               }}
               href="/notifications"
               aria-label={language === "ka" ? "შეტყობინებები" : "Notifications"}
-              className="native-press flex h-9 w-9 items-center justify-center rounded-full bg-card text-brand-mint"
+              className="native-press flex h-11 w-11 items-center justify-center rounded-full bg-card text-brand-mint"
             >
               <BellIcon className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </Link>
@@ -369,7 +383,7 @@ export default function NativeHome({
               : "Rescue a Lunch Box today"}
           </h1>
 
-          <div className="mt-3 flex h-11 items-center gap-2.5 rounded-2xl bg-card pl-3.5 pr-1.5">
+          <div className="mt-3 flex h-[3.25rem] items-center gap-2.5 rounded-2xl bg-card pl-3.5 pr-1">
             <SearchIcon
               className="h-4 w-4 shrink-0 text-muted"
               strokeWidth={2}
@@ -385,7 +399,7 @@ export default function NativeHome({
             <Link
               href="/discover?full=1"
               aria-label={t("native.home.filters")}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-mint text-brand-forest"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-mint text-brand-forest"
             >
               <FilterIcon className="h-4 w-4" strokeWidth={2} />
             </Link>
@@ -406,7 +420,7 @@ export default function NativeHome({
                   type="button"
                   onClick={() => setCategory("all")}
                   aria-pressed={category === "all"}
-                  className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
+                  className={`h-11 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
                     category === "all"
                       ? "border-transparent bg-brand-mint text-brand-forest"
                       : "border-line bg-card text-body"
@@ -420,7 +434,7 @@ export default function NativeHome({
                     type="button"
                     onClick={() => setCategory(option)}
                     aria-pressed={category === option}
-                    className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
+                    className={`h-11 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
                       category === option
                         ? "border-transparent bg-brand-mint text-brand-forest"
                         : "border-line bg-card text-body"
@@ -490,7 +504,7 @@ export default function NativeHome({
             <button
               type="button"
               onClick={notNowLocation}
-              className="shrink-0 px-1 text-xs font-medium text-body"
+              className="min-h-11 shrink-0 px-1 text-xs font-medium text-body"
             >
               {language === "ka" ? "ახლა არა" : "Not now"}
             </button>
@@ -498,11 +512,32 @@ export default function NativeHome({
               type="button"
               onClick={() => void turnOnLocation()}
               disabled={locating}
-              className="native-press min-h-9 shrink-0 rounded-full bg-brand-forest px-3.5 text-xs font-semibold text-brand-ground disabled:opacity-60"
+              className="native-press min-h-11 shrink-0 rounded-full bg-brand-forest px-3.5 text-xs font-semibold text-brand-ground disabled:opacity-60"
             >
-              {locating ? "…" : language === "ka" ? "ჩართვა" : "Turn on"}
+              {locating ? "…" : t("native.home.locationOn")}
             </button>
           </div>
+        )}
+
+        {locationOff && feed && shown.length > 0 && (
+          <button
+            type="button"
+            onClick={() => void turnOnLocation()}
+            disabled={locating}
+            className="mb-2 flex min-h-11 w-full items-center gap-2 px-1 text-left text-[13px] text-body disabled:opacity-60"
+          >
+            <MapPinIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+            <span className="min-w-0 flex-1 truncate">
+              {locationBlocked
+                ? t("native.home.locationSettings")
+                : t("native.home.locationOff")}
+            </span>
+            {!locationBlocked && (
+              <span className="shrink-0 font-semibold text-cream">
+                {locating ? "…" : t("native.home.locationOn")}
+              </span>
+            )}
+          </button>
         )}
 
         {view === "map" ? (

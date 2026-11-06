@@ -1,7 +1,6 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import { HelpCard } from "@/components/help/HelpCard";
 import { InfoBanner } from "@/components/help/InfoBanner";
@@ -12,6 +11,7 @@ import {
 import { SupportLink } from "@/components/help/SupportLink";
 import { TrustBadge } from "@/components/help/TrustBadge";
 import { ArrowLeftIcon, ClockIcon, StarIcon } from "@/components/icons";
+import { formatBusinessType } from "@/lib/businessTypes";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { getOfferCategoryLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
@@ -75,13 +75,15 @@ export default function BusinessProfilePage() {
         return;
       }
 
-      await processExpiredMarketplace();
+      // Tidies expired offers in the background; the reads below do not wait.
+      void processExpiredMarketplace();
 
       const [businessResult, offerResult, summaries, businessReviews] =
         await Promise.all([
           supabase
             .from("businesses")
-            .select("*")
+            // Public columns only (guests can't read owner_id or the commission).
+            .select("id, name, business_type, address, phone, approved, created_at, latitude, longitude, sales_paused_on")
             .eq("id", businessId)
             .maybeSingle(),
           supabase
@@ -131,7 +133,9 @@ export default function BusinessProfilePage() {
     business?.description?.trim() ||
     (isGeorgian
       ? `დადასტურებული ბიზნესი${
-          business?.business_type ? ` (${business.business_type})` : ""
+          business?.business_type
+            ? ` (${formatBusinessType(business.business_type, language)})`
+            : ""
         }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ ლანჩ ბოქსებს გთავაზობს.`
       : `Verified ${
           business?.business_type || "food"
@@ -162,8 +166,14 @@ export default function BusinessProfilePage() {
           )}
 
           {!loading && message && (
-            <div className="mt-6">
-              <Notice tone="error">{message}</Notice>
+            <div className="mt-6 rounded-[22px] bg-well p-8 text-center">
+              <p className="font-serif text-xl font-bold">{message}</p>
+              <Link
+                href="/discover"
+                className="premium-button mt-5 w-full rounded-2xl px-6 py-3 font-bold sm:w-auto"
+              >
+                {t("native.orders.emptyAction")}
+              </Link>
             </div>
           )}
 
@@ -215,7 +225,8 @@ export default function BusinessProfilePage() {
                         <span className="font-semibold text-cream">
                           {t("businessProfile.businessType")}:
                         </span>{" "}
-                        {business.business_type || t("common.food")}
+                        {formatBusinessType(business.business_type, language) ||
+                          t("common.food")}
                       </p>
                       <p>
                         <span className="font-semibold text-cream">

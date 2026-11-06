@@ -29,7 +29,7 @@ export default function NativeTopBar({
           else router.replace(fallbackHref);
         }}
         aria-label={t("native.back")}
-        className="native-press flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card text-cream"
+        className="native-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-cream"
       >
         <ArrowLeftIcon className="h-[18px] w-[18px]" strokeWidth={2} />
       </button>

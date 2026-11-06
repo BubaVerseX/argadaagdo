@@ -104,7 +104,8 @@ function FavoritesPage() {
 
   const loadFavorites = useCallback(
     async (userId: string) => {
-      await processExpiredMarketplace();
+      // Tidies expired offers in the background; the reads below do not wait.
+      void processExpiredMarketplace();
 
       const loadedFavorites = await fetchMyFavorites(userId);
 

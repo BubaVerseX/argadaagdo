@@ -1,5 +1,3 @@
-import type { ImpactLevelId } from "@/lib/impactLevels";
-
 // A small plant that grows with every Lunch Box collected: the stem gets
 // taller and one more leaf appears per box (up to 10). It grows in once when
 // the profile opens and then sways gently; with "Reduce motion" it is still
@@ -68,55 +66,6 @@ export default function ImpactPlant({ boxes, size = 64 }: { boxes: number; size?
           </g>
         </g>
       )}
-    </svg>
-  );
-}
-
-/** The four level badges: a tiny glyph each. */
-export function LevelGlyph({ id, className = "h-4 w-4" }: { id: ImpactLevelId; className?: string }) {
-  const common = {
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.8,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    className,
-    "aria-hidden": true,
-  };
-  if (id === "seedling") {
-    return (
-      <svg {...common}>
-        <path d="M12 20v-7" />
-        <path d="M12 13c-3.5 0-5.5-2-5.5-5 3.2 0 5.5 2 5.5 5Z" />
-        <path d="M12 15c2.8 0 4.8-1.7 4.8-4.3-2.8 0-4.8 1.7-4.8 4.3Z" />
-      </svg>
-    );
-  }
-  if (id === "sprout") {
-    return (
-      <svg {...common}>
-        <path d="M12 21V8" />
-        <path d="M12 8c-2.6 0-4.2-1.6-4.2-4 2.5 0 4.2 1.6 4.2 4Z" />
-        <path d="M12 13c-3 0-5-1.8-5-4.4 2.9 0 5 1.8 5 4.4Z" />
-        <path d="M12 16c3 0 5-1.8 5-4.4-2.9 0-5 1.8-5 4.4Z" />
-      </svg>
-    );
-  }
-  if (id === "tree") {
-    return (
-      <svg {...common}>
-        <path d="M12 21v-6" />
-        <path d="M12 15c-4 0-6.5-2.4-6.5-5.6A6.5 6.5 0 0 1 12 3a6.5 6.5 0 0 1 6.5 6.4c0 3.2-2.5 5.6-6.5 5.6Z" />
-      </svg>
-    );
-  }
-  return (
-    <svg {...common}>
-      <path d="M6 20v-3M12 20v-4M18 20v-3" />
-      <path d="M6 17 3 17 6 10l3 7Z" />
-      <path d="M12 16 8.5 16 12 6l3.5 10Z" />
-      <path d="M18 17 15 17l3-7 3 7Z" />
     </svg>
   );
 }

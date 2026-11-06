@@ -9,14 +9,14 @@ import OfferImage from "@/components/OfferImage";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { LeafDecor, WaveEdge } from "@/components/design/Decor";
-import { ClockIcon, HeartIcon, MapPinIcon } from "@/components/icons";
+import { ClockIcon, HeartIcon } from "@/components/icons";
 import {
   getConfirmedUser,
   getProfileById,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
+import { formatBusinessType } from "@/lib/businessTypes";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
-import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   getOfferCategoryLabel,
@@ -32,7 +32,6 @@ import {
   formatPickupTimeRange,
   getOfferDateLabel,
   getOfferGroup,
-  getRatingLabel,
   isOfferReservable,
   type OfferGroup,
   type RatingSummary,
@@ -40,9 +39,8 @@ import {
 import { loadBusinessRatingSummaries } from "@/lib/ratings";
 import { paginateItems } from "@/lib/pagination";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
-import type { Business, Offer } from "@/lib/types";
+import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -57,21 +55,9 @@ type PriceFilter = "all" | "under-5" | "under-10" | "under-15";
 
 const OFFERS_PAGE_SIZE = 12;
 const OFFERS_QUERY_LIMIT = 300;
-const BUSINESSES_QUERY_LIMIT = 80;
-const BEST_RATED_BUSINESS_COUNT = 4;
-
-type DiscoverBusiness = Pick<
-  Business,
-  "id" | "name" | "business_type" | "address" | "approved"
->;
 
 function getOfferCategory(offer: Offer) {
   return normalizeOfferCategory(offer.category);
-}
-
-function formatAvailableOfferCount(count: number, language: "en" | "ka") {
-  if (language === "ka") return `${count} ხელმისაწვდომი შეთავაზება`;
-  return `${count} ${count === 1 ? "available offer" : "available offers"}`;
 }
 
 function getSavingsAmount(offer: Offer) {
@@ -95,7 +81,7 @@ function DiscoverClient() {
   const { language, t } = useLanguage();
   const isGeorgian = language === "ka";
   const [offers, setOffers] = useState<Offer[]>([]);
-  const [businesses, setBusinesses] = useState<DiscoverBusiness[]>([]);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [offerSort, setOfferSort] = useState<OfferSort>("recommended");
@@ -139,7 +125,8 @@ function DiscoverClient() {
   const loadOffers = useCallback(async (runMaintenance = true) => {
     // The maintenance RPC is a database write; run it on page load, not on
     // every live update (that made every open browser run it at once).
-    if (runMaintenance) await processExpiredMarketplace();
+    // Fire-and-forget: the offers read below does not wait for it.
+    if (runMaintenance) void processExpiredMarketplace();
 
     const { data, error } = await supabase
       .from("offers")
@@ -156,18 +143,9 @@ function DiscoverClient() {
       return;
     }
 
-    const [summaries, businessResult] = await Promise.all([
-      loadBusinessRatingSummaries(),
-      supabase
-        .from("businesses")
-        .select("id, name, business_type, address, approved")
-        .eq("approved", true)
-        .order("id", { ascending: false })
-        .limit(BUSINESSES_QUERY_LIMIT),
-    ]);
+    const summaries = await loadBusinessRatingSummaries();
     setRatingSummaries(summaries);
     setOffers((data || []) as Offer[]);
-    setBusinesses((businessResult.data || []) as DiscoverBusiness[]);
     setLoading(false);
   }, []);
 
@@ -375,7 +353,7 @@ function DiscoverClient() {
     const matchingOffers = offers.filter((offer) => {
       const category = getOfferCategory(offer);
       const text =
-        `${offer.title} ${category} ${offer.businesses?.name} ${offer.businesses?.address} ${offer.businesses?.business_type}`.toLowerCase();
+        `${offer.title} ${category} ${getOfferCategoryLabel(category, "ka")} ${getOfferCategoryLabel(category, "en")} ${offer.businesses?.name} ${offer.businesses?.address} ${offer.businesses?.business_type} ${formatBusinessType(offer.businesses?.business_type, "ka")}`.toLowerCase();
 
       const matchesSearch = text.includes(search.toLowerCase());
       const matchesCategory =
@@ -467,18 +445,6 @@ function DiscoverClient() {
     return Array.from(new Set(offers.map(getOfferCategory))).sort();
   }, [offers]);
 
-  const bestRatedBusinesses = useMemo(
-    () =>
-      [...businesses]
-        .sort(
-          (first, second) =>
-            (ratingSummaries[second.id]?.average_rating || 0) -
-            (ratingSummaries[first.id]?.average_rating || 0)
-        )
-        .slice(0, BEST_RATED_BUSINESS_COUNT),
-    [businesses, ratingSummaries]
-  );
-
   const filtersAreActive =
     search.trim() !== "" ||
     selectedCategory !== "all" ||
@@ -497,6 +463,13 @@ function DiscoverClient() {
     setPage(1);
   }
 
+  const activeFilterCount =
+    (selectedCategory !== "all" ? 1 : 0) +
+    (offerSort !== "recommended" ? 1 : 0) +
+    (pickupFilter !== "all" ? 1 : 0) +
+    (priceFilter !== "all" ? 1 : 0) +
+    (!availableOnly ? 1 : 0);
+
   return (
     <main className="app-shell">
       <Navbar />
@@ -504,39 +477,41 @@ function DiscoverClient() {
       <section className="theme-forest relative overflow-hidden bg-page px-4 pb-4 pt-3 sm:px-5 md:px-12 md:pt-8">
         <LeafDecor className="-right-10 -top-8 h-56 w-56 text-brand-forest-2 lg:right-[6%] lg:h-96 lg:w-96" />
         <div className="relative mx-auto max-w-7xl">
-          <div>
-            <p className="premium-badge px-4 py-2">
-              {t("offers.badge")}
-            </p>
+          <h1 className="max-w-3xl font-serif text-[1.375rem] font-bold leading-[1.25] text-cream sm:text-3xl md:text-4xl">
+            {t("offers.title")}
+          </h1>
 
-            <h1 className="mt-4 max-w-3xl font-serif text-[1.8125rem] font-bold leading-[1.25] text-cream sm:text-4xl md:text-5xl">
-              {t("offers.title")}
-            </h1>
+          <div className="mt-4 flex gap-2">
+            <SearchBar
+              value={search}
+              onChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
+              placeholder={t("offers.search")}
+              label={t("offers.search")}
+              className="w-full min-w-0 md:max-w-xl"
+            />
+            <button
+              type="button"
+              aria-expanded={filtersOpen}
+              aria-controls="discover-filters"
+              onClick={() => setFiltersOpen((open) => !open)}
+              className="premium-button-secondary flex min-h-11 shrink-0 items-center gap-2 px-4 md:hidden"
+            >
+              {t("native.home.filters")}
+              {activeFilterCount > 0 && (
+                <span className="rounded-full bg-brand-mint px-2 text-xs font-bold text-brand-forest">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
 
-            <p className="mt-3 max-w-2xl text-base leading-[1.55] text-body md:text-lg">
-              {t("offers.subtitle")}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 md:flex-row">
-              <SearchBar
-                value={search}
-                onChange={(value) => {
-                  setSearch(value);
-                  setPage(1);
-                }}
-                placeholder={t("offers.search")}
-                label={t("offers.search")}
-                className="w-full md:max-w-xl"
-              />
-
-              <button
-                onClick={resetFilters}
-                className="premium-button-secondary px-6 py-3"
-              >
-                {t("offers.reset")}
-              </button>
-            </div>
-
+          <div
+            id="discover-filters"
+            className={`${filtersOpen ? "grid" : "hidden"} mt-3 gap-3 md:grid`}
+          >
             <div
               role="group"
               aria-label={
@@ -544,7 +519,7 @@ function DiscoverClient() {
                   ? "შეთავაზებების ფილტრი კატეგორიით"
                   : "Filter offers by category"
               }
-              className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 sm:-mx-5 sm:px-5 md:mx-0 md:flex-wrap md:px-0"
+              className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:-mx-5 sm:px-5 md:mx-0 md:flex-wrap md:px-0"
             >
               {["all", ...categoryOptions].map((category) => {
                 const selected = selectedCategory === category;
@@ -572,7 +547,7 @@ function DiscoverClient() {
               })}
             </div>
 
-            <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto] xl:items-center">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_auto_auto] xl:items-center">
               <select
                 value={priceFilter}
                 onChange={(event) => {
@@ -614,14 +589,10 @@ function DiscoverClient() {
                 className="premium-input w-full min-w-0 px-4 py-3"
               >
                 <option value="all">
-                  {isGeorgian ? "წაღების ნებისმიერი თარიღი" : "Any pickup date"}
+                  {isGeorgian ? "ნებისმიერი დღე" : "Any day"}
                 </option>
-                <option value="today">
-                  {isGeorgian ? "წაღება დღეს" : "Pickup today"}
-                </option>
-                <option value="tomorrow">
-                  {isGeorgian ? "წაღება ხვალ" : "Pickup tomorrow"}
-                </option>
+                <option value="today">{t("common.today")}</option>
+                <option value="tomorrow">{t("common.tomorrow")}</option>
                 <option value="upcoming">{t("common.upcoming")}</option>
               </select>
 
@@ -642,12 +613,10 @@ function DiscoverClient() {
                 <option value="price-asc">{t("offers.sortLowest")}</option>
                 <option value="price-desc">{t("offers.sortHighest")}</option>
                 <option value="savings-desc">
-                  {isGeorgian ? "ყველაზე დიდი დანაზოგი" : "Highest savings"}
+                  {isGeorgian ? "დიდი დანაზოგი" : "Biggest savings"}
                 </option>
                 <option value="rating-desc">
-                  {isGeorgian
-                    ? "ყველაზე მაღალი შეფასების ბიზნესები"
-                    : "Highest rated businesses"}
+                  {isGeorgian ? "მაღალი შეფასება" : "Top rated"}
                 </option>
               </select>
 
@@ -663,13 +632,16 @@ function DiscoverClient() {
                 />
                 {t("offers.availableOnly")}
               </label>
-            </div>
 
-            <div className="ui-well mt-4 rounded-3xl p-5 text-sm leading-6 text-body">
-              <span className="font-semibold text-cream">
-                {t("offers.surpriseBagTitle")}
-              </span>{" "}
-              {t("offers.surpriseBagText")}
+              {filtersAreActive && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="premium-button-secondary min-h-12 px-6 py-3"
+                >
+                  {t("offers.reset")}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -686,109 +658,62 @@ function DiscoverClient() {
             </div>
           )}
 
-          <div className="mt-2 sm:mt-4">
-            <h2 className="font-serif text-2xl font-bold text-cream sm:text-3xl md:text-4xl">
-              {t("offers.heading")}
-            </h2>
-            <p className="mt-2 text-sm text-body">
-              {formatAvailableOfferCount(filteredOffers.length, language)}
-            </p>
-          </div>
-
           {loading && (
-            <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {[1, 2, 3].map((item) => (
                 <div
                   key={item}
-                  className="h-[430px] animate-pulse rounded-[22px] bg-well"
+                  className="h-[360px] animate-pulse rounded-[22px] bg-well"
                 />
               ))}
             </div>
           )}
 
           {!loading && filteredOffers.length === 0 && (
-            <div className="ui-card mt-8 rounded-[22px] px-5 py-10 text-center sm:px-8 sm:py-12">
-              <div className="ui-well mx-auto flex h-16 w-16 items-center justify-center rounded-full">
-                <MapPinIcon className="h-7 w-7 text-mint" strokeWidth={1.6} />
-              </div>
-              <h3 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
+            <div className="ui-card mt-6 rounded-[22px] px-5 py-10 text-center sm:px-8">
+              <h2 className="text-xl font-semibold text-cream">
                 {offers.length === 0
-                  ? t("offers.noOffers")
+                  ? t("home.noSurpriseBags")
                   : t("offers.noMatching")}
-              </h3>
-
-              <p className="mx-auto mt-3 max-w-xl text-base leading-[1.55] text-body sm:text-lg">
-                {offers.length === 0
-                  ? t("offers.noOffersHint")
-                  : t("offers.noMatchingHint")}
-              </p>
-
-              {offers.length === 0 && (
-                <p className="mx-auto mt-3 max-w-xl text-sm font-semibold leading-6 text-mint sm:text-base">
-                  {t("offers.checkBackSoon")}
-                </p>
-              )}
-
-              <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-                {filtersAreActive && (
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="premium-button px-7 py-3"
-                  >
-                    {t("offers.clearFilters")}
-                  </button>
-                )}
-
-                <Link
-                  href="/"
-                  className="premium-button-secondary px-7 py-3"
+              </h2>
+              {filtersAreActive && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="premium-button mt-6 px-7 py-3"
                 >
-                  {t("offers.backHome")}
-                </Link>
-              </div>
+                  {t("offers.clearFilters")}
+                </button>
+              )}
             </div>
           )}
 
-          <div className="mt-6 grid gap-8 sm:mt-8 sm:gap-10">
+          <div className="mt-6 grid gap-8 sm:gap-10">
             {offerSections.map((section, sectionIndex) => {
               if (section.offers.length === 0) return null;
 
               return (
                 <section key={section.key}>
-                  <div className="flex items-end justify-between gap-4">
-                    <div>
-                      <h3 className="font-serif text-xl font-bold text-cream sm:text-2xl">
-                        {section.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-body">
-                        {formatAvailableOfferCount(section.offers.length, language)}
-                      </p>
-                    </div>
-                  </div>
+                  {offerSort === "recommended" && (
+                    <h2 className="font-serif text-xl font-bold text-cream sm:text-2xl">
+                      {section.title}
+                    </h2>
+                  )}
 
                   <div className="mt-4 grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {section.offers.map((offer, offerIndex) => {
-                      const businessAddress =
-                        offer.businesses?.address ||
-                        (isGeorgian ? "თბილისი" : "Tbilisi");
-                      const mapsUrl = createMapsSearchUrl(
-                        offer.businesses?.address,
-                        offer.businesses?.name
-                      );
                       const discount = getDiscountPercent(offer);
                       const originalPrice = getOriginalPrice(offer);
-                      const rating = ratingSummaries[offer.business_id];
                       const reservable = isOfferReservable(offer);
                       const isFavorite = favoriteOfferIds.includes(offer.id);
 
                       return (
                         <div
                           key={offer.id}
-                          className={`${getOfferCategoryTone(offer.category)} group flex flex-col rounded-[28px] bg-cat p-4 transition hover:-translate-y-1`}
+                          className={`${getOfferCategoryTone(offer.category)} group relative flex flex-col rounded-[28px] bg-cat p-4 transition hover:-translate-y-1`}
                         >
                           <div className="relative">
-                            <div className="photo-frame relative isolate h-52 overflow-hidden sm:h-56 md:h-60">
+                            <div className="photo-frame relative isolate h-48 overflow-hidden sm:h-56">
                               <OfferImage
                                 src={offer.image_url}
                                 alt={offer.title}
@@ -804,36 +729,33 @@ function DiscoverClient() {
                               </div>
                             )}
 
-                            <div className="ui-card pointer-events-none absolute right-2 top-2 rounded-full px-3 py-1.5 text-xs font-semibold text-cream">
-                              {getOfferCategoryLabel(offer.category, language)}
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleFavorite(offer)}
+                              disabled={updatingFavoriteId !== null}
+                              aria-label={
+                                isFavorite
+                                  ? `${t("offers.removeFavorite")} - ${offer.title}`
+                                  : `${t("offers.addFavorite")} - ${offer.title}`
+                              }
+                              aria-pressed={isFavorite}
+                              className="absolute right-2 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink disabled:opacity-60"
+                            >
+                              <HeartIcon className="h-5 w-5" strokeWidth={2} filled={isFavorite} />
+                            </button>
                           </div>
 
-                          <div className="flex flex-1 flex-col pt-5">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="min-w-0">
-                                <h4 className="font-serif text-xl font-bold leading-[1.25] text-cream">
-                                  {offer.title}
-                                </h4>
-                                <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-sm font-medium text-body">
-                                  <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-muted" strokeWidth={1.8} />
-                                  <span className="truncate">
-                                    {offer.businesses?.name} · {businessAddress}
-                                  </span>
-                                </div>
-                              </div>
+                          <div className="flex flex-1 flex-col pt-4">
+                            <h3 className="font-serif text-xl font-bold leading-[1.25] text-cream">
+                              {offer.title}
+                            </h3>
+                            <p className="mt-1 truncate text-sm text-body">
+                              {[offer.businesses?.name, offer.businesses?.address]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </p>
 
-                              <div className="ui-well shrink-0 rounded-2xl px-3 py-2 text-center">
-                                <p className="text-xl font-semibold text-cream">
-                                  {offer.quantity}
-                                </p>
-                                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted">
-                                  {t("offers.boxesLeft")}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="mt-4 flex items-end justify-between gap-4">
+                            <div className="mt-3 flex items-end justify-between gap-4">
                               <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-semibold text-mint">
                                   {formatMoney(offer.price)}
@@ -844,66 +766,23 @@ function DiscoverClient() {
                                   </span>
                                 )}
                               </div>
-                              <p className="flex items-center gap-1.5 text-right text-xs font-semibold leading-5 text-muted">
+                              <p className="flex items-center gap-1.5 text-right text-xs font-semibold text-muted">
                                 <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                                <span>
-                                  {getOfferDateLabel(offer, language)}
-                                  <br />
-                                  {formatPickupTimeRange(offer, language)}
-                                </span>
+                                {getOfferDateLabel(offer, language)}{" "}
+                                {formatPickupTimeRange(offer, language)}
                               </p>
                             </div>
 
-                            <p className="mt-4 truncate text-xs font-semibold text-muted">
-                              {getRatingLabel(rating, language)}
-                            </p>
-
-                            <a
-                              href={mapsUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              aria-label={`${t("common.openMap")} ${offer.businesses?.name || offer.title}`}
-                              className="ui-card mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full px-4 py-2 text-sm font-semibold text-cream transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                            <button
+                              onClick={() => openOfferDetails(offer)}
+                              className="premium-button mt-4 min-h-12 w-full px-6 py-3"
                             >
-                              {t("common.openMap")}
-                            </a>
-
-                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                              <button
-                                onClick={() => toggleFavorite(offer)}
-                                disabled={updatingFavoriteId !== null}
-                                aria-label={
-                                  isGeorgian
-                                    ? isFavorite
-                                      ? `რჩეულებიდან წაშლა: ${offer.title}`
-                                      : `რჩეულებში დამატება: ${offer.title}`
-                                    : isFavorite
-                                    ? `Remove ${offer.title} from favorites`
-                                    : `Add ${offer.title} to favorites`
-                                }
-                                aria-pressed={isFavorite}
-                                className={`premium-button-secondary flex min-h-12 w-full items-center justify-center gap-2 px-6 py-3 ${ isFavorite ? "text-mint" : ""
-                                }`}
-                              >
-                                <HeartIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled={isFavorite} />
-                                {updatingFavoriteId === offer.id
-                                  ? t("offers.updatingFavorite")
-                                  : isFavorite
-                                  ? t("offers.removeFavorite")
-                                  : t("offers.addFavorite")}
-                              </button>
-
-                              <button
-                                onClick={() => openOfferDetails(offer)}
-                                className="premium-button min-h-12 w-full px-6 py-3"
-                              >
-                                {reservable
-                                  ? t("common.viewDetails")
-                                  : Number(offer.quantity || 0) <= 0
-                                  ? t("common.soldOut")
-                                  : t("common.unavailable")}
-                              </button>
-                            </div>
+                              {reservable
+                                ? t("common.viewDetails")
+                                : Number(offer.quantity || 0) <= 0
+                                ? t("common.soldOut")
+                                : t("common.unavailable")}
+                            </button>
                           </div>
                         </div>
                       );
@@ -922,86 +801,6 @@ function DiscoverClient() {
             label={t("nav.offers")}
             onPageChange={setPage}
           />
-
-          <div className="mt-10 grid gap-8">
-        <section className="ui-card rounded-[22px] p-5 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-                {isGeorgian
-                  ? "საუკეთესო შეფასების ბიზნესები"
-                  : "Best Rated Businesses"}
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
-                {isGeorgian
-                  ? "ადგილობრივი ბიზნესები"
-                  : "Local businesses"}
-              </h2>
-            </div>
-            <Link
-              href="/businesses"
-              className="premium-button min-h-11 px-5 py-2.5 text-center"
-            >
-              {isGeorgian ? "ყველა ბიზნესის ნახვა" : "View all businesses"}
-            </Link>
-          </div>
-
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {bestRatedBusinesses.length === 0 && (
-              <div className="rounded-3xl bg-well p-6 md:col-span-2 xl:col-span-4">
-                <p className="text-lg font-semibold text-cream">
-                  {isGeorgian
-                    ? "შეფასებული ბიზნესები ჯერ არ არის."
-                    : "No rated businesses yet."}
-                </p>
-                <p className="mt-2 leading-7 text-body">
-                  {isGeorgian
-                    ? "ბიზნესები აქ გამოჩნდება, როცა მომხმარებლები დასრულებული წაღებების შეფასებას დაიწყებენ."
-                    : "Businesses will appear here once customers start rating completed pickups."}
-                </p>
-              </div>
-            )}
-
-            {bestRatedBusinesses.map((business) => (
-              <Link
-                key={business.id}
-                href={`/businesses/${business.id}`}
-                className="ui-card rounded-3xl p-5 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
-              >
-                <p className="text-xs font-semibold uppercase tracking-widest text-mint">
-                  {business.business_type ||
-                    (isGeorgian ? "კვების ბიზნესი" : "Food business")}
-                </p>
-                <h3 className="mt-2 text-xl font-semibold text-cream">
-                  {business.name}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-body">
-                  {business.address || (isGeorgian ? "თბილისი" : "Tbilisi")}
-                </p>
-                <p className="ui-well mt-3 rounded-full px-3 py-1.5 text-sm font-semibold text-warning">
-                  {getRatingLabel(ratingSummaries[business.id], language)}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="ui-card rounded-[22px] p-5 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            {isGeorgian ? "მდებარეობა" : "Location"}
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold text-cream sm:text-3xl">
-            {isGeorgian
-              ? "მარტივად იპოვე წაღების მისამართები"
-              : "Find pickup addresses easily"}
-          </h2>
-          <p className="mt-3 max-w-3xl leading-7 text-body">
-            {isGeorgian
-              ? "ყველა შეთავაზებაზე ჩანს ბიზნესის მისამართი და რუკის ბმული, რომ წაღება დაჯავშნამდე დაგეგმო."
-              : "Every offer shows the business address and a map link so you can plan pickup before reserving."}
-          </p>
-        </section>
-          </div>
         </div>
       </section>
 

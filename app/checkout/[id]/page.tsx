@@ -5,10 +5,9 @@ import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeCheckoutScreen } from "@/components/native/screens";
-import { LoadingState } from "@/components/LoadingState";
 import OfferImage from "@/components/OfferImage";
 import { WaveEdge } from "@/components/design/Decor";
-import { ArrowLeftIcon, CheckIcon } from "@/components/icons";
+import { ArrowLeftIcon } from "@/components/icons";
 import {
   getConfirmedUser,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
@@ -20,14 +19,12 @@ import {
   formatMoney,
   getOriginalPrice,
   formatPickupTimeRange,
-  formatPickupWindow,
   getOfferDateLabel,
   isOfferReservable,
 } from "@/lib/offerLifecycle";
 import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
-import { formatBagsLeft } from "@/lib/greenBag";
-import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
+import { getOfferCategoryTone } from "@/lib/offerCategories";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import { getNativeBrowser } from "@/lib/native";
@@ -125,36 +122,12 @@ function CheckoutPage() {
   // Set synchronously so a double tap can't start two checkouts (and two
   // inventory holds) while the auth check below is still awaiting.
   const payingRef = useRef(false);
-  const [rulesAccepted, setRulesAccepted] = useState(false);
   const [phoneRequired, setPhoneRequired] = useState(false);
   const [checkoutBlocked, setCheckoutBlocked] = useState(true);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
-  const checkoutSteps = [
-    {
-      number: "1",
-      title: t("checkout.stepReservationTitle"),
-      text: t("checkout.stepReservationText"),
-    },
-    {
-      number: "2",
-      title: t("checkout.stepPaymentTitle"),
-      text: t("checkout.stepPaymentText"),
-    },
-    {
-      number: "3",
-      title: t("checkout.stepPickupTitle"),
-      text: t("checkout.stepPickupText"),
-    },
-  ];
-  const trustItems = [
-    t("checkout.trustVerifiedBusiness"),
-    t("checkout.trustPickupCode"),
-    t("checkout.trustCustomerRatings"),
-  ];
-
   useEffect(() => {
     let isCurrent = true;
 
@@ -240,14 +213,6 @@ function CheckoutPage() {
     setMessage("");
 
     if (!offer) return;
-
-    if (!rulesAccepted) {
-      setMessageTone("warning");
-      setMessage(
-        "Please confirm that you understand the pickup and cancellation rules."
-      );
-      return;
-    }
 
     if (phoneRequired) {
       setMessageTone("warning");
@@ -357,56 +322,32 @@ function CheckoutPage() {
     window.location.assign(paymentSession.redirectUrl);
   }
 
+  const free = offer ? Number(offer.price) === 0 : false;
+
   return (
     <main className="app-shell">
       <Navbar hideBottomNav />
 
       <section className="theme-forest bg-page px-4 pb-3 pt-3 sm:px-6 md:px-12">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/discover"
-              aria-label={t("offerDetail.back")}
-              className="ui-well flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-0 text-cream"
-            >
-              <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
-            </Link>
-            <h1 className="min-w-0 font-serif text-[1.375rem] font-bold leading-tight text-cream sm:text-3xl">
-              {t("checkout.title")}
-            </h1>
-          </div>
-          <p className="mt-3 text-xs font-medium text-mint">{t("common.continueCheckout")}</p>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-body sm:text-base">
-            {t("checkout.subtitle")}
-          </p>
+        <div className="mx-auto flex max-w-xl items-center gap-3">
+          <Link
+            href={Number.isFinite(offerId) && offerId > 0 ? `/offers/${offerId}` : "/discover"}
+            aria-label={t("native.back")}
+            className="ui-well flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-0 text-cream"
+          >
+            <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
+          </Link>
+          <h1 className="min-w-0 font-serif text-[1.375rem] font-bold leading-tight text-cream sm:text-3xl">
+            {t("native.checkout.title")}
+          </h1>
         </div>
       </section>
       <WaveEdge />
 
-      <section className="px-4 pb-6 pt-2 sm:px-6 md:px-12">
-        <div className="mx-auto max-w-5xl">
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            {checkoutSteps.map((item) => (
-              <div
-                key={item.title}
-                className="premium-card rounded-2xl p-4"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="ui-well flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-mint">
-                    {item.number}
-                  </span>
-                  <h2 className="font-semibold text-cream">{item.title}</h2>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-body">
-                  {item.text}
-                </p>
-              </div>
-            ))}
-          </div>
-
+      <section className="px-4 pb-32 pt-2 sm:px-6 md:px-12 lg:pb-6">
+        <div className="mx-auto max-w-xl">
           {message && (
-            <div className="mt-5 sm:mt-6">
+            <div className="mt-5">
               <Notice tone={messageTone}>
                 {translateUserMessage(message, language)}
               </Notice>
@@ -414,256 +355,80 @@ function CheckoutPage() {
           )}
 
           {loading && (
-            <LoadingState
-              className="mt-8"
-              title={t("common.loading")}
-              description={{
-                en: "Loading the offer summary and pickup details.",
-                ka: "იტვირთება შეთავაზების შეჯამება და წაღების დეტალები.",
-              }}
-            />
+            <div className="mt-5 h-28 animate-pulse rounded-[22px] bg-well" aria-busy="true" />
+          )}
+
+          {!loading && !offer && (
+            <Link
+              href="/discover"
+              className="premium-button mt-5 w-full rounded-2xl px-6 py-3 font-bold"
+            >
+              {t("native.orders.emptyAction")}
+            </Link>
           )}
 
           {!loading && offer && (
-            <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-              <div className={`${getOfferCategoryTone(offer.category)} relative overflow-hidden rounded-[26px] bg-cat p-3.5`}>
-                <span aria-hidden="true" className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-cat-soft" />
-                <div className="photo-frame relative isolate h-48 overflow-hidden sm:h-64">
-                  <OfferImage
-                    src={offer.image_url}
-                    alt={offer.title}
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                  />
+            <>
+              <div className={`${getOfferCategoryTone(offer.category)} mt-5 flex items-center gap-4 rounded-[22px] bg-cat p-3.5`}>
+                <div className="photo-frame relative isolate h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
+                  <OfferImage src={offer.image_url} alt={offer.title} sizes="80px" />
                 </div>
-
-                <div className="p-5 sm:p-8">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="text-sm font-semibold uppercase tracking-widest text-mint">
-                        {getGreenBagLabel(offer, language)}
-                      </p>
-                      <h2 className="mt-2 font-serif text-2xl font-bold leading-[1.25]">
-                        {offer.title}
-                      </h2>
-                      <p className="mt-2 text-lg font-semibold text-cream">
-                        {offer.businesses?.name || t("common.business")}
-                      </p>
-                    </div>
-
-                    <div className="ui-well rounded-2xl px-5 py-4 text-center">
-                      <p className="text-xs text-body">
-                        {t("offers.boxesLeft")}
-                      </p>
-                      <p className="text-3xl font-semibold text-cream">
-                        {formatBagsLeft(offer, language)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid gap-3 font-semibold text-body">
-                    <p>{t("common.pickup")}: {formatPickupWindow(offer, language)}</p>
-                    <p>
-                      {t("checkout.address")}:{" "}
-                      {offer.businesses?.address || t("common.addressUnavailable")}
-                    </p>
-                  </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-serif text-lg font-bold leading-snug text-cat-ink">
+                    {offer.title}
+                  </h2>
+                  <p className="truncate text-sm text-cat-ink/80">
+                    {offer.businesses?.name || t("common.business")}
+                  </p>
+                  <p className="text-sm text-cat-ink/80">
+                    {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
+                  </p>
                 </div>
               </div>
 
-              <aside className="premium-card rounded-3xl p-5 sm:rounded-3xl sm:p-8">
-                <h2 className="font-serif text-2xl font-bold">{t("checkout.summary")}</h2>
-
-                <div className="mt-6 grid gap-4">
-                  <div className="premium-muted-card rounded-3xl p-4">
-                    <div className="grid gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-wide text-body">
-                          {t("checkout.offerTitle")}
-                        </p>
-                        <p className="mt-1 text-xl font-semibold text-cream">
-                          {offer.title}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="text-xs uppercase tracking-wide text-body">
-                          {t("checkout.businessName")}
-                        </p>
-                        <p className="mt-1 font-semibold text-cream">
-                          {offer.businesses?.name || t("common.business")}
-                        </p>
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                        <div className="rounded-2xl bg-well p-4">
-                          <p className="text-xs uppercase tracking-wide text-body">
-                            {t("checkout.pickupDate")}
-                          </p>
-                          <p className="mt-1 font-semibold text-cream">
-                            {getOfferDateLabel(offer, language)}
-                          </p>
-                        </div>
-
-                        <div className="rounded-2xl bg-well p-4">
-                          <p className="text-xs uppercase tracking-wide text-body">
-                            {t("checkout.pickupWindow")}
-                          </p>
-                          <p className="mt-1 font-semibold text-cream">
-                            {formatPickupTimeRange(offer, language)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-end justify-between gap-4 rounded-2xl bg-well p-4">
-                        <span className="font-semibold text-body">
-                          {t("checkout.price")}
-                        </span>
-                        <span className="text-3xl font-semibold text-mint">
-                          {formatMoney(offer.price)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-body">
-                      {t("checkout.quantityRemaining")}
-                    </span>
-                    <span className="font-semibold text-cream">
-                      {offer.quantity}
-                    </span>
-                  </div>
-
-                  <div className="ui-card rounded-2xl p-4">
-                    <p className="text-sm uppercase tracking-widest text-body">
-                      {t("checkout.cancellationPolicy")}
-                    </p>
-                    <p className="mt-2 text-sm text-body">
-                      {t("checkout.cancelReminder")}
-                    </p>
-                  </div>
-
-                  <div className="ui-card rounded-2xl p-4">
-                    <p className="text-sm uppercase tracking-widest text-body">
-                      {t("checkout.trustTitle")}
-                    </p>
-                    <div className="mt-3 grid gap-2">
-                      {trustItems.map((item) => (
-                        <p
-                          key={item}
-                          className="flex gap-2 text-sm font-semibold leading-6 text-body"
-                        >
-                          <CheckIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={2} />
-                          <span>{item}</span>
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-
+              <div className="mt-3 flex items-end justify-between gap-4 rounded-[22px] bg-well p-4">
+                <span className="font-semibold text-body">{t("native.checkout.total")}</span>
+                <span className="flex items-baseline gap-2">
                   {getOriginalPrice(offer) !== null && (
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-body">
-                        {t("checkout.regularPrice")}
-                      </span>
-                      <span className="font-semibold text-muted line-through">
-                        {formatMoney(getOriginalPrice(offer))}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="premium-muted-card rounded-2xl p-4">
-                    <p className="text-sm uppercase tracking-widest text-body">
-                      {t("checkout.paymentMethod")}
-                    </p>
-                    <p className="mt-1 font-semibold text-cream">
-                      {t("checkout.pilotReservationMethod")}
-                    </p>
-                  </div>
-
-                  <div className="ui-card rounded-2xl p-4">
-                    <p className="text-sm uppercase tracking-widest text-body">
-                      {t("checkout.paymentPreparationTitle")}
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-body">
-                      {t("checkout.paymentPreparationText")}
-                    </p>
-                    <div className="ui-well mt-4 rounded-2xl px-3 py-2 text-sm font-semibold text-cream">
-                      TBC Bank
-                    </div>
-                  </div>
-
-                  <div className="premium-muted-card rounded-2xl p-4">
-                    <p className="text-sm uppercase tracking-widest text-body">
-                      {t("checkout.futurePaymentTitle")}
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-body">
-                      {t("checkout.futurePaymentText")}
-                    </p>
-                  </div>
-
-                  <div className="ui-card rounded-2xl p-4">
-                    <p className="text-sm uppercase tracking-widest text-body">
-                      {t("checkout.receiptTitle")}
-                    </p>
-                    <div className="mt-3 grid gap-2 text-sm font-semibold text-body">
-                      <p>
-                        {t("checkout.offerTitle")}: {offer.title}
-                      </p>
-                      <p>
-                        {t("checkout.price")}: {formatMoney(offer.price)}
-                      </p>
-                      <p>{t("checkout.reservationIdAfterConfirmation")}</p>
-                      <p>{t("checkout.paymentReferenceFuture")}</p>
-                    </div>
-                  </div>
-
-                  {Number(offer.price) === 0 && (
-                    <Notice tone="success">
-                      {language === "ka"
-                        ? "სადემონსტრაციო ჯავშანი App Review-სთვის: გადახდა არ ხდება."
-                        : "Demo reservation for App Review: no payment is taken."}
-                    </Notice>
-                  )}
-
-                  {phoneRequired && (
-                    <div className="ui-card rounded-2xl p-4">
-                      <h2 className="mb-3 font-semibold text-cream">
-                        {language === "ka"
-                          ? "დაადასტურე ტელეფონი"
-                          : "Confirm your phone"}
-                      </h2>
-                      <PhoneVerification
-                        onVerified={() => {
-                          setPhoneRequired(false);
-                          setMessage("");
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  <label className="ui-card flex items-start gap-3 rounded-2xl p-4 font-semibold text-cream">
-                    <input
-                      type="checkbox"
-                      checked={rulesAccepted}
-                      onChange={(event) =>
-                        setRulesAccepted(event.target.checked)
-                      }
-                      className="mt-0.5 h-[22px] w-[22px] shrink-0 accent-mint"
-                    />
-                    <span>
-                      {t("checkout.rules")}
+                    <span className="text-sm text-muted line-through">
+                      {formatMoney(getOriginalPrice(offer))}
                     </span>
-                  </label>
+                  )}
+                  <span className="text-3xl font-semibold text-mint">
+                    {formatMoney(offer.price)}
+                  </span>
+                </span>
+              </div>
 
+              {phoneRequired && (
+                <div className="ui-card mt-3 rounded-2xl p-4">
+                  <h2 className="mb-3 font-semibold text-cream">
+                    {language === "ka" ? "დაადასტურე ტელეფონი" : "Confirm your phone"}
+                  </h2>
+                  <PhoneVerification
+                    onVerified={() => {
+                      setPhoneRequired(false);
+                      setMessage("");
+                    }}
+                  />
                 </div>
+              )}
 
-                <div className="theme-forest fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 rounded-3xl bg-page p-3 lg:static lg:mt-6">
+              {checkoutBlocked && (
+                <Link
+                  href={getLoginRedirectUrl(checkoutPath)}
+                  className="premium-button-secondary mt-3 w-full px-6 py-3"
+                >
+                  {t("nav.signIn")}
+                </Link>
+              )}
+
+              <div className="theme-forest fixed inset-x-3 bottom-[calc(0.75rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] z-40 rounded-3xl bg-page p-3 lg:static lg:mt-5">
                 <button
                   onClick={confirmPilotReservation}
                   disabled={
                     paying ||
                     checkoutBlocked ||
-                    !rulesAccepted ||
                     phoneRequired ||
                     !isOfferReservable(offer)
                   }
@@ -675,27 +440,19 @@ function CheckoutPage() {
                     ? Number(offer.quantity || 0) <= 0
                       ? t("common.soldOut")
                       : t("common.unavailable")
-                    : t("checkout.payReserve")}
+                    : free
+                    ? t("native.offer.reserve")
+                    : `${t("native.checkout.pay")} · ${formatMoney(offer.price)}`}
                 </button>
-                </div>
-
-                {checkoutBlocked && (
-                  <Link
-                    href="/login"
-                    className="premium-button-secondary mt-3 w-full px-6 py-3"
-                  >
-                    {t("nav.signIn")}
+                <p className="mt-2 text-center text-[11px] leading-snug text-body">
+                  {t(free ? "native.checkout.freeNote" : "native.checkout.payNote")}
+                  {" · "}
+                  <Link href="/terms" className="underline underline-offset-2">
+                    {t("native.checkout.cancelNote")}
                   </Link>
-                )}
-
-                <Link
-                  href="/discover"
-                  className="premium-button-secondary mt-3 w-full px-6 py-3"
-                >
-                  {t("offerDetail.back")}
-                </Link>
-              </aside>
-            </div>
+                </p>
+              </div>
+            </>
           )}
         </div>
       </section>

@@ -7,6 +7,7 @@ import Notice from "@/components/Notice";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { MapPinIcon } from "@/components/icons";
+import { formatBusinessType } from "@/lib/businessTypes";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
@@ -60,12 +61,13 @@ export default function BusinessesPage() {
     let active = true;
 
     async function loadBusinesses() {
-      await processExpiredMarketplace();
+      // Tidies expired offers in the background; the reads below do not wait.
+      void processExpiredMarketplace();
 
       const [businessResult, offerResult, summaries] = await Promise.all([
         supabase
           .from("businesses")
-          .select("id, owner_id, name, business_type, address, phone, approved")
+          .select("id, name, business_type, address, phone, approved")
           .eq("approved", true)
           .order("id", { ascending: false })
           .limit(BUSINESS_QUERY_LIMIT),
@@ -245,7 +247,7 @@ export default function BusinessesPage() {
               </option>
               {businessTypes.map((type) => (
                 <option key={type} value={type}>
-                  {type}
+                  {formatBusinessType(type, language)}
                 </option>
               ))}
             </select>
@@ -372,7 +374,7 @@ export default function BusinessesPage() {
                         </span>
                       </div>
                       <p className="mt-2 text-body">
-                        {business.business_type ||
+                        {formatBusinessType(business.business_type, language) ||
                           (isGeorgian ? "კვების ბიზნესი" : "Food business")}
                       </p>
                     </div>
