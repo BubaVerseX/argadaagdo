@@ -4,17 +4,13 @@ import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeBusinessScreen } from "@/components/native/screens";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { FilterBar } from "@/components/FilterBar";
 import { LoadingState } from "@/components/LoadingState";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
-import { BusinessAlertsSection } from "@/components/business/BusinessAlertsSection";
 import { isSalesPausedToday } from "@/lib/greenBag";
 import { BusinessQuickActions, type QuickPanel } from "@/components/business/BusinessQuickActions";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
-import { BusinessIntelligencePanel } from "@/components/business/BusinessIntelligencePanel";
-import { BusinessOnboardingSections } from "@/components/business/BusinessOnboardingSections";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
 import { BusinessRevenueInsights } from "@/components/business/BusinessRevenueInsights";
 import {
@@ -22,11 +18,11 @@ import {
   type BusinessDetailsDraft,
 } from "@/components/business/RejectedBusinessCard";
 import { BusinessReviews } from "@/components/business/BusinessReviews";
-import { BusinessStatsSection } from "@/components/business/BusinessStatsSection";
 import {
   BagTemplatesPanel,
   type BagTemplateInput,
 } from "@/components/business/BagTemplatesPanel";
+import { DashboardSection } from "@/components/business/DashboardSection";
 import { DepartmentsPanel } from "@/components/business/DepartmentsPanel";
 import { ImpactReportSection } from "@/components/business/ImpactReportSection";
 import { OfferForm } from "@/components/business/OfferForm";
@@ -55,12 +51,6 @@ import {
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
-  buildBusinessDailySummary,
-  buildBusinessRecommendations,
-  buildBusinessWeeklySummary,
-  buildOfferIntelligence,
-} from "@/lib/marketplaceIntelligence";
-import {
   notifyOfferPublished,
   notifyPickupCompleted,
   notifyProfileUpdated,
@@ -82,7 +72,6 @@ import {
   getEffectiveOfferStatus,
   getTbilisiDateKey,
   getTomorrowDateKey,
-  hasPickupWindowStarted,
   isOrderPastPickupEnd,
   type RatingSummary,
 } from "@/lib/offerLifecycle";
@@ -136,7 +125,6 @@ function BusinessDashboardPage() {
   const [departmentId, setDepartmentId] = useState("");
   const [departmentActionBusy, setDepartmentActionBusy] = useState(false);
   const [quickPanel, setQuickPanel] = useState<QuickPanel>(null);
-  const [moreOpen, setMoreOpen] = useState(false);
 
   // The navbar links to sections by hash; open whatever holds them.
   useEffect(() => {
@@ -144,19 +132,24 @@ function BusinessDashboardPage() {
       const { hash } = window.location;
 
       if (hash === "#business-reservations") setQuickPanel("collect");
-      if (hash === "#business-offers") setMoreOpen(true);
       if (hash) {
         window.setTimeout(() => {
-          document.querySelector(hash)?.scrollIntoView();
+          const target = document.querySelector(hash);
+          // Sections are closed <details>; open the one the link points at.
+          if (target instanceof HTMLDetailsElement) target.open = true;
+          target?.scrollIntoView();
         }, 0);
       }
     }
+
+    // The sections exist only once the dashboard has loaded.
+    if (loading) return;
 
     openHashTarget();
     window.addEventListener("hashchange", openHashTarget);
 
     return () => window.removeEventListener("hashchange", openHashTarget);
-  }, []);
+  }, [loading]);
   const [busyTemplateId, setBusyTemplateId] = useState<number | null>(null);
   const ensuredDefaultFor = useRef<Set<number>>(new Set());
 
@@ -1945,16 +1938,6 @@ function BusinessDashboardPage() {
   const activeOffers = offers.filter(
     (offer) => getEffectiveOfferStatus(offer) === "active"
   );
-  const expiredOffers = offers.filter(
-    (offer) => getEffectiveOfferStatus(offer) === "expired"
-  );
-  const nearlySoldOutOffers = activeOffers.filter(
-    (offer) =>
-      Number(offer.quantity || 0) > 0 && Number(offer.quantity || 0) <= 2
-  );
-  const inactiveOffers = offers.filter(
-    (offer) => getEffectiveOfferStatus(offer) === "inactive"
-  );
   const totalReviews = reviews.length;
   const averageRating =
     totalReviews > 0
@@ -1964,17 +1947,8 @@ function BusinessDashboardPage() {
             10
         ) / 10
       : 0;
-  const averageRatingLabel =
-    totalReviews > 0 ? `${averageRating.toFixed(1)} / 5` : t("common.noRatings");
   const dashboardBusinessName =
     selectedBusiness?.name || t("businessDashboard.businessOwner");
-  const businessNameById = approvedBusinesses.reduce<Record<number, string>>(
-    (businessMap, business) => {
-      businessMap[business.id] = business.name;
-      return businessMap;
-    },
-    {}
-  );
   const canCreateOffers = approvedBusinesses.length > 0;
   const rejectedBusinesses = businesses.filter(
     (business) => business.rejected_at
@@ -1982,11 +1956,11 @@ function BusinessDashboardPage() {
   const businessStatusMessage =
     businesses.length === 0
       ? isGeorgian
-        ? "ჯერ დაარეგისტრირე შენი ბიზნესი."
+        ? "ჯერ დაარეგისტრირე ბიზნესი."
         : "Register your business first."
       : isGeorgian
-      ? "შენი ბიზნესი ჯერ არ არის დამტკიცებული."
-      : "Your business is not approved yet.";
+      ? "განაცხადი განხილვაშია."
+      : "Your application is in review.";
   const collectedOrders = orders.filter((order) =>
     isCollectedOrderStatus(order.status)
   );
@@ -1997,70 +1971,11 @@ function BusinessDashboardPage() {
     isStrictlyCancelledOrderStatus(order.status)
   );
   const noShowOrders = orders.filter((order) => order.status === "no_show");
-  const todayDateKey = getTbilisiDateKey();
-  const todaysActiveReservations = orders.filter(
-    (order) =>
-      order.offers?.pickup_date === todayDateKey &&
-      isConfirmedOrderStatus(order.status)
-  );
-  const offersExpiringToday = activeOffers.filter(
-    (offer) => offer.pickup_date === todayDateKey
-  );
-  const reservationsWithStartedPickupWindow = todaysActiveReservations.filter(
-    (order) => hasPickupWindowStarted(order.offers)
-  );
-  const hasAnalyticsActivity =
-    offers.length > 0 || orders.length > 0 || totalReviews > 0;
-  const isNewBusinessOnboarding = offers.length === 0 && orders.length === 0;
   const businessAnalytics = calculateBusinessAnalytics({
     offers,
     orders,
     reviews,
   });
-  const offerIntelligenceById = buildOfferIntelligence(offers, orders, language);
-  const businessRecommendations = buildBusinessRecommendations(
-    offers,
-    offerIntelligenceById,
-    language
-  );
-  const dailySummary = buildBusinessDailySummary({ offers, orders }, language);
-  const weeklySummary = buildBusinessWeeklySummary({ orders, reviews }, language);
-  const onboardingChecklist = [
-    {
-      step: 1,
-      label: t("businessOnboarding.checkCreateOffer"),
-      completed: offers.length > 0,
-    },
-    {
-      step: 2,
-      label: t("businessOnboarding.checkFirstReservation"),
-      completed: orders.length > 0,
-    },
-    {
-      step: 3,
-      label: t("businessOnboarding.checkFirstPickup"),
-      completed: collectedOrders.length > 0,
-    },
-    {
-      step: 4,
-      label: t("businessOnboarding.checkFirstRating"),
-      completed: reviews.length > 0,
-    },
-  ];
-  const firstOfferGuidance = [
-    {
-      label: t("businessOnboarding.recommendedQuantity"),
-      value: t("businessOnboarding.recommendedQuantityValue"),
-    },
-    {
-      label: t("businessOnboarding.recommendedPickupWindow"),
-      value: t("businessOnboarding.recommendedPickupWindowValue"),
-    },
-    {
-      label: t("businessOnboarding.recommendedTitle"),
-      value: t("businessOnboarding.recommendedTitleValue"),
-    },
-  ];
   const hasCompleteProfile = Boolean(
     profileName.trim() &&
       profileType.trim() &&
@@ -2068,149 +1983,34 @@ function BusinessDashboardPage() {
       profilePhone.trim()
   );
   const hasBusinessImage = offers.some((offer) => Boolean(offer.image_url));
-  const hasBusinessDescription = Boolean(
-    selectedBusiness?.description?.trim() ||
-      offers.some((offer) => Boolean(offer.description?.trim()))
-  );
+  // Setup checklist: one short line each.
   const businessHealthChecks = [
     {
       label: isGeorgian ? "პროფილი შევსებულია" : "Profile complete",
-      helper: isGeorgian
-        ? "სახელი, ტიპი, მისამართი და ტელეფონი შევსებულია."
-        : "Name, type, address and phone are filled in.",
       complete: hasCompleteProfile,
     },
     {
-      label: isGeorgian
-        ? "ლოგო ან შეთავაზების სურათი ატვირთულია"
-        : "Logo or offer image uploaded",
-      helper: isGeorgian
-        ? "გამოიყენე მკაფიო სურათები, რომ მომხმარებლებმა შენს ლანჩ ბოქსებს ენდონ."
-        : "Use clear images so customers trust your Lunch Boxes.",
-      complete: hasBusinessImage,
+      label: isGeorgian ? "რუკაზე მონიშნულია" : "Pin on the map",
+      complete: selectedBusiness?.latitude != null && selectedBusiness?.longitude != null,
     },
     {
-      label: isGeorgian ? "აღწერა დამატებულია" : "Description added",
-      helper: isGeorgian
-        ? "დაამატე მოკლე აღწერა პროფილზე ან შეთავაზებებზე."
-        : "Add a short description on your profile or offers.",
-      complete: hasBusinessDescription,
+      label: isGeorgian ? "სურათი ატვირთულია" : "Photo uploaded",
+      complete: hasBusinessImage || bagTemplates.some((template) => Boolean(template.image_url)),
     },
     {
-      label: isGeorgian ? "მისამართი დამატებულია" : "Address added",
-      helper: isGeorgian
-        ? "მომხმარებლებს წაღების მკაფიო ადგილი სჭირდებათ."
-        : "Customers need a clear pickup location.",
-      complete: Boolean(profileAddress.trim() || selectedBusiness?.address),
-    },
-    {
-      label: isGeorgian ? "ტელეფონი დადასტურებულია" : "Phone verified",
-      helper: isGeorgian
-        ? "ამ ეტაპზე ეს ნიშნავს, რომ საკონტაქტო ტელეფონი ადმინის განსახილველად შენახულია."
-        : "For now this means a contact phone is saved for admin review.",
+      label: isGeorgian ? "საკონტაქტო ტელეფონი" : "Contact phone",
       complete: Boolean(profilePhone.trim() || selectedBusiness?.phone),
     },
     {
-      label: isGeorgian ? "აქტიური შეთავაზებები" : "Active offers",
-      helper: isGeorgian
-        ? "მომხმარებლებისთვის მინიმუმ ერთი შეთავაზება ხილულია."
-        : "At least one offer is visible to customers.",
-      complete: activeOffers.length > 0,
-    },
-    {
-      label: isGeorgian ? "დასრულებული წაღებები" : "Completed pickups",
-      helper: isGeorgian
-        ? "მინიმუმ ერთი წაღება უკვე დასრულებულია."
-        : "At least one customer pickup has been completed.",
-      complete: collectedOrders.length > 0,
-    },
-  ];
-  const businessOperationsChecklist = [
-    {
-      label: isGeorgian ? "შექმენი პირველი შეთავაზება" : "Create first offer",
-      helper: isGeorgian
-        ? "გამოაქვეყნე რეალისტური ლანჩ ბოქსი ფასითა და წაღების დროით."
-        : "Publish a realistic Lunch Box with price and pickup time.",
+      label: isGeorgian ? "პირველი ლანჩ ბოქსი" : "First bag published",
       complete: offers.length > 0,
-      anchor: "#create-offer",
     },
     {
-      label: isGeorgian ? "ატვირთე ლოგო ან სურათი" : "Upload logo or image",
-      helper: isGeorgian
-        ? "დაამატე მკაფიო სურათი მომხმარებლების ნდობის მოსაპოვებლად."
-        : "Add a clear image to build customer trust.",
-      complete: hasBusinessImage,
-      anchor: "#create-offer",
-    },
-    {
-      label: isGeorgian ? "შეავსე პროფილი" : "Complete profile",
-      helper: isGeorgian
-        ? "სახელი, ტიპი, მისამართი და ტელეფონი განახლებული გქონდეს."
-        : "Keep name, type, address and phone up to date.",
-      complete: hasCompleteProfile,
-    },
-    {
-      label: isGeorgian ? "მიიღე პირველი ჯავშანი" : "Receive first reservation",
-      helper: isGeorgian
-        ? "ახალი ჯავშნები ჯავშნების განყოფილებაში გამოჩნდება."
-        : "New reservations will appear in the reservations section.",
-      complete: orders.length > 0,
-    },
-    {
-      label: isGeorgian ? "დაასრულე პირველი წაღება" : "Complete first pickup",
-      helper: isGeorgian
-        ? "საკვების გადაცემამდე მოითხოვე წაღების კოდი."
-        : "Ask for the pickup code before handing over food.",
+      label: isGeorgian ? "პირველი გაცემა" : "First pickup",
       complete: collectedOrders.length > 0,
     },
-    {
-      label: isGeorgian ? "მიიღე პირველი შეფასება" : "Receive first rating",
-      helper: isGeorgian
-        ? "შეფასებები მომავალ მომხმარებლებს შენი ბიზნესის ნდობაში ეხმარება."
-        : "Ratings help future customers trust your business.",
-      complete: reviews.length > 0,
-    },
   ];
-  const overviewStats = [
-    {
-      title: t("businessDashboard.activeOffersMetric"),
-      value: activeOffers.length,
-      tone: "green" as const,
-    },
-    {
-      title: t("businessDashboard.totalReservationsMetric"),
-      value: orders.length,
-      tone: "neutral" as const,
-    },
-    {
-      title: t("businessDashboard.completedPickupsMetric"),
-      value: collectedOrders.length,
-      tone: "green" as const,
-    },
-    {
-      title: t("businessDashboard.averageRating"),
-      value: averageRatingLabel,
-      tone: totalReviews > 0 ? ("yellow" as const) : ("neutral" as const),
-    },
-    {
-      title: isGeorgian ? "გაყიდული ლანჩ ბოქსები" : "Boxes sold",
-      value: businessAnalytics.boxesSold,
-      tone: "green" as const,
-    },
-    {
-      title: isGeorgian ? "ხელმისაწვდომი ლანჩ ბოქსები" : "Boxes available",
-      value: businessAnalytics.boxesRemaining,
-      tone: "neutral" as const,
-    },
-    {
-      title: isGeorgian ? "დღევანდელი ჯავშნები" : "Today's reservations",
-      value: businessAnalytics.todayReservations,
-      tone:
-        businessAnalytics.todayReservations > 0
-          ? ("yellow" as const)
-          : ("neutral" as const),
-    },
-  ];
+  const completedHealthChecks = businessHealthChecks.filter((check) => check.complete).length;
   const reservationSummary = [
     {
       label: t("orders.reserved"),
@@ -2232,123 +2032,6 @@ function BusinessDashboardPage() {
       value: noShowOrders.length,
       className: "bg-well text-cream",
     },
-  ];
-  const businessAlerts = [
-    ...(reservedOrders.length > 0
-      ? [
-          {
-            title: isGeorgian ? "ახალი ჯავშანი" : "New reservation",
-            text: isGeorgian
-              ? `${reservedOrders.length} აქტიური ჯავშანი წაღების მოლოდინშია.`
-              : `${reservedOrders.length} active ${
-                  reservedOrders.length === 1
-                    ? "reservation needs"
-                    : "reservations need"
-                } pickup attention.`,
-            className: "ui-card text-cream",
-          },
-        ]
-      : [
-          {
-            title: isGeorgian
-              ? "აქტიური ჯავშნები არ არის"
-              : "No active reservations",
-            text: isGeorgian
-              ? "ახალი ჯავშნები აქ გამოჩნდება, როცა მომხმარებლები შენს შეთავაზებებს დაჯავშნიან."
-              : "New reservations will appear here when customers reserve your offers.",
-            className: "bg-well text-cream",
-          },
-        ]),
-    ...(offersExpiringToday.length > 0
-      ? [
-          {
-            title: isGeorgian ? "შეთავაზება დღეს სრულდება" : "Offer expires today",
-            text: isGeorgian
-              ? `${offersExpiringToday.length} აქტიური შეთავაზება დღეს სრულდება. გაუყიდავი რაოდენობა იმავე დღის მარაგად უნდა დარჩეს.`
-              : `${offersExpiringToday.length} active ${
-                  offersExpiringToday.length === 1 ? "offer ends" : "offers end"
-                } today. Unsold quantity should stay as same-day inventory.`,
-            className: "border border-warning-line bg-warning-soft text-cream",
-          },
-        ]
-      : []),
-    ...(reservationsWithStartedPickupWindow.length > 0
-      ? [
-          {
-            title: isGeorgian ? "წაღების დრო დაიწყო" : "Pickup window started",
-            text: isGeorgian
-              ? `${reservationsWithStartedPickupWindow.length} ჯავშანი ახლა წაღების დროსა.`
-              : `${reservationsWithStartedPickupWindow.length} ${
-                  reservationsWithStartedPickupWindow.length === 1
-                    ? "reservation is"
-                    : "reservations are"
-                } inside the pickup window now.`,
-            className: "ui-card text-cream",
-          },
-        ]
-      : []),
-    ...(todaysActiveReservations.length > 0
-      ? [
-          {
-            title: isGeorgian ? "დღეს წასაღები" : "Pickup due today",
-            text: isGeorgian
-              ? `${todaysActiveReservations.length} ჯავშნის წაღება დღესაა დაგეგმილი.`
-              : `${todaysActiveReservations.length} ${
-                  todaysActiveReservations.length === 1
-                    ? "reservation is"
-                    : "reservations are"
-                } scheduled for pickup today.`,
-            className: "border border-warning-line bg-warning-soft text-cream",
-          },
-        ]
-      : [
-          {
-            title: isGeorgian ? "დღეს ჯავშნები არ არის" : "No reservations today",
-            text: isGeorgian
-              ? "დღეს წაღებასთან დაკავშირებული მოქმედება საჭირო არ არის. ახალი ჯავშნები აქ ავტომატურად გამოჩნდება."
-              : "Nothing needs pickup action today. New reservations will appear here automatically.",
-            className: "bg-well text-cream",
-          },
-        ]),
-    ...(nearlySoldOutOffers.length > 0
-      ? [
-          {
-            title: isGeorgian ? "მცირე რაოდენობა" : "Low quantity",
-            text: isGeorgian
-              ? `${nearlySoldOutOffers.length} აქტიურ შეთავაზებას 2 ან ნაკლები ლანჩ ბოქსი დარჩა.`
-              : `${nearlySoldOutOffers.length} active ${
-                  nearlySoldOutOffers.length === 1 ? "offer has" : "offers have"
-                } 2 or fewer boxes left.`,
-            className: "border border-warning-line bg-warning-soft text-cream",
-          },
-        ]
-      : []),
-    ...(inactiveOffers.length > 0
-      ? [
-          {
-            title: isGeorgian ? "არააქტიური შეთავაზებები" : "Inactive offers",
-            text: isGeorgian
-              ? `${inactiveOffers.length} შეთავაზება საჯარო დათვალიერებიდან დამალულია.`
-              : `${inactiveOffers.length} ${
-                  inactiveOffers.length === 1 ? "offer is" : "offers are"
-                } hidden from public browsing.`,
-            className: "bg-well text-cream",
-          },
-        ]
-      : []),
-    ...(expiredOffers.length > 0
-      ? [
-          {
-            title: isGeorgian ? "ვადაგასული შეთავაზება" : "Expired offer",
-            text: isGeorgian
-              ? `${expiredOffers.length} შეთავაზებას წაღების დრო გაუვიდა და ისტორიაში უნდა დარჩეს.`
-              : `${expiredOffers.length} ${
-                  expiredOffers.length === 1 ? "offer has" : "offers have"
-                } passed the pickup window and should stay in history.`,
-            className: "border border-danger-line bg-danger-soft text-cream",
-          },
-        ]
-      : []),
   ];
   const normalizedReservationSearch = reservationSearch.trim().toLowerCase();
   const normalizedOfferSearch = offerManagementSearch.trim().toLowerCase();
@@ -2466,14 +2149,8 @@ function BusinessDashboardPage() {
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
           <LoadingState
-            title={{
-              en: "Loading business dashboard...",
-              ka: "ბიზნეს პანელი იტვირთება...",
-            }}
-            description={{
-              en: "Preparing offers, reservations, pickup tasks and ratings.",
-              ka: "მზადდება შეთავაზებები, ჯავშნები, წაღების დავალებები და შეფასებები.",
-            }}
+            title={{ en: "Loading...", ka: "იტვირთება..." }}
+            description={{ en: "", ka: "" }}
           />
         </section>
       </main>
@@ -2484,14 +2161,14 @@ function BusinessDashboardPage() {
     <main className="app-shell">
       <Navbar />
 
-      <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
+      <section className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-8 md:px-12">
         <BusinessDashboardHero
           t={t}
           businessName={dashboardBusinessName}
         />
 
         {message && (
-          <div ref={messageRef} className="mt-5 scroll-mt-24 sm:mt-6">
+          <div ref={messageRef} className="mt-4 scroll-mt-24">
             <Notice tone={messageTone}>
               {translateUserMessage(message, language)}
             </Notice>
@@ -2506,23 +2183,12 @@ function BusinessDashboardPage() {
         ))}
 
         {!canCreateOffers && rejectedBusinesses.length === 0 && (
-          <div className="mt-6 rounded-3xl bg-warning-soft p-5 sm:mt-8 sm:p-8">
-            <h2 className="text-xl font-semibold text-warning sm:text-2xl">
-              {businessStatusMessage}
-            </h2>
-            <p className="mt-3 font-medium text-warning">
-              {businesses.length === 0
-                ? isGeorgian
-                  ? "საკვების გადარჩენის შეთავაზებების გამოქვეყნებამდე შექმენი ბიზნესის პროფილი."
-                  : "Create a business profile before publishing food rescue offers."
-                : isGeorgian
-                ? "შენი ბიზნესი უკვე არსებობს, მაგრამ შეთავაზებების გამოქვეყნებამდე ის უნდა დამტკიცდეს."
-                : "Your business exists, but it must be approved before publishing offers."}
-            </p>
-          </div>
+          <p className="mt-4 rounded-2xl bg-warning-soft p-4 font-semibold text-warning">
+            {businessStatusMessage}
+          </p>
         )}
 
-{selectedBusiness && canCreateOffers && (
+        {selectedBusiness && canCreateOffers && (
           <BusinessQuickActions
             activePanel={quickPanel}
             reservedCount={reservedOrders.length}
@@ -2541,7 +2207,6 @@ function BusinessDashboardPage() {
         {/* Kept mounted but hidden, so half-filled forms survive switching. */}
         <div hidden={quickPanel !== "publish"}>
           {selectedBusiness && canCreateOffers && (
-            <>
             <BagTemplatesPanel
               language={language}
               business={selectedBusiness}
@@ -2554,78 +2219,79 @@ function BusinessDashboardPage() {
               onPublishNow={(template, day) => void publishTemplateNow(template, day)}
               onUploadImage={uploadTemplateImage}
             />
-            </>
           )}
 
-        <OfferForm
-          t={t}
-          canCreateOffers={canCreateOffers}
-          businessStatusMessage={businessStatusMessage}
-          approvedBusinesses={approvedBusinesses}
-          businessId={businessId}
-          departments={selectedDepartments}
-          departmentId={effectiveDepartmentId}
-          onDepartmentIdChange={setDepartmentId}
-          title={title}
-          description={description}
-          category={category}
-          size={size}
-          price={price}
-          oldPrice={oldPrice}
-          quantity={quantity}
-          pickupDate={pickupDate}
-          pickupStart={pickupStart}
-          pickupEnd={pickupEnd}
-          imageFile={imageFile}
-          publishing={publishing}
-          guidance={firstOfferGuidance}
-          onBusinessIdChange={setBusinessId}
-          onTitleChange={setTitle}
-          onDescriptionChange={setDescription}
-          onCategoryChange={setCategory}
-          onSizeChange={setSize}
-          onPriceChange={setPrice}
-          onOldPriceChange={setOldPrice}
-          onQuantityChange={setQuantity}
-          onPickupDateChange={setPickupDate}
-          onPickupStartChange={setPickupStart}
-          onPickupEndChange={setPickupEnd}
-          onImageFileChange={handleImageFileChange}
-          imageInputKey={imageInputKey}
-          onCreateOffer={(actionTime) => void createOffer(actionTime)}
-        />
-
+          <details className="group mt-3">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center px-1 font-semibold text-mint [&::-webkit-details-marker]:hidden">
+              {isGeorgian ? "+ ერთჯერადი ლანჩ ბოქსი" : "+ One-off bag"}
+            </summary>
+            <OfferForm
+              t={t}
+              canCreateOffers={canCreateOffers}
+              businessStatusMessage={businessStatusMessage}
+              approvedBusinesses={approvedBusinesses}
+              businessId={businessId}
+              departments={selectedDepartments}
+              departmentId={effectiveDepartmentId}
+              onDepartmentIdChange={setDepartmentId}
+              title={title}
+              description={description}
+              category={category}
+              size={size}
+              price={price}
+              oldPrice={oldPrice}
+              quantity={quantity}
+              pickupDate={pickupDate}
+              pickupStart={pickupStart}
+              pickupEnd={pickupEnd}
+              imageFile={imageFile}
+              publishing={publishing}
+              onBusinessIdChange={setBusinessId}
+              onTitleChange={setTitle}
+              onDescriptionChange={setDescription}
+              onCategoryChange={setCategory}
+              onSizeChange={setSize}
+              onPriceChange={setPrice}
+              onOldPriceChange={setOldPrice}
+              onQuantityChange={setQuantity}
+              onPickupDateChange={setPickupDate}
+              onPickupStartChange={setPickupStart}
+              onPickupEndChange={setPickupEnd}
+              onImageFileChange={handleImageFileChange}
+              imageInputKey={imageInputKey}
+              onCreateOffer={(actionTime) => void createOffer(actionTime)}
+            />
+          </details>
         </div>
 
         <div hidden={quickPanel !== "collect"}>
-        <div id="business-reservations" className="scroll-mt-24">
-        <ReservationList
-          t={t}
-          language={language}
-          orders={orders}
-          filteredOrders={paginatedReservations.items}
-          filteredOrderCount={filteredOrders.length}
-          reservationSummary={reservationSummary}
-          reservationFilter={reservationFilter}
-          reservationSearch={reservationSearch}
-          normalizedReservationSearch={normalizedReservationSearch}
-          updatingOrderId={updatingOrderId}
-          reservationPage={paginatedReservations.page}
-          reservationPageSize={DASHBOARD_RESERVATION_PAGE_SIZE}
-          onReservationSearchChange={(value) => {
-            setReservationSearch(value);
-            setReservationPage(1);
-          }}
-          onReservationFilterChange={(value) => {
-            setReservationFilter(value);
-            setReservationPage(1);
-          }}
-          onReservationPageChange={setReservationPage}
-          onOpenPickupVerification={openPickupVerification}
-          onMarkNoShow={(order) => void markNoShow(order)}
-        />
-        </div>
-
+          <div id="business-reservations" className="scroll-mt-24">
+            <ReservationList
+              t={t}
+              language={language}
+              orders={orders}
+              filteredOrders={paginatedReservations.items}
+              filteredOrderCount={filteredOrders.length}
+              reservationSummary={reservationSummary}
+              reservationFilter={reservationFilter}
+              reservationSearch={reservationSearch}
+              normalizedReservationSearch={normalizedReservationSearch}
+              updatingOrderId={updatingOrderId}
+              reservationPage={paginatedReservations.page}
+              reservationPageSize={DASHBOARD_RESERVATION_PAGE_SIZE}
+              onReservationSearchChange={(value) => {
+                setReservationSearch(value);
+                setReservationPage(1);
+              }}
+              onReservationFilterChange={(value) => {
+                setReservationFilter(value);
+                setReservationPage(1);
+              }}
+              onReservationPageChange={setReservationPage}
+              onOpenPickupVerification={openPickupVerification}
+              onMarkNoShow={(order) => void markNoShow(order)}
+            />
+          </div>
         </div>
 
         {pickupVerificationOrder && (
@@ -2645,221 +2311,199 @@ function BusinessDashboardPage() {
           />
         )}
 
-        <button
-          type="button"
-          aria-expanded={moreOpen}
-          onClick={() => setMoreOpen((open) => !open)}
-          className="premium-button-secondary mt-6 w-full px-6 py-3"
-        >
-          {moreOpen
-            ? isGeorgian
-              ? "ნაკლები"
-              : "Less"
-            : isGeorgian
-              ? "მეტი"
-              : "More"}
-        </button>
+        {/* Everything else: closed rows, one tap to open. */}
+        <div className="mt-6">
+          <DashboardSection
+            id="business-offers"
+            title={isGeorgian ? "შეთავაზებები" : "Offers"}
+            meta={activeOffers.length > 0 ? activeOffers.length : undefined}
+          >
+            {offers.length > DASHBOARD_OFFER_PAGE_SIZE && (
+              <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
+                <SearchBar
+                  value={offerManagementSearch}
+                  onChange={(value) => {
+                    setOfferManagementSearch(value);
+                    setOfferManagementPage(1);
+                  }}
+                  placeholder={isGeorgian ? "ძიება..." : "Search..."}
+                  label={isGeorgian ? "შეთავაზებების ძიება" : "Search offers"}
+                />
+              </div>
+            )}
 
-        <div hidden={!moreOpen}>
-        <BusinessAlertsSection alerts={businessAlerts} />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(
+                [
+                  { value: "active", label: isGeorgian ? "აქტიური" : "Active" },
+                  { value: "sold_out", label: isGeorgian ? "გაყიდული" : "Sold out" },
+                  { value: "inactive", label: isGeorgian ? "დამალული" : "Hidden" },
+                  { value: "archive", label: isGeorgian ? "არქივი" : "Archive" },
+                  { value: "all", label: isGeorgian ? "ყველა" : "All" },
+                ] as Array<{ value: DashboardOfferFilter; label: string }>
+              ).map((filter) => (
+                <button
+                  key={filter.value}
+                  type="button"
+                  aria-pressed={offerManagementFilter === filter.value}
+                  onClick={() => {
+                    setOfferManagementFilter(filter.value);
+                    setOfferManagementPage(1);
+                  }}
+                  className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    offerManagementFilter === filter.value
+                      ? "ui-well text-mint"
+                      : "ui-card text-body hover:text-mint"
+                  }`}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
 
-        {selectedBusiness && !selectedBusiness.rejected_at && (
-          <>
-            <BusinessProfileSection
-              profileName={profileName}
-              profileType={profileType}
-              profileAddress={profileAddress}
-              profilePhone={profilePhone}
-              savingProfile={savingProfile}
-              onProfileNameChange={setProfileName}
-              onProfileTypeChange={setProfileType}
-              onProfileAddressChange={setProfileAddress}
-              onProfilePhoneChange={setProfilePhone}
-              onSave={(actionTime) => void saveBusinessProfile(actionTime)}
-            />
-
-            <BusinessHealthScore
-              checks={businessHealthChecks}
-              checklist={businessOperationsChecklist}
-            />
-          </>
-        )}
-
-        {isNewBusinessOnboarding && (
-          <BusinessOnboardingSections t={t} checklist={onboardingChecklist} />
-        )}
-
-        <BusinessStatsSection
-          t={t}
-          hasAnalyticsActivity={hasAnalyticsActivity}
-          metrics={overviewStats}
-        />
-
-        <BusinessRevenueInsights
-          analytics={businessAnalytics}
-          onExportReservations={exportReservationsCsv}
-          onExportCompletedPickups={exportCompletedPickupsCsv}
-          onExportOfferStatistics={exportOfferStatisticsCsv}
-        />
-
-        {selectedBusiness && (
-          <ImpactReportSection
-            language={language}
-            businessId={selectedBusiness.id}
-            businessName={selectedBusiness.name}
-            orders={orders}
-          />
-        )}
-
-        <BusinessIntelligencePanel
-          dailySummary={dailySummary}
-          weeklySummary={weeklySummary}
-          recommendations={businessRecommendations}
-        />
-
-          {selectedBusiness && canCreateOffers && (
-            <>
-            <DepartmentsPanel
+            <OfferList
+              t={t}
               language={language}
-              business={selectedBusiness}
-              departments={selectedDepartments}
-              templateCountByDepartment={templateCountByDepartment}
-              busy={departmentActionBusy}
-              onToggleStorePause={(paused) => void setSalesPaused(null, paused)}
-              onToggleDepartmentPause={(department, paused) =>
-                void setSalesPaused(department, paused)
+              offers={paginatedManagedOffers.items}
+              emptyTitle={
+                offers.length === 0
+                  ? undefined
+                  : isGeorgian
+                  ? "აქ არაფერია"
+                  : "Nothing here"
               }
-              onAddDepartment={addDepartment}
-              onDeleteDepartment={(department) => void deleteDepartment(department)}
-              onSetStaffPin={setStaffPin}
-              onResetStaffLockouts={(department) => void resetStaffLockouts(department)}
+              ratingSummaries={ratingSummaries}
+              offerAnalyticsById={businessAnalytics.offerAnalyticsById}
+              editingOfferId={editingOfferId}
+              updatingOfferId={updatingOfferId}
+              editTitle={editTitle}
+              editCategory={editCategory}
+              editSize={editSize}
+              editPrice={editPrice}
+              editOldPrice={editOldPrice}
+              editQuantity={editQuantity}
+              editPickupDate={editPickupDate}
+              editPickupStart={editPickupStart}
+              editPickupEnd={editPickupEnd}
+              onStartEditing={startEditingOffer}
+              onCancelEditing={cancelEditingOffer}
+              onToggleActive={(offer) => void toggleOfferActive(offer)}
+              onDuplicate={(offer) => void duplicateOffer(offer)}
+              onArchiveExpired={(offer) => void archiveExpiredOffer(offer)}
+              onDelete={(offer) => void deleteOffer(offer)}
+              onSaveEdits={(offer) => void saveOfferEdits(offer)}
+              onEditTitleChange={setEditTitle}
+              onEditCategoryChange={setEditCategory}
+              onEditSizeChange={setEditSize}
+              onEditPriceChange={setEditPrice}
+              onEditOldPriceChange={setEditOldPrice}
+              onEditQuantityChange={setEditQuantity}
+              onEditPickupDateChange={setEditPickupDate}
+              onEditPickupStartChange={setEditPickupStart}
+              onEditPickupEndChange={setEditPickupEnd}
             />
 
-            </>
+            <Pagination
+              className="mt-4"
+              page={paginatedManagedOffers.page}
+              totalItems={filteredManagedOffers.length}
+              pageSize={DASHBOARD_OFFER_PAGE_SIZE}
+              label={t("nav.offers")}
+              onPageChange={setOfferManagementPage}
+            />
+          </DashboardSection>
+
+          <DashboardSection
+            id="business-stats"
+            title={isGeorgian ? "სტატისტიკა" : "Stats"}
+          >
+            <div className="mt-3">
+              <BusinessRevenueInsights
+                analytics={businessAnalytics}
+                onExportReservations={exportReservationsCsv}
+                onExportCompletedPickups={exportCompletedPickupsCsv}
+                onExportOfferStatistics={exportOfferStatisticsCsv}
+              />
+            </div>
+          </DashboardSection>
+
+          <DashboardSection
+            id="business-reviews"
+            title={isGeorgian ? "შეფასებები" : "Reviews"}
+            meta={totalReviews > 0 ? `★ ${averageRating.toFixed(1)} · ${totalReviews}` : undefined}
+          >
+            <div className="mt-3">
+              <BusinessReviews t={t} language={language} reviews={reviews} />
+            </div>
+          </DashboardSection>
+
+          {selectedBusiness && (
+            <DashboardSection
+              id="business-impact-section"
+              title={isGeorgian ? "გადარჩენილი საკვები" : "Food saved"}
+            >
+              <div className="mt-3">
+                <ImpactReportSection
+                  language={language}
+                  businessId={selectedBusiness.id}
+                  businessName={selectedBusiness.name}
+                  orders={orders}
+                />
+              </div>
+            </DashboardSection>
           )}
 
-        <div id="business-offers" className="scroll-mt-24">
-          <FilterBar
-            className="mt-6 sm:mt-8"
-            title={isGeorgian ? "შეთავაზებების ძიება" : "Offer management search"}
-            description={
-              isGeorgian
-                ? "მოძებნე შეთავაზებები სათაურით, კატეგორიით ან ბიზნესით. რედაქტირებამდე ან დაარქივებამდე გაფილტრე ისტორია."
-                : "Find offers by title, category or business. Filter history before editing or archiving."
-            }
-          >
-            <SearchBar
-              value={offerManagementSearch}
-              onChange={(value) => {
-                setOfferManagementSearch(value);
-                setOfferManagementPage(1);
-              }}
-              placeholder={
-                isGeorgian ? "მოძებნე შეთავაზება..." : "Search offers..."
-              }
-              label={isGeorgian ? "შეთავაზებების ძიება" : "Search offers"}
-            />
-
-            <select
-              value={offerManagementFilter}
-              onChange={(event) => {
-                setOfferManagementFilter(
-                  event.target.value as DashboardOfferFilter
-                );
-                setOfferManagementPage(1);
-              }}
-              aria-label={
-                isGeorgian
-                  ? "შეთავაზებების ფილტრი სტატუსით"
-                  : "Filter offers by status"
-              }
-              className="premium-input px-4 py-3 font-semibold"
+          {selectedBusiness && !selectedBusiness.rejected_at && (
+            <DashboardSection
+              id="business-profile"
+              title={isGeorgian ? "პროფილი" : "Profile"}
+              meta={`${completedHealthChecks}/${businessHealthChecks.length}`}
             >
-              <option value="all">
-                {isGeorgian ? "ყველა შეთავაზება" : "All offers"}
-              </option>
-              <option value="active">{isGeorgian ? "აქტიური" : "Active"}</option>
-              <option value="inactive">
-                {isGeorgian ? "არააქტიური" : "Inactive"}
-              </option>
-              <option value="archive">{isGeorgian ? "არქივი" : "Archive"}</option>
-              <option value="sold_out">
-                {isGeorgian ? "გაყიდულია" : "Sold out"}
-              </option>
-            </select>
-          </FilterBar>
+              <div className="mt-3">
+                <BusinessHealthScore checks={businessHealthChecks} />
+              </div>
+              <BusinessProfileSection
+                profileName={profileName}
+                profileType={profileType}
+                profileAddress={profileAddress}
+                profilePhone={profilePhone}
+                savingProfile={savingProfile}
+                onProfileNameChange={setProfileName}
+                onProfileTypeChange={setProfileType}
+                onProfileAddressChange={setProfileAddress}
+                onProfilePhoneChange={setProfilePhone}
+                onSave={(actionTime) => void saveBusinessProfile(actionTime)}
+              />
+            </DashboardSection>
+          )}
 
-          <OfferList
-            t={t}
-            language={language}
-            offers={paginatedManagedOffers.items}
-            emptyTitle={
-              offers.length === 0
-                ? undefined
-                : isGeorgian
-                ? "ფილტრებს შეთავაზება არ ემთხვევა"
-                : "No offers match your filters"
-            }
-            emptyText={
-              offers.length === 0
-                ? undefined
-                : isGeorgian
-                ? "სცადე სხვა ძიება ან სტატუსის ფილტრი."
-                : "Try a different search or status filter."
-            }
-            ratingSummaries={ratingSummaries}
-            offerAnalyticsById={businessAnalytics.offerAnalyticsById}
-            offerIntelligenceById={offerIntelligenceById}
-            editingOfferId={editingOfferId}
-            updatingOfferId={updatingOfferId}
-            editTitle={editTitle}
-            editCategory={editCategory}
-            editSize={editSize}
-            editPrice={editPrice}
-            editOldPrice={editOldPrice}
-            editQuantity={editQuantity}
-            editPickupDate={editPickupDate}
-            editPickupStart={editPickupStart}
-            editPickupEnd={editPickupEnd}
-            onStartEditing={startEditingOffer}
-            onCancelEditing={cancelEditingOffer}
-            onToggleActive={(offer) => void toggleOfferActive(offer)}
-            onDuplicate={(offer) => void duplicateOffer(offer)}
-            onArchiveExpired={(offer) => void archiveExpiredOffer(offer)}
-            onDelete={(offer) => void deleteOffer(offer)}
-            onSaveEdits={(offer) => void saveOfferEdits(offer)}
-            onEditTitleChange={setEditTitle}
-            onEditCategoryChange={setEditCategory}
-            onEditSizeChange={setEditSize}
-            onEditPriceChange={setEditPrice}
-            onEditOldPriceChange={setEditOldPrice}
-            onEditQuantityChange={setEditQuantity}
-            onEditPickupDateChange={setEditPickupDate}
-            onEditPickupStartChange={setEditPickupStart}
-            onEditPickupEndChange={setEditPickupEnd}
-          />
-
-          <Pagination
-            className="mt-5"
-            page={paginatedManagedOffers.page}
-            totalItems={filteredManagedOffers.length}
-            pageSize={DASHBOARD_OFFER_PAGE_SIZE}
-            label={t("nav.offers")}
-            onPageChange={setOfferManagementPage}
-          />
-        </div>
-
-
-        <BusinessReviews
-          t={t}
-          language={language}
-          reviews={reviews}
-          businessNameById={businessNameById}
-        />
+          {selectedBusiness && canCreateOffers && (
+            <DashboardSection
+              id="business-departments-section"
+              title={isGeorgian ? "თანამშრომლები" : "Staff"}
+              meta={selectedDepartments.length > 1 ? selectedDepartments.length : undefined}
+            >
+              <div className="mt-3">
+                <DepartmentsPanel
+                  language={language}
+                  business={selectedBusiness}
+                  departments={selectedDepartments}
+                  templateCountByDepartment={templateCountByDepartment}
+                  busy={departmentActionBusy}
+                  onToggleDepartmentPause={(department, paused) =>
+                    void setSalesPaused(department, paused)
+                  }
+                  onAddDepartment={addDepartment}
+                  onDeleteDepartment={(department) => void deleteDepartment(department)}
+                  onSetStaffPin={setStaffPin}
+                  onResetStaffLockouts={(department) => void resetStaffLockouts(department)}
+                />
+              </div>
+            </DashboardSection>
+          )}
         </div>
       </section>
     </main>
   );
 }
-
 export default withNativeScreen(BusinessDashboardPage, NativeBusinessScreen);

@@ -40,8 +40,10 @@ type PerformanceSummary = {
 };
 
 type MarketingInsights = {
-  mostViewedOffer: string;
-  highestConversion: string;
+  /** Null until offer views are tracked; the dashboard hides the row. */
+  mostViewedOffer: string | null;
+  /** Null without reservations to rank by; the dashboard hides the row. */
+  highestConversion: string | null;
   returningCustomers: number;
   repeatReservations: number;
   averageRatingTrend: string;
@@ -308,11 +310,9 @@ function getMarketingInsights(offers: Offer[], orders: Order[], reviews: Rating[
   const popularity = getPerformanceSummary(offers, orders).bestSellingOffer;
 
   return {
-    mostViewedOffer: "View tracking not connected yet",
+    mostViewedOffer: null,
     highestConversion:
-      popularity === "Not enough data"
-        ? "Conversion tracking not connected yet"
-        : `${popularity} by reservations`,
+      popularity === "Not enough data" ? null : `${popularity} by reservations`,
     returningCustomers: returningCustomerCounts.length,
     repeatReservations,
     averageRatingTrend: getRatingTrend(reviews),

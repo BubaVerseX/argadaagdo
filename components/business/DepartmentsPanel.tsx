@@ -16,7 +16,6 @@ type DepartmentsPanelProps = {
   departments: Department[];
   templateCountByDepartment: Record<number, number>;
   busy: boolean;
-  onToggleStorePause: (paused: boolean) => void;
   onToggleDepartmentPause: (department: Department, paused: boolean) => void;
   onAddDepartment: (name: string) => Promise<boolean>;
   onDeleteDepartment: (department: Department) => void;
@@ -30,7 +29,6 @@ export function DepartmentsPanel({
   departments,
   templateCountByDepartment,
   busy,
-  onToggleStorePause,
   onToggleDepartmentPause,
   onAddDepartment,
   onDeleteDepartment,
@@ -44,7 +42,6 @@ export function DepartmentsPanel({
   const [pinEditingId, setPinEditingId] = useState<number | null>(null);
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const storePaused = isSalesPausedToday(business.sales_paused_on);
-  const hasMultipleDepartments = departments.length > 1;
 
   async function submitNewDepartment() {
     const name = newDepartmentName.trim();
@@ -67,67 +64,10 @@ export function DepartmentsPanel({
   }
 
   return (
-    <div
-      id="business-departments"
-      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:p-8"
-    >
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {isGeorgian ? "დღევანდელი გაყიდვები" : "Today's sales"}
-      </p>
-      <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold sm:text-3xl">
-            {storePaused
-              ? isGeorgian
-                ? "დღეს ლანჩ ბოქსები არ იყიდება"
-                : "No boxes today"
-              : isGeorgian
-              ? "ლანჩ ბოქსები იყიდება"
-              : "Lunch Boxes on sale"}
-          </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-body">
-            {isGeorgian
-              ? "„დღეს ლანჩ ბოქსები არ არის“ აჩერებს ახალ გაყიდვებს დღევანდელი დღისთვის. უკვე გაყიდული ლანჩ ბოქსები რჩება და უნდა გაიცეს ან გაუქმდეს თანხის დაბრუნებით. ერთი შეხებით ისევ ჩართავ."
-              : "“Today: no boxes” stops new sales for today. Boxes already sold stay reserved and must be handed over or cancelled with a refund. One tap turns sales back on."}
-          </p>
-        </div>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => onToggleStorePause(!storePaused)}
-          className={`${
-            storePaused ? "premium-button" : "premium-button-danger"
-          } min-h-12 shrink-0 px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60`}
-        >
-          {storePaused
-            ? isGeorgian
-              ? "გაყიდვების ჩართვა"
-              : "Turn sales back on"
-            : isGeorgian
-            ? "დღეს ლანჩ ბოქსები არ არის"
-            : "Today: no boxes"}
-        </button>
-      </div>
-
-      <div className="mt-6 border-t border-line pt-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h3 className="text-xl font-semibold">
-              {isGeorgian ? "დეპარტამენტები" : "Departments"}
-            </h3>
-            <p className="mt-1 max-w-xl text-sm leading-6 text-body">
-              {hasMultipleDepartments
-                ? isGeorgian
-                  ? "თითოეულ დეპარტამენტს თავისი შაბლონები, გრაფიკი და სურვილისამებრ თანამშრომლის PIN აქვს."
-                  : "Each department has its own box templates, schedule and an optional staff PIN."
-                : isGeorgian
-                ? "პატარა მაღაზიას ერთი დეპარტამენტი ჰყოფნის. დაამატე დეპარტამენტები, თუ ცომეულს, ბოსტნეულსა და კულინარიას სხვადასხვა გუნდი გასცემს."
-                : "A small shop needs just this one. Add departments if different teams hand over bakery, produce or deli boxes."}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3">
+    // The store-wide "Today: no bags" switch is a quick action at the top.
+    <div id="business-departments" className="scroll-mt-24">
+      <div>
+        <div className="grid gap-3">
           {departments.map((department) => {
             const paused = isSalesPausedToday(department.sales_paused_on);
             const templateCount = templateCountByDepartment[department.id] || 0;
@@ -286,8 +226,8 @@ export function DepartmentsPanel({
                       )}
                       <p className="text-xs leading-5 text-body sm:col-span-3">
                         {isGeorgian
-                          ? "თანამშრომლები ხსნიან ბმულს, შეჰყავთ PIN და მომხმარებლის კოდით ასრულებენ წაღებას მფლობელის შესვლის გარეშე. 5 არასწორი ცდა მხოლოდ იმ მოწყობილობას ბლოკავს 15 წუთით; აქედან შეგიძლია განბლოკო ან ახალი PIN დააყენო."
-                          : "Staff open the link, enter the PIN and complete pickups with the customer's code, without the owner login. 5 wrong tries lock only that device for 15 minutes; unlock it here or set a new PIN."}
+                          ? "5 არასწორი ცდა = მოწყობილობა 15 წუთით იბლოკება."
+                          : "5 wrong tries lock the device for 15 min."}
                       </p>
                     </div>
                   )}

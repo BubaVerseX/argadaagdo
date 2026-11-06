@@ -1,6 +1,5 @@
 "use client";
 
-import { KpiCardGrid, type KpiCard } from "@/components/analytics/KpiCardGrid";
 import { MiniBarChart } from "@/components/analytics/MiniBarChart";
 import {
   formatAnalyticsMoney,
@@ -14,11 +13,6 @@ const georgianAnalyticsValues = new Map<string, string>([
   ["Not enough data", "საკმარისი მონაცემები არ არის"],
   ["Under 1 hour before pickup", "წაღებამდე 1 საათზე ნაკლებით ადრე"],
   ["No ratings yet", "შეფასებები ჯერ არ არის"],
-  ["View tracking not connected yet", "ნახვების აღრიცხვა ჯერ არ არის ჩართული"],
-  [
-    "Conversion tracking not connected yet",
-    "კონვერსიის აღრიცხვა ჯერ არ არის ჩართული",
-  ],
   ["Stable", "სტაბილური"],
   ["Improving", "უმჯობესდება"],
   ["Needs attention", "ყურადღებას საჭიროებს"],
@@ -53,6 +47,7 @@ type BusinessRevenueInsightsProps = {
   onExportOfferStatistics: () => void;
 };
 
+/** Key numbers first; the rest behind one tap. */
 export function BusinessRevenueInsights({
   analytics,
   onExportReservations,
@@ -61,308 +56,143 @@ export function BusinessRevenueInsights({
 }: BusinessRevenueInsightsProps) {
   const { language } = useLanguage();
   const isGeorgian = language === "ka";
-  const kpiCards: KpiCard[] = [
+  const text = (ka: string, en: string) => (isGeorgian ? ka : en);
+
+  const keyNumbers = [
+    { label: text("დღეს", "Today"), value: analytics.todayReservations },
+    { label: text("გაცემული", "Collected"), value: analytics.completedPickups },
+    { label: text("გაყიდული", "Bags sold"), value: analytics.boxesSold },
     {
-      title: isGeorgian ? "დღევანდელი ჯავშნები" : "Today's Reservations",
-      value: analytics.todayReservations,
-      helper: isGeorgian
-        ? "დღეს წასაღებად დაგეგმილი ჯავშნები"
-        : "Reservations scheduled for pickup today",
-      tone: analytics.todayReservations > 0 ? "green" : "white",
-    },
-    {
-      title: isGeorgian ? "ეს კვირა" : "This Week",
-      value: analytics.thisWeekReservations,
-      helper: isGeorgian
-        ? "ამ კვირაში გაკეთებული ჯავშნები"
-        : "Reservations created this week",
-    },
-    {
-      title: isGeorgian ? "ეს თვე" : "This Month",
-      value: analytics.thisMonthReservations,
-      helper: isGeorgian
-        ? "ამ თვეში გაკეთებული ჯავშნები"
-        : "Reservations created this month",
-    },
-    {
-      title: isGeorgian ? "დასრულებული წაღებები" : "Completed Pickups",
-      value: analytics.completedPickups,
-      helper: isGeorgian
-        ? "წარმატებით წაღებული შეკვეთები"
-        : "Orders successfully collected",
-      tone: "green",
-    },
-    {
-      title: isGeorgian ? "გაუქმებული შეკვეთები" : "Cancelled Orders",
-      value: analytics.cancelledOrders,
-      helper: isGeorgian
-        ? "გაუქმებული ან დაბრუნებული ჩანაწერები"
-        : "Cancelled or refunded records",
-      tone: analytics.cancelledOrders > 0 ? "yellow" : "white",
-    },
-    {
-      title: isGeorgian ? "გამოუცხადებელი შეკვეთები" : "No-show Orders",
-      value: analytics.noShowOrders,
-      helper: isGeorgian
-        ? "დაჯავშნილი შეკვეთები, რომლებიც მომხმარებლებმა არ წაიღეს"
-        : "Reserved orders missed by customers",
-      tone: analytics.noShowOrders > 0 ? "red" : "white",
-    },
-    {
-      title: isGeorgian ? "სავარაუდო შემოსავალი" : "Estimated Revenue",
-      value: formatAnalyticsMoney(analytics.estimatedRevenue),
-      helper: isGeorgian
-        ? "ჯავშნების ჯამური ღირებულება ანაზღაურების დაანგარიშებამდე"
-        : "Gross reservation value before future payout settlement",
-      tone: "green",
-    },
-    {
-      title: isGeorgian ? "გადარჩენილი საკვები" : "Estimated Food Saved",
-      value: `${analytics.estimatedFoodSavedKg} ${isGeorgian ? "კგ" : "kg"}`,
-      helper: isGeorgian
-        ? "შეფასება: 1 კგ თითო გადარჩენილ ლანჩ ბოქსზე"
-        : "Estimate: 1 kg per rescued box",
-      tone: "green",
-    },
-    {
-      title: isGeorgian ? "საშუალო შეფასება" : "Average Rating",
-      value: localizeAnalyticsValue(analytics.averageRating, isGeorgian),
-      helper: isGeorgian
-        ? "მომხმარებლების საშუალო შეფასება დასრულებული წაღებებიდან"
-        : "Customer rating average from completed pickups",
-      tone: analytics.averageRating === "No ratings yet" ? "white" : "yellow",
-    },
-    {
-      title: isGeorgian ? "გაყიდული ლანჩ ბოქსები" : "Boxes sold",
-      value: analytics.boxesSold,
-      helper: isGeorgian
-        ? "დაჯავშნილი, წაღებული და გამოუცხადებელი ლანჩ ბოქსები"
-        : "Reserved, collected and no-show boxes",
-      tone: "green",
-    },
-    {
-      title: isGeorgian ? "დარჩენილი ლანჩ ბოქსები" : "Boxes remaining",
-      value: analytics.boxesRemaining,
-      helper: isGeorgian
-        ? "შეთავაზებებში ამჟამად დარჩენილი რაოდენობა"
-        : "Current quantity remaining across offers",
-    },
-    {
-      title: isGeorgian ? "ბიზნესის შემოსავალი" : "Business Earnings",
+      label: text("შენი შემოსავალი", "Your earnings"),
       value: formatAnalyticsMoney(analytics.estimatedBusinessEarnings),
-      helper: isGeorgian
-        ? "ბიზნესის წილი თითოეული შეკვეთის ჩაწერილი საკომისიოს მიხედვით, ანაზღაურების გადამოწმებამდე"
-        : "Business share after each order's recorded commission, before payout review",
-      tone: "green",
+    },
+    {
+      label: text("შეფასება", "Rating"),
+      value: localizeAnalyticsValue(analytics.averageRating, isGeorgian),
+    },
+    {
+      label: text("გადარჩენილი", "Food saved"),
+      value: `${analytics.estimatedFoodSavedKg} ${text("კგ", "kg")}`,
     },
   ];
 
-  const performanceItems = [
+  const detailRows: Array<{ label: string; value: string | number | null }> = [
+    { label: text("ეს კვირა", "This week"), value: analytics.thisWeekReservations },
+    { label: text("ეს თვე", "This month"), value: analytics.thisMonthReservations },
+    { label: text("გაუქმებული", "Cancelled"), value: analytics.cancelledOrders },
+    { label: text("არ მოვიდა", "No-shows"), value: analytics.noShowOrders },
+    { label: text("დარჩენილი", "Bags left"), value: analytics.boxesRemaining },
     {
-      label: isGeorgian
-        ? "ყველაზე გაყიდვადი შეთავაზება"
-        : "Best-selling offer",
-      value: analytics.performance.bestSellingOffer,
+      label: text("ჯავშნების ჯამი", "Gross sales"),
+      value: formatAnalyticsMoney(analytics.estimatedRevenue),
     },
+    { label: text("საუკეთესო", "Best seller"), value: analytics.performance.bestSellingOffer },
+    { label: text("ყველაზე სუსტი", "Weakest"), value: analytics.performance.worstSellingOffer },
     {
-      label: isGeorgian
-        ? "ყველაზე ნაკლებად გაყიდვადი შეთავაზება"
-        : "Worst-selling offer",
-      value: analytics.performance.worstSellingOffer,
-    },
-    {
-      label: isGeorgian
-        ? "საშუალოდ რამდენით ადრე ჯავშნიან"
-        : "Average reservation lead time",
+      label: text("დაჯავშნის დრო", "Booked ahead"),
       value: analytics.performance.averageReservationLeadTime,
     },
     {
-      label: isGeorgian
-        ? "წაღების ყველაზე აქტიური საათი"
-        : "Most active pickup hour",
+      label: text("აქტიური საათი", "Busiest hour"),
       value: analytics.performance.mostActivePickupHour,
     },
     {
-      label: isGeorgian
-        ? "კვირის ყველაზე პოპულარული დღე"
-        : "Most popular weekday",
+      label: text("აქტიური დღე", "Busiest day"),
       value: analytics.performance.mostPopularWeekday,
     },
-  ];
-  const marketingItems = [
+    // Hidden while views aren't tracked (null).
+    { label: text("ყველაზე ნანახი", "Most viewed"), value: analytics.marketingInsights.mostViewedOffer },
     {
-      label: isGeorgian ? "ყველაზე ნანახი შეთავაზება" : "Most Viewed Offer",
-      value: analytics.marketingInsights.mostViewedOffer,
-    },
-    {
-      label: isGeorgian ? "ყველაზე მაღალი კონვერსია" : "Highest Conversion",
+      label: text("საუკეთესო კონვერსია", "Best conversion"),
       value: analytics.marketingInsights.highestConversion,
     },
     {
-      label: isGeorgian ? "დაბრუნებული მომხმარებლები" : "Returning Customers",
+      label: text("დაბრუნებული მომხმარებლები", "Returning customers"),
       value: analytics.marketingInsights.returningCustomers,
     },
     {
-      label: isGeorgian ? "განმეორებითი ჯავშნები" : "Repeat Reservations",
-      value: analytics.marketingInsights.repeatReservations,
-    },
-    {
-      label: isGeorgian
-        ? "საშუალო შეფასების ტენდენცია"
-        : "Average Rating Trend",
+      label: text("შეფასების ტენდენცია", "Rating trend"),
       value: analytics.marketingInsights.averageRatingTrend,
     },
   ];
+  const noData = text("მონაცემები ჯერ არ არის", "No data yet");
 
   return (
-    <section className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            {isGeorgian ? "შემოსავალი და ანალიტიკა" : "Revenue and insights"}
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            {isGeorgian
-              ? "ბიზნესის შედეგების მიმოხილვა"
-              : "Business performance snapshot"}
-          </h2>
-          <p className="mt-3 max-w-3xl leading-7 text-body">
-            {isGeorgian
-              ? "სავარაუდო შემოსავალი შეკვეთების გადახდის არსებულ მონაცემებს ეფუძნება. პილოტის პერიოდში ბიზნესის საბოლოო ანაზღაურება ჯერ კიდევ ხელით მოწმდება."
-              : "Estimated revenue uses existing order payment fields. Final business payouts are still reviewed manually during the pilot."}
-          </p>
-        </div>
-
-        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-cream lg:max-w-sm">
-          <p className="font-semibold">
-            {isGeorgian ? "პილოტის საკომისიოს მოდელი" : "Pilot commission model"}
-          </p>
-          <p className="mt-1">
-            {isGeorgian
-              ? "მიმდინარე შეფასება თითოეულ შეკვეთაზე ჩაწერილი პლატფორმის საკომისიოს მიხედვით (სტანდარტულად 30%, პარტნიორთან შეთანხმებით). ანაზღაურებამდე შეადარე გადახდის პროვაიდერის ჩანაწერებს."
-              : "Current estimate based on each order's recorded platform commission (30% by default, agreed per partner). Reconcile against payment provider records before payout."}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <KpiCardGrid cards={kpiCards} />
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="rounded-3xl bg-well p-5">
-          <h3 className="text-xl font-semibold text-cream">
-            {isGeorgian ? "შედეგების სიგნალები" : "Performance signals"}
-          </h3>
-          <div className="mt-4 grid gap-3">
-            {performanceItems.map((item) => (
-              <div key={item.label} className="rounded-2xl bg-well p-4">
-                <p className="text-sm font-semibold text-mint">
-                  {item.label}
-                </p>
-                <p className="mt-1 font-semibold text-cream">
-                  {localizeAnalyticsValue(item.value, isGeorgian)}
-                </p>
-              </div>
-            ))}
+    <section className="grid gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {keyNumbers.map((item) => (
+          <div key={item.label} className="ui-card rounded-2xl p-4">
+            <p className="text-sm font-semibold text-body">{item.label}</p>
+            <p className="mt-1 break-words text-2xl font-semibold text-cream">{item.value}</p>
           </div>
-        </div>
+        ))}
+      </div>
 
-        <div className="grid gap-4">
+      <details className="group rounded-2xl bg-well">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 font-semibold text-cream [&::-webkit-details-marker]:hidden">
+          {text("ყველა მაჩვენებელი", "All numbers")}
+          <span aria-hidden="true" className="transition group-open:rotate-180">⌄</span>
+        </summary>
+
+        <div className="grid gap-4 px-4 pb-4">
+          <dl className="grid gap-1">
+            {detailRows
+              .filter((row) => row.value !== null)
+              .map((row) => (
+                <div key={row.label} className="flex justify-between gap-4 border-b border-line py-2 text-sm">
+                  <dt className="text-body">{row.label}</dt>
+                  <dd className="min-w-0 truncate text-right font-semibold text-cream">
+                    {localizeAnalyticsValue(row.value as string | number, isGeorgian)}
+                  </dd>
+                </div>
+              ))}
+          </dl>
+
           <MiniBarChart
-            title={
-              isGeorgian ? "ჯავშნები დროის მიხედვით" : "Reservations over time"
-            }
-            description={
-              isGeorgian
-                ? "ბოლო აქტიური ჯავშნების თარიღები შეკვეთის შექმნის მიხედვით."
-                : "Last active reservation dates based on order creation."
-            }
+            title={text("ჯავშნები", "Reservations")}
+
             data={analytics.reservationsOverTime}
-            emptyText={isGeorgian ? "ჯერ საკმარისი მონაცემები არ არის." : undefined}
+            emptyText={noData}
           />
           <MiniBarChart
-            title={isGeorgian ? "შემოსავალი დროის მიხედვით" : "Revenue over time"}
-            description={
-              isGeorgian
-                ? "ბიზნესის სავარაუდო შემოსავალი აქტიური, გადახდილი სტატუსის შეკვეთებიდან."
-                : "Estimated business revenue from active paid-status orders."
-            }
+            title={text("შემოსავალი", "Revenue")}
+
             data={analytics.revenueOverTime}
             valuePrefix="₾ "
-            emptyText={isGeorgian ? "ჯერ საკმარისი მონაცემები არ არის." : undefined}
+            emptyText={noData}
           />
           <MiniBarChart
-            title={isGeorgian ? "შეთავაზებების პოპულარობა" : "Offer popularity"}
-            description={
-              isGeorgian
-                ? "საუკეთესო შეთავაზებები ჯავშნების რაოდენობის მიხედვით."
-                : "Top offers by reservation count."
-            }
+            title={text("პოპულარული", "Popular bags")}
+
             data={analytics.offerPopularity}
-            emptyText={isGeorgian ? "ჯერ საკმარისი მონაცემები არ არის." : undefined}
+            emptyText={noData}
           />
-        </div>
-      </div>
-
-      <div className="mt-6 rounded-3xl bg-well p-5">
-        <h3 className="text-xl font-semibold text-cream">
-          {isGeorgian ? "მარკეტინგული ანალიტიკა" : "Marketing insights"}
-        </h3>
-        <p className="mt-2 max-w-3xl leading-7 text-body">
-          {isGeorgian
-            ? "ეს სიგნალები პანელს ზრდის კამპანიებისთვის ამზადებს. ნახვებისა და კონვერსიის ზუსტი აღრიცხვისთვის ჯერ კიდევ ცალკე მოვლენებია საჭირო."
-            : "These signals prepare the dashboard for growth campaigns. View and conversion tracking still need dedicated events before they become exact."}
-        </p>
-        <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {marketingItems.map((item) => (
-            <div key={item.label} className="rounded-2xl bg-well p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-mint">
-                {item.label}
-              </p>
-              <p className="mt-2 font-semibold text-cream">
-                {localizeAnalyticsValue(item.value, isGeorgian)}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="ui-card mt-6 rounded-3xl p-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h3 className="text-xl font-semibold text-cream">
-              {isGeorgian ? "CSV ექსპორტი" : "CSV exports"}
-            </h3>
-            <p className="mt-2 leading-7 text-body">
-              {isGeorgian
-                ? "ჩამოტვირთე მსუბუქი CSV ფაილები ჯავშნების, დასრულებული წაღებებისა და შეთავაზებების სტატისტიკისთვის."
-                : "Download lightweight CSV files for reservations, completed pickups and offer statistics."}
-            </p>
-          </div>
 
           <div className="grid gap-2 sm:grid-cols-3">
             <button
+              type="button"
               onClick={onExportReservations}
               className="premium-button-secondary px-4 py-2.5 text-sm"
             >
-              {isGeorgian ? "ჯავშნები (CSV)" : "Reservations CSV"}
+              {text("ჯავშნები (CSV)", "Reservations CSV")}
             </button>
             <button
+              type="button"
               onClick={onExportCompletedPickups}
               className="premium-button-secondary px-4 py-2.5 text-sm"
             >
-              {isGeorgian ? "დასრულებული (CSV)" : "Completed CSV"}
+              {text("გაცემული (CSV)", "Collected CSV")}
             </button>
             <button
+              type="button"
               onClick={onExportOfferStatistics}
               className="premium-button-secondary px-4 py-2.5 text-sm"
             >
-              {isGeorgian ? "შეთავაზებების სტატისტიკა (CSV)" : "Offer Stats CSV"}
+              {text("ლანჩ ბოქსები (CSV)", "Bags CSV")}
             </button>
           </div>
         </div>
-      </div>
+      </details>
     </section>
   );
 }

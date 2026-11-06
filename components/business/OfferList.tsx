@@ -1,7 +1,6 @@
 import OfferImage from "@/components/OfferImage";
-import { PlusIcon, StarIcon } from "@/components/icons";
+import { PlusIcon } from "@/components/icons";
 import { formatAnalyticsMoney, type OfferAnalytics } from "@/lib/analytics";
-import type { OfferIntelligence } from "@/lib/marketplaceIntelligence";
 import {
   BAG_SIZES,
   DEFAULT_OFFER_CATEGORY,
@@ -33,10 +32,8 @@ type OfferListProps = {
   language: Language;
   offers: Offer[];
   emptyTitle?: string;
-  emptyText?: string;
   ratingSummaries: Record<number, RatingSummary>;
   offerAnalyticsById?: Record<number, OfferAnalytics>;
-  offerIntelligenceById?: Record<number, OfferIntelligence>;
   editingOfferId: number | null;
   updatingOfferId: number | null;
   editTitle: string;
@@ -71,10 +68,8 @@ export function OfferList({
   language,
   offers,
   emptyTitle,
-  emptyText,
   ratingSummaries,
   offerAnalyticsById = {},
-  offerIntelligenceById = {},
   editingOfferId,
   updatingOfferId,
   editTitle,
@@ -104,54 +99,16 @@ export function OfferList({
   onEditPickupEndChange,
 }: OfferListProps) {
   const isGeorgian = language === "ka";
-  const badgeToneStyles: Record<
-    OfferIntelligence["badges"][number]["tone"],
-    string
-  > = {
-    green: "bg-well text-mint",
-    yellow: "bg-warning-soft text-warning",
-    red: "bg-danger-soft text-danger",
-    gray: "bg-well text-body",
-  };
-  const recommendationToneStyles: Record<
-    OfferIntelligence["recommendations"][number]["tone"],
-    string
-  > = {
-    green: "ui-card text-cream",
-    yellow: "bg-warning-soft text-warning",
-    red: "bg-danger-soft text-danger",
-  };
+
 
   return (
-    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {isGeorgian ? "შეთავაზებების ისტორია" : "Offer History"}
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-        {t("businessDashboard.myOffers")}
-      </h2>
-
-      <div className="mt-6 grid gap-4">
+    <div className="mt-4">
+      <div className="grid gap-3">
         {offers.length === 0 && (
-          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
-            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <PlusIcon className="h-6 w-6 text-mint" strokeWidth={1.8} />
-            </div>
-            <h3 className="mt-4 text-2xl font-semibold text-cream">
-              {emptyTitle || t("businessDashboard.noOffers")}
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              {emptyText || t("businessDashboard.noOffersHint")}
-            </p>
-            {!emptyTitle && (
-              <a
-                href="#create-offer"
-                className="premium-button mt-5 px-6 py-3"
-              >
-                {t("businessDashboard.createFirstOffer")}
-              </a>
-            )}
-          </div>
+          <p className="ui-card flex items-center gap-3 rounded-2xl p-4 font-semibold text-body">
+            <PlusIcon className="h-5 w-5 shrink-0 text-mint" strokeWidth={1.8} />
+            {emptyTitle || (isGeorgian ? "შეთავაზებები ჯერ არ არის" : "No offers yet")}
+          </p>
         )}
 
         {offers.map((offer) => {
@@ -159,255 +116,147 @@ export function OfferList({
           const statusClass = getOfferStatusClassName(offer);
           const rating = ratingSummaries[offer.business_id];
           const analytics = offerAnalyticsById[offer.id];
-          const intelligence = offerIntelligenceById[offer.id];
           const isEditing = editingOfferId === offer.id;
           const effectiveStatus = getEffectiveOfferStatus(offer);
 
           return (
             <div
               key={offer.id}
-              className={`${getOfferCategoryTone(offer.category)} grid gap-5 rounded-[20px] bg-cat p-4 sm:p-5`}
+              className={`${getOfferCategoryTone(offer.category)} grid gap-3 rounded-[20px] bg-cat p-4`}
             >
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex gap-3 sm:gap-4">
-                  <div className="photo-leaf-sm relative isolate h-20 w-20 shrink-0 sm:h-24 sm:w-24">
-                    <OfferImage src={offer.image_url} alt={offer.title} sizes="96px" />
-                  </div>
-
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-serif text-lg font-bold">{offer.title}</h3>
-                      <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold text-mint">
-                        {getGreenBagLabel(offer, language)}
-                      </span>
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
-                      >
-                        {statusLabel}
-                      </span>
-                    </div>
-
-                    <p className="text-body">
-                      {formatMoney(offer.price)} · {t("common.quantity")}:{" "}
-                      {offer.unlimited_quantity
-                        ? isGeorgian
-                          ? `სანამ არ გაჩერდება (${offer.quantity})`
-                          : `until stopped (${offer.quantity})`
-                        : offer.quantity}
-                    </p>
-                    <p className="text-body">
-                      {t("common.pickup")}: {formatPickupWindow(offer, language)}
-                    </p>
-                    <p className="flex items-center gap-1.5 text-sm font-semibold text-warning">
-                      <StarIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
-                      {getRatingLabel(rating, language)}
-                    </p>
-                    <p className="mt-1 text-xs text-body">
-                      {t("businessDashboard.created")}:{" "}
-                      {formatDisplayDateTime(offer.created_at, language)}
-                    </p>
-                    {intelligence && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {intelligence.badges.map((badge) => (
-                          <span
-                            key={badge.label}
-                            className={`rounded-full px-3 py-1 text-xs font-semibold ${badgeToneStyles[badge.tone]}`}
-                          >
-                            {badge.label}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+              <div className="flex gap-3">
+                <div className="photo-leaf-sm relative isolate h-14 w-14 shrink-0">
+                  <OfferImage src={offer.image_url} alt={offer.title} sizes="56px" />
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:flex-wrap lg:justify-end">
-                  <button
-                    onClick={() =>
-                      isEditing ? onCancelEditing() : onStartEditing(offer)
-                    }
-                    disabled={
-                      updatingOfferId !== null && updatingOfferId !== offer.id
-                    }
-                    className="premium-button-secondary px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isEditing
-                      ? t("common.cancel")
-                      : isGeorgian
-                      ? "რედაქტირება"
-                      : "Edit"}
-                  </button>
-
-                  <button
-                    onClick={() => onToggleActive(offer)}
-                    disabled={updatingOfferId !== null}
-                    aria-label={
-                      isGeorgian
-                        ? `აქტიური სტატუსის გადართვა: ${offer.title}`
-                        : `Toggle ${offer.title} active status`
-                    }
-                    className={`min-h-12 rounded-full px-5 py-3 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${ offer.active
-                        ? "bg-well text-mint hover:bg-mint-strong"
-                        : "bg-well text-body hover:bg-mint-strong"
-                    }`}
-                  >
-                    {updatingOfferId === offer.id
-                      ? isGeorgian
-                        ? "ახლდება..."
-                        : "Updating..."
-                      : offer.active
-                      ? isGeorgian
-                        ? "დეაქტივაცია"
-                        : "Deactivate"
-                      : isGeorgian
-                      ? "ხელახლა გააქტიურება"
-                      : "Reactivate"}
-                  </button>
-
-                  <button
-                    onClick={() => onDuplicate(offer)}
-                    disabled={updatingOfferId !== null}
-                    className="premium-button-secondary px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {updatingOfferId === offer.id
-                      ? isGeorgian
-                        ? "მიმდინარეობს..."
-                        : "Working..."
-                      : effectiveStatus === "expired"
-                      ? isGeorgian
-                        ? "მსგავსი შეთავაზების შექმნა"
-                        : "Create Similar Offer"
-                      : isGeorgian
-                      ? "ასლის შექმნა"
-                      : "Duplicate Offer"}
-                  </button>
-
-                  {effectiveStatus === "expired" && (
-                    <button
-                      onClick={() => onArchiveExpired(offer)}
-                      disabled={updatingOfferId !== null}
-                      className="min-h-12 rounded-full bg-warning-soft px-5 py-3 font-semibold text-warning transition hover:bg-warning-soft disabled:cursor-not-allowed disabled:opacity-60"
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="min-w-0 truncate font-serif text-lg font-bold">{offer.title}</h3>
+                    <span
+                      className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}
                     >
-                      {updatingOfferId === offer.id
-                        ? isGeorgian
-                          ? "არქივდება..."
-                          : "Archiving..."
-                        : isGeorgian
-                        ? "დაარქივება"
-                        : "Archive"}
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => onDelete(offer)}
-                    disabled={updatingOfferId !== null}
-                    className="min-h-12 rounded-full bg-danger-soft px-5 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {updatingOfferId === offer.id
+                      {statusLabel}
+                    </span>
+                  </div>
+                  <p className="truncate text-sm text-body">
+                    {formatMoney(offer.price)} ·{" "}
+                    {offer.unlimited_quantity
                       ? isGeorgian
-                        ? "იშლება..."
-                        : "Deleting..."
-                      : isGeorgian
-                      ? "წაშლა"
-                      : "Delete"}
-                  </button>
+                        ? "სანამ არ გაჩერდება"
+                        : "until stopped"
+                      : `${offer.quantity} ${isGeorgian ? "ც" : "left"}`}{" "}
+                    · {formatPickupWindow(offer, language)}
+                  </p>
                 </div>
               </div>
 
-              {analytics && (
-                <div className="grid gap-3 rounded-2xl bg-well p-4 sm:grid-cols-2 xl:grid-cols-6">
-                  {[
-                    {
-                      label: isGeorgian ? "ჯავშნები" : "Reservations",
-                      value: analytics.reservations,
-                    },
-                    {
-                      label: isGeorgian ? "დარჩენილი" : "Remaining",
-                      value: analytics.remainingQuantity,
-                    },
-                    {
-                      label: isGeorgian
-                        ? "დასრულების მაჩვენებელი"
-                        : "Completion rate",
-                      value: `${analytics.completionRate}%`,
-                    },
-                    {
-                      label: isGeorgian
-                        ? "გაუქმების მაჩვენებელი"
-                        : "Cancellation rate",
-                      value: `${analytics.cancellationRate}%`,
-                    },
-                    {
-                      label: isGeorgian ? "სავარ. შემოსავალი" : "Est. revenue",
-                      value: formatAnalyticsMoney(analytics.estimatedRevenue),
-                    },
-                    {
-                      label: isGeorgian ? "წარმატებული წაღება" : "Pickup success",
-                      value: `${analytics.pickupSuccessRate}%`,
-                    },
-                  ].map((item) => (
-                    <div key={item.label} className="rounded-2xl bg-well p-4">
-                      <p className="text-xs uppercase tracking-wide text-body">
-                        {item.label}
-                      </p>
-                      <p className="mt-1 text-xl font-semibold text-cream">
-                        {item.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="flex flex-wrap items-start gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    isEditing ? onCancelEditing() : onStartEditing(offer)
+                  }
+                  disabled={
+                    updatingOfferId !== null && updatingOfferId !== offer.id
+                  }
+                  className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isEditing
+                    ? t("common.cancel")
+                    : isGeorgian
+                    ? "რედაქტირება"
+                    : "Edit"}
+                </button>
 
-              {intelligence && (
-                <div className="grid gap-3 rounded-2xl bg-well p-4 lg:grid-cols-[0.9fr_1.1fr]">
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {[
-                      {
-                        label: isGeorgian ? "წაღების დრო" : "Pickup timing",
-                        value: intelligence.timeUntilPickup,
-                      },
-                      {
-                        label: isGeorgian ? "დაჯავშნილი" : "Reserved",
-                        value: `${intelligence.reservationPercentage}%`,
-                      },
-                      {
-                        label: isGeorgian
-                          ? "გაყიდვის ალბათობა"
-                          : "Sell-out chance",
-                        value: `${intelligence.sellOutProbability}%`,
-                      },
-                      {
-                        label: isGeorgian ? "სიჩქარე" : "Speed",
-                        value: intelligence.reservationSpeed,
-                      },
-                    ].map((item) => (
-                      <div key={item.label} className="rounded-2xl bg-well p-4">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-mint">
-                          {item.label}
-                        </p>
-                        <p className="mt-1 text-sm font-semibold text-cream">
-                          {item.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                <button
+                  type="button"
+                  onClick={() => onToggleActive(offer)}
+                  disabled={updatingOfferId !== null}
+                  aria-label={
+                    isGeorgian
+                      ? `აქტიური სტატუსის გადართვა: ${offer.title}`
+                      : `Toggle ${offer.title} active status`
+                  }
+                  className="min-h-11 rounded-full bg-well px-4 py-2 text-sm font-semibold text-mint transition disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {updatingOfferId === offer.id
+                    ? isGeorgian
+                      ? "ახლდება..."
+                      : "Updating..."
+                    : offer.active
+                    ? isGeorgian
+                      ? "დამალვა"
+                      : "Hide"
+                    : isGeorgian
+                    ? "ჩართვა"
+                    : "Show"}
+                </button>
 
-                  <div className="grid gap-2">
-                    {intelligence.recommendations.map((recommendation) => (
-                      <div
-                        key={`${offer.id}-${recommendation.title}`}
-                        className={`rounded-2xl p-4 ${recommendationToneStyles[recommendation.tone]}`}
+                <details className="group">
+                  <summary
+                    aria-label={isGeorgian ? "მეტი" : "More"}
+                    className="premium-button-secondary flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center px-3 text-sm [&::-webkit-details-marker]:hidden"
+                  >
+                    ⋯
+                  </summary>
+                  <div className="mt-2 grid gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onDuplicate(offer)}
+                        disabled={updatingOfferId !== null}
+                        className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        <p className="font-semibold">{recommendation.title}</p>
-                        <p className="mt-1 text-sm font-semibold leading-6 opacity-80">
-                          {recommendation.text}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                        {isGeorgian ? "ასლი" : "Duplicate"}
+                      </button>
 
+                      {effectiveStatus === "expired" && (
+                        <button
+                          type="button"
+                          onClick={() => onArchiveExpired(offer)}
+                          disabled={updatingOfferId !== null}
+                          className="min-h-11 rounded-full bg-warning-soft px-4 py-2 text-sm font-semibold text-warning transition disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {isGeorgian ? "არქივი" : "Archive"}
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => onDelete(offer)}
+                        disabled={updatingOfferId !== null}
+                        className="min-h-11 rounded-full bg-danger-soft px-4 py-2 text-sm font-semibold text-danger transition disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {isGeorgian ? "წაშლა" : "Delete"}
+                      </button>
+                    </div>
+
+                    <dl className="grid gap-1 rounded-2xl bg-well p-3 text-sm">
+                      {[
+                        { label: isGeorgian ? "ზომა" : "Bag", value: getGreenBagLabel(offer, language) },
+                        { label: isGeorgian ? "შეფასება" : "Rating", value: getRatingLabel(rating, language) },
+                        ...(analytics
+                          ? [
+                              { label: isGeorgian ? "ჯავშნები" : "Reservations", value: String(analytics.reservations) },
+                              { label: isGeorgian ? "გაცემული" : "Pickup success", value: `${analytics.pickupSuccessRate}%` },
+                              { label: isGeorgian ? "გაუქმებული" : "Cancelled", value: `${analytics.cancellationRate}%` },
+                              { label: isGeorgian ? "შემოსავალი" : "Revenue", value: formatAnalyticsMoney(analytics.estimatedRevenue) },
+                            ]
+                          : []),
+                        {
+                          label: isGeorgian ? "შექმნილია" : "Created",
+                          value: formatDisplayDateTime(offer.created_at, language),
+                        },
+                      ].map((row) => (
+                        <div key={row.label} className="flex justify-between gap-3">
+                          <dt className="text-body">{row.label}</dt>
+                          <dd className="min-w-0 truncate text-right font-semibold text-cream">{row.value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </div>
+                </details>
+              </div>
               {isEditing && (
                 <div className="rounded-2xl bg-well p-4">
                   <div className="grid gap-3 md:grid-cols-2">
