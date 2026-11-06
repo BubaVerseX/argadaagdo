@@ -29,7 +29,7 @@ export default function NativeSubpageBar() {
   }, []);
 
   return (
-    <div className="theme-forest sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-brand-forest px-4 py-2.5">
+    <div data-native-subpage-bar className="native-topbar theme-forest sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 bg-brand-forest px-4 py-2.5">
       <button
         type="button"
         onClick={() => {
