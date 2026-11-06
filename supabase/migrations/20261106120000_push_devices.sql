@@ -1,6 +1,5 @@
 -- Push notification devices (2026-11-06). Additive.
--- STATUS: NOT applied to production yet (needs the owner's OK). Until it is,
--- the app's switch shows "couldn't turn on" and the server sends nothing.
+-- STATUS: applied to production (Frankfurt) on 6 Nov 2026 with the owner's OK.
 --
 -- One row per app install that allowed notifications: the APNs device token
 -- (iOS) or FCM registration token (Android) and the account signed in on it.
