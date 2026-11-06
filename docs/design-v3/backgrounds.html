@@ -74,18 +74,19 @@ figcaption span{color:var(--muted);font-size:14px;line-height:1.5}
 .c .nav{background:rgba(5,22,19,.8)}.c .dot{background:var(--mint)}
 
 /* D — A+B mix: Market Morning clouds + small detailed leaves drifting */
-.d .bg{background:var(--cream);overflow:hidden}
-.d .mini{position:absolute;width:46px;height:46px;opacity:.55;animation:sway 14s ease-in-out infinite}
+.d .bg{background:radial-gradient(120% 80% at 80% 0%,#1C5A4B 0%,var(--green) 55%,#0A2622 100%);overflow:hidden}
+.d canvas{position:absolute;inset:0;width:100%;height:100%}
+.d .mini{position:absolute;width:46px;height:46px;opacity:.5;animation:sway 14s ease-in-out infinite}
 .d .mini svg{width:100%;height:100%}
 .m1{left:22px;top:150px}.m2{right:26px;top:96px;width:38px;height:38px;animation-delay:-3s;animation-duration:17s}
 .m3{left:120px;top:330px;width:34px;height:34px;animation-delay:-7s}.m4{right:40px;top:440px;width:50px;height:50px;animation-delay:-10s;animation-duration:19s}
 .m5{left:30px;top:520px;width:30px;height:30px;animation-delay:-5s;animation-duration:15s}.m6{right:110px;top:250px;width:28px;height:28px;animation-delay:-12s}
 @keyframes sway{0%,100%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(10px,-18px) rotate(12deg)}}
-.d .ui{color:var(--ink)}.d .ic{background:rgba(255,255,255,.6);color:var(--green)}
-.d .chip{background:rgba(255,255,255,.55);color:var(--ink)}.d .chip.on{background:var(--green);color:var(--cream)}
-.d .card{background:rgba(255,255,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.7)}
-.d .card span{color:var(--muted)}.d .ph{background:var(--sage)}
-.d .nav{background:var(--green)}.d .dot{background:var(--mint)}
+.d .ui{color:var(--cream)}.d .ic{background:rgba(247,241,227,.12);color:var(--mint)}
+.d .chip{background:rgba(247,241,227,.1);color:var(--cream);border:1px solid rgba(184,230,196,.2)}.d .chip.on{background:var(--mint);color:var(--green)}
+.d .card{background:rgba(10,38,34,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(184,230,196,.22)}
+.d .card span{color:#C3DDCB}.d .ph{background:var(--sage)}
+.d .nav{background:rgba(5,22,19,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.d .dot{background:var(--mint)}
 .mix{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:20px;padding-top:28px;border-top:1px solid rgba(11,43,38,.15)}
 
 @media (prefers-reduced-motion:reduce){.leaf,.blob,.mini{animation:none}}
@@ -93,7 +94,7 @@ figcaption span{color:var(--muted);font-size:14px;line-height:1.5}
 
 <div class="wrap">
   <h1>Background ideas for the app</h1>
-  <p class="lead">Three moving backgrounds, each behind the same home screen. All three move slowly and quietly, so they feel premium without slowing the phone. Pick A, B or C.</p>
+  <p class="lead">Three moving backgrounds, each behind the same home screen. All three move slowly and quietly, so they feel premium without slowing the phone. Pick A, B or C. D at the bottom is your mix of A and C.</p>
 
   <div class="grid">
     <figure class="a">
@@ -147,12 +148,12 @@ figcaption span{color:var(--muted);font-size:14px;line-height:1.5}
 
     <figure class="d mix">
       <div class="phone">
-        <div class="bg"><div class="blob bh"></div><div class="blob bs"></div><div class="blob bk"></div><div class="blob bc"></div>
-          <div class="mini m1"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#2F7A55"/><path d="M20 84 C40 62 58 42 82 16" stroke="#B8E6C4" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#B8E6C4" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
-          <div class="mini m2"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#0F3A32"/><path d="M20 84 C40 62 58 42 82 16" stroke="#8FD19E" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#8FD19E" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
+        <div class="bg"><canvas class="flow"></canvas>
+          <div class="mini m1"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#B8E6C4"/><path d="M20 84 C40 62 58 42 82 16" stroke="#164A3F" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#164A3F" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
+          <div class="mini m2"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#8FD19E"/><path d="M20 84 C40 62 58 42 82 16" stroke="#0F3A32" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#0F3A32" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
           <div class="mini m3"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#E7A93A"/><path d="M20 84 C40 62 58 42 82 16" stroke="#FFF3D6" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#FFF3D6" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
-          <div class="mini m4"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#2F7A55"/><path d="M20 84 C40 62 58 42 82 16" stroke="#B8E6C4" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#B8E6C4" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
-          <div class="mini m5"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#0F3A32"/><path d="M20 84 C40 62 58 42 82 16" stroke="#8FD19E" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></div>
+          <div class="mini m4"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#B8E6C4"/><path d="M20 84 C40 62 58 42 82 16" stroke="#164A3F" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M36 64 L30 48 M46 54 L42 36 M56 44 L54 28 M44 60 L60 60 M54 50 L70 48 M64 40 L76 36" stroke="#164A3F" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></div>
+          <div class="mini m5"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#8FD19E"/><path d="M20 84 C40 62 58 42 82 16" stroke="#0F3A32" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></div>
           <div class="mini m6"><svg viewBox="0 0 100 100"><path d="M18 84 C14 50 38 20 84 14 C88 52 62 82 22 86 Z" fill="#E07A57"/><path d="M20 84 C40 62 58 42 82 16" stroke="#FFE3D8" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></div>
         </div>
         <div class="ui">
@@ -164,14 +165,14 @@ figcaption span{color:var(--muted);font-size:14px;line-height:1.5}
         </div>
         <div class="nav"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
       </div>
-      <figcaption><b>D · Your mix (A + B)</b><span>Market Morning colour clouds with small detailed leaves (with veins) slowly swaying, in green, honey and coral.</span></figcaption>
+      <figcaption><b>D · Your mix (A + C)</b><span>Deep green with fine mint lines flowing behind, and small detailed leaves (with veins) slowly floating on top. Premium and calm.</span></figcaption>
     </figure>
   </div>
 </div>
 
 <script>
 (function(){
-  const cv=document.getElementById('lines'); if(!cv) return;
+  document.querySelectorAll('#lines, canvas.flow').forEach(function(cv){
   const ctx=cv.getContext('2d'); let w,h,t=0;
   const still=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function size(){const r=cv.getBoundingClientRect();const d=window.devicePixelRatio||1;w=r.width;h=r.height;cv.width=w*d;cv.height=h*d;ctx.setTransform(d,0,0,d,0,0)}
@@ -192,5 +193,6 @@ figcaption span{color:var(--muted);font-size:14px;line-height:1.5}
     if(!still) requestAnimationFrame(draw);
   }
   size(); draw(); window.addEventListener('resize',size);
+});
 })();
 </script>
