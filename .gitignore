@@ -44,3 +44,7 @@ next-env.d.ts
 # Firebase config for Android push: kept out of this public repo.
 # Copy it from ~/.argadaagdo-keys/ before building.
 android/app/google-services.json
+
+# Private documents (bank, ID): never in this public repo. Keep them in
+# ~/Documents/ArGadaagdo-private/.
+/*.pdf
