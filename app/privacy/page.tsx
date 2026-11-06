@@ -2,49 +2,15 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { privacyContent } from "@/lib/legal/privacy";
+import { LEGAL_LAST_UPDATED } from "@/lib/legal/shared";
 import { useLanguage } from "@/lib/useLanguage";
+import LegalSections from "@/components/legal/LegalSections";
 import Link from "next/link";
 
 export default function PrivacyPage() {
-  const { t } = useLanguage();
-
-  const sections = [
-    {
-      title: t("privacy.infoTitle"),
-      text: t("privacy.infoText"),
-    },
-    {
-      title: t("privacy.verificationTitle"),
-      text: t("privacy.verificationText"),
-    },
-    {
-      title: t("privacy.accountTitle"),
-      text: t("privacy.accountText"),
-    },
-    {
-      title: t("privacy.paymentsTitle"),
-      text: t("privacy.paymentsText"),
-    },
-    {
-      title: t("privacy.sharingTitle"),
-      text: t("privacy.sharingText"),
-    },
-    {
-      title: t("privacy.ordersTitle"),
-      text: t("privacy.ordersText"),
-    },
-    {
-      // Anchor used as the account-deletion URL in the store listings
-      // (Google Play "Account deletion" requirement): /privacy#delete-account
-      id: "delete-account",
-      title: t("privacy.deletionTitle"),
-      text: t("privacy.deletionText"),
-    },
-    {
-      title: t("privacy.contactTitle"),
-      text: t("privacy.contactText"),
-    },
-  ];
+  const { language } = useLanguage();
+  const content = privacyContent[language];
 
   return (
     <main className="app-shell theme-web">
@@ -52,47 +18,35 @@ export default function PrivacyPage() {
 
       <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-5xl">
-          <div className="premium-surface rounded-3xl p-5 sm:rounded-3xl sm:p-8 md:rounded-3xl md:p-12">
+          <div className="premium-surface rounded-3xl p-5 sm:p-8 md:p-12">
             <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-              {t("privacy.badge")}
+              {content.badge}
             </p>
-            <h1 className="mt-3 text-3xl font-semibold break-words sm:text-4xl md:text-6xl">
-              {t("privacy.title")}
+            <h1 className="mt-3 break-words text-3xl font-semibold sm:text-4xl md:text-6xl">
+              {content.title}
             </h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-body sm:text-lg sm:leading-8">
-              {t("privacy.subtitle")}
+              {content.intro}
+            </p>
+            <p className="mt-4 text-sm text-muted">
+              {LEGAL_LAST_UPDATED[language]}
             </p>
           </div>
 
-          <div className="mt-6 grid gap-4">
-            {sections.map((section) => (
-              <section
-                key={section.title}
-                id={section.id}
-                className="scroll-mt-24 rounded-3xl ui-card p-5 sm:p-8"
-              >
-                <h2 className="text-2xl font-semibold text-cream">
-                  {section.title}
-                </h2>
-                <p className="mt-4 leading-8 text-body">
-                  {section.text}
-                </p>
-              </section>
-            ))}
-          </div>
+          <LegalSections sections={content.sections} />
 
           <div className="mt-6 rounded-3xl ui-card p-5 text-center sm:p-8">
             <h2 className="break-words text-2xl font-semibold text-cream">
-              {t("privacy.helpTitle")}
+              {content.helpTitle}
             </h2>
             <p className="mx-auto mt-3 max-w-2xl leading-7 text-body">
-              {t("privacy.helpText")}
+              {content.helpText}
             </p>
             <Link
               href="/contact"
               className="mt-6 premium-button w-full px-6 py-3 text-center sm:w-auto"
             >
-              {t("contact.cta")}
+              {content.contactLabel}
             </Link>
           </div>
         </div>
