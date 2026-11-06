@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NativeNameSetting from "@/components/profile/NativeNameSetting";
 import NativeTopBar from "./NativeTopBar";
-import PushDebug from "./PushDebug";
+import PushTestTap from "./PushTestTap";
 import PushToggle from "./PushToggle";
 
 const field =
@@ -293,7 +293,7 @@ export default function NativeSettings() {
           )}
         </section>
 
-        <PushDebug />
+        <PushTestTap />
       </div>
     </main>
   );

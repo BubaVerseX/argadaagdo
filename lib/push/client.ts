@@ -32,30 +32,6 @@ const TOKEN_KEY = "argadaagdo-push-token";
 // Set when the person turns notifications off in Settings.
 const OFF_KEY = "argadaagdo-push-off";
 export const PUSH_ASKED_KEY = "argadaagdo-push-asked";
-// Last steps and errors of turning push on (shown in the hidden debug panel).
-const DEBUG_KEY = "argadaagdo-push-debug";
-
-function errorText(error: unknown) {
-  if (error instanceof Error) return error.message;
-  if (typeof error === "string") return error;
-  try {
-    return JSON.stringify(error);
-  } catch {
-    return String(error);
-  }
-}
-
-export function logPush(step: string, error?: unknown) {
-  try {
-    const entries = JSON.parse(window.localStorage.getItem(DEBUG_KEY) || "[]") as string[];
-    const time = new Date().toISOString().slice(11, 19);
-    entries.push(`${time} ${step}${error === undefined ? "" : `: ${errorText(error)}`}`.slice(0, 200));
-    window.localStorage.setItem(DEBUG_KEY, JSON.stringify(entries.slice(-8)));
-  } catch {
-    // Debug only.
-  }
-}
-
 function capacitor() {
   return isNativeApp()
     ? ((window as unknown as { Capacitor?: CapacitorGlobal }).Capacitor ?? null)
@@ -148,11 +124,10 @@ function registerDevice(push: PushPlugin) {
         reject(new Error(`iOS/Android registration error: ${detail?.error || "unknown"}`));
       }) as never)
     );
-    logPush("register() called");
     void push.register().catch((error: unknown) => {
       window.clearTimeout(timer);
       done();
-      reject(new Error(`register() failed: ${errorText(error)}`));
+      reject(error instanceof Error ? error : new Error("register() failed"));
     });
   });
 }
@@ -174,9 +149,7 @@ export function enablePush(): Promise<EnableResult> {
 async function enablePushOnce(): Promise<EnableResult> {
   const push = plugin();
   const os = platform();
-  logPush("turn on tapped");
   if (!push || !os || !(await isPushSupported())) {
-    logPush(`unsupported (plugin ${push ? "yes" : "no"}, platform ${os || "none"})`);
     return "unsupported";
   }
 
@@ -185,34 +158,27 @@ async function enablePushOnce(): Promise<EnableResult> {
   let permission: Permission;
   try {
     permission = (await push.checkPermissions()).receive;
-    logPush(`permission before: ${permission}`);
     if (permission !== "granted" && permission !== "denied") {
       permission = (await push.requestPermissions()).receive;
-      logPush(`permission after asking: ${permission}`);
     }
-  } catch (error) {
-    logPush("permission check failed", error);
+  } catch {
     return "failed";
   }
   if (permission !== "granted") return "denied";
 
   try {
     const token = await registerDevice(push);
-    logPush(`device token received (${token.slice(0, 6)}…)`);
     const { error } = await supabase.rpc("register_push_device", {
       p_token: token,
       p_platform: os,
       p_language: currentLanguage(),
     });
     if (error) {
-      logPush("saving the device failed", error.message);
       return "failed";
     }
     storage("set", TOKEN_KEY, token);
-    logPush("on");
     return "on";
-  } catch (error) {
-    logPush("failed", error);
+  } catch {
     return "failed";
   }
 }
@@ -289,47 +255,4 @@ export function openPhoneNotificationSettings() {
 /** Whether the phone can open its own settings from the app (iOS only). */
 export function canOpenPhoneSettings() {
   return platform() === "ios";
-}
-
-/** Everything the hidden debug panel in Settings shows. */
-export async function getPushDiagnostics() {
-  const cap = capacitor();
-  const lines: [string, string][] = [];
-  let version = "?";
-  try {
-    const info = await cap?.Plugins?.App?.getInfo?.();
-    if (info) version = `${(info as { version?: string }).version ?? "?"} (${info.build})`;
-  } catch (error) {
-    version = `error: ${errorText(error)}`;
-  }
-  let permission = "-";
-  const push = plugin();
-  if (push) {
-    try {
-      permission = (await push.checkPermissions()).receive;
-    } catch (error) {
-      permission = `error: ${errorText(error)}`;
-    }
-  }
-  const { data } = await supabase.auth.getSession();
-  let log: string[] = [];
-  try {
-    log = JSON.parse(window.localStorage.getItem(DEBUG_KEY) || "[]") as string[];
-  } catch {
-    log = [];
-  }
-  lines.push(["App", isNativeApp() ? `${platform() || "?"} ${version}` : "website"]);
-  lines.push(["Push plugin", push ? "yes" : "no"]);
-  lines.push([
-    "Plugins",
-    Object.keys(cap?.Plugins || {}).sort().join(", ") || "-",
-  ]);
-  lines.push(["Supported", (await isPushSupported()) ? "yes" : "no"]);
-  lines.push(["iOS permission", permission]);
-  lines.push(["Token saved", storage("get", TOKEN_KEY) ? "yes" : "no"]);
-  lines.push(["Turned off by user", storage("get", OFF_KEY) ? "yes" : "no"]);
-  lines.push(["Signed in", data.session ? "yes" : "no"]);
-  lines.push(["Site", window.location.host]);
-  lines.push(["Last error", log.filter((line) => /fail|error|timeout|unsupported/i.test(line)).pop() || "-"]);
-  return { lines, log };
 }
