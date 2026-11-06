@@ -32,7 +32,8 @@ export type NativeFeed = {
 
 const FEED_STORAGE_KEY = "argadaagdo-native-feed-v1";
 const FEED_STORAGE_MAX_AGE_MS = 12 * 60 * 60 * 1000;
-const BUSINESS_COLUMNS = "name, address, business_type";
+// Coordinates: map pins and "nearest first" (20261106150000_business_location.sql).
+const BUSINESS_COLUMNS = "name, address, business_type, latitude, longitude";
 
 let feedInMemory: NativeFeed | null = null;
 let expiryStarted = false;
