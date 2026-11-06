@@ -21,11 +21,11 @@ import {
   formatPickupTimeRange,
   getDiscountPercent,
   getOfferDateLabel,
-  getOriginalPrice,
   type RatingSummary,
 } from "@/lib/offerLifecycle";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "./AppLink";
+import NativeHero from "./NativeHero";
 import { useEffect, useMemo, useState } from "react";
 
 function NativeOfferCard({
@@ -42,7 +42,6 @@ function NativeOfferCard({
   priority: boolean;
 }) {
   const discount = getDiscountPercent(offer);
-  const oldPrice = getOriginalPrice(offer);
   const quantity = Number(offer.quantity || 0);
   const lowStock = !offer.unlimited_quantity && quantity > 0 && quantity <= 5;
 
@@ -76,20 +75,17 @@ function NativeOfferCard({
             {offer.businesses?.name || t("common.business")}
           </span>
           {rating && rating.rating_count > 0 && (
-            <span className="shrink-0 text-xs text-body">★ {rating.average_rating.toFixed(1)}</span>
+            <span className="shrink-0 text-xs font-medium text-[#3b8a55]">★ {rating.average_rating.toFixed(1)}</span>
           )}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <p className="flex min-w-0 items-center gap-1 text-[13px] text-body">
+          <p className="native-time-chip min-w-0 text-[12px] font-medium">
             <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
             <span className="min-w-0 truncate">
               {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
             </span>
           </p>
           <p className="shrink-0 whitespace-nowrap text-right leading-none">
-            {oldPrice !== null && (
-              <span className="mr-1.5 hidden text-xs text-muted line-through min-[380px]:inline">{formatMoney(oldPrice)}</span>
-            )}
             <span className="text-base font-semibold text-mint">{formatMoney(offer.price)}</span>
           </p>
         </div>
@@ -156,89 +152,91 @@ export default function NativeHome() {
 
   return (
     <main className="native-main">
-      <header className="relative px-4 pb-2 pt-3">
-        <div className="flex items-center gap-2.5">
-          <svg width="26" height="26" viewBox="0 0 200 200" aria-hidden="true">
-            <rect width="200" height="200" rx="46" fill="var(--brand-forest)" />
-            <path
-              d="M44 156 C44 96, 88 50, 158 42 C162 112, 118 158, 50 160 Z"
-              fill="var(--brand-mint)"
-            />
-          </svg>
-          <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-cream">
-            ArGadaagdo
-          </p>
-          {/* The app's only language switch. */}
-          <button
-            type="button"
-            onClick={() => setLanguage(language === "ka" ? "en" : "ka")}
-            aria-label={language === "ka" ? "Switch to English" : "ქართულზე გადართვა"}
-            className="native-press flex h-9 min-w-9 items-center justify-center rounded-full border border-line bg-card px-2.5 text-xs font-semibold text-cream"
-          >
-            {language === "ka" ? "KA" : "EN"}
-          </button>
-          <Link
-            href="/notifications"
-            aria-label={language === "ka" ? "შეტყობინებები" : "Notifications"}
-            className="native-press flex h-9 w-9 items-center justify-center rounded-full border border-line bg-card text-cream"
-          >
-            <BellIcon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-          </Link>
-        </div>
-
-        <h1 className="mt-5 font-serif text-[1.25rem] font-bold leading-snug text-cream">
-          {language === "ka" ? "დღეს გადაარჩინე ლანჩ ბოქსი" : "Rescue a Lunch Box today"}
-        </h1>
-
-        <div className="mt-3 flex h-11 items-center gap-2.5 rounded-2xl border border-line bg-card pl-3.5 pr-1.5">
-          <SearchIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("native.home.search")}
-            aria-label={t("native.home.search")}
-            className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-cream outline-none placeholder:text-muted"
-          />
-          <Link
-            href="/discover?full=1"
-            aria-label={t("native.home.filters")}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-forest text-brand-ground"
-          >
-            <FilterIcon className="h-4 w-4" strokeWidth={2} />
-          </Link>
-        </div>
-
-        {presentCategories.length > 0 && (
-          <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
+      <NativeHero className="px-4 pb-1 pt-3">
+        <header>
+          <div className="flex items-center gap-2.5">
+            <svg width="28" height="28" viewBox="0 0 200 200" aria-hidden="true">
+              <rect width="200" height="200" rx="46" fill="var(--brand-mint)" />
+              <path
+                d="M44 156 C44 96, 88 50, 158 42 C162 112, 118 158, 50 160 Z"
+                fill="var(--brand-forest)"
+              />
+            </svg>
+            <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-cream">
+              ArGadaagdo
+            </p>
+            {/* The app's only language switch. */}
             <button
               type="button"
-              onClick={() => setCategory("all")}
-              aria-pressed={category === "all"}
-              className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
-                category === "all" ? "border-transparent bg-brand-forest text-brand-ground" : "border-line bg-card text-body"
-              }`}
+              onClick={() => setLanguage(language === "ka" ? "en" : "ka")}
+              aria-label={language === "ka" ? "Switch to English" : "ქართულზე გადართვა"}
+              className="native-press flex h-9 min-w-9 items-center justify-center rounded-full bg-card px-2.5 text-xs font-semibold text-brand-mint"
             >
-              {t("native.home.all")}
+              {language === "ka" ? "KA" : "EN"}
             </button>
-            {presentCategories.map((option) => (
+            <Link
+              href="/notifications"
+              aria-label={language === "ka" ? "შეტყობინებები" : "Notifications"}
+              className="native-press flex h-9 w-9 items-center justify-center rounded-full bg-card text-brand-mint"
+            >
+              <BellIcon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            </Link>
+          </div>
+
+          <h1 className="mt-5 font-serif text-[1.375rem] font-bold leading-snug text-cream">
+            {language === "ka" ? "დღეს გადაარჩინე ლანჩ ბოქსი" : "Rescue a Lunch Box today"}
+          </h1>
+
+          <div className="mt-3 flex h-11 items-center gap-2.5 rounded-2xl bg-card pl-3.5 pr-1.5">
+            <SearchIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t("native.home.search")}
+              aria-label={t("native.home.search")}
+              className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-cream outline-none placeholder:text-muted"
+            />
+            <Link
+              href="/discover?full=1"
+              aria-label={t("native.home.filters")}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-mint text-brand-forest"
+            >
+              <FilterIcon className="h-4 w-4" strokeWidth={2} />
+            </Link>
+          </div>
+
+          {presentCategories.length > 0 && (
+            <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
               <button
-                key={option}
                 type="button"
-                onClick={() => setCategory(option)}
-                aria-pressed={category === option}
+                onClick={() => setCategory("all")}
+                aria-pressed={category === "all"}
                 className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
-                  category === option ? "border-transparent bg-brand-forest text-brand-ground" : "border-line bg-card text-body"
+                  category === "all" ? "border-transparent bg-brand-mint text-brand-forest" : "border-line bg-card text-body"
                 }`}
               >
-                {getOfferCategoryLabel(option, language)}
+                {t("native.home.all")}
               </button>
-            ))}
-          </div>
-        )}
-      </header>
+              {presentCategories.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setCategory(option)}
+                  aria-pressed={category === option}
+                  className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
+                    category === option ? "border-transparent bg-brand-mint text-brand-forest" : "border-line bg-card text-body"
+                  }`}
+                >
+                  {getOfferCategoryLabel(option, language)}
+                </button>
+              ))}
+            </div>
+          )}
+        </header>
+      </NativeHero>
 
-      <section className="px-4 pt-2">
+      <section className="native-under-hero relative z-[1] px-4">
         {loading && !feed && <CardSkeleton />}
 
         {failed && !feed && (

@@ -91,16 +91,14 @@ export default function NativeShell() {
     { href: "/profile", label: t("nav.profile"), Icon: UserIcon },
   ];
 
-  // The app is beige now: dark status-bar icons. Installed builds were made for
-  // the dark green app, so switch at runtime; the beige strip behind the
-  // status bar only appears once the switch worked (app/native.css).
+  // The screens start with a deep green header: light status-bar icons.
+  // 1.0.1 (4) / versionCode 5 were built with dark icons, so set it at runtime.
   useEffect(() => {
     const bars = (window as unknown as {
       Capacitor?: { Plugins?: { SystemBars?: { setStyle?: (options: { style: string }) => Promise<void> } } };
     }).Capacitor?.Plugins?.SystemBars;
     void bars
-      ?.setStyle?.({ style: "LIGHT" })
-      .then(() => document.documentElement.classList.add("native-light-bars"))
+      ?.setStyle?.({ style: "DARK" })
       .catch(() => undefined);
   }, []);
 

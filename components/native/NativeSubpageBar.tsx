@@ -29,7 +29,7 @@ export default function NativeSubpageBar() {
   }, []);
 
   return (
-    <div data-native-subpage-bar className="native-topbar sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 px-4 py-2">
+    <div data-native-subpage-bar className="native-topbar theme-forest sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-50 px-4 py-2">
       <button
         type="button"
         onClick={() => {
@@ -37,7 +37,7 @@ export default function NativeSubpageBar() {
           else router.replace("/");
         }}
         aria-label={t("native.back")}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-cream"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-card text-cream"
       >
         <ArrowLeftIcon className="h-[18px] w-[18px]" strokeWidth={2} />
       </button>

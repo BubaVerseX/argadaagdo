@@ -79,7 +79,14 @@ html.native-screen body:not(:has(.native-main))::after {
    --------------------------------------------------------------------- */
 html.native-app {
   color-scheme: light;
-  --native-ground: linear-gradient(180deg, #fbf7ee 0%, #f7f1e3 42%, #f1e9d6 100%);
+  /* Version A ("a bit more green", the default): sage-tinted beige. */
+  --native-ground: linear-gradient(180deg, #e6eedc 0%, #eef3e6 28%, #f7f1e3 70%, #f3ecdb 100%);
+  --hero: #0f3a32;
+  --hero-leaf: #164a3f;
+  --hero-wave-h: 2.5rem;
+  --chip-bg: #e1efe3;
+  --chip-ink: #0f3a32;
+  --hero-overlap: -0.75rem;
   --page: transparent;
   --page-deep: #f7f1e3;
   --card: rgba(255, 253, 248, 0.8);
@@ -111,12 +118,101 @@ html.native-app body {
   background: var(--native-ground) fixed #f7f1e3;
 }
 
-/* The status bar strip stays dark green (light icons) until the app confirms
-   it switched the status bar to dark icons (NativeShell), then turns beige. */
-html.native-app.native-light-bars body::before {
-  background: rgba(247, 241, 227, 0.86);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+/* Version B ("a bit less green"): lighter tint, shorter green, text-only
+   green details. Preview only, switched with localStorage until chosen. */
+html.native-app.native-tone-soft {
+  --native-ground: linear-gradient(180deg, #eef3e6 0%, #f7f1e3 45%, #f5efe0 100%);
+  --hero-wave-h: 1.5rem;
+  --hero-overlap: 0.25rem;
+  --chip-bg: transparent;
+  --chip-ink: #3b6b5c;
+}
+
+/* The status bar strip is deep green, like the headers (light icons). */
+html.native-app body::before {
+  background: var(--hero);
+}
+
+/* Deep green screen header ending in a soft wave (NativeHero.tsx). */
+.native-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--hero);
+}
+
+.native-hero-leaf {
+  position: absolute;
+  right: -40px;
+  top: -30px;
+  width: 220px;
+  height: 220px;
+  fill: var(--hero-leaf);
+  pointer-events: none;
+}
+
+.native-hero-wave {
+  display: block;
+  width: 100%;
+  height: var(--hero-wave-h);
+  margin-top: -1px;
+  fill: var(--hero);
+}
+
+html.native-tone-soft .native-hero-leaf {
+  width: 160px;
+  height: 160px;
+  opacity: 0.7;
+}
+
+/* Content right under a green header tucks slightly into the wave. */
+.native-under-hero {
+  margin-top: var(--hero-overlap);
+}
+
+/* Small green details on white cards: pickup time, price. */
+.native-time-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-ink);
+  padding: 0.125rem 0.5rem;
+}
+
+html.native-tone-soft .native-time-chip {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* The Help centre's title block turns into the green header in the app. */
+.help-hero-wave {
+  display: none;
+}
+
+html.native-app .help-hero {
+  --cream: #f7f1e3;
+  --body: #c3ddcb;
+  --muted: #9dbfa8;
+  --card: #164a3f;
+  --line: #1f4a40;
+  position: relative;
+  margin: -1.25rem -1rem 0;
+  padding: 0.25rem 1rem 1rem;
+  background: var(--hero);
+}
+
+html.native-app .help-hero-wave {
+  display: block;
+  width: calc(100% + 2rem);
+  height: var(--hero-wave-h);
+  margin: -1px -1rem 0;
+  fill: var(--hero);
+}
+
+/* Website pages in the app: the back bar is green too. */
+html.native-app [data-native-subpage-bar] {
+  background: var(--hero);
 }
 
 .native-bg {
@@ -271,4 +367,12 @@ html.native-app .photo-leaf-sm,
 html.native-app .photo-hero {
   background: var(--cat-soft, var(--well));
   background: color-mix(in srgb, var(--cat-soft, #efe7d3) 60%, #fbf7ee);
+}
+
+/* Version B: the impact card is a light sage-green card on the beige. */
+.native-impact-soft {
+  background: #e3efe4;
+  border: 1px solid rgba(15, 58, 50, 0.08);
+  --well: rgba(15, 58, 50, 0.08);
+  --moss: #cfe5d3;
 }

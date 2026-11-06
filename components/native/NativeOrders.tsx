@@ -1,5 +1,6 @@
 "use client";
 
+import NativeHero from "./NativeHero";
 import { LeafIcon } from "@/components/icons";
 import Notice from "@/components/Notice";
 import { CollectSlider } from "@/components/orders/CollectSlider";
@@ -428,27 +429,29 @@ export default function NativeOrders() {
 
   return (
     <main className="native-main">
-      <header className="flex items-center justify-between gap-3 px-4 pb-1 pt-4">
-        <h1 className="min-w-0 truncate whitespace-nowrap font-serif text-[1.25rem] font-bold">{t("nav.orders")}</h1>
-        <div className="flex rounded-full bg-well p-1" role="tablist">
-          {(["active", "history"] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="tab"
-              aria-selected={tab === option}
-              onClick={() => setTab(option)}
-              className={`min-h-9 rounded-full px-3.5 text-[13px] font-bold ${
-                tab === option ? "bg-brand-forest text-brand-ground" : "text-cream"
-              }`}
-            >
-              {t(option === "active" ? "native.orders.active" : "native.orders.history")}
-            </button>
-          ))}
-        </div>
-      </header>
+      <NativeHero className="px-4 pb-2 pt-4">
+        <header className="flex items-center justify-between gap-3">
+          <h1 className="min-w-0 truncate whitespace-nowrap font-serif text-[1.375rem] font-bold text-cream">{t("nav.orders")}</h1>
+          <div className="flex rounded-full bg-card p-1" role="tablist">
+            {(["active", "history"] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                role="tab"
+                aria-selected={tab === option}
+                onClick={() => setTab(option)}
+                className={`min-h-9 rounded-full px-3.5 text-[13px] font-semibold ${
+                  tab === option ? "bg-brand-mint text-brand-forest" : "text-cream"
+                }`}
+              >
+                {t(option === "active" ? "native.orders.active" : "native.orders.history")}
+              </button>
+            ))}
+          </div>
+        </header>
+      </NativeHero>
 
-      <section className="grid gap-4 px-4 pt-3">
+      <section className="native-under-hero relative z-[1] grid gap-4 px-4">
         {message && (
           <Notice tone={messageTone}>
             {translateUserMessage(message, language)}

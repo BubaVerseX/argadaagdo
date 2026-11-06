@@ -4,8 +4,9 @@ import { ArrowLeftIcon } from "@/components/icons";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import NativeHero from "./NativeHero";
 
-/** Back button and title for the app's secondary screens. */
+/** Back button and title for the app's secondary screens, on the green header. */
 export default function NativeTopBar({
   title,
   fallbackHref = "/profile",
@@ -20,7 +21,7 @@ export default function NativeTopBar({
   const { t } = useLanguage();
 
   return (
-    <header className="native-topbar sticky top-[var(--safe-area-inset-top,env(safe-area-inset-top,0px))] z-40 flex items-center gap-3 px-4 py-2">
+    <NativeHero className="flex items-center gap-3 px-4 pb-2 pt-2.5">
       <button
         type="button"
         onClick={() => {
@@ -28,14 +29,14 @@ export default function NativeTopBar({
           else router.replace(fallbackHref);
         }}
         aria-label={t("native.back")}
-        className="native-press flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-card text-cream"
+        className="native-press flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card text-cream"
       >
         <ArrowLeftIcon className="h-[18px] w-[18px]" strokeWidth={2} />
       </button>
-      <h1 className="min-w-0 flex-1 truncate text-[17px] font-semibold text-cream">
+      <h1 className="min-w-0 flex-1 truncate font-serif text-[1.25rem] font-bold text-cream">
         {title}
       </h1>
       {action}
-    </header>
+    </NativeHero>
   );
 }
