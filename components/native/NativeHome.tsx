@@ -1,7 +1,6 @@
 "use client";
 
-import { LeafDecor, WaveEdge } from "@/components/design/Decor";
-import { BellIcon, FilterIcon, LeafIcon, SearchIcon } from "@/components/icons";
+import { BellIcon, ClockIcon, FilterIcon, LeafIcon, SearchIcon } from "@/components/icons";
 import OfferImage from "@/components/OfferImage";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
@@ -53,63 +52,50 @@ function NativeOfferCard({
     <Link
       href={`/offers/${offer.id}`}
       onTouchStart={() => void prefetchOfferDetail(offer.id)}
-      className={`${getOfferCategoryTone(
-        offer.category
-      )} native-press relative block overflow-hidden rounded-[28px] bg-cat p-3.5 text-cat-ink`}
+      className="native-press relative flex min-w-0 items-center gap-3 rounded-[24px] bg-card p-3 text-cream"
     >
-      <span
-        aria-hidden="true"
-        className="absolute -bottom-12 -right-10 h-48 w-48 rounded-full bg-cat-soft"
-      />
-
-      <div className="relative">
-        <div className="photo-leaf relative isolate h-52 w-full">
-          <OfferImage
-            src={offer.image_url}
-            alt={offer.title}
-            sizes="(max-width: 500px) 94vw, 480px"
-            priority={priority}
-          />
-        </div>
-
+      <div
+        className={`${getOfferCategoryTone(
+          offer.category
+        )} photo-leaf-sm relative isolate h-[5.5rem] w-[5.5rem] shrink-0`}
+      >
+        <OfferImage src={offer.image_url} alt={offer.title} sizes="88px" priority={priority} />
         {discount !== null && (
-          <span className="discount-sticker absolute -right-1 -top-1 h-[3.75rem] w-[3.75rem] border-[3px] border-brand-ground text-sm">
+          <span className="absolute bottom-1 left-1 rounded-full bg-brand-forest px-1.5 py-0.5 text-[11px] font-bold text-brand-mint">
             −{discount}%
-          </span>
-        )}
-
-        {lowStock && (
-          <span className="absolute bottom-2.5 left-2.5 rounded-full bg-brand-forest px-3 py-1 text-xs font-bold text-brand-ground">
-            {t("native.left").replace("{n}", String(quantity))}
           </span>
         )}
       </div>
 
-      <div className="relative mt-3 flex items-end justify-between gap-3 px-1 pb-0.5">
-        <div className="min-w-0">
-          <p className="truncate font-serif text-[1.1875rem] font-bold leading-snug">
-            {offer.businesses?.name || t("common.business")}
-          </p>
-          <p className="mt-0.5 truncate text-[13px] text-cat-ink-2">
-            {getOfferDateLabel(offer, language)}{" "}
-            {formatPickupTimeRange(offer, language)}
-            {size ? ` · ${language === "ka" ? "ზომა" : "Size"} ${size}` : ""}
-            {rating && rating.rating_count > 0
-              ? ` · ★ ${rating.average_rating.toFixed(1)}`
-              : ""}
-          </p>
-        </div>
-
-        <div className="shrink-0 text-right">
-          {oldPrice !== null && (
-            <p className="text-xs leading-none text-cat-ink-2 line-through">
-              {formatMoney(oldPrice)}
-            </p>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-serif text-[1.0625rem] font-bold leading-snug">
+          {offer.businesses?.name || t("common.business")}
+        </p>
+        <p className="truncate text-[13px] text-body">
+          {getOfferCategoryLabel(normalizeOfferCategory(offer.category), language)}
+          {size ? ` · ${language === "ka" ? "ზომა" : "Size"} ${size}` : ""}
+          {rating && rating.rating_count > 0 ? ` · ★ ${rating.average_rating.toFixed(1)}` : ""}
+        </p>
+        <p className="mt-1 flex min-w-0 items-center gap-1 text-[13px] text-body">
+          <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+          <span className="min-w-0 truncate">
+            {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
+          </span>
+          {lowStock && (
+            <span className="ml-1 shrink-0 rounded-full bg-mint px-1.5 text-[11px] font-bold text-ink">
+              {t("native.left").replace("{n}", String(quantity))}
+            </span>
           )}
-          <p className="mt-0.5 whitespace-nowrap text-2xl font-bold leading-tight">
-            {formatMoney(offer.price)}
-          </p>
-        </div>
+        </p>
+      </div>
+
+      <div className="shrink-0 self-end text-right">
+        {oldPrice !== null && (
+          <p className="text-xs leading-none text-muted line-through">{formatMoney(oldPrice)}</p>
+        )}
+        <p className="mt-0.5 whitespace-nowrap text-xl font-bold leading-tight text-mint">
+          {formatMoney(offer.price)}
+        </p>
       </div>
     </Link>
   );
@@ -117,9 +103,9 @@ function NativeOfferCard({
 
 function CardSkeleton() {
   return (
-    <div className="grid gap-4" aria-hidden="true">
-      {[0, 1].map((key) => (
-        <div key={key} className="native-skeleton h-[19.5rem] rounded-[28px]" />
+    <div className="grid gap-3" aria-hidden="true">
+      {[0, 1, 2, 3].map((key) => (
+        <div key={key} className="native-skeleton h-[7rem] rounded-[24px]" />
       ))}
     </div>
   );
@@ -173,10 +159,8 @@ export default function NativeHome() {
 
   return (
     <main className="native-main">
-      <header className="theme-forest relative overflow-hidden bg-brand-forest px-4 pb-3 pt-3">
-        <LeafDecor className="-right-10 -top-12 h-52 w-52 text-brand-forest-2" />
-
-        <div className="relative flex items-center gap-2.5">
+      <header className="theme-forest relative px-4 pb-3 pt-3">
+        <div className="flex items-center gap-2.5">
           <svg width="30" height="30" viewBox="0 0 200 200" aria-hidden="true">
             <rect width="200" height="200" rx="46" fill="var(--brand-mint)" />
             <path
@@ -184,39 +168,44 @@ export default function NativeHome() {
               fill="var(--brand-forest)"
             />
           </svg>
-          <h1 className="min-w-0 flex-1 truncate font-serif text-lg font-bold text-brand-ground">
-            {t("native.home.title")}
-          </h1>
+          <p className="min-w-0 flex-1 truncate font-serif text-lg font-bold text-brand-ground">
+            ArGadaagdo
+          </p>
           {/* The app's only language switch. */}
           <button
             type="button"
             onClick={() => setLanguage(language === "ka" ? "en" : "ka")}
             aria-label={language === "ka" ? "Switch to English" : "ქართულზე გადართვა"}
-            className="native-press flex h-10 min-w-10 items-center justify-center rounded-full bg-brand-forest-2 px-2.5 text-[13px] font-bold text-brand-mint"
+            className="native-press flex h-10 min-w-10 items-center justify-center rounded-full bg-well px-2.5 text-[13px] font-bold text-brand-mint"
           >
             {language === "ka" ? "KA" : "EN"}
           </button>
           <Link
             href="/notifications"
             aria-label={language === "ka" ? "შეტყობინებები" : "Notifications"}
-            className="native-press flex h-10 w-10 items-center justify-center rounded-full bg-brand-forest-2 text-brand-mint"
+            className="native-press flex h-10 w-10 items-center justify-center rounded-full bg-well text-brand-mint"
           >
             <BellIcon className="h-5 w-5" strokeWidth={2} />
           </Link>
         </div>
 
-        <div className="relative mt-3 flex h-12 items-center gap-2.5 rounded-[18px] bg-brand-ground pl-3.5 pr-1.5">
-          <SearchIcon
-            className="h-[18px] w-[18px] shrink-0 text-brand-secondary"
-            strokeWidth={2}
-          />
+        <h1 className="mt-4 font-serif text-[1.625rem] font-bold leading-tight text-brand-ground">
+          {language === "ka" ? (
+            <>დღეს გადაარჩინე<br />ლანჩ ბოქსი</>
+          ) : (
+            <>Rescue a<br />Lunch Box today</>
+          )}
+        </h1>
+
+        <div className="mt-4 flex h-12 items-center gap-2.5 rounded-[18px] border border-line bg-card pl-3.5 pr-1.5">
+          <SearchIcon className="h-[18px] w-[18px] shrink-0 text-muted" strokeWidth={2} />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={t("native.home.search")}
             aria-label={t("native.home.search")}
-            className="h-full min-w-0 flex-1 bg-transparent text-base text-brand-ink outline-none placeholder:text-brand-secondary"
+            className="h-full min-w-0 flex-1 bg-transparent text-base text-cream outline-none placeholder:text-muted"
           />
           <Link
             href="/discover?full=1"
@@ -228,15 +217,15 @@ export default function NativeHome() {
         </div>
 
         {presentCategories.length > 0 && (
-          <div className="no-scrollbar relative -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
+          <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
             <button
               type="button"
               onClick={() => setCategory("all")}
               aria-pressed={category === "all"}
-              className={`h-10 flex-none rounded-full px-4 text-[13px] font-bold ${
+              className={`h-10 flex-none rounded-full border px-4 text-[13px] font-bold ${
                 category === "all"
-                  ? "bg-brand-mint text-brand-forest"
-                  : "bg-brand-forest-2 text-brand-ground"
+                  ? "border-transparent bg-brand-mint text-brand-forest"
+                  : "border-line bg-well text-brand-ground"
               }`}
             >
               {t("native.home.all")}
@@ -247,10 +236,10 @@ export default function NativeHome() {
                 type="button"
                 onClick={() => setCategory(option)}
                 aria-pressed={category === option}
-                className={`${getOfferCategoryTone(
-                  option
-                )} h-10 flex-none rounded-full bg-cat px-4 text-[13px] font-medium text-cat-ink ${
-                  category === option ? "ring-2 ring-brand-ground" : ""
+                className={`h-10 flex-none rounded-full border px-4 text-[13px] font-bold ${
+                  category === option
+                    ? "border-transparent bg-brand-mint text-brand-forest"
+                    : "border-line bg-well text-brand-ground"
                 }`}
               >
                 {getOfferCategoryLabel(option, language)}
@@ -259,9 +248,8 @@ export default function NativeHome() {
           </div>
         )}
       </header>
-      <WaveEdge />
 
-      <section className="px-4 pt-1">
+      <section className="px-4 pt-2">
         {loading && !feed && <CardSkeleton />}
 
         {failed && !feed && (
@@ -307,7 +295,7 @@ export default function NativeHome() {
           </p>
         )}
 
-        <div className="grid gap-4">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
           {shown.map((offer, index) => (
             <NativeOfferCard
               key={offer.id}

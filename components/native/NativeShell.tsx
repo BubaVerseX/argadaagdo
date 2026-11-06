@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { whenIdle } from "@/lib/whenIdle";
 import { startPush } from "@/lib/push/client";
+import NativeBackground from "./NativeBackground";
 import PushPrompt from "./PushPrompt";
 import Link from "./AppLink";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -124,6 +125,7 @@ export default function NativeShell() {
       <Suspense fallback={null}>
         <ScreenClassSync />
       </Suspense>
+      <NativeBackground />
       <PushPrompt />
 
       {!HIDE_BAR.test(pathname) && (

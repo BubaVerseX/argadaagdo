@@ -23,14 +23,15 @@ html.native-screen body:not(:has(.native-main))::after {
   position: fixed;
   inset: 0;
   z-index: 30;
-  background: var(--brand-ground)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect width='390' height='176' fill='%230F3A32'/%3E%3Crect x='20' y='62' width='350' height='48' rx='18' fill='%23164A3F'/%3E%3Crect x='20' y='122' width='70' height='40' rx='20' fill='%23164A3F'/%3E%3Crect x='98' y='122' width='96' height='40' rx='20' fill='%23164A3F'/%3E%3Crect x='202' y='122' width='96' height='40' rx='20' fill='%23164A3F'/%3E%3Crect x='20' y='196' width='350' height='320' rx='28' fill='%23EFE7D3'/%3E%3Crect x='20' y='532' width='350' height='320' rx='28' fill='%23EFE7D3'/%3E%3C/svg%3E")
-    top center / 100% auto no-repeat;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect x='20' y='22' width='150' height='26' rx='10' fill='%23B8E6C4' fill-opacity='.14'/%3E%3Crect x='20' y='70' width='240' height='30' rx='10' fill='%23B8E6C4' fill-opacity='.12'/%3E%3Crect x='20' y='118' width='350' height='48' rx='18' fill='%23F7F1E3' fill-opacity='.09'/%3E%3Crect x='20' y='180' width='70' height='36' rx='18' fill='%23B8E6C4' fill-opacity='.14'/%3E%3Crect x='98' y='180' width='96' height='36' rx='18' fill='%23B8E6C4' fill-opacity='.1'/%3E%3Crect x='202' y='180' width='96' height='36' rx='18' fill='%23B8E6C4' fill-opacity='.1'/%3E%3Crect x='20' y='236' width='350' height='112' rx='24' fill='%230A2622' fill-opacity='.55' stroke='%23B8E6C4' stroke-opacity='.18'/%3E%3Crect x='20' y='362' width='350' height='112' rx='24' fill='%230A2622' fill-opacity='.55' stroke='%23B8E6C4' stroke-opacity='.18'/%3E%3Crect x='20' y='488' width='350' height='112' rx='24' fill='%230A2622' fill-opacity='.55' stroke='%23B8E6C4' stroke-opacity='.18'/%3E%3C/svg%3E")
+      top center / 100% auto no-repeat,
+    var(--native-ground);
 }
 
 .native-main {
   min-height: 100dvh;
-  background: var(--page);
+  background: transparent;
   color: var(--cream);
   /* Clears the floating bar. */
   padding-bottom: calc(6.5rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
@@ -61,9 +62,135 @@ html.native-screen body:not(:has(.native-main))::after {
 
 /* Secondary app screens: their own top bar, no website chrome. */
 .native-topbar {
-  background: var(--page);
+  background: rgba(10, 38, 34, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .native-main--bare {
   padding-bottom: calc(6.5rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+/* ---------------------------------------------------------------------
+   App ground, design D (docs/design-v3/backgrounds.html): deep green, mint
+   lines and floating leaves (components/native/NativeBackground.tsx), with
+   frosted-glass cards. App only: the website keeps its cream look.
+   --------------------------------------------------------------------- */
+html.native-app {
+  color-scheme: dark;
+  --native-ground: radial-gradient(120% 80% at 80% 0%, #1c5a4b 0%, #0f3a32 55%, #0a2622 100%);
+  --page: transparent;
+  --page-deep: #0a2622;
+  --card: rgba(10, 38, 34, 0.55);
+  --card-2: rgba(10, 38, 34, 0.55);
+  --well: rgba(247, 241, 227, 0.08);
+  --line: rgba(184, 230, 196, 0.2);
+  --line-strong: #4f7a6c;
+  --cream: #f7f1e3;
+  --body: #c3ddcb;
+  --body-2: #c3ddcb;
+  --body-light: #c3ddcb;
+  --muted: #9dbfa8;
+  --mint: #b8e6c4;
+  --mint-strong: #a4dab2;
+  --sage: #9dbfa8;
+  --moss: rgba(184, 230, 196, 0.14);
+  --moss-light: rgba(184, 230, 196, 0.14);
+  --ink: #0f3a32;
+  --warning: #f3d98c;
+  --warning-soft: rgba(243, 217, 140, 0.16);
+  --warning-line: rgba(243, 217, 140, 0.32);
+  --danger: #f8bcbc;
+  --danger-soft: rgba(244, 120, 120, 0.18);
+  --danger-line: rgba(244, 120, 120, 0.38);
+  --shadow-card: none;
+}
+
+html.native-app body {
+  background: var(--native-ground) fixed #0a2622;
+}
+
+/* The status bar strip: glass instead of an opaque bar. */
+html.native-app body::before {
+  background: rgba(10, 38, 34, 0.78);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.native-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.native-bg canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.native-bg-leaf {
+  position: absolute;
+  opacity: 0.5;
+  will-change: transform;
+  animation: native-sway 14s ease-in-out infinite;
+}
+
+.native-bg-leaf svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes native-sway {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate(10px, -18px) rotate(12deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .native-bg-leaf {
+    animation: none;
+  }
+}
+
+/* Frosted glass: the cards blur the lines and leaves behind them. */
+html.native-app .bg-card,
+html.native-app .ui-card,
+html.native-app .premium-card,
+html.native-app .premium-surface {
+  background: var(--card);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Website pages shown inside the app (terms, FAQ...) sit on the same ground. */
+html.native-app .app-shell {
+  background: transparent;
+}
+
+/* Deep green header blocks and their decorations give way to the ground. */
+html.native-app .native-main header.bg-brand-forest {
+  background: transparent;
+}
+
+html.native-app .wave-edge,
+html.native-app .leaf-decor {
+  display: none;
+}
+
+/* The floating tab bar, as in the mock-up. */
+html.native-app .tab-pill {
+  background: rgba(5, 22, 19, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
