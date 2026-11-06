@@ -22,6 +22,7 @@ type PushPlugin = {
 
 type CapacitorGlobal = {
   getPlatform?: () => string;
+  isPluginAvailable?: (name: string) => boolean;
   Plugins?: { PushNotifications?: PushPlugin; App?: { getInfo?: () => Promise<{ build: string }> } };
 };
 
@@ -37,7 +38,10 @@ function capacitor() {
 }
 
 function plugin() {
-  return capacitor()?.Plugins?.PushNotifications ?? null;
+  const cap = capacitor();
+  // Builds before 1.0.1 (3), e.g. App Store 1.0.0, have no push plugin.
+  if (cap?.isPluginAvailable && !cap.isPluginAvailable("PushNotifications")) return null;
+  return cap?.Plugins?.PushNotifications ?? null;
 }
 
 function platform(): "ios" | "android" | null {
@@ -133,9 +137,14 @@ export async function enablePush(): Promise<EnableResult> {
 
   storage("set", PUSH_ASKED_KEY, "1");
   storage("remove", OFF_KEY);
-  let permission = (await push.checkPermissions()).receive;
-  if (permission !== "granted" && permission !== "denied") {
-    permission = (await push.requestPermissions()).receive;
+  let permission: Permission;
+  try {
+    permission = (await push.checkPermissions()).receive;
+    if (permission !== "granted" && permission !== "denied") {
+      permission = (await push.requestPermissions()).receive;
+    }
+  } catch {
+    return "failed";
   }
   if (permission !== "granted") return "denied";
 
@@ -201,4 +210,29 @@ export async function ensurePushRegistered({ refresh = false } = {}) {
   if (!(await isPushSupported()) || (await getPushPermission()) !== "granted") return;
   const { data } = await supabase.auth.getSession();
   if (data.session) await enablePush();
+}
+
+/**
+ * In the app but without push support (old build, or an Android build from
+ * before Firebase): the person has to update the app to get notifications.
+ */
+export async function pushNeedsAppUpdate() {
+  return isNativeApp() && !(await isPushSupported());
+}
+
+/**
+ * Opens this app's page in iPhone Settings, where notifications can be turned
+ * back on after "Don't Allow". Capacitor hands any non-website address to iOS,
+ * which opens "app-settings:" in Settings (works in every build, no plugin).
+ * Android has no such link: returns false and the caller shows the path.
+ */
+export function openPhoneNotificationSettings() {
+  if (platform() !== "ios") return false;
+  window.location.href = "app-settings:";
+  return true;
+}
+
+/** Whether the phone can open its own settings from the app (iOS only). */
+export function canOpenPhoneSettings() {
+  return platform() === "ios";
 }

@@ -2,11 +2,14 @@
 
 import { BellIcon } from "@/components/icons";
 import {
+  canOpenPhoneSettings,
   disablePush,
   enablePush,
   getPushPermission,
   isPushOn,
   isPushSupported,
+  openPhoneNotificationSettings,
+  pushNeedsAppUpdate,
 } from "@/lib/push/client";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
@@ -24,6 +27,8 @@ export default function PushToggle({
   const { language } = useLanguage();
   const L = (ka: string, en: string) => (language === "ka" ? ka : en);
   const [supported, setSupported] = useState(false);
+  // In the app, but this build has no push support (e.g. App Store 1.0.0).
+  const [needsUpdate, setNeedsUpdate] = useState(false);
   const [on, setOn] = useState(false);
   const [denied, setDenied] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -55,9 +60,13 @@ export default function PushToggle({
 
   useEffect(() => {
     let active = true;
-    void (async () => {
+    const refresh = async () => {
       const ok = await isPushSupported();
-      if (!active || !ok) return;
+      if (!active) return;
+      if (!ok) {
+        setNeedsUpdate(await pushNeedsAppUpdate());
+        return;
+      }
       const [isOn, permission] = await Promise.all([
         isPushOn(),
         getPushPermission(),
@@ -66,27 +75,68 @@ export default function PushToggle({
       setSupported(true);
       setOn(isOn);
       setDenied(permission === "denied");
-    })();
+    };
+    void refresh();
+    // Coming back from iPhone Settings: show the new permission state.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       active = false;
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
-  if (!supported || (compact && on)) return null;
+  if (!supported) {
+    // Settings only: a short hint instead of a switch that can't work.
+    if (!needsUpdate || compact) return null;
+    return (
+      <>
+        {heading && (
+          <h2 className="px-1 pt-2 text-xs font-medium text-body">{heading}</h2>
+        )}
+        <section className="flex min-h-11 items-center gap-3 rounded-[22px] bg-card px-4 py-2.5">
+          <BellIcon
+            className="h-[18px] w-[18px] shrink-0 text-sage"
+            strokeWidth={1.8}
+          />
+          <p className="text-[13px] leading-5 text-body">
+            {L(
+              "განაახლე აპი შეტყობინებებისთვის",
+              "Update the app to get notifications"
+            )}
+          </p>
+        </section>
+      </>
+    );
+  }
+
+  if (compact && on) return null;
 
   async function toggle() {
+    // Turned off in the phone's settings: only the phone can turn it on again.
+    if (denied && !on) {
+      openPhoneNotificationSettings();
+      return;
+    }
     setBusy(true);
     setFailed(false);
-    if (on) {
-      await disablePush();
-      setOn(false);
-    } else {
-      const result = await enablePush();
-      setOn(result === "on");
-      setDenied(result === "denied");
-      setFailed(result === "failed");
+    try {
+      if (on) {
+        await disablePush();
+        setOn(false);
+      } else {
+        const result = await enablePush();
+        setOn(result === "on");
+        setDenied(result === "denied");
+        setFailed(result === "failed" || result === "unsupported");
+      }
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   return (
@@ -116,7 +166,7 @@ export default function PushToggle({
             role="switch"
             aria-checked={on}
             aria-label={L("შეტყობინებები", "Notifications")}
-            disabled={busy || (denied && !on)}
+            disabled={busy || (denied && !on && !canOpenPhoneSettings())}
             onClick={() => void toggle()}
             className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
               on ? "bg-mint" : "bg-[rgba(15,58,50,0.16)]"
@@ -129,14 +179,26 @@ export default function PushToggle({
             />
           </button>
         </div>
-        {denied && !on && (
-          <p className="mt-2 text-xs leading-5 text-body">
-            {L(
-              "შეტყობინებები ტელეფონის პარამეტრებშია გამორთული: Settings → ArGadaagdo → Notifications.",
-              "Notifications are off in your phone settings: Settings → ArGadaagdo → Notifications."
-            )}
-          </p>
-        )}
+        {denied && !on &&
+          (canOpenPhoneSettings() ? (
+            <button
+              type="button"
+              onClick={() => openPhoneNotificationSettings()}
+              className="mt-1 min-h-11 text-left text-xs font-bold text-mint"
+            >
+              {L(
+                "გამორთულია iPhone-ის პარამეტრებში — გახსნა",
+                "Off in iPhone Settings — open Settings"
+              )}
+            </button>
+          ) : (
+            <p className="mt-2 text-xs leading-5 text-body">
+              {L(
+                "გამორთულია ტელეფონის პარამეტრებში: Settings → Apps → ArGadaagdo → Notifications.",
+                "Off in your phone settings: Settings → Apps → ArGadaagdo → Notifications."
+              )}
+            </p>
+          ))}
         {on && !compact && (
           <button
             type="button"
