@@ -1,4 +1,10 @@
-import { SUPPORT_EMAIL, type ContentSection, type Localized } from "@/lib/legal/shared";
+import {
+  MINIMUM_AGE,
+  SUPPORT_EMAIL,
+  operatorSentence,
+  type ContentSection,
+  type Localized,
+} from "@/lib/legal/shared";
 
 // Facts behind this page (checked 6 Nov 2026):
 // - deletion: app/api/account/delete/route.ts + anonymize_account_for_deletion
@@ -32,7 +38,8 @@ export const privacyContent: Localized<PrivacyContent> = {
       {
         title: "Who we are",
         paragraphs: [
-          `ArGadaagdo runs the ArGadaagdo website and app and is responsible for the personal data described here. For any privacy question or request, write to ${SUPPORT_EMAIL}.`,
+          `${operatorSentence("en")} The operator runs the ArGadaagdo website and app and is responsible for the personal data described here (the data controller). For any privacy question or request, write to ${SUPPORT_EMAIL}.`,
+          `ArGadaagdo is for people aged ${MINIMUM_AGE} and over. We don't knowingly collect data from anyone younger. If you believe someone under ${MINIMUM_AGE} has created an account, write to us and we'll delete it.`,
         ],
       },
       {
@@ -164,7 +171,8 @@ export const privacyContent: Localized<PrivacyContent> = {
       {
         title: "ვინ ვართ",
         paragraphs: [
-          `არ გადააგდო მართავს არ გადააგდოს ვებსაიტსა და აპლიკაციას და პასუხისმგებელია აქ აღწერილ პერსონალურ მონაცემებზე. კონფიდენციალურობასთან დაკავშირებული ნებისმიერი კითხვით ან მოთხოვნით მოგვწერე: ${SUPPORT_EMAIL}.`,
+          `${operatorSentence("ka")} ოპერატორი მართავს არ გადააგდოს ვებსაიტსა და აპლიკაციას და პასუხისმგებელია აქ აღწერილ პერსონალურ მონაცემებზე (მონაცემთა დამმუშავებელი). კონფიდენციალურობასთან დაკავშირებული ნებისმიერი კითხვით ან მოთხოვნით მოგვწერე: ${SUPPORT_EMAIL}.`,
+          `არ გადააგდო ${MINIMUM_AGE} წლის და უფროსი ასაკის ადამიანებისთვისაა. ${MINIMUM_AGE} წლამდე პირების მონაცემებს შეგნებულად არ ვაგროვებთ. თუ ფიქრობ, რომ ანგარიში ${MINIMUM_AGE} წლამდე პირმა შექმნა, მოგვწერე და მას წავშლით.`,
         ],
       },
       {

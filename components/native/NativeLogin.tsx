@@ -4,6 +4,7 @@ import Notice from "@/components/Notice";
 import { LeafIcon } from "@/components/icons";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
 import { businessLoginUrl } from "@/lib/businessArea";
+import SignupConsent from "@/components/legal/SignupConsent";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { useAuthForm } from "@/lib/useAuthForm";
 import NativeTopBar from "./NativeTopBar";
@@ -172,6 +173,8 @@ export default function NativeLogin() {
               ? L("შესვლა", "Sign in")
               : L("ანგარიშის შექმნა", "Create account")}
           </button>
+
+          {!isLogin && <SignupConsent isGeorgian={isGeorgian} />}
 
           {message && <Notice tone={messageTone}>{translateUserMessage(message, language)}</Notice>}
 

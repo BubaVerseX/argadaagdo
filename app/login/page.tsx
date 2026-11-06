@@ -2,6 +2,7 @@
 
 import { businessLoginUrl } from "@/lib/businessArea";
 import Navbar from "@/components/Navbar";
+import SignupConsent from "@/components/legal/SignupConsent";
 import Notice from "@/components/Notice";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
 import { translateUserMessage } from "@/lib/messageTranslations";
@@ -230,6 +231,8 @@ function LoginPage() {
                   ? "ანგარიშის შექმნა"
                   : "Create account"}
               </button>
+
+              {!isLogin && <SignupConsent isGeorgian={isGeorgian} />}
 
               {message && (
                 <Notice tone={messageTone}>

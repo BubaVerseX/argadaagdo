@@ -1,4 +1,10 @@
-import { SUPPORT_EMAIL, type ContentSection, type Localized } from "@/lib/legal/shared";
+import {
+  MINIMUM_AGE,
+  SUPPORT_EMAIL,
+  operatorSentence,
+  type ContentSection,
+  type Localized,
+} from "@/lib/legal/shared";
 
 // Facts behind this page (checked 6 Nov 2026):
 // - cancel up to 2 h before pickup_start, full refund: begin_customer_refund
@@ -33,11 +39,13 @@ export const termsContent: Localized<TermsContent> = {
         paragraphs: [
           "ArGadaagdo is an online marketplace. Food businesses in Tbilisi use it to sell food they didn't sell that day as discounted Lunch Boxes. You reserve a Lunch Box in the app, pay online and collect it from the business in person.",
           "Each Lunch Box is prepared and sold by the business, which is responsible for the food. ArGadaagdo provides the platform, handles payment through TBC Bank and supports both sides.",
+          `${operatorSentence("en")} In these terms, "we" and "us" mean the operator.`,
         ],
       },
       {
         title: "Your account",
         bullets: [
+          `You must be at least ${MINIMUM_AGE} years old to create an account and reserve.`,
           "You sign up with an email address and a password, and confirm your email before you reserve.",
           "You may be asked to confirm a mobile number with an SMS code. One phone number can be linked to one account only.",
           "Keep your password private. You are responsible for activity in your account.",
@@ -78,7 +86,7 @@ export const termsContent: Localized<TermsContent> = {
           "In the last 2 hours before pickup, cancellation is no longer possible, because the business is already preparing your box.",
           "If you don't collect your order during the pickup window, it is marked as a missed pickup and the payment is not refunded.",
           "Cancellations and missed pickups lower your reliability score, which businesses can see. If the score falls too low, new reservations are blocked on your account. If you think this is a mistake, contact us.",
-          `If something goes wrong with your order (for example, the business can't hand it over), write to ${SUPPORT_EMAIL} with your order details. We'll resolve it with you and the business.`,
+          `If the business can't hand over your paid order, write to ${SUPPORT_EMAIL} with your order details, and we'll refund the full amount to the card or account you paid with. For any other problem with an order, write to us too, and we'll resolve it with you and the business.`,
         ],
       },
       {
@@ -139,11 +147,13 @@ export const termsContent: Localized<TermsContent> = {
         paragraphs: [
           "არ გადააგდო ონლაინ პლატფორმაა. თბილისის კვების ობიექტები აქ იმ დღეს გაუყიდავ საკვებს ლანჩ ბოქსების სახით, ფასდაკლებით ყიდიან. ლანჩ ბოქსს აპლიკაციაში დაჯავშნი, ონლაინ გადაიხდი და ბიზნესიდან თავად წაიღებ.",
           "ლანჩ ბოქსს ამზადებს და ყიდის ბიზნესი, რომელიც საკვებზე პასუხს აგებს. არ გადააგდო უზრუნველყოფს პლატფორმას, გადახდას TBC ბანკის მეშვეობით და ორივე მხარის მხარდაჭერას.",
+          `${operatorSentence("ka")} ამ წესებში „ჩვენ“ ოპერატორს ნიშნავს.`,
         ],
       },
       {
         title: "ანგარიში",
         bullets: [
+          `ანგარიშის შექმნა და დაჯავშნა მხოლოდ ${MINIMUM_AGE} წლიდან შეიძლება.`,
           "რეგისტრაციისთვის გჭირდება ელფოსტა და პაროლი. დაჯავშნამდე ელფოსტა უნდა დაადასტურო.",
           "შეიძლება დაგჭირდეს მობილურის ნომრის დადასტურება SMS კოდით. ერთი ნომერი მხოლოდ ერთ ანგარიშზე შეიძლება იყოს მიბმული.",
           "პაროლს ნურავის გაუზიარებ. შენს ანგარიშში შესრულებულ მოქმედებებზე პასუხისმგებელი შენ ხარ.",
@@ -184,7 +194,7 @@ export const termsContent: Localized<TermsContent> = {
           "წაღების დაწყებამდე ბოლო 2 საათში ჯავშანს ვეღარ გააუქმებ, რადგან ბიზნესი შენს ბოქსს უკვე ამზადებს.",
           "თუ შეკვეთას წაღების დროს არ წაიღებ, ის გამოტოვებულ წაღებად მოინიშნება და თანხა არ ბრუნდება.",
           "გაუქმება და გამოტოვებული წაღება ამცირებს შენს სანდოობის ქულას, რომელსაც ბიზნესი ხედავს. თუ ქულა ძალიან დაბლა ჩამოვა, ახალი ჯავშნები შენს ანგარიშზე შეიზღუდება. თუ ფიქრობ, რომ ეს შეცდომაა, მოგვწერე.",
-          `თუ შეკვეთასთან დაკავშირებით რამე ისე ვერ მოხდა (მაგალითად, ბიზნესმა შეკვეთა ვერ გადმოგცა), მოგვწერე ${SUPPORT_EMAIL}-ზე შეკვეთის დეტალებით. საკითხს შენთან და ბიზნესთან ერთად მოვაგვარებთ.`,
+          `თუ ბიზნესმა გადახდილი შეკვეთა ვერ გადმოგცა, მოგვწერე ${SUPPORT_EMAIL}-ზე შეკვეთის დეტალებით და სრულ თანხას დაგიბრუნებთ იმ ბარათზე ან ანგარიშზე, რომლითაც გადაიხადე. შეკვეთასთან დაკავშირებული სხვა პრობლემის შემთხვევაშიც მოგვწერე და საკითხს შენთან და ბიზნესთან ერთად მოვაგვარებთ.`,
         ],
       },
       {
