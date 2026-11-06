@@ -11,7 +11,6 @@ import {
   openPhoneNotificationSettings,
   pushNeedsAppUpdate,
 } from "@/lib/push/client";
-import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { useEffect, useState } from "react";
 
@@ -33,30 +32,6 @@ export default function PushToggle({
   const [denied, setDenied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [testNote, setTestNote] = useState("");
-
-  async function sendTest() {
-    setTestNote("");
-    const { data } = await supabase.auth.getSession();
-    const response = await fetch("/api/push/test", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${data.session?.access_token || ""}` },
-    }).catch(() => null);
-    const result = (await response?.json().catch(() => null)) as {
-      sent?: number;
-    } | null;
-    setTestNote(
-      response?.ok && result?.sent
-        ? L(
-            "გაიგზავნა — რამდენიმე წამში მოვა.",
-            "Sent — it should arrive in a few seconds."
-          )
-        : L(
-            "ჯერ ვერ გაიგზავნა. სცადე მოგვიანებით.",
-            "Couldn't send yet. Please try again later."
-          )
-    );
-  }
 
   useEffect(() => {
     let active = true;
@@ -139,85 +114,49 @@ export default function PushToggle({
     }
   }
 
+  // One switch, nothing else. If the phone's own setting blocks it, the
+  // switch opens iPhone Settings (Android: one short line where to look).
   return (
-    <>
-      {heading && (
-        <h2 className="px-1 pt-2 text-xs font-medium text-body">{heading}</h2>
-      )}
-      <section className="rounded-[22px] bg-card px-4 py-2.5">
-        <div className="flex min-h-11 items-center gap-3">
-          <BellIcon
-            className="h-[18px] w-[18px] shrink-0 text-sage"
-            strokeWidth={1.8}
-          />
-          <div className="min-w-0 flex-1">
-            <p className="text-[15px] text-cream">
-              {L("შეტყობინებები", "Notifications")}
-            </p>
-            <p className="text-xs leading-5 text-body">
-              {L(
-                "დადასტურება, წაღების შეხსენება, ახალი ბოქსები",
-                "Confirmations, pickup reminders, new boxes"
-              )}
-            </p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={on}
-            aria-label={L("შეტყობინებები", "Notifications")}
-            disabled={busy || (denied && !on && !canOpenPhoneSettings())}
-            onClick={() => void toggle()}
-            className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
-              on ? "bg-mint" : "bg-[rgba(15,58,50,0.16)]"
+    <section className="rounded-[22px] bg-card px-4 py-2.5">
+      <div className="flex min-h-11 items-center gap-3">
+        <BellIcon
+          className="h-[18px] w-[18px] shrink-0 text-sage"
+          strokeWidth={1.8}
+        />
+        <p className="min-w-0 flex-1 text-[15px] text-cream">
+          {L("შეტყობინებები", "Notifications")}
+        </p>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={on}
+          aria-label={L("შეტყობინებები", "Notifications")}
+          disabled={busy || (denied && !on && !canOpenPhoneSettings())}
+          onClick={() => void toggle()}
+          className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+            on ? "bg-mint" : "bg-[rgba(15,58,50,0.16)]"
+          }`}
+        >
+          <span
+            className={`absolute left-0 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+              on ? "translate-x-7" : "translate-x-1"
             }`}
-          >
-            <span
-              className={`absolute left-0 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-                on ? "translate-x-7" : "translate-x-1"
-              }`}
-            />
-          </button>
-        </div>
-        {denied && !on &&
-          (canOpenPhoneSettings() ? (
-            <button
-              type="button"
-              onClick={() => openPhoneNotificationSettings()}
-              className="mt-1 min-h-11 text-left text-xs font-bold text-mint"
-            >
-              {L(
-                "გამორთულია iPhone-ის პარამეტრებში — გახსნა",
-                "Off in iPhone Settings — open Settings"
-              )}
-            </button>
-          ) : (
-            <p className="mt-2 text-xs leading-5 text-body">
-              {L(
-                "გამორთულია ტელეფონის პარამეტრებში: Settings → Apps → ArGadaagdo → Notifications.",
-                "Off in your phone settings: Settings → Apps → ArGadaagdo → Notifications."
-              )}
-            </p>
-          ))}
-        {on && !compact && (
-          <button
-            type="button"
-            onClick={() => void sendTest()}
-            className="mt-1 text-xs font-bold text-mint"
-          >
-            {testNote ||
-              L("სატესტო შეტყობინების გაგზავნა", "Send me a test notification")}
-          </button>
-        )}
-        {failed && (
-          <p className="mt-2 text-xs leading-5 text-danger">
-            {L(
-              "ვერ ჩაირთო. სცადე მოგვიანებით.",
-              "Couldn't turn them on. Please try again later."
-            )}
-          </p>
-        )}
-      </section>
-    </>
+          />
+        </button>
+      </div>
+      {denied && !on && !canOpenPhoneSettings() && (
+        <p className="pb-1 text-xs leading-5 text-body">
+          {L(
+            "ჩართე ტელეფონის პარამეტრებში: Apps → ArGadaagdo → Notifications.",
+            "Turn on in phone settings: Apps → ArGadaagdo → Notifications."
+          )}
+        </p>
+      )}
+      {failed && (
+        <p className="pb-1 text-xs leading-5 text-danger">
+          {L("ვერ ჩაირთო. სცადე ხელახლა.", "Couldn't turn on. Try again.")}
+        </p>
+      )}
+    </section>
   );
 }

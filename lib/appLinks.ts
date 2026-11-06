@@ -1,5 +1,5 @@
 import { SUPPORT_EMAIL } from "@/lib/legal/shared";
-import { getNativeBrowser, isNativeApp } from "@/lib/native";
+import { getNativeBrowser, isNativeApp, removeNativeListener } from "@/lib/native";
 
 // Official social profiles (from the owner, 6 Nov 2026), shown in the website
 // footer and the app's profile footer. A Vercel env handle (without the @)
@@ -67,7 +67,7 @@ export function openSocial(link: SocialLink) {
 
   window.setTimeout(() => {
     document.removeEventListener("visibilitychange", markLeft);
-    void appListener?.then((handle) => handle.remove());
+    removeNativeListener(appListener);
     if (!left) openExternal(link.href);
   }, 1500);
 

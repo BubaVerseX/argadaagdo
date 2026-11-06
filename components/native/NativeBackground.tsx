@@ -1,5 +1,6 @@
 "use client";
 
+import { removeNativeListener } from "@/lib/native";
 import { useEffect, useRef } from "react";
 
 // Design D (docs/design-v3/backgrounds.html, "Your mix (A + C)") in its light
@@ -147,7 +148,7 @@ export default function NativeBackground() {
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibility);
       still.removeEventListener("change", onMotionChange);
-      void appListener?.then((handle) => handle.remove());
+      removeNativeListener(appListener);
     };
   }, []);
 
