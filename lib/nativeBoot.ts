@@ -1,3 +1,5 @@
+import { launchBootSnippet } from "@/lib/nativeLaunch";
+
 // What the app shell does before React runs. Capacitor injects window.Capacitor
 // at document start (WKUserScript on iOS, addDocumentStartJavaScript or HTML
 // injection on Android), so this script already knows it is in the app. In a
@@ -18,6 +20,7 @@ export function isNativeScreenUrl(pathname: string, search: string) {
 // - native-screen hides the server-rendered website page on app-screen routes.
 // - The app is Georgian first; a language the user chose stays.
 // - The home data request starts right away, in parallel with the JavaScript.
+// - The launch animation (once per app start, lib/nativeLaunch.ts).
 // - The app's fonts start downloading now instead of after the CSS is parsed,
 //   so text paints once in the right font (app/fonts.css has the same URLs).
 const nativeFonts = [
@@ -33,4 +36,4 @@ export const nativeBootScript = `try{var c=window.Capacitor;if(c&&c.isNativePlat
   nativeFonts
 )}.forEach(function(u){var l=document.createElement("link");l.rel="preload";l.as="font";l.type="font/woff2";l.crossOrigin="anonymous";l.href=u;document.head.appendChild(l)});if(new RegExp(${JSON.stringify(
   nativeScreenPattern
-)}).test(p)&&!/[?&]full=1(&|$)/.test(location.search)){h.classList.add("native-screen");if(p==="/"||p==="/discover"){window.__nativeFeed=fetch("/api/native/feed").then(function(r){return r.ok?r.json():null}).catch(function(){return null})}}try{if(!localStorage.getItem("argadaagdo-language"))localStorage.setItem("argadaagdo-language","ka")}catch(e){}}}catch(e){}`;
+)}).test(p)&&!/[?&]full=1(&|$)/.test(location.search)){h.classList.add("native-screen");if(p==="/"||p==="/discover"){window.__nativeFeed=fetch("/api/native/feed").then(function(r){return r.ok?r.json():null}).catch(function(){return null})}}try{if(!localStorage.getItem("argadaagdo-language"))localStorage.setItem("argadaagdo-language","ka")}catch(e){}${launchBootSnippet}}}catch(e){}`;

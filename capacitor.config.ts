@@ -18,7 +18,7 @@ const config: CapacitorConfig = {
   webDir: 'native-shell',
   // Same deep green as the site, so launching doesn't flash white before
   // the remote page paints.
-  backgroundColor: '#f7f1e3',
+  backgroundColor: '#0f3a32',
   server: {
     url: 'https://argadaagdo.ge',
     androidScheme: 'https',

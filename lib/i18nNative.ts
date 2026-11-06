@@ -5,6 +5,7 @@ export const nativeTranslations = {
   en: {
     "native.back": "Back",
     "native.nav.map": "Map",
+    "native.nav.nearby": "Nearby",
     "native.error": "Couldn't load.",
     "native.left": "{n} left",
 
@@ -82,6 +83,7 @@ export const nativeTranslations = {
   ka: {
     "native.back": "უკან",
     "native.nav.map": "რუკა",
+    "native.nav.nearby": "ახლოს",
     "native.error": "ვერ ჩაიტვირთა.",
     "native.left": "დარჩა {n}",
 

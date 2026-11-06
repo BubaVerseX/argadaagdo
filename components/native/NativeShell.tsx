@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  HomeIcon,
   LayoutGridIcon,
   MapPinIcon,
   ReceiptIcon,
@@ -84,9 +83,9 @@ export default function NativeShell() {
         }
       : { href: "/orders", label: t("nav.orders"), Icon: ReceiptIcon };
 
+  // Three tabs: Nearby (list and map), Orders, Profile.
   const tabs = [
-    { href: "/", label: t("nav.home"), Icon: HomeIcon },
-    { href: "/map", label: t("native.nav.map"), Icon: MapPinIcon },
+    { href: "/", label: t("native.nav.nearby"), Icon: MapPinIcon },
     ordersTab,
     { href: "/profile", label: t("nav.profile"), Icon: UserIcon },
   ];
@@ -109,7 +108,7 @@ export default function NativeShell() {
   useEffect(
     () =>
       whenIdle(() => {
-        for (const path of ["/", "/map", "/orders", "/profile"]) {
+        for (const path of ["/", "/orders", "/profile"]) {
           router.prefetch(path);
         }
       }),
@@ -117,10 +116,8 @@ export default function NativeShell() {
   );
 
   const activeHref =
-    pathname === "/" || pathname === "/discover"
+    pathname === "/" || pathname === "/discover" || pathname === "/map" || pathname.startsWith("/businesses")
       ? "/"
-      : pathname === "/map" || pathname.startsWith("/businesses")
-      ? "/map"
       : pathname === "/orders" || pathname.startsWith("/business/")
       ? ordersTab.href
       : pathname === "/profile" ||
@@ -142,7 +139,7 @@ export default function NativeShell() {
       {!HIDE_BAR.test(pathname) && (
         <nav
           aria-label={t("brand.name")}
-          className="native-fixed-bottom fixed inset-x-5 z-50"
+          className="native-tabbar native-fixed-bottom fixed inset-x-5 z-50"
         >
           <div className="tab-pill mx-auto flex h-16 w-full max-w-md items-center justify-around px-1.5">
             {tabs.map(({ href, label, Icon }) => {
