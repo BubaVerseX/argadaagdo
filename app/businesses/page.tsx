@@ -67,7 +67,7 @@ export default function BusinessesPage() {
       const [businessResult, offerResult, summaries] = await Promise.all([
         supabase
           .from("businesses")
-          .select("id, owner_id, name, business_type, address, phone, approved")
+          .select("id, name, business_type, address, phone, approved")
           .eq("approved", true)
           .order("id", { ascending: false })
           .limit(BUSINESS_QUERY_LIMIT),

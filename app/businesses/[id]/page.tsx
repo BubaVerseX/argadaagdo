@@ -82,7 +82,8 @@ export default function BusinessProfilePage() {
         await Promise.all([
           supabase
             .from("businesses")
-            .select("*")
+            // Public columns only (guests can't read owner_id or the commission).
+            .select("id, name, business_type, address, phone, approved, created_at, latitude, longitude, sales_paused_on")
             .eq("id", businessId)
             .maybeSingle(),
           supabase
