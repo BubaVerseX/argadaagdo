@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeOrdersScreen } from "@/components/native/screens";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { LoadingState } from "@/components/LoadingState";
@@ -93,7 +95,7 @@ function getInitialPaymentReturnMessage():
   return null;
 }
 
-export default function OrdersPage() {
+function OrdersPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
   useMinuteTick();
@@ -574,3 +576,5 @@ export default function OrdersPage() {
     </main>
   );
 }
+
+export default withNativeScreen(OrdersPage, NativeOrdersScreen);

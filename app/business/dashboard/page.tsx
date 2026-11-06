@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeBusinessScreen } from "@/components/native/screens";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { FilterBar } from "@/components/FilterBar";
@@ -115,7 +117,7 @@ const DASHBOARD_RESERVATION_PAGE_SIZE = 8;
 const PICKUP_LOCKED_MESSAGE =
   "This order is locked after 5 wrong pickup codes. Contact ArGadaagdo support to unlock it.";
 
-export default function BusinessDashboardPage() {
+function BusinessDashboardPage() {
   const router = useRouter();
   const { language, t } = useLanguage();
   const isGeorgian = language === "ka";
@@ -2875,3 +2877,5 @@ export default function BusinessDashboardPage() {
     </main>
   );
 }
+
+export default withNativeScreen(BusinessDashboardPage, NativeBusinessScreen);

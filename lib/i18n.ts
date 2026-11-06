@@ -1,3 +1,5 @@
+import { nativeTranslations } from "@/lib/i18nNative";
+
 export const supportedLanguages = ["en", "ka"] as const;
 
 export type Language = (typeof supportedLanguages)[number];
@@ -16,6 +18,7 @@ export const languageShortNames: Record<Language, string> = {
 
 const translations = {
   en: {
+    ...nativeTranslations.en,
     "brand.name": "ArGadaagdo",
     "brand.tagline": "Food rescue marketplace",
 
@@ -825,6 +828,7 @@ const translations = {
 
   },
   ka: {
+    ...nativeTranslations.ka,
     "brand.name": "არ გადააგდო",
     "brand.tagline": "საკვების გადარჩენის პლატფორმა",
 

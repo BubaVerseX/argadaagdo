@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeHomeScreen } from "@/components/native/screens";
 import { AppHome } from "@/components/home/AppHome";
 import { PublicHome } from "@/components/home/PublicHome";
 import { getUserErrorMessage } from "@/lib/errors";
@@ -16,7 +18,7 @@ import { supabase } from "@/lib/supabase";
 import type { Offer } from "@/lib/types";
 import { useEffect, useState } from "react";
 
-export default function Home() {
+function Home() {
   const { language, t } = useLanguage();
   const signedIn = useHasStoredSession();
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -238,3 +240,5 @@ export default function Home() {
 
   return signedIn ? <AppHome {...homeProps} /> : <PublicHome {...homeProps} />;
 }
+
+export default withNativeScreen(Home, NativeHomeScreen);

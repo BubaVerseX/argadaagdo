@@ -1,5 +1,7 @@
 "use client";
 
+import { withNativeScreen } from "@/components/native/NativeSwitch";
+import { NativeOfferScreen } from "@/components/native/screens";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
@@ -69,7 +71,7 @@ function getUrgencyMessage(quantity: number, language: string) {
   return "";
 }
 
-export default function OfferDetailPage() {
+function OfferDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { language, t } = useLanguage();
@@ -803,3 +805,5 @@ export default function OfferDetailPage() {
     </main>
   );
 }
+
+export default withNativeScreen(OfferDetailPage, NativeOfferScreen);

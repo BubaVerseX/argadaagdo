@@ -1,0 +1,60 @@
+/* Native app only: nothing here applies without html.native-app, which only the
+   inline script in app/layout.tsx sets, and only inside the Capacitor shell. */
+
+/* The website header and footer never paint in the app. */
+html.native-app [data-web-chrome] {
+  display: none !important;
+}
+
+html.native-app,
+html.native-app body {
+  overscroll-behavior-y: none;
+}
+
+/* On a route with an app screen, the server's website HTML never paints. */
+html.native-screen main:not(.native-main) {
+  display: none !important;
+}
+
+/* The skeleton until the screen's chunk arrives: real layout blocks, no spinner.
+   The screens render their own skeletons while their data loads. */
+html.native-screen body:not(:has(.native-main))::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: var(--brand-ground)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect width='390' height='176' fill='%230F3A32'/%3E%3Crect x='20' y='62' width='350' height='48' rx='18' fill='%23164A3F'/%3E%3Crect x='20' y='122' width='70' height='40' rx='20' fill='%23164A3F'/%3E%3Crect x='98' y='122' width='96' height='40' rx='20' fill='%23164A3F'/%3E%3Crect x='202' y='122' width='96' height='40' rx='20' fill='%23164A3F'/%3E%3Crect x='20' y='196' width='350' height='320' rx='28' fill='%23EFE7D3'/%3E%3Crect x='20' y='532' width='350' height='320' rx='28' fill='%23EFE7D3'/%3E%3C/svg%3E")
+    top center / 100% auto no-repeat;
+}
+
+.native-main {
+  min-height: 100dvh;
+  background: var(--page);
+  color: var(--cream);
+  /* Clears the floating bar. */
+  padding-bottom: calc(6.5rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+.native-fixed-bottom {
+  bottom: calc(0.75rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+.native-press {
+  transition: transform 120ms ease;
+}
+
+.native-press:active {
+  transform: scale(0.98);
+}
+
+@keyframes native-shimmer {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.native-skeleton {
+  background: var(--well);
+  animation: native-shimmer 1.2s ease-in-out infinite;
+}
