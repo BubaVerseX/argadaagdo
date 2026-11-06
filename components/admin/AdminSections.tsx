@@ -1,9 +1,8 @@
 import { LEGAL_FORMS } from "@/lib/verification";
 import { useState } from "react";
-import AnalyticsBarCard from "@/components/AnalyticsBarCard";
+import type { ReactNode } from "react";
 import StatCard from "@/components/StatCard";
-import { CheckIcon } from "@/components/icons";
-import { KpiCardGrid, type KpiCard } from "@/components/analytics/KpiCardGrid";
+import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { MiniBarChart } from "@/components/analytics/MiniBarChart";
 import {
   formatAnalyticsMoney,
@@ -13,14 +12,9 @@ import {
   getApplicationHealthStatusLabel,
   type ApplicationHealthItem,
 } from "@/lib/diagnostics";
-import type { Language, TranslationKey } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 import { formatDisplayDateTime } from "@/lib/offerLifecycle";
-import {
-  adminPaymentPanelSections,
-  currentDatabasePaymentStatuses,
-  paymentProviderOptions,
-  paymentStatuses,
-} from "@/lib/paymentArchitecture";
+import { paymentStatuses } from "@/lib/paymentArchitecture";
 import type { Business, Profile } from "@/lib/types";
 import type { FormEvent } from "react";
 import type { LatLng } from "@/lib/location";
@@ -49,296 +43,204 @@ export type AdminReviewReport = {
   } | null;
 };
 
-const REVIEW_REPORT_REASON_LABELS: Record<string, string> = {
-  offensive: "Offensive",
-  spam: "Spam",
-  false: "False",
-  other: "Other",
+const REVIEW_REPORT_REASON_LABELS: Record<string, { ka: string; en: string }> = {
+  offensive: { ka: "შეურაცხმყოფელი", en: "Offensive" },
+  spam: { ka: "სპამი", en: "Spam" },
+  false: { ka: "ყალბი", en: "False" },
+  other: { ka: "სხვა", en: "Other" },
 };
 
-type MetricCard = {
-  title: string;
-  value: number | string;
-  helper: string;
-  className: string;
+// Stored business types are English; Georgian admins see them translated.
+const GEORGIAN_BUSINESS_TYPES: Record<string, string> = {
+  Cafe: "კაფე",
+  Bakery: "საცხობი",
+  Restaurant: "რესტორანი",
+  Supermarket: "სუპერმარკეტი",
+  Hotel: "სასტუმრო",
+  Other: "სხვა",
 };
 
-type BarMetric = {
-  title: string;
-  value: number;
-  caption: string;
-  percentage: number;
-  tone: "green" | "yellow" | "red";
-};
+function businessTypeLabel(type: string | null | undefined, language: Language) {
+  if (!type) return "";
+  return language === "ka" ? GEORGIAN_BUSINESS_TYPES[type] ?? type : type;
+}
 
-type SimpleStat = {
+function useText(language: Language) {
+  return (ka: string, en: string) => (language === "ka" ? ka : en);
+}
+
+export type SimpleStat = {
   title: string;
   value: number | string;
   tone?: "green" | "yellow" | "red";
 };
 
-type AdminHeroProps = {
-  t: (key: TranslationKey) => string;
-};
-
-export function AdminHero({ t }: AdminHeroProps) {
+function StatGrid({ stats, className = "" }: { stats: SimpleStat[]; className?: string }) {
   return (
-    <div className="premium-surface rounded-3xl p-5 sm:p-8 md:rounded-3xl md:p-12">
-      <p className="premium-badge px-4 py-2">
-        {t("admin.analytics")}
-      </p>
-      <h1 className="mt-4 text-3xl font-semibold text-cream sm:text-4xl md:text-6xl">
-        {t("admin.title")}
-      </h1>
-      <p className="mt-3 max-w-2xl text-sm leading-7 text-body sm:text-lg">
-        {t("admin.subtitle")}
-      </p>
+    <div className={`grid grid-cols-2 gap-3 md:grid-cols-4 ${className}`}>
+      {stats.map((stat) => (
+        <StatCard key={stat.title} {...stat} />
+      ))}
     </div>
   );
 }
 
-export function AdminMarketplaceOverview({
-  metrics,
+function SubTitle({ children }: { children: ReactNode }) {
+  return <h3 className="mt-6 text-lg font-semibold text-cream first:mt-0">{children}</h3>;
+}
+
+export function AdminHeader({ language }: { language: Language }) {
+  const text = useText(language);
+
+  return (
+    <h1 className="text-3xl font-semibold text-cream sm:text-4xl">
+      {text("ადმინი", "Admin")}
+    </h1>
+  );
+}
+
+/** A short title that opens its details on tap. */
+export function AdminCollapsible({
+  title,
+  count,
+  children,
 }: {
-  metrics: MetricCard[];
+  title: string;
+  count?: number;
+  children: ReactNode;
 }) {
   return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Marketplace overview
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Pilot operations snapshot
-          </h2>
-        </div>
-
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          The core numbers admins need before approving businesses or checking
-          marketplace activity.
-        </p>
-      </div>
-
-      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-3" />
-    </div>
+    <details className="group premium-card mt-3 rounded-3xl">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 font-semibold text-cream [&::-webkit-details-marker]:hidden">
+        <span>
+          {title}
+          {count !== undefined && <span className="ml-2 text-body">{count}</span>}
+        </span>
+        <ChevronDownIcon
+          className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
+          strokeWidth={1.8}
+        />
+      </summary>
+      <div className="px-5 pb-5">{children}</div>
+    </details>
   );
 }
 
-export function AdminRevenueInsights({
+export function AdminKeyNumbers({ stats }: { stats: SimpleStat[] }) {
+  return <StatGrid stats={stats} className="mt-6" />;
+}
+
+export function AdminAnalytics({
+  language,
+  overview,
   analytics,
 }: {
+  language: Language;
+  overview: SimpleStat[];
   analytics: MarketplaceAnalyticsSummary;
 }) {
-  const cards: KpiCard[] = [
+  const text = useText(language);
+  const revenue: SimpleStat[] = [
+    { title: text("შეკვეთები", "Reservations"), value: analytics.reservations },
+    { title: text("გაცემული", "Picked up"), value: analytics.completedPickups, tone: "green" },
     {
-      title: "Businesses",
-      value: analytics.businesses,
-      helper: "All business profiles in the marketplace",
-    },
-    {
-      title: "Customers",
-      value: analytics.customers,
-      helper: "Customer accounts ready to reserve offers",
-    },
-    {
-      title: "Offers",
-      value: analytics.offers,
-      helper: "Total offers visible to admin",
-    },
-    {
-      title: "Reservations",
-      value: analytics.reservations,
-      helper: "All order records in the current admin dataset",
-      tone: "green",
-    },
-    {
-      title: "Completed Pickups",
-      value: analytics.completedPickups,
-      helper: "Orders successfully collected",
-      tone: "green",
-    },
-    {
-      title: "Cancellation Rate",
+      title: text("გაუქმება", "Cancel rate"),
       value: `${analytics.cancellationRate}%`,
-      helper: "Cancelled, refunded and no-show share of orders",
-      tone: analytics.cancellationRate > 20 ? "yellow" : "white",
+      tone: analytics.cancellationRate > 20 ? "yellow" : undefined,
     },
+    { title: text("საშ. შეფასება", "Avg rating"), value: analytics.averageRating },
     {
-      title: "Average Rating",
-      value: analytics.averageRating,
-      helper: "Average customer review score",
-      tone: analytics.averageRating === "No ratings yet" ? "white" : "yellow",
-    },
-    {
-      title: "Marketplace Revenue",
+      title: text("საკომისიო", "Commission"),
       value: formatAnalyticsMoney(analytics.estimatedMarketplaceRevenue),
-      helper: "Recorded platform commission (30% default, per-business rate)",
       tone: "green",
     },
     {
-      title: "Business Revenue",
+      // Recorded per order at each business's own rate (30% default).
+      title: text("ბიზნესების შემოსავალი", "Business earnings"),
       value: formatAnalyticsMoney(analytics.estimatedBusinessRevenue),
-      helper: "Estimated 90% business earnings",
       tone: "green",
     },
   ];
 
   return (
-    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Marketplace revenue
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Financial and operational insight
-          </h2>
-          <p className="mt-3 max-w-3xl leading-7 text-body">
-            These are pilot estimates from existing orders. They prepare the
-            admin view for a future commission model without connecting real
-            payment providers.
-          </p>
-        </div>
-
-        <div className="ui-card rounded-3xl p-4 text-sm font-semibold leading-6 text-cream lg:max-w-sm">
-          <p className="font-semibold">Future commission model</p>
-          <p className="mt-1">
-            Each order records the platform commission at the business&apos;s rate (30% by default) and the business
-            revenue per paid reservation.
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <KpiCardGrid cards={cards} />
-      </div>
-
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+    <>
+      <StatGrid stats={overview} />
+      <StatGrid stats={revenue} className="mt-3" />
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <MiniBarChart
-          title="Reservations over time"
-          description="Reservation volume by recent order creation date."
+          title={text("შეკვეთები დღეების მიხედვით", "Reservations by day")}
+          description=""
           data={analytics.reservationsOverTime}
         />
         <MiniBarChart
-          title="Revenue over time"
-          description="Estimated gross reservation value by date."
+          title={text("შემოსავალი დღეების მიხედვით", "Revenue by day")}
+          description=""
           data={analytics.revenueOverTime}
           valuePrefix="₾ "
         />
         <MiniBarChart
-          title="Offer popularity"
-          description="Top offers by total reservations."
+          title={text("პოპულარული", "Top offers")}
+          description=""
           data={analytics.offerPopularity}
         />
       </div>
-    </section>
+    </>
   );
 }
 
-export function AdminOperationalDashboard({
-  metrics,
+export function AdminOperations({
+  language,
+  today,
+  status,
+  signals,
 }: {
-  metrics: SimpleStat[];
+  language: Language;
+  today: SimpleStat[];
+  status: SimpleStat[];
+  signals: SimpleStat[];
 }) {
+  const text = useText(language);
+
   return (
-    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Operational dashboard
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Today&apos;s marketplace activity
-          </h2>
-        </div>
+    <>
+      <SubTitle>{text("დღეს", "Today")}</SubTitle>
+      <StatGrid stats={today} className="mt-3" />
+      <SubTitle>{text("სტატუსები", "Statuses")}</SubTitle>
+      <StatGrid stats={status} className="mt-3" />
+      <SubTitle>{text("სიგნალები", "Signals")}</SubTitle>
+      <StatGrid stats={signals} className="mt-3" />
+    </>
+  );
+}
 
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          Fast pilot signals for reservations, pickups, cancellations,
-          no-shows and marketplace activity.
-        </p>
-      </div>
+export function AdminPayments({
+  language,
+  stats,
+}: {
+  language: Language;
+  stats: SimpleStat[];
+}) {
+  const text = useText(language);
 
-      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
-        {metrics.map((metric) => (
-          <StatCard key={metric.title} {...metric} />
+  return (
+    <>
+      <StatGrid stats={stats} />
+      <SubTitle>{text("გადახდის სტატუსები", "Payment states")}</SubTitle>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {paymentStatuses.map((status) => (
+          <span
+            key={status}
+            className="ui-card rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-mint"
+          >
+            {status}
+          </span>
         ))}
       </div>
-    </section>
+    </>
   );
 }
 
-export function AdminMarketplaceIntelligence({
-  metrics,
-}: {
-  metrics: MetricCard[];
-}) {
-  return (
-    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Marketplace intelligence
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Business activity signals
-          </h2>
-        </div>
-
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          Rule-based operations view for spotting active partners, inactive
-          businesses and offers that need admin attention.
-        </p>
-      </div>
-
-      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-3" />
-    </section>
-  );
-}
-
-export function AdminSupportTools({
-  metrics,
-}: {
-  metrics: MetricCard[];
-}) {
-  return (
-    <section className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Support tools
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Lookup workspace
-          </h2>
-        </div>
-
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          Use the admin search box below to look up reservations, customers,
-          businesses and orders during pilot operations.
-        </p>
-      </div>
-
-      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-5" />
-    </section>
-  );
-}
-
-export function AdminHealthSections({
-  t,
-  marketplaceHealth,
-  marketplaceOperations,
-  operationalStats,
-  customerReliabilityStats,
-  applicationHealth,
-}: {
-  t: (key: TranslationKey) => string;
-  marketplaceHealth: BarMetric[];
-  marketplaceOperations: SimpleStat[];
-  operationalStats: SimpleStat[];
-  customerReliabilityStats: SimpleStat[];
-  applicationHealth: ApplicationHealthItem[];
-}) {
+export function AdminApplicationHealth({ items }: { items: ApplicationHealthItem[] }) {
   const healthToneStyles = {
     ok: "ui-card text-cream",
     warning: "bg-warning-soft text-warning",
@@ -346,311 +248,63 @@ export function AdminHealthSections({
   };
 
   return (
-    <>
-      <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="premium-card rounded-3xl p-5 sm:p-8">
-          <p className="premium-badge px-4 py-2">
-            Admin guidance
-          </p>
-          <h2 className="mt-4 text-2xl font-semibold text-cream sm:text-3xl">
-            Use this dashboard to approve businesses and monitor marketplace
-            activity.
-          </h2>
-          <p className="mt-4 leading-7 text-body">
-            Review pending businesses before they can publish offers, then watch
-            orders, active offers, ratings and reliability signals as the pilot
-            grows.
-          </p>
-        </div>
-
-        <div className="premium-card rounded-3xl p-5 sm:p-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-                Live marketplace health
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-                {t("admin.analytics")}
-              </h2>
-            </div>
-
-            <p className="max-w-xl text-sm text-body sm:text-right">
-              Lightweight status cards based on the current businesses, offers,
-              orders and ratings visible to admins.
-            </p>
-          </div>
-
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {marketplaceHealth.map((metric) => (
-              <AnalyticsBarCard key={metric.title} {...metric} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-              Marketplace operations
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-              Pilot health checklist
-            </h2>
-          </div>
-
-          <p className="max-w-xl text-sm text-body sm:text-right">
-            Fast counts for approvals, today&apos;s reservations, pickups, expired
-            offers and active customer demand.
-          </p>
-        </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
-          {marketplaceOperations.map((stat) => (
-            <StatCard key={stat.title} {...stat} />
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-              Application health
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-              Runtime diagnostics
-            </h2>
-          </div>
-
-          <p className="max-w-xl text-sm text-body sm:text-right">
-            Lightweight checks for environment variables, Supabase, Storage,
-            Realtime and the deployed build identifier.
-          </p>
-        </div>
-
-        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {applicationHealth.map((item) => (
-            <div
-              key={item.title}
-              className={`rounded-2xl p-4 ${healthToneStyles[item.status]}`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-semibold">{item.title}</p>
-                <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide">
-                  {getApplicationHealthStatusLabel(item.status)}
-                </span>
-              </div>
-              <p className="mt-3 text-2xl font-semibold">{item.value}</p>
-              <p className="mt-2 text-sm font-semibold leading-6">
-                {item.detail}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-              Operational details
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-              Status and reliability
-            </h2>
-          </div>
-
-          <p className="max-w-xl text-sm text-body sm:text-right">
-            Extra signals for spotting sold-out offers, no-shows and customer
-            reliability risks during the pilot.
-          </p>
-        </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6">
-          {operationalStats.map((stat) => (
-            <StatCard key={stat.title} {...stat} />
-          ))}
-
-          {customerReliabilityStats.map((stat) => (
-            <StatCard key={stat.title} {...stat} />
-          ))}
-        </div>
-      </div>
-    </>
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      {items.map((item) => (
+        <details key={item.title} className={`rounded-2xl p-4 ${healthToneStyles[item.status]}`}>
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+            <span className="font-semibold">{item.title}</span>
+            <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+              {getApplicationHealthStatusLabel(item.status)}
+            </span>
+          </summary>
+          <p className="mt-2 text-sm font-semibold">{item.value}</p>
+          <p className="mt-1 text-sm leading-6">{item.detail}</p>
+        </details>
+      ))}
+    </div>
   );
 }
 
-export function AdminPaymentsOverview({
-  metrics,
+export function AdminAccounts({
+  language,
+  stats,
+  profiles,
 }: {
-  metrics: MetricCard[];
+  language: Language;
+  stats: SimpleStat[];
+  profiles: Profile[];
 }) {
+  const text = useText(language);
+
   return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Payments overview
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Financial architecture overview
-          </h2>
+    <>
+      <StatGrid stats={stats} />
+
+      <div className="ui-card mt-4 overflow-hidden rounded-3xl">
+        <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-well px-4 py-3 text-xs font-semibold uppercase tracking-wide text-body">
+          <span>{text("ელფოსტა", "Email")}</span>
+          <span>{text("როლი", "Role")}</span>
+          <span>{text("სანდოობა", "Reliability")}</span>
         </div>
 
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          TBC Bank checkout support is wired through server route
-          handlers. This panel shows the financial fields recorded by orders and
-          the states admins should monitor during pilot operations.
-        </p>
-      </div>
+        {profiles.length === 0 && (
+          <p className="px-4 py-5 text-body">{text("ანგარიშები არ არის.", "No accounts.")}</p>
+        )}
 
-      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-3" />
-
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-3xl bg-well p-5">
-          <h3 className="text-xl font-semibold text-cream">
-            Payment states
-          </h3>
-          <p className="mt-2 text-sm leading-6 text-body">
-            Current database payments support{" "}
-            {currentDatabasePaymentStatuses.join(", ")}. Pending sessions hold
-            inventory until TBC Bank confirms, fails, cancels or expires
-            the payment.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {paymentStatuses.map((status) => (
-              <span
-                key={status}
-                className="ui-card rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-mint"
-              >
-                {status}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="ui-card rounded-3xl p-5">
-          <h3 className="text-xl font-semibold text-cream">
-            Provider options
-          </h3>
-          <div className="mt-4 grid gap-2">
-            {paymentProviderOptions.map((provider) => (
-              <div key={provider.id} className="rounded-2xl bg-well p-3 text-sm">
-                <p className="font-semibold text-cream">{provider.name}</p>
-                <p className="mt-1 leading-5 text-body">
-                  {provider.role}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 grid gap-3 md:grid-cols-5">
-        {adminPaymentPanelSections.map((section) => (
+        {profiles.slice(0, 12).map((profile) => (
           <div
-            key={section.title}
-            className="ui-card rounded-2xl p-4"
+            key={profile.id}
+            className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 px-4 py-4 text-sm font-semibold text-body"
           >
-            <p className="font-semibold text-cream">{section.title}</p>
-            <p className="mt-2 text-sm leading-6 text-body">
-              {section.text}
-            </p>
+            <span className="min-w-0 break-words">{profile.email || "—"}</span>
+            <span className="capitalize">{profile.role || "—"}</span>
+            <span>
+              {profile.reliability_score ?? "—"} · {profile.reliability_status || "—"}
+            </span>
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-export function AdminAccountView({
-  metrics,
-  profiles,
-}: {
-  metrics: MetricCard[];
-  profiles: Profile[];
-}) {
-  return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Account view
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Customers, businesses and admins
-          </h2>
-        </div>
-
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          Admins can review role distribution here. Roles still cannot be
-          changed from this dashboard.
-        </p>
-      </div>
-
-      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-4" />
-
-      <div className="ui-card mt-6 overflow-hidden rounded-3xl">
-        <div className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 bg-well px-4 py-3 text-xs font-semibold uppercase tracking-wide text-body">
-          <span>Email</span>
-          <span>Role</span>
-          <span>Reliability</span>
-        </div>
-
-        <div>
-          {profiles.length === 0 && (
-            <p className="px-4 py-5 text-body">
-              No profiles available.
-            </p>
-          )}
-
-          {profiles.slice(0, 12).map((profile) => (
-            <div
-              key={profile.id}
-              className="grid grid-cols-[1.4fr_0.8fr_1fr] gap-3 px-4 py-4 text-sm font-semibold text-body"
-            >
-              <span className="min-w-0 break-words">
-                {profile.email || "Email unavailable"}
-              </span>
-              <span className="capitalize">{profile.role || "Missing"}</span>
-              <span>
-                {profile.reliability_score ?? "N/A"} ·{" "}
-                {profile.reliability_status || "unknown"}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function AdminModerationVisibility({
-  metrics,
-}: {
-  metrics: MetricCard[];
-}) {
-  return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            Moderation visibility
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            Business and offer review signals
-          </h2>
-        </div>
-
-        <p className="max-w-xl text-sm text-body sm:text-right">
-          Rejected businesses leave the pending queue until the owner edits the
-          details and resubmits. Find them under the Rejected filter.
-        </p>
-      </div>
-
-      <MetricCardGrid metrics={metrics} columnsClassName="xl:grid-cols-4" />
-    </div>
+    </>
   );
 }
 
@@ -687,99 +341,105 @@ function isVerificationReady(verification: BusinessVerificationReview | undefine
 }
 
 function BusinessVerificationCard({
+  language,
   verification,
   busy,
   onConfirmIbanHolder,
   onOpenExtract,
 }: {
+  language: Language;
   verification: BusinessVerificationReview | undefined;
   busy: boolean;
   onConfirmIbanHolder: (confirmed: boolean) => void;
   onOpenExtract: (path: string) => void;
 }) {
+  const text = useText(language);
+
   if (verification?.is_exempt) {
     return (
-      <p className="mt-4 rounded-2xl bg-well p-4 text-sm font-semibold text-body">
-        Approved before verification existed, so no documents are required.
+      <p className="mt-3 rounded-2xl bg-well p-3 text-sm font-semibold text-body">
+        {text("დოკუმენტები არ სჭირდება (ძველი ბიზნესი).", "No documents needed (older business).")}
       </p>
     );
   }
 
   if (!verification?.legal_name) {
     return (
-      <p className="mt-4 rounded-2xl bg-danger-soft p-4 text-sm font-semibold text-danger">
-        No verification details. This business can&apos;t be approved until the
-        owner completes the application.
+      <p className="mt-3 rounded-2xl bg-danger-soft p-3 text-sm font-semibold text-danger">
+        {text("ვერიფიკაციის მონაცემები არ არის.", "No verification details.")}
       </p>
     );
   }
 
-  const legalForm =
-    LEGAL_FORMS.find((form) => form.value === verification.legal_form)?.en ??
-    verification.legal_form;
+  const legalFormEntry = LEGAL_FORMS.find((form) => form.value === verification.legal_form);
+  const legalForm = legalFormEntry
+    ? language === "ka"
+      ? legalFormEntry.ka
+      : legalFormEntry.en
+    : verification.legal_form;
 
   return (
-    <div className="mt-4 rounded-2xl bg-well p-4">
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint">
-        Verification
-      </p>
-      <div className="mt-3 grid gap-3 text-sm font-semibold text-body sm:grid-cols-2">
-        <BusinessDetail label="Legal name" value={verification.legal_name} />
-        <BusinessDetail label="Legal form" value={legalForm} />
-        <BusinessDetail label="Identification code" value={verification.id_code} />
-        <BusinessDetail label="Owner" value={verification.owner_full_name} />
+    <div className="mt-3 grid gap-3">
+      <div className="grid grid-cols-2 gap-2 text-sm font-semibold text-body">
+        <BusinessDetail label={text("იურიდიული სახელი", "Legal name")} value={verification.legal_name} />
+        <BusinessDetail label={text("ფორმა", "Legal form")} value={legalForm} />
+        <BusinessDetail label={text("ს/კ", "ID code")} value={verification.id_code} />
+        <BusinessDetail label={text("მფლობელი", "Owner")} value={verification.owner_full_name} />
         <BusinessDetail
-          label={verification.phone_still_verified ? "Phone (SMS verified)" : "Phone (NOT verified)"}
+          label={
+            verification.phone_still_verified
+              ? text("ტელეფონი ✓", "Phone ✓")
+              : text("ტელეფონი ✗ (არ არის დადასტურებული)", "Phone ✗ (not verified)")
+          }
           value={verification.verified_phone ? `+${verification.verified_phone}` : null}
         />
         <BusinessDetail label="TBC IBAN" value={verification.iban} />
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
+        {verification.registry_extract_path && (
+          <button
+            type="button"
+            onClick={() => onOpenExtract(verification.registry_extract_path || "")}
+            className="premium-button-secondary min-h-11 px-4 py-2 text-sm"
+          >
+            {text("ამონაწერის გახსნა", "Open extract")}
+          </button>
+        )}
         <a
           href={REGISTRY_CHECK_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="premium-button-secondary px-4 py-2 text-sm"
+          className="premium-button-secondary min-h-11 px-4 py-2 text-sm"
         >
-          Registry check ↗
+          {text("რეესტრი ↗", "Registry ↗")}
         </a>
         {verification.id_code && (
           <button
             type="button"
             onClick={() => void navigator.clipboard?.writeText(verification.id_code || "")}
-            className="premium-button-secondary px-4 py-2 text-sm"
+            className="premium-button-secondary min-h-11 px-4 py-2 text-sm"
           >
-            Copy ID code
-          </button>
-        )}
-        {verification.registry_extract_path && (
-          <button
-            type="button"
-            onClick={() => onOpenExtract(verification.registry_extract_path || "")}
-            className="premium-button-secondary px-4 py-2 text-sm"
-          >
-            Open registry extract
+            {text("ს/კ კოპირება", "Copy ID")}
           </button>
         )}
       </div>
 
-      <label className="mt-4 flex items-start gap-3 text-sm font-semibold text-cream">
+      <label className="flex min-h-11 items-center gap-3 text-sm font-semibold text-cream">
         <input
           type="checkbox"
           checked={Boolean(verification.iban_holder_confirmed_at)}
           disabled={busy}
           onChange={(event) => onConfirmIbanHolder(event.target.checked)}
-          className="mt-0.5 h-[22px] w-[22px] shrink-0 accent-mint"
+          className="h-[22px] w-[22px] shrink-0 accent-mint"
         />
-        I confirmed that the IBAN holder name matches the legal name.
+        {text("IBAN-ის მფლობელი = იურიდიული სახელი", "IBAN holder = legal name")}
       </label>
     </div>
   );
 }
 
 export function PendingBusinesses({
-  t,
   language,
   businesses,
   waitingCount,
@@ -788,10 +448,8 @@ export function PendingBusinesses({
   onConfirmIbanHolder,
   onOpenExtract,
   onApprove,
-  onRequestChanges,
   onReject,
 }: {
-  t: (key: TranslationKey) => string;
   language: Language;
   businesses: AdminBusiness[];
   /** Total pending businesses (the list itself is one page). */
@@ -801,191 +459,97 @@ export function PendingBusinesses({
   onConfirmIbanHolder: (id: number, confirmed: boolean) => void;
   onOpenExtract: (path: string) => void;
   onApprove: (id: number) => void;
-  onRequestChanges: (id: number, reason: string) => void;
   onReject: (id: number, reason: string) => void;
 }) {
-  function handleReviewAction(
-    event: FormEvent<HTMLFormElement>,
-    businessId: number
-  ) {
+  const text = useText(language);
+
+  function handleReject(event: FormEvent<HTMLFormElement>, businessId: number) {
     event.preventDefault();
-
     const formData = new FormData(event.currentTarget);
-    const reason = String(formData.get("reason") || "").trim();
-    // FormData(form) never includes the clicked submit button, so read the
-    // action from the event's submitter instead.
-    const submitter = (event.nativeEvent as SubmitEvent).submitter as
-      | HTMLButtonElement
-      | null;
-    const action =
-      submitter?.name === "approval_action" ? submitter.value : "";
-
-    if (action === "request_changes") {
-      onRequestChanges(businessId, reason);
-      return;
-    }
-
-    if (action === "reject") {
-      onReject(businessId, reason);
-    }
+    onReject(businessId, String(formData.get("reason") || "").trim());
   }
 
   return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-warning sm:text-sm">
-            Approval queue
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            {t("admin.pendingBusinesses")}
-          </h2>
-          <p className="mt-2 max-w-2xl leading-7 text-body">
-            Review new business registrations before they can publish food
-            rescue offers.
-          </p>
-        </div>
-
-        <span className="w-full rounded-full bg-warning-soft px-4 py-2 text-center text-sm font-semibold text-warning sm:w-auto">
-          {waitingCount ?? businesses.length} waiting
+    <section className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-2xl font-semibold text-cream">
+          {text("დასამტკიცებელი", "To approve")}
+        </h2>
+        <span className="rounded-full bg-warning-soft px-4 py-2 text-sm font-semibold text-warning">
+          {waitingCount ?? businesses.length}
         </span>
       </div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-3">
-        {[
-          {
-            title: "1. Review details",
-            text: "Check the business type, address and phone before approving.",
-          },
-          {
-            title: "2. Approve verified businesses",
-            text: "Approved businesses can open their dashboard and publish offers.",
-          },
-          {
-            title: "3. Monitor pilot activity",
-            text: "Use marketplace health cards to watch offers, orders and ratings.",
-          },
-        ].map((step) => (
-          <div key={step.title} className="rounded-2xl bg-well p-4 text-sm">
-            <p className="font-semibold text-cream">{step.title}</p>
-            <p className="mt-2 leading-6 text-body">
-              {step.text}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-6 grid gap-4">
+      <div className="mt-4 grid gap-4">
         {businesses.length === 0 && (
-          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
-            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <CheckIcon className="h-6 w-6 text-mint" strokeWidth={2} />
-            </div>
-            <h3 className="mt-4 text-2xl font-semibold text-cream">
-              No businesses awaiting approval
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              New registrations will appear here.
-            </p>
-          </div>
+          <p className="flex items-center gap-2 font-semibold text-body">
+            <CheckIcon className="h-5 w-5 text-mint" strokeWidth={2} />
+            {text("არაფერი ელოდება", "Nothing waiting")}
+          </p>
         )}
 
         {businesses.map((business) => (
           <div
             key={business.id}
-            className="grid gap-5 rounded-3xl bg-warning-soft p-5 sm:p-6 lg:grid-cols-[1fr_320px] lg:items-start"
+            className="grid gap-4 rounded-3xl bg-warning-soft p-4 sm:p-6 lg:grid-cols-[1fr_300px] lg:items-start"
           >
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-xl font-semibold sm:text-2xl">
-                  {business.name}
-                </h3>
-                <span className="rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning">
-                  Pending approval
-                </span>
-              </div>
-
-              <div className="mt-4 grid gap-3 text-sm font-semibold text-body sm:grid-cols-2 xl:grid-cols-4">
-                <BusinessDetail label="Business type" value={business.business_type} />
-                <BusinessDetail label="Address" value={business.address} />
-                <BusinessDetail label="Phone" value={business.phone} />
-                <BusinessDetail
-                  label="Registered"
-                  value={formatDisplayDateTime(business.created_at, language)}
-                />
-              </div>
+              <h3 className="break-words text-xl font-semibold text-cream">{business.name}</h3>
+              <p className="mt-1 text-sm text-body">
+                {businessTypeLabel(business.business_type, language)} · {business.address}
+              </p>
+              <p className="text-sm text-body">
+                {business.phone} · {formatDisplayDateTime(business.created_at, language)}
+              </p>
 
               <BusinessVerificationCard
+                language={language}
                 verification={verifications[business.id]}
                 busy={updatingBusinessId !== null}
-                onConfirmIbanHolder={(confirmed) =>
-                  onConfirmIbanHolder(business.id, confirmed)
-                }
+                onConfirmIbanHolder={(confirmed) => onConfirmIbanHolder(business.id, confirmed)}
                 onOpenExtract={onOpenExtract}
               />
             </div>
 
             <form
-              onSubmit={(event) => handleReviewAction(event, business.id)}
-              className="premium-card rounded-3xl p-4"
+              onSubmit={(event) => handleReject(event, business.id)}
+              className="premium-card grid gap-2 rounded-3xl p-4"
             >
-              <label className="grid gap-2 text-sm font-semibold text-body">
-                Review reason
-                <textarea
-                  name="reason"
-                  rows={3}
-                  placeholder="Required to reject. The owner sees this and gets it by email."
-                  maxLength={500}
-                  className="premium-input p-3 font-semibold"
-                />
-              </label>
+              <button
+                type="button"
+                onClick={() => onApprove(business.id)}
+                disabled={
+                  updatingBusinessId !== null ||
+                  !isVerificationReady(verifications[business.id])
+                }
+                className="premium-button min-h-12 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {updatingBusinessId === business.id
+                  ? text("ინახება...", "Updating...")
+                  : text("დამტკიცება", "Approve")}
+              </button>
 
-              <div className="mt-4 grid gap-2">
-                <button
-                  type="button"
-                  onClick={() => onApprove(business.id)}
-                  disabled={
-                    updatingBusinessId !== null ||
-                    !isVerificationReady(verifications[business.id])
-                  }
-                  className="premium-button min-h-12 w-full px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {updatingBusinessId === business.id
-                    ? "Updating..."
-                    : "Approve"}
-                </button>
+              <textarea
+                name="reason"
+                rows={2}
+                aria-label={text("უარის მიზეზი", "Reason for rejection")}
+                placeholder={text("უარის მიზეზი (მფლობელი ნახავს)", "Reason (owner sees it)")}
+                maxLength={500}
+                className="premium-input mt-2 p-3 font-semibold"
+              />
 
-                <button
-                  type="submit"
-                  name="approval_action"
-                  value="request_changes"
-                  disabled={updatingBusinessId !== null}
-                  className="min-h-12 rounded-full bg-warning-soft px-6 py-3 font-semibold text-warning transition hover:bg-warning-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
-                >
-                  Request changes
-                </button>
-
-                <button
-                  type="submit"
-                  name="approval_action"
-                  value="reject"
-                  disabled={updatingBusinessId !== null}
-                  className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
-                >
-                  Reject
-                </button>
-              </div>
-
-              <p className="mt-3 text-xs leading-5 text-body">
-                Reject saves the reason and emails the owner, who can edit the
-                details and resubmit. Request changes doesn&apos;t save or send
-                anything yet, so tell the business yourself.
-              </p>
+              <button
+                type="submit"
+                disabled={updatingBusinessId !== null}
+                className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
+              >
+                {text("უარყოფა", "Reject")}
+              </button>
             </form>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -996,50 +560,27 @@ export function RejectedBusinesses({
   language: Language;
   businesses: AdminBusiness[];
 }) {
+  const text = useText(language);
+
   return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <h2 className="text-xl font-semibold sm:text-2xl">Rejected businesses</h2>
+    <div className="grid gap-3">
+      {businesses.length === 0 && (
+        <p className="font-semibold text-body">{text("არ არის.", "None.")}</p>
+      )}
 
-      <div className="mt-6 grid gap-4">
-        {businesses.length === 0 && (
-          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
-            <h3 className="text-2xl font-semibold text-cream">
-              No rejected businesses
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              Rejected applications appear here until the owner resubmits.
-            </p>
-          </div>
-        )}
-
-        {businesses.map((business) => (
-          <div key={business.id} className="rounded-3xl bg-danger-soft p-5 sm:p-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="min-w-0 break-words text-xl font-semibold sm:text-2xl">
-                {business.name}
-              </h3>
-              <span className="rounded-full bg-danger-soft px-3 py-1 text-xs font-semibold text-danger">
-                Rejected
-              </span>
-            </div>
-
-            <div className="mt-4 grid gap-3 text-sm font-semibold text-body sm:grid-cols-2 xl:grid-cols-4">
-              <BusinessDetail label="Business type" value={business.business_type} />
-              <BusinessDetail label="Address" value={business.address} />
-              <BusinessDetail label="Phone" value={business.phone} />
-              <BusinessDetail
-                label="Rejected"
-                value={formatDisplayDateTime(business.rejected_at, language)}
-              />
-            </div>
-
-            <p className="mt-4 whitespace-pre-wrap break-words text-body">
-              <span className="font-semibold text-cream">Reason: </span>
-              {business.rejection_reason}
-            </p>
-          </div>
-        ))}
-      </div>
+      {businesses.map((business) => (
+        <div key={business.id} className="rounded-2xl bg-danger-soft p-4">
+          <h3 className="min-w-0 break-words font-semibold text-cream">{business.name}</h3>
+          <p className="mt-1 text-sm text-body">
+            {businessTypeLabel(business.business_type, language)} · {business.address} ·{" "}
+            {formatDisplayDateTime(business.rejected_at, language)}
+          </p>
+          <p className="mt-1 whitespace-pre-wrap break-words text-sm text-body">
+            <span className="font-semibold text-cream">{text("მიზეზი: ", "Reason: ")}</span>
+            {business.rejection_reason}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
@@ -1063,146 +604,124 @@ export function ReportedReviews({
   onHide: (reportId: number) => void;
   onDismiss: (reportId: number) => void;
 }) {
-  return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold sm:text-2xl">Reported reviews</h2>
-          <p className="mt-2 max-w-2xl leading-7 text-body">
-            Hide removes the review from public pages and closes every open
-            report on it. Dismiss closes this report and leaves the review up.
-          </p>
-        </div>
+  const text = useText(language);
 
-        <span className="w-full rounded-full bg-warning-soft px-4 py-2 text-center text-sm font-semibold text-warning sm:w-auto">
-          {openCount} open
+  return (
+    <section className="mt-6 premium-card rounded-3xl p-5 sm:p-8">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-2xl font-semibold text-cream">
+          {text("დარეპორტებული შეფასებები", "Reported reviews")}
+        </h2>
+        <span className="rounded-full bg-warning-soft px-4 py-2 text-sm font-semibold text-warning">
+          {openCount}
         </span>
       </div>
 
-      <div className="mt-6 grid gap-4">
-        {reports.length === 0 && (
-          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
-            <h3 className="text-2xl font-semibold text-cream">
-              No open reports
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              Reviews that customers report will appear here.
-            </p>
-          </div>
-        )}
-
+      <div className="mt-4 grid gap-3">
         {reports.map((report) => {
           const review = report.business_ratings;
+          const reason = REVIEW_REPORT_REASON_LABELS[report.reason];
 
           return (
             <div
               key={report.id}
-              className="ui-card flex flex-col gap-4 rounded-2xl p-5 md:flex-row md:items-start md:justify-between"
+              className="ui-card flex flex-col gap-3 rounded-2xl p-4 md:flex-row md:items-start md:justify-between"
             >
               <div className="min-w-0">
                 <p className="break-words font-semibold text-cream">
-                  {(review && businessNameById[review.business_id]) || "Unknown business"}
+                  {(review && businessNameById[review.business_id]) || "—"}
                   {review ? ` · ${review.rating}/5` : ""}
                 </p>
-                <p className="mt-2 whitespace-pre-wrap break-words text-body">
-                  {review?.comment?.trim() || "No written review."}
+                <p className="mt-1 whitespace-pre-wrap break-words text-body">
+                  {review?.comment?.trim() || "—"}
                 </p>
-
-                <div className="mt-4 grid gap-1 text-sm text-body">
-                  <p>
-                    <span className="font-semibold text-cream">Reason: </span>
-                    {REVIEW_REPORT_REASON_LABELS[report.reason] || report.reason}
-                  </p>
+                <details className="mt-2 text-sm text-body">
+                  <summary className="min-h-11 cursor-pointer py-2 font-semibold text-cream">
+                    {reason ? (language === "ka" ? reason.ka : reason.en) : report.reason}
+                  </summary>
                   {report.comment && (
-                    <p className="whitespace-pre-wrap break-words">
-                      <span className="font-semibold text-cream">Comment: </span>
-                      {report.comment}
-                    </p>
+                    <p className="whitespace-pre-wrap break-words">{report.comment}</p>
                   )}
                   <p className="break-words">
-                    <span className="font-semibold text-cream">Reported by: </span>
-                    {reporterEmailById[report.reporter_id] || report.reporter_id}
-                    {" · "}
+                    {reporterEmailById[report.reporter_id] || report.reporter_id} ·{" "}
                     {formatDisplayDateTime(report.created_at, language)}
                   </p>
-                </div>
+                </details>
               </div>
 
-              <div className="grid shrink-0 gap-2 md:w-44">
+              <div className="grid shrink-0 grid-cols-2 gap-2 md:w-44 md:grid-cols-1">
                 <button
                   type="button"
                   disabled={updatingReportId !== null}
                   onClick={() => onHide(report.id)}
-                  className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
+                  className="min-h-12 rounded-full bg-danger-soft px-4 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
                 >
-                  Hide review
+                  {text("დამალვა", "Hide")}
                 </button>
                 <button
                   type="button"
                   disabled={updatingReportId !== null}
                   onClick={() => onDismiss(report.id)}
-                  className="min-h-12 rounded-full bg-well px-6 py-3 font-semibold text-body transition hover:text-cream disabled:cursor-not-allowed disabled:text-muted"
+                  className="min-h-12 rounded-full bg-well px-4 py-3 font-semibold text-body transition hover:text-cream disabled:cursor-not-allowed disabled:text-muted"
                 >
-                  Dismiss
+                  {text("დატოვება", "Keep")}
                 </button>
               </div>
             </div>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }
 
 export function HiddenReviews({
+  language,
   reports,
   businessNameById,
   updatingReportId,
   onUnhide,
 }: {
+  language: Language;
   /** One report per hidden review. */
   reports: AdminReviewReport[];
   businessNameById: Record<number, string>;
   updatingReportId: number | null;
   onUnhide: (report: AdminReviewReport) => void;
 }) {
-  if (reports.length === 0) return null;
+  const text = useText(language);
 
   return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <h2 className="text-xl font-semibold sm:text-2xl">Hidden reviews</h2>
+    <div className="grid gap-3">
+      {reports.map((report) => {
+        const review = report.business_ratings;
 
-      <div className="mt-6 grid gap-3">
-        {reports.map((report) => {
-          const review = report.business_ratings;
-
-          return (
-            <div
-              key={report.review_id}
-              className="ui-card flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0">
-                <p className="break-words font-semibold text-cream">
-                  {(review && businessNameById[review.business_id]) || "Unknown business"}
-                  {review ? ` · ${review.rating}/5` : ""}
-                </p>
-                <p className="mt-1 whitespace-pre-wrap break-words text-sm text-body">
-                  {review?.comment?.trim() || "No written review."}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                disabled={updatingReportId !== null}
-                onClick={() => onUnhide(report)}
-                className="min-h-11 shrink-0 self-start rounded-full bg-well px-4 py-2 text-sm font-semibold text-body transition hover:text-cream disabled:cursor-not-allowed disabled:text-muted sm:self-auto"
-              >
-                Unhide
-              </button>
+        return (
+          <div
+            key={report.review_id}
+            className="ui-card flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="min-w-0">
+              <p className="break-words font-semibold text-cream">
+                {(review && businessNameById[review.business_id]) || "—"}
+                {review ? ` · ${review.rating}/5` : ""}
+              </p>
+              <p className="mt-1 whitespace-pre-wrap break-words text-sm text-body">
+                {review?.comment?.trim() || "—"}
+              </p>
             </div>
-          );
-        })}
-      </div>
+
+            <button
+              type="button"
+              disabled={updatingReportId !== null}
+              onClick={() => onUnhide(report)}
+              className="min-h-11 shrink-0 self-start rounded-full bg-well px-4 py-2 text-sm font-semibold text-body transition hover:text-cream disabled:cursor-not-allowed disabled:text-muted sm:self-auto"
+            >
+              {text("გამოჩენა", "Unhide")}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1224,6 +743,7 @@ export function ApprovedBusinesses({
   onSetLocation: (id: number, location: LatLng) => Promise<boolean>;
   language: Language;
 }) {
+  const text = useText(language);
   const [feeDrafts, setFeeDrafts] = useState<Record<number, string>>({});
   const [pinFor, setPinFor] = useState<number | null>(null);
   const [pinDraft, setPinDraft] = useState<LatLng | null>(null);
@@ -1233,154 +753,125 @@ export function ApprovedBusinesses({
   }
 
   return (
-    <div className="mt-6 premium-card rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <h2 className="text-xl font-semibold sm:text-2xl">Approved businesses</h2>
+    <div className="grid gap-3">
+      {businesses.length === 0 && (
+        <p className="font-semibold text-body">{text("არ არის.", "None.")}</p>
+      )}
 
-      <div className="mt-6 grid gap-4">
-        {businesses.length === 0 && (
-          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
-            <h3 className="text-2xl font-semibold text-cream">
-              No approved businesses yet
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              Approved businesses will appear here after you review new
-              registrations.
-            </p>
-          </div>
-        )}
+      {businesses.map((business) => {
+        const hasPin = business.latitude != null && business.longitude != null;
 
-        {businesses.map((business) => (
-          <div
-            key={business.id}
-            className="ui-card flex flex-col gap-4 rounded-2xl p-5 md:flex-row md:items-center md:justify-between"
-          >
-            <div>
-              <h3 className="text-xl font-semibold">{business.name}</h3>
-              <p className="text-body">
-                {business.business_type} · {business.address}
-              </p>
-              <p className="text-body">{business.phone}</p>
-              <p className="mt-2 inline-block rounded-full bg-well px-3 py-1 text-sm font-semibold text-mint">
-                Approved
-              </p>
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                <label className="flex items-center gap-2 text-body">
-                  Platform commission
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="1"
-                    inputMode="numeric"
-                    value={feeDrafts[business.id] ?? String(currentPercent(business))}
-                    onChange={(event) =>
-                      setFeeDrafts((drafts) => ({ ...drafts, [business.id]: event.target.value }))
-                    }
-                    aria-label={`Platform commission for ${business.name}, percent`}
-                    className="premium-input w-20 px-3 py-2 text-right font-semibold"
-                  />
-                  %
-                </label>
-                <button
-                  type="button"
-                  disabled={
-                    updatingBusinessId !== null ||
-                    Number(feeDrafts[business.id] ?? currentPercent(business)) === currentPercent(business)
-                  }
-                  onClick={() => onSetFeeRate(business.id, Number(feeDrafts[business.id]))}
-                  className="premium-button-secondary min-h-11 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Save rate
-                </button>
-                <span className="text-xs text-body">
-                  Default 30%; 0% for pilot partners. Applies to new reservations.
+        return (
+          <details key={business.id} className="ui-card rounded-2xl p-4">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+              <span className="min-w-0">
+                <span className="block break-words font-semibold text-cream">{business.name}</span>
+                <span className="block text-sm text-body">
+                  {businessTypeLabel(business.business_type, language)} · {currentPercent(business)}%
+                  {hasPin ? " · 📍" : ""}
                 </span>
-              </div>
+              </span>
+              <ChevronDownIcon className="h-5 w-5 shrink-0" strokeWidth={1.8} />
+            </summary>
 
-              <div className="mt-3 text-sm">
-                <span className="text-body">
-                  Map pin:{" "}
-                  {business.latitude != null && business.longitude != null
-                    ? `${Number(business.latitude).toFixed(5)}, ${Number(business.longitude).toFixed(5)}`
-                    : "not set (not on the app map yet)"}
-                </span>{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPinFor(pinFor === business.id ? null : business.id);
-                    setPinDraft(
-                      business.latitude != null && business.longitude != null
-                        ? { latitude: Number(business.latitude), longitude: Number(business.longitude) }
-                        : null
-                    );
-                  }}
-                  className="premium-button-secondary ml-1 min-h-11 px-3 py-1.5 text-xs"
-                >
-                  {pinFor === business.id ? "Close" : business.latitude != null ? "Change pin" : "Set pin"}
-                </button>
-              </div>
-              {pinFor === business.id && (
-                <div className="mt-3 grid max-w-xl gap-2">
-                  <LocationPicker
-                    value={pinDraft}
-                    onChange={setPinDraft}
-                    initialQuery={business.address}
-                    language={language}
-                  />
-                  <button
-                    type="button"
-                    disabled={!pinDraft || updatingBusinessId !== null}
-                    onClick={() =>
-                      pinDraft &&
-                      void onSetLocation(business.id, pinDraft).then((saved) => saved && setPinFor(null))
-                    }
-                    className="premium-button min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Save pin
-                  </button>
-                </div>
-              )}
+            <p className="mt-3 text-sm text-body">
+              {business.address} · {business.phone}
+            </p>
+
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <label className="flex items-center gap-2 text-body">
+                {text("საკომისიო", "Commission")}
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="1"
+                  inputMode="numeric"
+                  value={feeDrafts[business.id] ?? String(currentPercent(business))}
+                  onChange={(event) =>
+                    setFeeDrafts((drafts) => ({ ...drafts, [business.id]: event.target.value }))
+                  }
+                  aria-label={`${text("საკომისიო", "Commission")} ${business.name}, %`}
+                  className="premium-input w-20 px-3 py-2 text-right font-semibold"
+                />
+                %
+              </label>
+              <button
+                type="button"
+                disabled={
+                  updatingBusinessId !== null ||
+                  Number(feeDrafts[business.id] ?? currentPercent(business)) === currentPercent(business)
+                }
+                onClick={() => onSetFeeRate(business.id, Number(feeDrafts[business.id]))}
+                className="premium-button-secondary min-h-11 px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {text("შენახვა", "Save")}
+              </button>
+              <span className="text-xs text-body">
+                {text("ნაგულისხმევი 30%, ახალ შეკვეთებზე", "Default 30%, new orders")}
+              </span>
             </div>
 
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-body">
+                {hasPin
+                  ? `📍 ${Number(business.latitude).toFixed(5)}, ${Number(business.longitude).toFixed(5)}`
+                  : text("📍 რუკაზე არ არის", "📍 Not on the map")}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setPinFor(pinFor === business.id ? null : business.id);
+                  setPinDraft(
+                    hasPin
+                      ? { latitude: Number(business.latitude), longitude: Number(business.longitude) }
+                      : null
+                  );
+                }}
+                className="premium-button-secondary min-h-11 px-3 py-1.5 text-xs"
+              >
+                {pinFor === business.id
+                  ? text("დახურვა", "Close")
+                  : hasPin
+                    ? text("შეცვლა", "Change pin")
+                    : text("დასმა", "Set pin")}
+              </button>
+            </div>
+            {pinFor === business.id && (
+              <div className="mt-3 grid max-w-xl gap-2">
+                <LocationPicker
+                  value={pinDraft}
+                  onChange={setPinDraft}
+                  initialQuery={business.address}
+                  language={language}
+                />
+                <button
+                  type="button"
+                  disabled={!pinDraft || updatingBusinessId !== null}
+                  onClick={() =>
+                    pinDraft &&
+                    void onSetLocation(business.id, pinDraft).then((saved) => saved && setPinFor(null))
+                  }
+                  className="premium-button min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {text("პინის შენახვა", "Save pin")}
+                </button>
+              </div>
+            )}
+
             <button
+              type="button"
               onClick={() => onMoveToPending(business.id)}
               disabled={updatingBusinessId !== null}
-              className="min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
+              className="mt-4 min-h-12 rounded-full bg-danger-soft px-6 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:bg-well disabled:text-muted"
             >
               {updatingBusinessId === business.id
-                ? "Updating..."
-                : "Move to pending"}
+                ? text("ინახება...", "Updating...")
+                : text("მოლოდინში დაბრუნება", "Move to pending")}
             </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function MetricCardGrid({
-  metrics,
-  columnsClassName,
-}: {
-  metrics: MetricCard[];
-  columnsClassName: string;
-}) {
-  return (
-    <div className={`mt-6 grid gap-3 sm:grid-cols-2 ${columnsClassName}`}>
-      {metrics.map((metric) => (
-        <div
-          key={metric.title}
-          className={`rounded-2xl p-4 sm:rounded-3xl sm:p-5 ${metric.className}`}
-        >
-          <p className="text-sm font-semibold">{metric.title}</p>
-          <p className="mt-2 text-3xl font-semibold sm:text-4xl">
-            {metric.value}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-body">
-            {metric.helper}
-          </p>
-        </div>
-      ))}
+          </details>
+        );
+      })}
     </div>
   );
 }
@@ -1393,13 +884,9 @@ function BusinessDetail({
   value: string | null | undefined;
 }) {
   return (
-    <div className="rounded-2xl bg-well p-4">
-      <p className="text-xs uppercase tracking-wide text-body">
-        {label}
-      </p>
-      <p className="mt-1 break-words text-cream">
-        {value || "Not provided"}
-      </p>
+    <div className="rounded-2xl bg-well px-3 py-2">
+      <p className="text-xs text-body">{label}</p>
+      <p className="break-words text-cream">{value || "—"}</p>
     </div>
   );
 }

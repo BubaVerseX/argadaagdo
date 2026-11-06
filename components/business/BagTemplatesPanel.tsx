@@ -232,27 +232,22 @@ export function BagTemplatesPanel({
   const labelClass = "grid min-w-0 gap-2 text-sm font-semibold text-body";
 
   return (
-    <div id="bag-templates" className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-            {isGeorgian ? "ავტომატური გამოქვეყნება" : "Auto-publish"}
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-            {isGeorgian ? "ლანჩ ბოქსის შაბლონები" : "Lunch Box templates"}
+    <div id="bag-templates" className="premium-card mt-4 scroll-mt-24 rounded-3xl p-4 sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-xl font-semibold sm:text-2xl">
+            {isGeorgian ? "შაბლონები" : "Templates"}
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-body">
-            {isGeorgian
-              ? "შაბლონი = კატეგორია, ზომა და ფასი, ლანჩ ბოქსების რაოდენობა დღეში, წაღების დრო და კვირის დღეები. ყოველ საღამოს 19:00-ზე ხვალინდელი შეთავაზებები ავტომატურად იქმნება აქტიური შაბლონებიდან."
-              : "A template is a category, size and price, boxes per day, a pickup window and the days of the week. Every evening at 19:00 tomorrow's offers are created from the active templates."}
+          <p className="mt-1 text-sm text-body">
+            {isGeorgian ? "ავტომატურად ყოველ დღე 19:00-ზე" : "Auto-publish daily at 19:00"}
           </p>
         </div>
         <button
           type="button"
           onClick={openCreate}
-          className="premium-button min-h-12 shrink-0 px-6 py-3"
+          className="premium-button min-h-11 shrink-0 px-4 py-2.5"
         >
-          {isGeorgian ? "ახალი შაბლონი" : "New template"}
+          {isGeorgian ? "+ ახალი" : "+ New"}
         </button>
       </div>
 
@@ -401,11 +396,6 @@ export function BagTemplatesPanel({
                   />
                 )}
               </div>
-              <p className="text-xs leading-5 text-body">
-                {isGeorgian
-                  ? "„სანამ არ გავაჩერებ“: ლანჩ ბოქსები იყიდება, სანამ „დღეს ლანჩ ბოქსები არ არის“ ღილაკს არ დააჭერ. მომხმარებლები დარჩენილ რაოდენობას ვერ ხედავენ."
-                  : "“Until stopped”: boxes sell until you press “Today: no boxes”. Customers don't see a remaining count."}
-              </p>
             </div>
 
             <label className={labelClass}>
@@ -529,12 +519,10 @@ export function BagTemplatesPanel({
         </div>
       )}
 
-      <div className="mt-6 grid gap-3">
+      <div className="mt-4 grid gap-3">
         {templates.length === 0 && !formOpen && (
-          <div className="ui-card rounded-2xl p-5 text-center text-sm font-semibold text-body">
-            {isGeorgian
-              ? "შაბლონები ჯერ არ გაქვს. შექმენი ერთი და ხვალინდელი ლანჩ ბოქსები თავისით გამოქვეყნდება."
-              : "No templates yet. Create one and tomorrow's boxes publish themselves."}
+          <div className="ui-card rounded-2xl p-4 text-center text-sm font-semibold text-body">
+            {isGeorgian ? "შაბლონები ჯერ არ არის" : "No templates yet"}
           </div>
         )}
 
@@ -589,23 +577,31 @@ export function BagTemplatesPanel({
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2 md:justify-end">
-                <button
-                  type="button"
-                  disabled={busy || !template.active}
-                  onClick={() => onPublishNow(template, "tomorrow")}
-                  className="premium-button-secondary min-h-11 px-3 py-2 text-sm disabled:opacity-60"
-                >
-                  {isGeorgian ? "ხვალინდელის გამოქვეყნება" : "Publish for tomorrow"}
-                </button>
+              <div className="flex flex-wrap items-start gap-2 md:justify-end">
                 <button
                   type="button"
                   disabled={busy || !template.active}
                   onClick={() => onPublishNow(template, "today")}
-                  className="premium-button-secondary min-h-11 px-3 py-2 text-sm disabled:opacity-60"
+                  className="premium-button min-h-11 px-4 py-2 text-sm disabled:opacity-60"
                 >
-                  {isGeorgian ? "დღევანდელის გამოქვეყნება" : "Publish for today"}
+                  {isGeorgian ? "დღეს" : "Today"}
                 </button>
+                <button
+                  type="button"
+                  disabled={busy || !template.active}
+                  onClick={() => onPublishNow(template, "tomorrow")}
+                  className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
+                >
+                  {isGeorgian ? "ხვალ" : "Tomorrow"}
+                </button>
+                <details className="group relative">
+                  <summary
+                    aria-label={isGeorgian ? "მეტი" : "More"}
+                    className="premium-button-secondary flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center px-3 text-sm [&::-webkit-details-marker]:hidden"
+                  >
+                    ⋯
+                  </summary>
+                  <div className="mt-2 flex flex-wrap gap-2">
                 <button
                   type="button"
                   disabled={busy}
@@ -622,11 +618,11 @@ export function BagTemplatesPanel({
                 >
                   {template.active
                     ? isGeorgian
-                      ? "შაბლონის გაჩერება"
-                      : "Pause template"
+                      ? "გაჩერება"
+                      : "Pause"
                     : isGeorgian
-                    ? "შაბლონის ჩართვა"
-                    : "Resume template"}
+                    ? "ჩართვა"
+                    : "Resume"}
                 </button>
                 <button
                   type="button"
@@ -636,6 +632,8 @@ export function BagTemplatesPanel({
                 >
                   {isGeorgian ? "წაშლა" : "Delete"}
                 </button>
+                  </div>
+                </details>
               </div>
             </div>
           );

@@ -1,4 +1,4 @@
-import { CheckIcon, StarIcon } from "@/components/icons";
+import { StarIcon } from "@/components/icons";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import { formatDisplayDateTime } from "@/lib/offerLifecycle";
 import type { Rating } from "@/lib/types";
@@ -7,78 +7,34 @@ type BusinessReviewsProps = {
   t: (key: TranslationKey) => string;
   language: Language;
   reviews: Rating[];
-  businessNameById: Record<number, string>;
 };
 
-export function BusinessReviews({
-  t,
-  language,
-  reviews,
-  businessNameById,
-}: BusinessReviewsProps) {
+/** One line per review: stars, comment, date. */
+export function BusinessReviews({ t, language, reviews }: BusinessReviewsProps) {
+  if (reviews.length === 0) {
+    return (
+      <p className="rounded-2xl bg-well p-4 font-semibold text-body">
+        {language === "ka" ? "შეფასებები ჯერ არ არის" : "No reviews yet"}
+      </p>
+    );
+  }
+
   return (
-    <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {language === "ka" ? "მომხმარებლის გამოხმაურება" : "Customer Feedback"}
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-        {t("businessDashboard.businessReviews")}
-      </h2>
-
-      <p className="mt-2 flex items-center gap-1.5 text-body">
-        <CheckIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
-        {t("businessOnboarding.ratingsGuidanceText")}
-      </p>
-
-      <div className="mt-6 grid gap-4">
-        {reviews.length === 0 && (
-          <div className="rounded-3xl bg-warning-soft p-6 text-center sm:p-8">
-            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <StarIcon className="h-6 w-6 text-warning" strokeWidth={1.6} />
-            </div>
-            <h3 className="mt-4 text-2xl font-semibold text-cream">
-              {t("businessDashboard.noReviews")}
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              {t("businessDashboard.noReviewsHint")}
-            </p>
-            <a
-              href="#reservations"
-              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-warning px-6 py-3 font-semibold text-ink transition hover:bg-warning/90"
-            >
-              {t("businessDashboard.viewReservations")}
-            </a>
-          </div>
-        )}
-
-        {reviews.map((review) => (
-          <div
-            key={review.id}
-            className="rounded-2xl bg-well p-5"
-          >
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="flex items-center gap-1.5 text-xl font-semibold text-warning">
-                  <StarIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} filled />
-                  {review.rating}
-                </p>
-                <p className="mt-1 font-semibold text-cream">
-                  {businessNameById[Number(review.business_id)] ||
-                    t("common.business")}
-                </p>
-              </div>
-
-              <p className="text-sm text-body">
-                {formatDisplayDateTime(review.created_at, language)}
-              </p>
-            </div>
-
-            <p className="mt-4 text-body">
-              {review.review?.trim() || t("common.noWrittenReview")}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <ul className="grid gap-2">
+      {reviews.map((review) => (
+        <li key={review.id} className="flex items-start gap-3 rounded-2xl bg-well p-4">
+          <span className="flex shrink-0 items-center gap-1 font-semibold text-warning">
+            <StarIcon className="h-4 w-4" strokeWidth={1.8} filled />
+            {review.rating}
+          </span>
+          <span className="min-w-0 flex-1 break-words text-cream">
+            {review.review?.trim() || t("common.noWrittenReview")}
+          </span>
+          <span className="shrink-0 text-xs text-body">
+            {formatDisplayDateTime(review.created_at, language)}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

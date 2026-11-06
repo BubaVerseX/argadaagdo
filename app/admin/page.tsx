@@ -3,20 +3,17 @@
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { LoadingState } from "@/components/LoadingState";
-import { FilterBar } from "@/components/FilterBar";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import {
-  AdminAccountView,
-  AdminHealthSections,
-  AdminHero,
-  AdminMarketplaceIntelligence,
-  AdminMarketplaceOverview,
-  AdminOperationalDashboard,
-  AdminRevenueInsights,
-  AdminModerationVisibility,
-  AdminPaymentsOverview,
-  AdminSupportTools,
+  AdminAccounts,
+  AdminAnalytics,
+  AdminApplicationHealth,
+  AdminCollapsible,
+  AdminHeader,
+  AdminKeyNumbers,
+  AdminOperations,
+  AdminPayments,
   ApprovedBusinesses,
   HiddenReviews,
   PendingBusinesses,
@@ -25,9 +22,10 @@ import {
   type AdminReviewReport,
   type AdminBusiness,
   type BusinessVerificationReview,
+  type SimpleStat,
 } from "@/components/admin/AdminSections";
 import { getConfirmedProfile } from "@/lib/auth";
-import { calculateMarketplaceAnalytics } from "@/lib/analytics";
+import { calculateMarketplaceAnalytics, formatAnalyticsMoney } from "@/lib/analytics";
 import {
   checkApplicationHealth,
   type ApplicationHealthItem,
@@ -56,11 +54,6 @@ import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-function getPercentage(value: number, total: number) {
-  if (total <= 0) return 0;
-  return Math.round((value / total) * 100);
-}
-
 function getBusinessSortTime(business: AdminBusiness) {
   if (!business.created_at) return business.id;
   const createdAt = new Date(business.created_at).getTime();
@@ -75,12 +68,6 @@ type AdminOrderFilter =
   | "cancelled"
   | "no_show";
 type AdminProfileFilter = "all" | "customer" | "business" | "admin";
-type ApprovalQueueFilter =
-  | "newest"
-  | "oldest"
-  | "needs_review"
-  | "approved"
-  | "rejected";
 
 const ADMIN_LIST_PAGE_SIZE = 8;
 // PostgREST returns at most 1000 rows per request, so read in pages; the old
@@ -117,7 +104,8 @@ async function fetchAllRows<T>(
 
 export default function AdminPage() {
   const router = useRouter();
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
+  const text = (ka: string, en: string) => (language === "ka" ? ka : en);
   const [businesses, setBusinesses] = useState<AdminBusiness[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -142,8 +130,6 @@ export default function AdminPage() {
     useState<AdminOrderFilter>("all");
   const [adminProfileFilter, setAdminProfileFilter] =
     useState<AdminProfileFilter>("all");
-  const [approvalQueueFilter, setApprovalQueueFilter] =
-    useState<ApprovalQueueFilter>("newest");
   const [pendingPage, setPendingPage] = useState(1);
   const [approvedPage, setApprovedPage] = useState(1);
   const [rejectedPage, setRejectedPage] = useState(1);
@@ -248,9 +234,7 @@ export default function AdminPage() {
         }
       );
       setMessageTone("error");
-      setMessage(
-        "Admin data could not be loaded. Check that your admin database policies allow this view."
-      );
+      setMessage("Admin data could not be loaded.");
       setLoading(false);
       return;
     }
@@ -308,7 +292,7 @@ export default function AdminPage() {
       )
     );
     setMessageTone("success");
-    setMessage(`Commission for this business set to ${percent}% for new reservations.`);
+    setMessage(`Commission set to ${percent}%.`);
   }
 
   async function setBusinessLocation(id: number, location: { latitude: number; longitude: number }) {
@@ -342,7 +326,7 @@ export default function AdminPage() {
       )
     );
     setMessageTone("success");
-    setMessage("Map pin saved. It shows in the app within a minute.");
+    setMessage("Map pin saved.");
     return true;
   }
 
@@ -470,11 +454,17 @@ export default function AdminPage() {
         businessOfferIds.has(Number(order.offer_id)) &&
         ["pending_payment", "reserved", "confirmed"].includes(String(order.status))
     ).length;
+    const name = business?.name || text("ბიზნესი", "this business");
     const confirmed = window.confirm(
-      `Move ${business?.name || "this business"} back to pending?\n\n` +
-        "Its offers will be hidden from customers and the owner will lose access to the dashboard." +
+      text(
+        `${name} მოლოდინში დაბრუნდეს? შეთავაზებები დაიმალება.`,
+        `Move ${name} back to pending? Its offers get hidden.`
+      ) +
         (activeOrderCount > 0
-          ? `\n\nWarning: it has ${activeOrderCount} active reservation(s). The owner will not be able to verify these pickups, and they will become no-shows when the pickup window ends.`
+          ? text(
+              `\n${activeOrderCount} აქტიური შეკვეთა ვეღარ გაიცემა.`,
+              `\n${activeOrderCount} active order(s) can't be picked up.`
+            )
           : "")
     );
 
@@ -507,8 +497,10 @@ export default function AdminPage() {
     if (unlockingOrderId !== null) return;
 
     const confirmed = window.confirm(
-      `Unlock pickup code for order #${orderId}?\n\n` +
-        `It was locked after ${PICKUP_CODE_MAX_ATTEMPTS} wrong codes. Only unlock it once you have confirmed with the business and customer that the pickup is genuine.`
+      text(
+        `შეკვეთა #${orderId} განიბლოკოს? ჯერ გადაამოწმე ბიზნესთან და მომხმარებელთან.`,
+        `Unlock order #${orderId}? Check with business and customer first.`
+      )
     );
 
     if (!confirmed) return;
@@ -530,19 +522,9 @@ export default function AdminPage() {
     }
 
     setMessageTone("success");
-    setMessage(`Order #${orderId} unlocked. The business can enter the pickup code again.`);
+    setMessage(`Order #${orderId} unlocked.`);
     setUnlockingOrderId(null);
     await checkAdminAndLoadData();
-  }
-
-  function requestBusinessChanges(id: number, reason: string) {
-    const business = businesses.find((item) => item.id === id);
-    setMessageTone("warning");
-    setMessage(
-      `Change request noted for ${
-        business?.name || "this business"
-      }. Reason: ${reason || "No reason provided yet."} Current pilot data model keeps the business pending until the owner updates details.`
-    );
   }
 
   async function rejectBusinessApplication(id: number, reason: string) {
@@ -550,14 +532,17 @@ export default function AdminPage() {
 
     if (!reason) {
       setMessageTone("error");
-      setMessage("Write a reason first. The owner will see it and get it by email.");
+      setMessage(text("ჯერ დაწერე მიზეზი.", "Write a reason first."));
       return;
     }
 
     const business = businesses.find((item) => item.id === id);
+    const name = business?.name || text("ბიზნესი", "this business");
     const confirmed = window.confirm(
-      `Reject ${business?.name || "this business"}?\n\n` +
-        "The owner will get an email with this reason, and can edit the details and resubmit."
+      text(
+        `${name} უარყოფა? მფლობელი მიზეზს ელფოსტით მიიღებს.`,
+        `Reject ${name}? The owner gets the reason by email.`
+      )
     );
 
     if (!confirmed) return;
@@ -594,12 +579,10 @@ export default function AdminPage() {
 
     if (emailResult.ok) {
       setMessageTone("success");
-      setMessage("Business rejected. The owner has been emailed the reason.");
+      setMessage("Rejected. Owner emailed.");
     } else {
       setMessageTone("warning");
-      setMessage(
-        "Business rejected, but the email to the owner could not be sent. They will still see the reason in their dashboard."
-      );
+      setMessage("Rejected. Email failed; the owner sees the reason in the dashboard.");
     }
 
     setUpdatingBusinessId(null);
@@ -610,7 +593,7 @@ export default function AdminPage() {
     if (updatingReportId !== null) return;
 
     const confirmed = window.confirm(
-      "Hide this review?\n\nIt will disappear from all public pages and stop counting toward the business rating."
+      text("შეფასება დაიმალოს?", "Hide this review?")
     );
 
     if (!confirmed) return;
@@ -640,7 +623,7 @@ export default function AdminPage() {
     if (updatingReportId !== null) return;
 
     const confirmed = window.confirm(
-      "Unhide this review?\n\nIt will be public again and count toward the business rating."
+      text("შეფასება ისევ გამოჩნდეს?", "Show this review again?")
     );
 
     if (!confirmed) return;
@@ -691,7 +674,7 @@ export default function AdminPage() {
     }
 
     setMessageTone("success");
-    setMessage("Report dismissed. The review stays public.");
+    setMessage("Report dismissed.");
     await checkAdminAndLoadData();
   }
 
@@ -802,24 +785,12 @@ export default function AdminPage() {
     (order) => order.status === "cancelled" || order.status === "refunded"
   );
   const noShowOrders = orders.filter((order) => order.status === "no_show");
-  const excellentProfiles = profiles.filter(
-    (profile) => profile.reliability_status === "excellent"
-  );
   const warningProfiles = profiles.filter(
     (profile) => profile.reliability_status === "warning"
   );
   const restrictedProfiles = profiles.filter(
     (profile) => profile.reliability_status === "restricted"
   );
-  const averageReliability =
-    profiles.length > 0
-      ? Math.round(
-          profiles.reduce(
-            (total, profile) => total + Number(profile.reliability_score || 0),
-            0
-          ) / profiles.length
-        )
-      : 0;
   const customerProfiles = profiles.filter(
     (profile) => profile.role === "customer"
   );
@@ -835,236 +806,25 @@ export default function AdminPage() {
     orders,
     ratings: ratingScores,
   });
-  const totalProfileCompletedPickups = profiles.reduce(
-    (total, profile) => total + Number(profile.completed_pickup_count || 0),
-    0
-  );
-  const totalProfileCancellations = profiles.reduce(
-    (total, profile) => total + Number(profile.cancelled_order_count || 0),
-    0
-  );
-  const totalProfileNoShows = profiles.reduce(
-    (total, profile) => total + Number(profile.no_show_count || 0),
-    0
-  );
-  const marketplaceOverview = [
-    {
-      title: "Total Businesses",
-      value: businesses.length,
-      helper: "All submitted business profiles",
-      className: "ui-card text-cream",
-    },
-    {
-      title: "Approved Businesses",
-      value: approvedBusinesses.length,
-      helper: "Businesses allowed to publish offers",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Pending Businesses",
-      value: pendingBusinesses.length,
-      helper: "Registrations waiting for review",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Active Offers",
-      value: activeOffers.length,
-      helper: "Offers currently visible to customers",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Total Orders",
-      value: orders.length,
-      helper: "All reservations and pickup records",
-      className: "ui-card text-cream",
-    },
-    {
-      title: "Total Ratings",
-      value: totalRatings,
-      helper: "Customer reviews submitted",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Customers",
-      value: customerProfiles.length,
-      helper: "Customer accounts in profiles",
-      className: "ui-card text-cream",
-    },
-    {
-      title: "Business Accounts",
-      value: businessProfiles.length,
-      helper: "Users with business account role",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Admins",
-      value: adminProfiles.length,
-      helper: "Admin accounts with approval access",
-      className: "ui-card text-cream",
-    },
-  ];
-  const accountOverview = [
-    {
-      title: "Customers",
-      value: customerProfiles.length,
-      helper: "Can browse, reserve, favorite and rate completed pickups",
-      className: "ui-card text-cream",
-    },
-    {
-      title: "Businesses",
-      value: businessProfiles.length,
-      helper: "Can register businesses and manage approved business offers",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Admins",
-      value: adminProfiles.length,
-      helper: "Can approve businesses and monitor marketplace activity",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Missing role",
-      value: unknownProfiles.length,
-      helper: "Profiles that may need support review",
-      className: "bg-danger-soft text-danger",
-    },
-  ];
-  const marketplaceHealth = [
-    {
-      title: "Businesses Approved",
-      value: approvedBusinesses.length,
-      caption: `${approvedBusinesses.length} approved of ${businesses.length} total businesses`,
-      percentage: getPercentage(approvedBusinesses.length, businesses.length),
-      tone: "green" as const,
-    },
-    {
-      title: "Offers Active",
-      value: activeOffers.length,
-      caption: `${activeOffers.length} active of ${offers.length} total offers`,
-      percentage: getPercentage(activeOffers.length, offers.length),
-      tone: "green" as const,
-    },
-    {
-      title: "Reservations Created",
-      value: orders.length,
-      caption: `${reservedOrders.length} waiting for pickup`,
-      percentage: getPercentage(orders.length, Math.max(orders.length, 1)),
-      tone: "yellow" as const,
-    },
-    {
-      title: "Ratings Submitted",
-      value: totalRatings,
-      caption: `${totalRatings} customer ${
-        totalRatings === 1 ? "rating" : "ratings"
-      } submitted`,
-      percentage: getPercentage(totalRatings, Math.max(totalRatings, 1)),
-      tone: "yellow" as const,
-    },
-  ];
-  const operationalStats = [
-    { title: "Sold Out", value: soldOutOffers.length, tone: "yellow" as const },
-    { title: "Expired", value: expiredOffers.length, tone: "red" as const },
-    { title: "Inactive", value: inactiveOffers.length },
-    { title: t("orders.reserved"), value: reservedOrders.length, tone: "yellow" as const },
-    { title: t("orders.collected"), value: completedOrders.length, tone: "green" as const },
-    { title: t("orders.cancelled"), value: cancelledOrders.length, tone: "red" as const },
-    { title: "No-show", value: noShowOrders.length, tone: "red" as const },
-    { title: "Profiles", value: profiles.length },
-    { title: "Avg score", value: averageReliability, tone: "green" as const },
-    { title: "Warning", value: warningProfiles.length, tone: "yellow" as const },
-    { title: "Restricted", value: restrictedProfiles.length, tone: "red" as const },
-    {
-      title: "Profile no-shows",
-      value: totalProfileNoShows,
-      tone: "red" as const,
-    },
-  ];
-  const customerReliabilityStats = [
-    { title: "Excellent", value: excellentProfiles.length, tone: "green" as const },
-    {
-      title: "Profile pickups",
-      value: totalProfileCompletedPickups,
-      tone: "green" as const,
-    },
-    {
-      title: "Profile cancels",
-      value: totalProfileCancellations,
-      tone: "yellow" as const,
-    },
-  ];
-  const moderationStats = [
-    {
-      title: "Pending businesses",
-      value: pendingBusinesses.length,
-      helper: "Applications waiting for approval",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Approved businesses",
-      value: approvedBusinesses.length,
-      helper: "Businesses allowed to publish offers",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Rejected businesses",
-      value: rejectedBusinesses.length,
-      helper: "Waiting for the owner to edit and resubmit",
-      className: "bg-danger-soft text-danger",
-    },
-    {
-      title: "Reported reviews",
-      value: openReviewReports.length,
-      helper: "Open reports waiting for a decision",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Inactive offers",
-      value: inactiveOffers.length,
-      helper: "Offers hidden by businesses or admins",
-      className: "bg-well text-body",
-    },
-    {
-      title: "Expired offers",
-      value: expiredOffers.length,
-      helper: "Pickup windows that have already passed",
-      className: "bg-danger-soft text-danger",
-    },
-  ];
   const paymentSummary = calculatePaymentSummary(orders);
   const normalizedAdminSearch = adminSearch.trim().toLowerCase();
-  const filteredPendingBusinesses = pendingBusinesses.filter((business) => {
-    const searchText =
-      `${business.name} ${business.business_type} ${business.address} ${business.phone}`.toLowerCase();
-    return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
-  });
-  const filteredApprovedBusinesses = approvedBusinesses.filter((business) => {
-    const searchText =
-      `${business.name} ${business.business_type} ${business.address} ${business.phone}`.toLowerCase();
-    return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
-  });
-  const filteredRejectedBusinesses = rejectedBusinesses.filter((business) => {
-    const searchText =
-      `${business.name} ${business.business_type} ${business.address} ${business.phone} ${business.rejection_reason}`.toLowerCase();
-    return normalizedAdminSearch === "" || searchText.includes(normalizedAdminSearch);
-  });
-  const sortDirection = approvalQueueFilter === "oldest" ? 1 : -1;
-  const sortedPendingBusinesses = [...filteredPendingBusinesses].sort(
-    (first, second) =>
-      (getBusinessSortTime(first) - getBusinessSortTime(second)) * sortDirection
-  );
-  const sortedApprovedBusinesses = [...filteredApprovedBusinesses].sort(
-    (first, second) =>
-      (getBusinessSortTime(first) - getBusinessSortTime(second)) * sortDirection
-  );
-  const showRejectedOnly = approvalQueueFilter === "rejected";
-  const approvalVisiblePendingBusinesses =
-    approvalQueueFilter === "approved" || showRejectedOnly
-      ? []
-      : sortedPendingBusinesses;
-  const approvalVisibleApprovedBusinesses =
-    approvalQueueFilter === "needs_review" || showRejectedOnly
-      ? []
-      : sortedApprovedBusinesses;
+  const matchesBusinessSearch = (business: AdminBusiness) =>
+    normalizedAdminSearch === "" ||
+    `${business.name} ${business.business_type} ${business.address} ${business.phone} ${business.rejection_reason ?? ""}`
+      .toLowerCase()
+      .includes(normalizedAdminSearch);
+  // Newest first.
+  const byNewest = (first: AdminBusiness, second: AdminBusiness) =>
+    getBusinessSortTime(second) - getBusinessSortTime(first);
+  const filteredPendingBusinesses = pendingBusinesses
+    .filter(matchesBusinessSearch)
+    .sort(byNewest);
+  const filteredApprovedBusinesses = approvedBusinesses
+    .filter(matchesBusinessSearch)
+    .sort(byNewest);
+  const filteredRejectedBusinesses = rejectedBusinesses
+    .filter(matchesBusinessSearch)
+    .sort(byNewest);
   const filteredAdminOffers = offers.filter((offer) => {
     const status = getEffectiveOfferStatus(offer);
     const searchText =
@@ -1103,12 +863,12 @@ export default function AdminPage() {
     return matchesSearch && matchesFilter;
   });
   const paginatedPendingBusinesses = paginateItems(
-    approvalVisiblePendingBusinesses,
+    filteredPendingBusinesses,
     pendingPage,
     ADMIN_LIST_PAGE_SIZE
   );
   const paginatedApprovedBusinesses = paginateItems(
-    approvalVisibleApprovedBusinesses,
+    filteredApprovedBusinesses,
     approvedPage,
     ADMIN_LIST_PAGE_SIZE
   );
@@ -1181,244 +941,129 @@ export default function AdminPage() {
     }))
     .sort((first, second) => second.reservations - first.reservations);
   const mostActiveBusiness = rankedBusinessActivity[0];
-  const leastActiveBusiness =
-    rankedBusinessActivity.length > 0
-      ? [...rankedBusinessActivity].sort(
-          (first, second) => first.reservations - second.reservations
-        )[0]
-      : null;
-  const businessesWithoutReservations = approvedBusinesses.filter(
-    (business) => (reservationsByBusinessId[business.id] || 0) === 0
-  );
-  const businessesNeedingAttention = new Set([
-    ...pendingBusinesses.map((business) => business.id),
-    ...inactiveBusinesses.map((business) => business.id),
-    ...businessesWithZeroOffers.map((business) => business.id),
-  ]);
   const customersWithActiveReservations = new Set(
     activeReservationOrders
       .map((order) => order.user_id)
       .filter((userId): userId is string => Boolean(userId))
   );
-  const marketplaceOperations = [
+
+  const keyNumbers: SimpleStat[] = [
     {
-      title: "Pending businesses",
+      title: text("მოლოდინში", "Pending"),
       value: pendingBusinesses.length,
-      tone: pendingBusinesses.length > 0 ? ("yellow" as const) : undefined,
+      tone: pendingBusinesses.length > 0 ? "yellow" : undefined,
     },
     {
-      title: "Active offers",
+      title: text("აქტიური შეთავაზება", "Active offers"),
       value: activeOffers.length,
-      tone: activeOffers.length > 0 ? ("green" as const) : undefined,
+      tone: "green",
     },
     {
-      title: "Today's reservations",
+      title: text("დღევანდელი შეკვეთა", "Orders today"),
       value: todayReservations.length,
-      tone: todayReservations.length > 0 ? ("yellow" as const) : undefined,
     },
     {
-      title: "Today's pickups",
-      value: todayPickups.length,
-      tone: todayPickups.length > 0 ? ("green" as const) : undefined,
-    },
-    {
-      title: "Expired offers",
-      value: expiredOffers.length,
-      tone: expiredOffers.length > 0 ? ("red" as const) : undefined,
-    },
-    {
-      title: "Expiring today",
-      value: offersExpiringToday.length,
-      tone: offersExpiringToday.length > 0 ? ("yellow" as const) : undefined,
-    },
-    {
-      title: "Zero reservations",
-      value: offersWithZeroReservations.length,
-      tone:
-        offersWithZeroReservations.length > 0 ? ("yellow" as const) : undefined,
-    },
-    {
-      title: "Businesses with zero offers",
-      value: businessesWithZeroOffers.length,
-      tone: businessesWithZeroOffers.length > 0 ? ("yellow" as const) : undefined,
-    },
-    {
-      title: "Inactive businesses",
-      value: inactiveBusinesses.length,
-      tone: inactiveBusinesses.length > 0 ? ("yellow" as const) : undefined,
-    },
-    {
-      title: "Need attention",
-      value: businessesNeedingAttention.size,
-      tone:
-        businessesNeedingAttention.size > 0 ? ("yellow" as const) : undefined,
-    },
-    {
-      title: "Customers with active reservations",
-      value: customersWithActiveReservations.size,
-      tone:
-        customersWithActiveReservations.size > 0
-          ? ("green" as const)
-          : undefined,
+      title: text("საკომისიო", "Commission"),
+      value: formatAnalyticsMoney(marketplaceAnalytics.estimatedMarketplaceRevenue),
+      tone: "green",
     },
   ];
-  const paymentOverview = [
+  const overviewStats: SimpleStat[] = [
+    { title: text("ბიზნესები", "Businesses"), value: businesses.length },
+    { title: text("დამტკიცებული", "Approved"), value: approvedBusinesses.length, tone: "green" },
+    { title: text("მომხმარებლები", "Customers"), value: customerProfiles.length },
+    { title: text("შეფასებები", "Ratings"), value: totalRatings },
+  ];
+  const todayStats: SimpleStat[] = [
+    { title: text("შეკვეთები", "Reservations"), value: todayReservations.length },
+    { title: text("გაცემული", "Picked up"), value: todayPickups.length, tone: "green" },
+    { title: text("ახალი შეთავაზება", "New offers"), value: offersCreatedToday.length },
     {
-      title: "Paid reservations",
-      value: paymentSummary.activePaidCount,
-      helper: "Current reserved/completed orders with recorded amounts",
-      className: "ui-card text-mint",
+      title: text("დღეს სრულდება", "Ending today"),
+      value: offersExpiringToday.length,
+      tone: offersExpiringToday.length > 0 ? "yellow" : undefined,
+    },
+  ];
+  const statusStats: SimpleStat[] = [
+    { title: text("გაყიდული", "Sold out"), value: soldOutOffers.length, tone: "yellow" },
+    { title: text("ვადაგასული", "Expired"), value: expiredOffers.length, tone: "red" },
+    { title: text("არააქტიური", "Inactive"), value: inactiveOffers.length },
+    { title: text("ჯავშანი", "Reserved"), value: reservedOrders.length, tone: "yellow" },
+    { title: text("გაცემული", "Collected"), value: completedOrders.length, tone: "green" },
+    { title: text("გაუქმებული", "Cancelled"), value: cancelledOrders.length, tone: "red" },
+    { title: text("არ მოვიდა", "No-show"), value: noShowOrders.length, tone: "red" },
+    {
+      title: text("აქტიური მყიდველი", "Active buyers"),
+      value: customersWithActiveReservations.size,
+    },
+  ];
+  const signalStats: SimpleStat[] = [
+    {
+      title: text("ყველაზე აქტიური", "Most active"),
+      value: mostActiveBusiness ? mostActiveBusiness.business.name : "—",
     },
     {
-      title: "Refunded/cancelled",
-      value: paymentSummary.refundedCount,
-      helper: `${formatMoney(
-        paymentSummary.refundedAmount
-      )} marked for refund history`,
-      className: "bg-warning-soft text-warning",
+      title: text("შეთავაზების გარეშე", "No offers"),
+      value: businessesWithZeroOffers.length,
+      tone: businessesWithZeroOffers.length > 0 ? "yellow" : undefined,
     },
     {
-      title: "Platform revenue",
+      title: text("უმოქმედო ბიზნესი", "Inactive businesses"),
+      value: inactiveBusinesses.length,
+      tone: inactiveBusinesses.length > 0 ? "yellow" : undefined,
+    },
+    {
+      title: text("ჯავშნის გარეშე", "No reservations"),
+      value: offersWithZeroReservations.length,
+    },
+    {
+      title: text("გაფრთხილება", "Warning accounts"),
+      value: warningProfiles.length,
+      tone: warningProfiles.length > 0 ? "yellow" : undefined,
+    },
+    {
+      title: text("შეზღუდული", "Restricted"),
+      value: restrictedProfiles.length,
+      tone: restrictedProfiles.length > 0 ? "red" : undefined,
+    },
+  ];
+  const paymentStats: SimpleStat[] = [
+    { title: text("გადახდილი", "Paid"), value: paymentSummary.activePaidCount, tone: "green" },
+    {
+      title: text("დაბრუნებული", "Refunded"),
+      value: `${paymentSummary.refundedCount} · ${formatMoney(paymentSummary.refundedAmount)}`,
+      tone: "yellow",
+    },
+    {
+      title: text("საკომისიო", "Commission"),
       value: formatMoney(paymentSummary.platformRevenue),
-      helper: "Estimated 10% marketplace fee",
-      className: "ui-card text-cream",
     },
     {
-      title: "Business payout",
+      // Recorded per order at each business's own rate.
+      title: text("ბიზნესებს", "To businesses"),
       value: formatMoney(paymentSummary.businessPayout),
-      helper: "Estimated 90% business revenue",
-      className: "ui-card text-cream",
     },
     {
-      title: "Pending payouts",
+      title: text("გასაცემი", "Payouts due"),
       value: formatMoney(paymentSummary.pendingPayoutEstimate),
-      helper: "Manual payout estimate from completed pickups",
-      className: "ui-card text-mint",
+      tone: "green",
     },
     {
-      title: "Failed payments",
       // Checkouts cancelled before a pickup code was issued: bank failure,
       // abandoned bank page, or an expired hold.
+      title: text("წარუმატებელი", "Failed"),
       value: orders.filter(isFailedCheckoutOrder).length,
-      helper: "Provider failures to review during payment operations",
-      className: "bg-danger-soft text-danger",
+      tone: "red",
     },
   ];
-  const operationalDashboardMetrics = [
+  const accountStats: SimpleStat[] = [
+    { title: text("მომხმარებელი", "Customers"), value: customerProfiles.length },
+    { title: text("ბიზნესი", "Businesses"), value: businessProfiles.length, tone: "green" },
+    { title: text("ადმინი", "Admins"), value: adminProfiles.length },
     {
-      title: "Today's activity",
-      value: todayReservations.length + todayPickups.length,
-      tone:
-        todayReservations.length + todayPickups.length > 0
-          ? ("green" as const)
-          : undefined,
-    },
-    {
-      title: "Reservations",
-      value: todayReservations.length,
-      tone: todayReservations.length > 0 ? ("yellow" as const) : undefined,
-    },
-    {
-      title: "Pickups",
-      value: todayPickups.length,
-      tone: todayPickups.length > 0 ? ("green" as const) : undefined,
-    },
-    {
-      title: "Cancelled",
-      value: cancelledOrders.length,
-      tone: cancelledOrders.length > 0 ? ("red" as const) : undefined,
-    },
-    {
-      title: "No-shows",
-      value: noShowOrders.length,
-      tone: noShowOrders.length > 0 ? ("red" as const) : undefined,
-    },
-    {
-      title: "Average rating",
-      value: marketplaceAnalytics.averageRating,
-      tone:
-        marketplaceAnalytics.averageRating === "No ratings yet"
-          ? undefined
-          : ("yellow" as const),
-    },
-    {
-      title: "Active offers",
-      value: activeOffers.length,
-      tone: activeOffers.length > 0 ? ("green" as const) : undefined,
-    },
-  ];
-  const supportLookupMetrics = [
-    {
-      title: "Reservation lookup",
-      value: filteredAdminOrders.length,
-      helper: "Use search to find reservation/order records by id or status",
-      className: "ui-card text-cream",
-    },
-    {
-      title: "Customer lookup",
-      value: filteredAdminProfiles.filter(
-        (profile) => profile.role === "customer"
-      ).length,
-      helper: "Customer accounts matching the current admin search",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Business lookup",
-      value: filteredApprovedBusinesses.length + filteredPendingBusinesses.length,
-      helper: "Approved and pending businesses matching the search",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Order lookup",
-      value: filteredAdminOrders.length,
-      helper: "Orders matching the selected status and search term",
-      className: "ui-card text-cream",
-    },
-  ];
-  const marketplaceIntelligenceMetrics = [
-    {
-      title: "Most active business",
-      value: mostActiveBusiness
-        ? mostActiveBusiness.business.name
-        : "Not enough data",
-      helper: mostActiveBusiness
-        ? `${mostActiveBusiness.reservations} total reservations`
-        : "Reservations will identify the strongest active partner.",
-      className: "ui-card text-mint",
-    },
-    {
-      title: "Least active business",
-      value: leastActiveBusiness
-        ? leastActiveBusiness.business.name
-        : "Not enough data",
-      helper: leastActiveBusiness
-        ? `${leastActiveBusiness.reservations} total reservations`
-        : "Approved businesses will appear here after onboarding.",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Offers created today",
-      value: offersCreatedToday.length,
-      helper: "New offers published in the current Tbilisi day",
-      className: "ui-card text-cream",
-    },
-    {
-      title: "Offers expiring",
-      value: offersExpiringToday.length,
-      helper: "Active offers with pickup scheduled today",
-      className: "bg-warning-soft text-warning",
-    },
-    {
-      title: "Businesses without offers",
-      value: businessesWithZeroOffers.length,
-      helper: "Businesses that may need onboarding help",
-      className: "bg-danger-soft text-danger",
-    },
-    {
-      title: "Without reservations",
-      value: businessesWithoutReservations.length,
-      helper: "Approved businesses that have not received reservations yet",
-      className: "bg-warning-soft text-warning",
+      title: text("როლის გარეშე", "No role"),
+      value: unknownProfiles.length,
+      tone: unknownProfiles.length > 0 ? "red" : undefined,
     },
   ];
 
@@ -1427,10 +1072,7 @@ export default function AdminPage() {
       <main className="app-shell">
         <Navbar />
         <section className="px-4 py-8 sm:px-6 md:px-12">
-          <LoadingState
-            title="Loading admin dashboard..."
-            description="Checking businesses, offers, orders and marketplace health."
-          />
+          <LoadingState title={{ en: "Loading...", ka: "იტვირთება..." }} />
         </section>
       </main>
     );
@@ -1440,8 +1082,8 @@ export default function AdminPage() {
     <main className="app-shell">
       <Navbar />
 
-      <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-12">
-        <AdminHero t={t} />
+      <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10 md:px-12">
+        <AdminHeader language={language} />
 
         {message && (
           <div className="mt-5">
@@ -1449,43 +1091,35 @@ export default function AdminPage() {
           </div>
         )}
 
-        <AdminMarketplaceOverview metrics={marketplaceOverview} />
-
-        <AdminRevenueInsights analytics={marketplaceAnalytics} />
-
-        <AdminOperationalDashboard metrics={operationalDashboardMetrics} />
-
-        <AdminMarketplaceIntelligence
-          metrics={marketplaceIntelligenceMetrics}
+        <PendingBusinesses
+          language={language}
+          businesses={paginatedPendingBusinesses.items}
+          waitingCount={filteredPendingBusinesses.length}
+          updatingBusinessId={updatingBusinessId}
+          verifications={businessVerifications}
+          onConfirmIbanHolder={(id, confirmed) => void confirmIbanHolder(id, confirmed)}
+          onOpenExtract={(path) => void openRegistryExtract(path)}
+          onApprove={(id) => void approveBusiness(id)}
+          onReject={(id, reason) => void rejectBusinessApplication(id, reason)}
         />
 
-        <AdminHealthSections
-          t={t}
-          marketplaceHealth={marketplaceHealth}
-          marketplaceOperations={marketplaceOperations}
-          operationalStats={operationalStats}
-          customerReliabilityStats={customerReliabilityStats}
-          applicationHealth={applicationHealth}
+        <Pagination
+          className="mt-5"
+          page={paginatedPendingBusinesses.page}
+          totalItems={filteredPendingBusinesses.length}
+          pageSize={ADMIN_LIST_PAGE_SIZE}
+          label={text("მოლოდინში", "Pending businesses")}
+          onPageChange={setPendingPage}
         />
 
-        <AdminPaymentsOverview metrics={paymentOverview} />
-
-        <AdminAccountView metrics={accountOverview} profiles={profiles} />
-
-        <AdminModerationVisibility metrics={moderationStats} />
-
-        <AdminSupportTools metrics={supportLookupMetrics} />
+        <AdminKeyNumbers stats={keyNumbers} />
 
         {lockedPickupOrders.length > 0 && (
-          <div className="premium-card mt-6 rounded-3xl p-5 sm:mt-8">
-            <h3 className="text-lg font-semibold text-cream">
-              Locked pickup codes
-            </h3>
-            <p className="mt-1 text-sm text-body">
-              Reserved orders locked after {PICKUP_CODE_MAX_ATTEMPTS} wrong
-              pickup codes. The business cannot complete them until unlocked.
-            </p>
-            <div className="mt-4 grid gap-3">
+          <div className="premium-card mt-6 rounded-3xl p-5">
+            <h2 className="text-lg font-semibold text-cream">
+              {text("დაბლოკილი კოდები", "Locked pickup codes")}
+            </h2>
+            <div className="mt-3 grid gap-3">
               {lockedPickupOrders.map((order) => {
                 const businessId = offerBusinessIdById.get(order.offer_id);
                 return (
@@ -1493,17 +1127,10 @@ export default function AdminPage() {
                     key={order.id}
                     className="flex flex-col gap-3 rounded-2xl bg-danger-soft p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
-                    <div>
-                      <p className="font-semibold text-danger">
-                        Order #{order.id}
-                      </p>
-                      <p className="mt-1 text-sm text-body">
-                        Offer #{order.offer_id} ·{" "}
-                        {(businessId && businessNameById[businessId]) ||
-                          "Business"}{" "}
-                        · {order.pickup_code_failed_attempts} wrong codes
-                      </p>
-                    </div>
+                    <p className="font-semibold text-danger">
+                      #{order.id} ·{" "}
+                      {(businessId && businessNameById[businessId]) || "—"}
+                    </p>
                     <button
                       type="button"
                       onClick={() => void unlockPickupCode(order.id)}
@@ -1511,8 +1138,8 @@ export default function AdminPage() {
                       className="rounded-2xl premium-button px-4 py-3 text-sm disabled:opacity-50"
                     >
                       {unlockingOrderId === order.id
-                        ? "Unlocking..."
-                        : "Unlock pickup code"}
+                        ? text("იხსნება...", "Unlocking...")
+                        : text("განბლოკვა", "Unlock")}
                     </button>
                   </div>
                 );
@@ -1521,214 +1148,35 @@ export default function AdminPage() {
           </div>
         )}
 
-        <FilterBar
-          className="mt-6 sm:mt-8"
-          title="Admin search tools"
-          description="Search businesses, offers, customers and orders from one place."
-        >
-          <SearchBar
-            value={adminSearch}
-            onChange={(value) => {
-              setAdminSearch(value);
-              setPendingPage(1);
-              setApprovedPage(1);
-              setRejectedPage(1);
-            }}
-            placeholder="Search admin data..."
-            label="Search admin data"
-          />
-
-          <select
-            value={adminOfferFilter}
-            onChange={(event) =>
-              setAdminOfferFilter(event.target.value as AdminOfferFilter)
-            }
-            aria-label="Filter admin offers"
-            className="premium-input px-4 py-3 font-semibold"
-          >
-            <option value="all">All offer statuses</option>
-            <option value="active">Active offers</option>
-            <option value="inactive">Inactive offers</option>
-            <option value="expired">Expired offers</option>
-            <option value="sold_out">Sold out offers</option>
-          </select>
-
-          <select
-            value={adminOrderFilter}
-            onChange={(event) =>
-              setAdminOrderFilter(event.target.value as AdminOrderFilter)
-            }
-            aria-label="Filter admin orders"
-            className="premium-input px-4 py-3 font-semibold"
-          >
-            <option value="all">All order statuses</option>
-            <option value="reserved">Reserved</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled/refunded</option>
-            <option value="no_show">No-show</option>
-          </select>
-
-          <select
-            value={adminProfileFilter}
-            onChange={(event) =>
-              setAdminProfileFilter(event.target.value as AdminProfileFilter)
-            }
-            aria-label="Filter admin profiles"
-            className="premium-input px-4 py-3 font-semibold"
-          >
-            <option value="all">All account roles</option>
-            <option value="customer">Customers</option>
-            <option value="business">Businesses</option>
-            <option value="admin">Admins</option>
-          </select>
-
-          <select
-            value={approvalQueueFilter}
-            onChange={(event) => {
-              setApprovalQueueFilter(
-                event.target.value as ApprovalQueueFilter
-              );
-              setPendingPage(1);
-              setApprovedPage(1);
-              setRejectedPage(1);
-            }}
-            aria-label="Filter approval center"
-            className="premium-input px-4 py-3 font-semibold"
-          >
-            <option value="newest">Approval: Newest first</option>
-            <option value="oldest">Approval: Oldest first</option>
-            <option value="needs_review">Approval: Needs review</option>
-            <option value="approved">Approval: Approved</option>
-            <option value="rejected">Approval: Rejected</option>
-          </select>
-        </FilterBar>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-4">
-          <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm text-body">Businesses found</p>
-            <p className="mt-2 text-3xl font-semibold text-cream">
-              {filteredPendingBusinesses.length +
-                filteredApprovedBusinesses.length +
-                filteredRejectedBusinesses.length}
-            </p>
-          </div>
-          <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm text-body">Offers found</p>
-            <p className="mt-2 text-3xl font-semibold text-cream">
-              {filteredAdminOffers.length}
-            </p>
-          </div>
-          <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm text-body">Orders found</p>
-            <p className="mt-2 text-3xl font-semibold text-cream">
-              {filteredAdminOrders.length}
-            </p>
-          </div>
-          <div className="ui-card rounded-2xl p-4">
-            <p className="text-sm text-body">Accounts found</p>
-            <p className="mt-2 text-3xl font-semibold text-cream">
-              {filteredAdminProfiles.length}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-4 lg:grid-cols-3">
-          <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-semibold text-cream">Offer matches</h3>
-            <div className="mt-4 grid gap-3">
-              {filteredAdminOffers.slice(0, 5).map((offer) => (
-                <div key={offer.id} className="rounded-2xl bg-well p-4">
-                  <p className="font-semibold text-cream">{offer.title}</p>
-                  <p className="mt-1 text-sm text-body">
-                    {businessNameById[offer.business_id] || "Business"} ·{" "}
-                    {getEffectiveOfferStatus(offer)}
-                  </p>
-                </div>
-              ))}
-              {filteredAdminOffers.length === 0 && (
-                <p className="text-body">No offers found.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-semibold text-cream">Order matches</h3>
-            <div className="mt-4 grid gap-3">
-              {filteredAdminOrders.slice(0, 5).map((order) => (
-                <div key={order.id} className="rounded-2xl bg-well p-4">
-                  <p className="font-semibold text-cream">Order #{order.id}</p>
-                  <p className="mt-1 text-sm text-body">
-                    Offer #{order.offer_id} · {order.status}
-                  </p>
-                </div>
-              ))}
-              {filteredAdminOrders.length === 0 && (
-                <p className="text-body">No orders found.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="premium-card rounded-3xl p-5">
-            <h3 className="text-lg font-semibold text-cream">Account matches</h3>
-            <div className="mt-4 grid gap-3">
-              {filteredAdminProfiles.slice(0, 5).map((profile) => (
-                <div key={profile.id} className="rounded-2xl bg-well p-4">
-                  <p className="break-words font-semibold text-cream">
-                    {profile.email || "Email unavailable"}
-                  </p>
-                  <p className="mt-1 text-sm capitalize text-body">
-                    {profile.role || "Missing role"}
-                  </p>
-                </div>
-              ))}
-              {filteredAdminProfiles.length === 0 && (
-                <p className="text-body">No accounts found.</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {showRejectedOnly ? (
+        {openReviewReports.length > 0 && (
           <>
-            <RejectedBusinesses
+            <ReportedReviews
               language={language}
-              businesses={paginatedRejectedBusinesses.items}
+              reports={paginatedReviewReports.items}
+              openCount={openReviewReports.length}
+              businessNameById={businessNameById}
+              reporterEmailById={profileEmailById}
+              updatingReportId={updatingReportId}
+              onHide={(id) => void hideReportedReview(id)}
+              onDismiss={(id) => void dismissReviewReport(id)}
             />
 
             <Pagination
               className="mt-5"
-              page={paginatedRejectedBusinesses.page}
-              totalItems={filteredRejectedBusinesses.length}
+              page={paginatedReviewReports.page}
+              totalItems={openReviewReports.length}
               pageSize={ADMIN_LIST_PAGE_SIZE}
-              label="Rejected businesses"
-              onPageChange={setRejectedPage}
+              label={text("რეპორტები", "Reported reviews")}
+              onPageChange={setReviewReportsPage}
             />
           </>
-        ) : (
-          <>
-            <PendingBusinesses
-              t={t}
-              language={language}
-              businesses={paginatedPendingBusinesses.items}
-              waitingCount={approvalVisiblePendingBusinesses.length}
-              updatingBusinessId={updatingBusinessId}
-              verifications={businessVerifications}
-              onConfirmIbanHolder={(id, confirmed) => void confirmIbanHolder(id, confirmed)}
-              onOpenExtract={(path) => void openRegistryExtract(path)}
-              onApprove={(id) => void approveBusiness(id)}
-              onRequestChanges={requestBusinessChanges}
-              onReject={(id, reason) => void rejectBusinessApplication(id, reason)}
-            />
+        )}
 
-            <Pagination
-              className="mt-5"
-              page={paginatedPendingBusinesses.page}
-              totalItems={approvalVisiblePendingBusinesses.length}
-              pageSize={ADMIN_LIST_PAGE_SIZE}
-              label="Pending businesses"
-              onPageChange={setPendingPage}
-            />
-
+        <div className="mt-6">
+          <AdminCollapsible
+            title={text("დამტკიცებული ბიზნესები", "Approved businesses")}
+            count={filteredApprovedBusinesses.length}
+          >
             <ApprovedBusinesses
               businesses={paginatedApprovedBusinesses.items}
               updatingBusinessId={updatingBusinessId}
@@ -1737,53 +1185,194 @@ export default function AdminPage() {
               onSetLocation={setBusinessLocation}
               language={language}
             />
-
             <Pagination
-              className="mt-5"
+              className="mt-4"
               page={paginatedApprovedBusinesses.page}
-              totalItems={approvalVisibleApprovedBusinesses.length}
+              totalItems={filteredApprovedBusinesses.length}
               pageSize={ADMIN_LIST_PAGE_SIZE}
-              label="Approved businesses"
+              label={text("დამტკიცებული", "Approved businesses")}
               onPageChange={setApprovedPage}
             />
-          </>
-        )}
+          </AdminCollapsible>
 
-        <ReportedReviews
-          language={language}
-          reports={paginatedReviewReports.items}
-          openCount={openReviewReports.length}
-          businessNameById={businessNameById}
-          reporterEmailById={profileEmailById}
-          updatingReportId={updatingReportId}
-          onHide={(id) => void hideReportedReview(id)}
-          onDismiss={(id) => void dismissReviewReport(id)}
-        />
+          <AdminCollapsible
+            title={text("უარყოფილი", "Rejected")}
+            count={filteredRejectedBusinesses.length}
+          >
+            <RejectedBusinesses
+              language={language}
+              businesses={paginatedRejectedBusinesses.items}
+            />
+            <Pagination
+              className="mt-4"
+              page={paginatedRejectedBusinesses.page}
+              totalItems={filteredRejectedBusinesses.length}
+              pageSize={ADMIN_LIST_PAGE_SIZE}
+              label={text("უარყოფილი", "Rejected businesses")}
+              onPageChange={setRejectedPage}
+            />
+          </AdminCollapsible>
 
-        <Pagination
-          className="mt-5"
-          page={paginatedReviewReports.page}
-          totalItems={openReviewReports.length}
-          pageSize={ADMIN_LIST_PAGE_SIZE}
-          label="Reported reviews"
-          onPageChange={setReviewReportsPage}
-        />
+          <AdminCollapsible title={text("ანალიტიკა", "Analytics")}>
+            <AdminAnalytics
+              language={language}
+              overview={overviewStats}
+              analytics={marketplaceAnalytics}
+            />
+          </AdminCollapsible>
 
-        <HiddenReviews
-          reports={paginatedHiddenReviews.items}
-          businessNameById={businessNameById}
-          updatingReportId={updatingReportId}
-          onUnhide={(report) => void unhideReview(report)}
-        />
+          <AdminCollapsible title={text("ოპერაციები", "Operations")}>
+            <AdminOperations
+              language={language}
+              today={todayStats}
+              status={statusStats}
+              signals={signalStats}
+            />
+          </AdminCollapsible>
 
-        <Pagination
-          className="mt-5"
-          page={paginatedHiddenReviews.page}
-          totalItems={hiddenReviewReports.length}
-          pageSize={ADMIN_LIST_PAGE_SIZE}
-          label="Hidden reviews"
-          onPageChange={setHiddenReviewsPage}
-        />
+          <AdminCollapsible title={text("გადახდები", "Payments")}>
+            <AdminPayments language={language} stats={paymentStats} />
+          </AdminCollapsible>
+
+          <AdminCollapsible title={text("ანგარიშები", "Accounts")} count={profiles.length}>
+            <AdminAccounts language={language} stats={accountStats} profiles={profiles} />
+          </AdminCollapsible>
+
+          {hiddenReviewReports.length > 0 && (
+            <AdminCollapsible
+              title={text("დამალული შეფასებები", "Hidden reviews")}
+              count={hiddenReviewReports.length}
+            >
+              <HiddenReviews
+                language={language}
+                reports={paginatedHiddenReviews.items}
+                businessNameById={businessNameById}
+                updatingReportId={updatingReportId}
+                onUnhide={(report) => void unhideReview(report)}
+              />
+              <Pagination
+                className="mt-4"
+                page={paginatedHiddenReviews.page}
+                totalItems={hiddenReviewReports.length}
+                pageSize={ADMIN_LIST_PAGE_SIZE}
+                label={text("დამალული", "Hidden reviews")}
+                onPageChange={setHiddenReviewsPage}
+              />
+            </AdminCollapsible>
+          )}
+
+          <AdminCollapsible title={text("ძიება", "Search")}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <SearchBar
+                value={adminSearch}
+                onChange={(value) => {
+                  setAdminSearch(value);
+                  setPendingPage(1);
+                  setApprovedPage(1);
+                  setRejectedPage(1);
+                }}
+                placeholder={text("ძიება...", "Search...")}
+                label={text("ძიება", "Search")}
+              />
+
+              <select
+                value={adminOfferFilter}
+                onChange={(event) =>
+                  setAdminOfferFilter(event.target.value as AdminOfferFilter)
+                }
+                aria-label={text("შეთავაზებები", "Offers")}
+                className="premium-input px-4 py-3 font-semibold"
+              >
+                <option value="all">{text("ყველა შეთავაზება", "All offers")}</option>
+                <option value="active">{text("აქტიური", "Active")}</option>
+                <option value="inactive">{text("არააქტიური", "Inactive")}</option>
+                <option value="expired">{text("ვადაგასული", "Expired")}</option>
+                <option value="sold_out">{text("გაყიდული", "Sold out")}</option>
+              </select>
+
+              <select
+                value={adminOrderFilter}
+                onChange={(event) =>
+                  setAdminOrderFilter(event.target.value as AdminOrderFilter)
+                }
+                aria-label={text("შეკვეთები", "Orders")}
+                className="premium-input px-4 py-3 font-semibold"
+              >
+                <option value="all">{text("ყველა შეკვეთა", "All orders")}</option>
+                <option value="reserved">{text("ჯავშანი", "Reserved")}</option>
+                <option value="completed">{text("გაცემული", "Completed")}</option>
+                <option value="cancelled">{text("გაუქმებული", "Cancelled")}</option>
+                <option value="no_show">{text("არ მოვიდა", "No-show")}</option>
+              </select>
+
+              <select
+                value={adminProfileFilter}
+                onChange={(event) =>
+                  setAdminProfileFilter(event.target.value as AdminProfileFilter)
+                }
+                aria-label={text("ანგარიშები", "Accounts")}
+                className="premium-input px-4 py-3 font-semibold"
+              >
+                <option value="all">{text("ყველა როლი", "All roles")}</option>
+                <option value="customer">{text("მომხმარებელი", "Customers")}</option>
+                <option value="business">{text("ბიზნესი", "Businesses")}</option>
+                <option value="admin">{text("ადმინი", "Admins")}</option>
+              </select>
+            </div>
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-3">
+              <div>
+                <h3 className="font-semibold text-cream">
+                  {text("შეთავაზებები", "Offers")} · {filteredAdminOffers.length}
+                </h3>
+                <div className="mt-2 grid gap-2">
+                  {filteredAdminOffers.slice(0, 5).map((offer) => (
+                    <p key={offer.id} className="rounded-2xl bg-well p-3 text-sm text-body">
+                      <span className="font-semibold text-cream">{offer.title}</span> ·{" "}
+                      {businessNameById[offer.business_id] || "—"} ·{" "}
+                      {getEffectiveOfferStatus(offer)}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-cream">
+                  {text("შეკვეთები", "Orders")} · {filteredAdminOrders.length}
+                </h3>
+                <div className="mt-2 grid gap-2">
+                  {filteredAdminOrders.slice(0, 5).map((order) => (
+                    <p key={order.id} className="rounded-2xl bg-well p-3 text-sm text-body">
+                      <span className="font-semibold text-cream">#{order.id}</span> ·{" "}
+                      {order.status}
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-cream">
+                  {text("ანგარიშები", "Accounts")} · {filteredAdminProfiles.length}
+                </h3>
+                <div className="mt-2 grid gap-2">
+                  {filteredAdminProfiles.slice(0, 5).map((profile) => (
+                    <p
+                      key={profile.id}
+                      className="break-words rounded-2xl bg-well p-3 text-sm text-body"
+                    >
+                      <span className="font-semibold text-cream">{profile.email || "—"}</span> ·{" "}
+                      {profile.role || "—"}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </AdminCollapsible>
+
+          <AdminCollapsible title={text("სისტემა", "App health")}>
+            <AdminApplicationHealth items={applicationHealth} />
+          </AdminCollapsible>
+        </div>
       </section>
     </main>
   );

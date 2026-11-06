@@ -58,8 +58,8 @@ function getDeviceToken() {
 function describePinError(message: string, isGeorgian: boolean) {
   if (message.includes("pin_locked") || message.includes("staff_pin_locked")) {
     return isGeorgian
-      ? "ამ მოწყობილობიდან ძალიან ბევრი არასწორი ცდა იყო. სცადე 15 წუთში, ან სთხოვე მფლობელს განბლოკვა პანელიდან."
-      : "Too many wrong attempts from this device. Try again in 15 minutes, or ask the owner to unlock it from the dashboard.";
+      ? "ბევრი არასწორი ცდა. სცადე 15 წუთში ან სთხოვე მფლობელს განბლოკვა."
+      : "Too many wrong tries. Wait 15 minutes or ask the owner to unlock.";
   }
   if (message.includes("rate_limited")) {
     return isGeorgian ? "ძალიან სწრაფად. სცადე წამში." : "Too fast. Try again in a second.";
@@ -68,8 +68,8 @@ function describePinError(message: string, isGeorgian: boolean) {
     return isGeorgian ? "არასწორი PIN." : "Wrong PIN.";
   }
   return isGeorgian
-    ? "გვერდი ვერ ჩაიტვირთა. სცადე თავიდან."
-    : "The page could not be loaded. Please try again.";
+    ? "ვერ ჩაიტვირთა. სცადე თავიდან."
+    : "Could not load. Try again.";
 }
 
 // Department staff page: no owner login. Staff enter the department PIN once
@@ -215,7 +215,7 @@ export default function StaffDepartmentPage() {
         reservations.find((r) => ["reserved", "confirmed"].includes(r.status)) || null;
       setLastCompleted(matched);
       setMessageTone("success");
-      setMessage(isGeorgian ? "წაღება დადასტურდა. გადაეცი ლანჩ ბოქსი." : "Pickup confirmed. Hand over the box.");
+      setMessage(isGeorgian ? "დადასტურდა. გადაეცი ლანჩ ბოქსი." : "Confirmed. Hand over the box.");
       setCode("");
       await load(pin, true);
       return;
@@ -225,15 +225,15 @@ export default function StaffDepartmentPage() {
     setMessage(
       data === "locked"
         ? isGeorgian
-          ? "ძალიან ბევრი არასწორი კოდი. ეს მოწყობილობა 15 წუთით დაიბლოკა; მფლობელს პანელიდან განბლოკვა შეუძლია."
-          : "Too many wrong codes. This device is locked for 15 minutes; the owner can unlock it from the dashboard."
+          ? "ბევრი არასწორი კოდი. 15 წუთით დაიბლოკა."
+          : "Too many wrong codes. Locked for 15 minutes."
         : data === "ambiguous"
         ? isGeorgian
-          ? "ამ კოდით ორი ღია ჯავშანია. დაასრულე მფლობელის პანელიდან."
-          : "Two open reservations share this code. Complete it from the owner dashboard."
+          ? "ამ კოდით ორი ჯავშანია. გაეცი მფლობელის პანელიდან."
+          : "Two orders share this code. Use the owner dashboard."
         : isGeorgian
-        ? "კოდი არ ემთხვევა ამ დეპარტამენტის ღია ჯავშანს."
-        : "That code doesn't match an open reservation in this department."
+        ? "კოდი არ ემთხვევა."
+        : "Code doesn't match."
     );
   }
 
@@ -260,8 +260,8 @@ export default function StaffDepartmentPage() {
           ? "გაყიდვები ისევ ჩართულია."
           : "Sales are back on."
         : isGeorgian
-        ? "დღეს ახალი ლანჩ ბოქსები აღარ გაიყიდება."
-        : "No more boxes will be sold today."
+        ? "დღეს გაყიდვა შეჩერდა."
+        : "Sales stopped for today."
     );
     await load(pin, true);
   }
@@ -282,19 +282,12 @@ export default function StaffDepartmentPage() {
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-well text-mint">
               <LockIcon className="h-5 w-5" strokeWidth={1.8} />
             </span>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-mint">
-                {isGeorgian ? "თანამშრომლის რეჟიმი" : "Staff mode"}
-              </p>
-              <h1 className="text-2xl font-semibold text-cream">
-                {isGeorgian ? "შეიყვანე დეპარტამენტის PIN" : "Enter the department PIN"}
-              </h1>
-            </div>
+            <h1 className="text-2xl font-semibold text-cream">
+              {isGeorgian ? "თანამშრომლის PIN" : "Staff PIN"}
+            </h1>
           </div>
-          <p className="mt-4 text-sm leading-6 text-body">
-            {isGeorgian
-              ? "PIN-ს ბიზნესის მფლობელი აყენებს ბიზნეს პანელში. ამ მოწყობილობაზე ის ბრაუზერის დახურვამდე იმახსოვრება."
-              : "The owner sets the PIN in the business dashboard. It stays remembered on this device until the browser is closed."}
+          <p className="mt-3 text-sm text-body">
+            {isGeorgian ? "PIN-ს მფლობელი გაძლევს." : "Ask the owner for the PIN."}
           </p>
           <input
             value={pinInput}
@@ -351,7 +344,7 @@ export default function StaffDepartmentPage() {
             </div>
 
             <label className="mt-5 grid gap-2 text-sm font-semibold text-body">
-              {isGeorgian ? "მომხმარებლის წაღების კოდი" : "Customer's pickup code"}
+              {isGeorgian ? "წაღების კოდი" : "Pickup code"}
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   ref={codeInputRef}
@@ -372,7 +365,7 @@ export default function StaffDepartmentPage() {
                   disabled={busy || code.length !== 6}
                   className="premium-button cta-glow min-h-14 px-6 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isGeorgian ? "წაღების დადასტურება" : "Confirm pickup"}
+                  {isGeorgian ? "გაცემა" : "Hand over"}
                 </button>
               </div>
             </label>
@@ -397,11 +390,11 @@ export default function StaffDepartmentPage() {
               <p className="text-sm text-body">
                 {summary?.sales_paused
                   ? isGeorgian
-                    ? "დღეს ახალი ლანჩ ბოქსები არ იყიდება."
-                    : "No new boxes are being sold today."
+                    ? "დღეს არ იყიდება"
+                    : "Not selling today"
                   : isGeorgian
-                  ? "ლანჩ ბოქსები იყიდება."
-                  : "Lunch Boxes are on sale."}
+                  ? "იყიდება"
+                  : "On sale"}
               </p>
               <button
                 type="button"
@@ -413,8 +406,8 @@ export default function StaffDepartmentPage() {
               >
                 {summary?.sales_paused
                   ? isGeorgian
-                    ? "გაყიდვების ჩართვა"
-                    : "Turn sales back on"
+                    ? "ჩართვა"
+                    : "Resume sales"
                   : isGeorgian
                   ? "დღეს ლანჩ ბოქსები არ არის"
                   : "Today: no boxes"}
@@ -424,13 +417,13 @@ export default function StaffDepartmentPage() {
 
           <div className="premium-card rounded-3xl p-5 sm:p-6">
             <h2 className="text-xl font-semibold text-cream">
-              {isGeorgian ? "წასაღებად მზად" : "Waiting for pickup"}{" "}
+              {isGeorgian ? "ელოდება" : "Waiting"}{" "}
               <span className="text-body">({openReservations.length})</span>
             </h2>
             <div className="mt-4 grid gap-3">
               {openReservations.length === 0 && (
                 <p className="rounded-2xl bg-well p-4 text-sm text-body">
-                  {isGeorgian ? "ღია ჯავშნები არ არის." : "No open reservations."}
+                  {isGeorgian ? "არაფერი ელოდება." : "Nothing waiting."}
                 </p>
               )}
               {openReservations.map((reservation) => (
@@ -451,10 +444,10 @@ export default function StaffDepartmentPage() {
             </div>
 
             {doneReservations.length > 0 && (
-              <>
-                <h3 className="mt-6 text-sm font-semibold uppercase tracking-widest text-body">
-                  {isGeorgian ? "დასრულებული" : "Done"}
-                </h3>
+              <details className="mt-6">
+                <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold uppercase tracking-widest text-body">
+                  {isGeorgian ? "დასრულებული" : "Done"} ({doneReservations.length})
+                </summary>
                 <div className="mt-3 grid gap-2">
                   {doneReservations.slice(0, 20).map((reservation) => (
                     <div
@@ -476,7 +469,7 @@ export default function StaffDepartmentPage() {
                     </div>
                   ))}
                 </div>
-              </>
+              </details>
             )}
           </div>
         </div>

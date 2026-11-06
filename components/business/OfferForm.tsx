@@ -18,10 +18,6 @@ import type { Business, Department } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import type { ChangeEvent } from "react";
 
-type GuidanceItem = {
-  label: string;
-  value: string;
-};
 
 type OfferFormProps = {
   t: (key: TranslationKey) => string;
@@ -44,7 +40,6 @@ type OfferFormProps = {
   pickupEnd: string;
   imageFile: File | null;
   publishing: boolean;
-  guidance: GuidanceItem[];
   onBusinessIdChange: (value: string) => void;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
@@ -83,7 +78,6 @@ export function OfferForm({
   pickupEnd,
   imageFile,
   publishing,
-  guidance,
   onBusinessIdChange,
   onTitleChange,
   onDescriptionChange,
@@ -105,55 +99,33 @@ export function OfferForm({
   return (
     <div
       id="create-offer"
-      className="cat-mixed mt-6 scroll-mt-24 rounded-[24px] bg-cat p-5 sm:mt-8 sm:p-8"
+      className="cat-mixed mt-4 scroll-mt-24 rounded-[24px] bg-cat p-4 sm:p-6"
     >
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {isGeorgian ? "შეთავაზებების მართვა" : "Offer Management"}
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-        {t("businessDashboard.createOffer")}
+      <h2 className="text-xl font-semibold sm:text-2xl">
+        {isGeorgian ? "ერთჯერადი ლანჩ ბოქსი" : "One-off bag"}
       </h2>
-      <p className="mt-2 max-w-xl text-sm leading-6 text-body">
-        {isGeorgian
-          ? "ერთჯერადი შეთავაზებისთვის. ყოველდღიური ლანჩ ბოქსებისთვის გამოიყენე შაბლონები ზემოთ."
-          : "For a one-off offer. Daily boxes are better set up as templates above."}
-      </p>
 
       {canCreateOffers ? (
         <>
-          <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-            <p className="text-sm uppercase tracking-widest text-body">
-              {t("businessOnboarding.firstOfferGuidanceTitle")}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {guidance.map((item) => (
-                <span
-                  key={item.label}
-                  className="ui-card rounded-full px-4 py-2 text-sm font-semibold text-cream"
-                >
-                  {item.label}: {item.value}
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            {approvedBusinesses.length > 1 && (
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
+                <span>
+                  {t("common.business")} <RequiredMark />
                 </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
-              <span>
-                {t("common.business")} <RequiredMark />
-              </span>
-              <select
-                value={businessId}
-                onChange={(event) => onBusinessIdChange(event.target.value)}
-                className="premium-input w-full min-w-0 p-4 font-semibold"
-              >
-                {approvedBusinesses.map((business) => (
-                  <option key={business.id} value={business.id}>
-                    {business.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <select
+                  value={businessId}
+                  onChange={(event) => onBusinessIdChange(event.target.value)}
+                  className="premium-input w-full min-w-0 p-4 font-semibold"
+                >
+                  {approvedBusinesses.map((business) => (
+                    <option key={business.id} value={business.id}>
+                      {business.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             {departments.length > 1 && (
               <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
@@ -336,25 +308,6 @@ export function OfferForm({
             />
           </label>
           </div>
-
-          <div className="mt-4 grid gap-2 md:grid-cols-3">
-            {[
-              t("businessOnboarding.titleHelper"),
-              t("businessOnboarding.quantityHelper"),
-              t("businessOnboarding.pickupWindowHelper"),
-            ].map((helper) => (
-              <p
-                key={helper}
-                className="rounded-2xl bg-well px-4 py-3 text-sm font-semibold leading-6 text-body"
-              >
-                {helper}
-              </p>
-            ))}
-          </div>
-
-          <p className="mt-4 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
-            {t("businessOnboarding.offerValidationHint")}
-          </p>
 
           {imageFile && (
             <p className="mt-4 rounded-2xl bg-well px-4 py-3 text-sm font-semibold text-cream">

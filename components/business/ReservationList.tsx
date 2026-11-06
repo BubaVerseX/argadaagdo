@@ -71,99 +71,27 @@ export function ReservationList({
   onMarkNoShow,
 }: ReservationListProps) {
   const isGeorgian = language === "ka";
+  const text = (ka: string, en: string) => (isGeorgian ? ka : en);
+  // reservationSummary is [reserved, collected, cancelled, no-show].
+  const counts: Partial<Record<ReservationFilter, number>> = {
+    all: orders.length,
+    reserved: reservationSummary[0]?.value,
+    collected: reservationSummary[1]?.value,
+    cancelled: reservationSummary[2]?.value,
+    no_show: reservationSummary[3]?.value,
+  };
+  const filters: Array<{ value: ReservationFilter; label: string }> = [
+    { value: "reserved", label: text("აქტიური", "Active") },
+    { value: "collected", label: text("გაცემული", "Collected") },
+    { value: "cancelled", label: text("გაუქმებული", "Cancelled") },
+    { value: "no_show", label: text("არ მოვიდა", "No-show") },
+    { value: "all", label: text("ყველა", "All") },
+  ];
 
   return (
-    <div
-      id="reservations"
-      className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:rounded-3xl sm:p-8"
-    >
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {isGeorgian ? "წაღების ოპერაციები" : "Pickup Operations"}
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-        {t("businessDashboard.reservations")}
-      </h2>
-
-      <div className="premium-muted-card mt-5 rounded-2xl p-4 sm:p-5">
-        <p className="text-sm uppercase tracking-widest text-body">
-          {t("businessOnboarding.reservationGuidanceTitle")}
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {[
-            t("businessOnboarding.reservationGuidanceText"),
-            t("businessOnboarding.pickupStepAskCode"),
-            t("businessOnboarding.pickupStepEnterCode"),
-            t("businessOnboarding.pickupStepComplete"),
-          ].map((step) => (
-            <span
-              key={step}
-              className="ui-card rounded-full px-4 py-2 text-sm font-semibold leading-6 text-cream"
-            >
-              {step}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {orders.length > 0 && (
-        <div className="mt-6 rounded-3xl bg-well p-5 sm:p-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-body">
-                {t("businessDashboard.reservationSummary")}
-              </p>
-              <h3 className="mt-2 text-2xl font-semibold text-cream">
-                {t("businessDashboard.totalReservationsMetric")}: {orders.length}
-              </h3>
-            </div>
-          </div>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {reservationSummary.map((item) => (
-              <div
-                key={item.label}
-                className={`rounded-2xl p-4 ${item.className}`}
-              >
-                <p className="text-sm font-semibold">{item.label}</p>
-                <p className="mt-2 text-3xl font-semibold">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-        <input
-          value={reservationSearch}
-          onChange={(event) => onReservationSearchChange(event.target.value)}
-          className="premium-input px-4 py-3 font-semibold"
-          placeholder={
-            isGeorgian
-              ? "მოძებნე მომხმარებლის ელფოსტა..."
-              : "Search customer email..."
-          }
-          aria-label={
-            isGeorgian
-              ? "ჯავშნების ძიება მომხმარებლის ელფოსტით"
-              : "Search reservations by customer email"
-          }
-        />
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        {[
-          { value: "all", label: isGeorgian ? "ყველა" : "All" },
-          { value: "reserved", label: isGeorgian ? "აქტიური" : "Active" },
-          {
-            value: "collected",
-            label: isGeorgian ? "დასრულებული" : "Completed",
-          },
-          {
-            value: "cancelled",
-            label: isGeorgian ? "გაუქმებული" : "Cancelled",
-          },
-          { value: "no_show", label: t("businessDashboard.noShow") },
-        ].map((filter) => {
+    <div id="reservations" className="mt-4 scroll-mt-24">
+      <div className="flex flex-wrap gap-2">
+        {filters.map((filter) => {
           const isActive = reservationFilter === filter.value;
 
           return (
@@ -171,225 +99,149 @@ export function ReservationList({
               key={filter.value}
               type="button"
               aria-pressed={isActive}
-              onClick={() =>
-                onReservationFilterChange(filter.value as ReservationFilter)
-              }
-              className={`min-h-11 rounded-full px-5 py-2.5 font-semibold transition ${ isActive
-                  ? "ui-well text-mint"
-                  : "ui-card text-body hover:text-mint"
+              onClick={() => onReservationFilterChange(filter.value)}
+              className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                isActive ? "ui-well text-mint" : "ui-card text-body hover:text-mint"
               }`}
             >
               {filter.label}
+              {counts[filter.value] ? ` ${counts[filter.value]}` : ""}
             </button>
           );
         })}
       </div>
 
-      <div className="mt-6 grid gap-4">
+      {orders.length > 8 && (
+        <input
+          value={reservationSearch}
+          onChange={(event) => onReservationSearchChange(event.target.value)}
+          className="premium-input mt-3 w-full px-4 py-3 font-semibold"
+          placeholder={text("ელფოსტით ძიება", "Search by email")}
+          aria-label={text("ჯავშნების ძიება ელფოსტით", "Search reservations by email")}
+        />
+      )}
+
+      <div className="mt-4 grid gap-3">
         {filteredOrders.length === 0 && (
-          <div className="ui-card rounded-3xl p-6 text-center sm:p-8">
-            <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-              <ReceiptIcon className="h-6 w-6 text-mint" strokeWidth={1.6} />
-            </div>
-            <h3 className="mt-4 text-2xl font-semibold text-cream">
-              {orders.length === 0
-                ? t("businessDashboard.noReservations")
-                : normalizedReservationSearch
-                ? isGeorgian
-                  ? "ჯავშნები ვერ მოიძებნა"
-                  : "No reservations found"
-                : reservationFilter === "reserved"
-                ? isGeorgian
-                  ? "აქტიური ჯავშნები არ არის"
-                  : "No active reservations"
-                : t("businessDashboard.noFilteredReservations")}
-            </h3>
-            <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-              {orders.length === 0
-                ? t("businessDashboard.noReservationsHint")
-                : normalizedReservationSearch
-                ? isGeorgian
-                  ? "სცადე სხვა მომხმარებლის ელფოსტით ძიება."
-                  : "Try searching a different customer email."
-                : reservationFilter === "reserved"
-                ? isGeorgian
-                  ? "დასრულებული, გაუქმებული და გამოუცხადებელი ჯავშნები ისტორიაში ინახება. მათ სანახავად ზემოთ მოცემული ფილტრები გამოიყენე."
-                  : "Completed, cancelled and no-show reservations are kept in history. Use the filters above to review them."
-                : t("businessDashboard.noFilteredReservationsHint")}
-            </p>
-          </div>
+          <p className="ui-card flex items-center gap-3 rounded-2xl p-4 font-semibold text-body">
+            <ReceiptIcon className="h-5 w-5 shrink-0 text-mint" strokeWidth={1.6} />
+            {normalizedReservationSearch
+              ? text("ვერ მოიძებნა", "Nothing found")
+              : reservationFilter === "reserved"
+              ? text("ახლა არავინ ელოდება", "Nobody waiting")
+              : text("აქ ჯერ არაფერია", "Nothing here yet")}
+          </p>
         )}
 
         {filteredOrders.map((order) => {
           const timelineSteps = getBusinessTimelineSteps(order, language);
+          const active = isConfirmedOrderStatus(order.status);
+          const pastPickup = isOrderPastPickupEnd(order.offers);
 
           return (
-            <div
-              key={order.id}
-              className="ui-card flex flex-col gap-5 rounded-3xl p-5 lg:flex-row lg:items-center lg:justify-between"
-            >
-              <div>
-                <h3 className="text-xl font-semibold sm:text-2xl">
-                  {order.offers?.title || t("common.offerUnavailable")}
-                </h3>
-                {order.offers && (
-                  <p className="mt-1 text-sm font-semibold text-mint">
-                    {getGreenBagLabel(order.offers, language)}
-                  </p>
-                )}
-
-                <p className="mt-2 text-body">
-                  {t("businessDashboard.customer")}:{" "}
-                  {order.profiles?.email || t("common.unavailable")}
-                </p>
-
-                <p className="mt-1 text-body">
-                  {t("businessDashboard.created")}:{" "}
-                  {formatDisplayDateTime(order.created_at, language)}
-                </p>
-
-                <p className="mt-1 font-semibold text-mint">
-                  {order.offers
-                    ? formatMoney(order.offers.price)
-                    : t("common.unavailable")}
-                </p>
-
-                <div className="mt-3 grid gap-2 rounded-2xl bg-well p-4 text-sm font-semibold text-body sm:grid-cols-2">
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-body">
-                      {isGeorgian ? "ბიზნესის ქვითარი" : "Business receipt"}
-                    </p>
-                    <p className="mt-1">
-                      {isGeorgian ? "ჯავშნის ID" : "Reservation ID"}: #{order.id}
-                    </p>
-                    <p>
-                      {isGeorgian ? "ჯამური თანხა" : "Gross"}:{" "}
-                      {order.amount
-                        ? formatMoney(order.amount)
-                        : order.offers
-                        ? formatMoney(order.offers.price)
-                        : t("common.unavailable")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-body">
-                      {isGeorgian ? "ანაზღაურების შეფასება" : "Payout estimate"}
-                    </p>
-                    <p>
-                      {isGeorgian ? "პლატფორმის საკომისიო" : "Platform fee"}:{" "}
-                      {order.platform_fee
-                        ? formatMoney(order.platform_fee)
-                        : t("common.unavailable")}
-                    </p>
-                    <p>
-                      {isGeorgian ? "ბიზნესის თანხა" : "Business amount"}:{" "}
-                      {order.business_amount
-                        ? formatMoney(order.business_amount)
-                        : t("common.unavailable")}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="mt-1 flex items-center gap-1.5 text-body">
-                  <ClockIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
-                  {t("common.pickup")}:{" "}
-                  {order.offers
-                    ? formatPickupWindow(order.offers, language)
-                    : t("orders.pickupUnavailable")}
-                </p>
-
-                <p className="mt-1 text-sm text-body">
-                  {t("businessDashboard.reliability")}:{" "}
-                  {order.profiles?.reliability_score ??
-                    t("common.unavailable")}{" "}
-                  ·{" "}
-                  {(isGeorgian && order.profiles?.reliability_status
-                    ? georgianReliabilityLabels.get(
-                        order.profiles.reliability_status
-                      )
-                    : undefined) ||
-                    order.profiles?.reliability_status ||
-                    t("common.unavailable")}
-                </p>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span
-                    className={`rounded-full px-4 py-2 text-sm font-semibold ${getOrderStatusClassName(order.status)}`}
-                  >
-                    {getOrderStatusLabel(order.status, language)}
-                  </span>
-
-                  {isConfirmedOrderStatus(order.status) && (
-                    <span className="rounded-full bg-well px-4 py-2 text-sm font-semibold text-body">
-                      {isGeorgian ? "წაღების კოდი" : "Pickup code"}:{" "}
-                      {order.has_pickup_code
-                        ? isGeorgian
-                          ? "სთხოვე მომხმარებელს"
-                          : "ask the customer"
-                        : isGeorgian
-                        ? "მოლოდინში"
-                        : "pending"}
+            <div key={order.id} className="ui-card rounded-2xl p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="truncate text-lg font-semibold">
+                    {order.offers?.title || t("common.offerUnavailable")}
+                  </h3>
+                  <p className="mt-0.5 flex items-center gap-1.5 text-sm text-body">
+                    <ClockIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.8} />
+                    <span className="truncate">
+                      {order.offers
+                        ? formatPickupWindow(order.offers, language)
+                        : t("orders.pickupUnavailable")}{" "}
+                      · {formatMoney(order.amount || order.offers?.price || 0)} · #{order.id}
                     </span>
-                  )}
-                </div>
-
-                {isConfirmedOrderStatus(order.status) && (
-                  <p className="mt-3 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
-                    {isGeorgian
-                      ? "მომხმარებელს სრული კოდი ჰკითხე და შემდეგ გამოიყენე ღილაკი „შემოწმება და წაღების დასრულება“."
-                      : "Ask the customer for the full code, then use Verify & Complete Pickup."}
                   </p>
-                )}
-
-                <div className="mt-4 rounded-3xl bg-well p-4">
-                  <p className="mb-3 text-sm uppercase tracking-widest text-body">
-                    {isGeorgian ? "ჯავშნის ეტაპები" : "Reservation timeline"}
-                  </p>
-                  <TimelineSteps
-                    steps={timelineSteps}
-                    columnsClassName="sm:grid-cols-5"
-                    ariaLabel={
-                      isGeorgian ? "ჯავშნის ეტაპები" : "Reservation timeline"
-                    }
-                  />
                 </div>
+                <span
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusClassName(order.status)}`}
+                >
+                  {getOrderStatusLabel(order.status, language)}
+                </span>
               </div>
 
-              {isConfirmedOrderStatus(order.status) && (
-                <div className="flex flex-col gap-3 lg:flex-row">
-                  {isOrderPastPickupEnd(order.offers) && (
+              {active && (
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  {pastPickup ? (
                     <button
+                      type="button"
                       onClick={() => onMarkNoShow(order)}
                       disabled={updatingOrderId !== null}
-                      className="min-h-12 w-full rounded-full bg-danger-soft px-5 py-3 font-semibold text-danger transition hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="min-h-11 w-full rounded-full bg-danger-soft px-5 py-2.5 font-semibold text-danger transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                     >
                       {updatingOrderId === order.id
-                        ? isGeorgian
-                          ? "ახლდება..."
-                          : "Updating..."
-                        : isGeorgian
-                        ? "მონიშვნა: არ გამოცხადდა"
-                        : "Mark No-Show"}
+                        ? text("ახლდება...", "Updating...")
+                        : text("არ მოვიდა", "Mark no-show")}
                     </button>
-                  )}
-
-                  {!isOrderPastPickupEnd(order.offers) && (
+                  ) : (
                     <button
+                      type="button"
                       onClick={() => onOpenPickupVerification(order)}
                       disabled={updatingOrderId !== null}
-                      className="premium-button w-full px-5 py-3 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+                      className="premium-button min-h-11 w-full px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                     >
                       {updatingOrderId === order.id
-                        ? isGeorgian
-                          ? "სრულდება..."
-                          : "Completing..."
-                        : isGeorgian
-                        ? "შემოწმება და წაღების დასრულება"
-                        : "Verify & Complete Pickup"}
+                        ? text("სრულდება...", "Completing...")
+                        : text("კოდით გაცემა", "Hand over with code")}
                     </button>
                   )}
                 </div>
               )}
+
+              <details className="group mt-2">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center text-sm font-semibold text-mint [&::-webkit-details-marker]:hidden">
+                  {text("დეტალები", "Details")}
+                  <span aria-hidden="true" className="ml-1 transition group-open:rotate-180">⌄</span>
+                </summary>
+                <dl className="grid gap-1 rounded-2xl bg-well p-3 text-sm">
+                  {[
+                    {
+                      label: text("ზომა", "Bag"),
+                      value: order.offers ? getGreenBagLabel(order.offers, language) : "—",
+                    },
+                    {
+                      label: text("მომხმარებელი", "Customer"),
+                      value: order.profiles?.email || t("common.unavailable"),
+                    },
+                    {
+                      label: text("საიმედოობა", "Reliability"),
+                      value: `${order.profiles?.reliability_score ?? "—"} · ${
+                        (isGeorgian && order.profiles?.reliability_status
+                          ? georgianReliabilityLabels.get(order.profiles.reliability_status)
+                          : undefined) ||
+                        order.profiles?.reliability_status ||
+                        "—"
+                      }`,
+                    },
+                    {
+                      label: text("შექმნილია", "Created"),
+                      value: formatDisplayDateTime(order.created_at, language),
+                    },
+                    {
+                      label: text("საკომისიო", "Platform fee"),
+                      value: order.platform_fee ? formatMoney(order.platform_fee) : "—",
+                    },
+                    {
+                      label: text("შენი თანხა", "Your amount"),
+                      value: order.business_amount ? formatMoney(order.business_amount) : "—",
+                    },
+                  ].map((row) => (
+                    <div key={row.label} className="flex justify-between gap-3">
+                      <dt className="text-body">{row.label}</dt>
+                      <dd className="min-w-0 truncate text-right font-semibold text-cream">{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-2 rounded-2xl bg-well p-3">
+                  <TimelineSteps
+                    steps={timelineSteps}
+                    columnsClassName="sm:grid-cols-5"
+                    ariaLabel={text("ჯავშნის ეტაპები", "Reservation timeline")}
+                  />
+                </div>
+              </details>
             </div>
           );
         })}

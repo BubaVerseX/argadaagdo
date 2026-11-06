@@ -79,16 +79,8 @@ export function ImpactReportSection({
   const reportUrl = `/business/report?business=${businessId}&month=${monthKey}`;
 
   return (
-    <div id="business-impact" className="premium-card mt-6 scroll-mt-24 rounded-3xl p-5 sm:mt-8 sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-widest text-mint sm:text-sm">
-        {isGeorgian ? "გავლენა და ანგარიშები" : "Impact and reports"}
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
-        {isGeorgian ? "რამდენი საკვები გადაარჩინა მაღაზიამ" : "What this store has saved"}
-      </h2>
-
+    <div id="business-impact" className="scroll-mt-24">
       <ImpactCard
-        className="mt-5"
         language={language}
         bags={collectedOrders.length}
         subject="store"
@@ -144,11 +136,6 @@ export function ImpactReportSection({
           </a>
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-body">
-        {isGeorgian
-          ? "PDF ანგარიში ახალ ჩანართში იხსნება; გამოიყენე „ბეჭდვა → შენახვა PDF-ად“. შეფასება: 1 ლანჩ ბოქსი ≈ 1 კგ საკვები ≈ 2.7 კგ CO₂."
-          : "The PDF report opens in a new tab; use Print → Save as PDF. Estimate: 1 box ≈ 1 kg of food ≈ 2.7 kg CO₂."}
-      </p>
     </div>
   );
 }
