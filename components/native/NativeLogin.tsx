@@ -32,7 +32,7 @@ export default function NativeLogin() {
             <LeafIcon className="h-6 w-6" strokeWidth={2} />
           </span>
           <div>
-            <p className="font-serif text-2xl font-bold text-cream">
+            <p className="font-serif text-xl font-bold text-cream">
               {isLogin ? L("კეთილი დაბრუნება", "Welcome back") : L("შემოგვიერთდი", "Join ArGadaagdo")}
             </p>
             <p className="text-sm text-body">

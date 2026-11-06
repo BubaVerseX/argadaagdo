@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from "react";
 
-// Design D (docs/design-v3/backgrounds.html, "Your mix (A + C)"): fine mint
-// lines flowing slowly on deep green, with small detailed leaves floating on
-// top. App only (mounted by NativeShell).
+// Design D (docs/design-v3/backgrounds.html, "Your mix (A + C)") in its light
+// version: fine soft-green and honey lines flowing slowly on warm beige, with
+// small detailed leaves floating on top, all low contrast. App only (mounted
+// by NativeShell).
 //
 // Kept cheap on purpose: the canvas redraws 15 times a second at most,
 // at no more than 1.5x pixel density, and stops completely while the app is in
@@ -13,13 +14,13 @@ import { useEffect, useRef } from "react";
 // drawn once and nothing moves.
 
 const LEAVES = [
-  { left: "6%", top: "18%", size: 46, fill: "#B8E6C4", vein: "#164A3F", delay: 0, duration: 14, detailed: true },
-  { right: "7%", top: "11%", size: 38, fill: "#8FD19E", vein: "#0F3A32", delay: -3, duration: 17, detailed: true },
-  { left: "31%", top: "39%", size: 34, fill: "#E7A93A", vein: "#FFF3D6", delay: -7, duration: 14, detailed: true },
-  { right: "10%", top: "52%", size: 50, fill: "#B8E6C4", vein: "#164A3F", delay: -10, duration: 19, detailed: true },
-  { left: "8%", top: "70%", size: 30, fill: "#8FD19E", vein: "#0F3A32", delay: -5, duration: 15, detailed: false },
-  { right: "28%", top: "30%", size: 28, fill: "#E07A57", vein: "#FFE3D8", delay: -12, duration: 14, detailed: false },
-  { right: "18%", top: "84%", size: 32, fill: "#B8E6C4", vein: "#164A3F", delay: -8, duration: 18, detailed: false },
+  { left: "6%", top: "18%", size: 40, fill: "#CFE6D3", vein: "#8DB89A", delay: 0, duration: 16, detailed: true },
+  { right: "7%", top: "11%", size: 34, fill: "#BFDDC6", vein: "#7FAF8D", delay: -3, duration: 19, detailed: true },
+  { left: "31%", top: "39%", size: 30, fill: "#F2D9A0", vein: "#C9A55A", delay: -7, duration: 16, detailed: true },
+  { right: "10%", top: "52%", size: 44, fill: "#CFE6D3", vein: "#8DB89A", delay: -10, duration: 21, detailed: true },
+  { left: "8%", top: "70%", size: 26, fill: "#BFDDC6", vein: "#7FAF8D", delay: -5, duration: 17, detailed: false },
+  { right: "28%", top: "30%", size: 24, fill: "#F0CDBB", vein: "#C98F72", delay: -12, duration: 16, detailed: false },
+  { right: "18%", top: "84%", size: 28, fill: "#F2D9A0", vein: "#C9A55A", delay: -8, duration: 20, detailed: false },
 ];
 
 function Leaf({ fill, vein, detailed }: { fill: string; vein: string; detailed: boolean }) {
@@ -83,8 +84,12 @@ export default function NativeBackground() {
           if (x === 0) context!.moveTo(x, y);
           else context!.lineTo(x, y);
         }
-        const alpha = 0.06 + 0.16 * Math.max(0, Math.sin(i * 0.4 + time * 0.3));
-        context!.strokeStyle = `rgba(184,230,196,${alpha.toFixed(3)})`;
+        // Soft green, every fourth line honey; faint on purpose.
+        const alpha = 0.05 + 0.09 * Math.max(0, Math.sin(i * 0.4 + time * 0.3));
+        context!.strokeStyle =
+          i % 4 === 3
+            ? `rgba(201,165,90,${alpha.toFixed(3)})`
+            : `rgba(95,140,110,${alpha.toFixed(3)})`;
         context!.stroke();
       }
     }

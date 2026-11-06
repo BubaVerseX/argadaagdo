@@ -286,39 +286,39 @@ export default function NativeBusiness() {
 
   return (
     <main className="native-main">
-      <header className="theme-forest relative overflow-hidden bg-brand-forest px-4 pb-3 pt-4">
+      <header className="relative overflow-hidden px-4 pb-3 pt-4">
         <LeafDecor className="-right-10 -top-12 h-52 w-52 text-brand-forest-2" />
-        <p className="relative text-[13px] text-brand-mint">
+        <p className="relative text-[13px] text-body">
           {t("native.business.panel")}
         </p>
         {business ? (
-          <h1 className="relative truncate font-serif text-xl font-bold text-brand-ground">
+          <h1 className="relative truncate text-lg font-semibold text-cream">
             {business.name}
           </h1>
         ) : (
-          <div className="relative mt-1 h-7 w-2/3 animate-pulse rounded-lg bg-brand-forest-2" />
+          <div className="native-skeleton relative mt-1 h-6 w-2/3 rounded-lg" />
         )}
 
         <div className="relative mt-4 grid grid-cols-3 gap-2">
-          <div className="rounded-[18px] bg-brand-forest-2 p-3">
-            <p className="truncate text-[11px] text-brand-mint">
+          <div className="rounded-[18px] bg-card p-3">
+            <p className="truncate text-[11px] text-body">
               {t("native.business.soldToday")}
             </p>
-            <p className="text-2xl font-bold text-brand-ground">
+            <p className="text-xl font-semibold text-cream">
               {loading ? "–" : paidOrders.length}
             </p>
           </div>
-          <div className="rounded-[18px] bg-brand-forest-2 p-3">
-            <p className="truncate text-[11px] text-brand-mint">
+          <div className="rounded-[18px] bg-card p-3">
+            <p className="truncate text-[11px] text-body">
               {t("native.business.sales")}
             </p>
-            <p className="truncate text-2xl font-bold text-brand-ground">
+            <p className="truncate text-xl font-semibold text-cream">
               {loading ? "–" : `${Math.round(salesTotal)} ₾`}
             </p>
           </div>
           <div className="rounded-[18px] bg-brand-honey p-3 text-brand-ink">
             <p className="truncate text-[11px]">{t("native.business.toHand")}</p>
-            <p className="text-2xl font-bold">{loading ? "–" : pickups.length}</p>
+            <p className="text-xl font-semibold">{loading ? "–" : pickups.length}</p>
           </div>
         </div>
       </header>

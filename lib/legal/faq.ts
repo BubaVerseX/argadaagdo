@@ -1,7 +1,7 @@
 import type { FaqItem, Localized } from "@/lib/legal/shared";
 
-// Shared by /faq (all groups) and /support (a short selection, see
-// pickFaqItems). Facts are the same as in lib/legal/terms.ts.
+// The answers behind the Help centre (/support and /faq, see HELP_CATEGORIES
+// below). Facts are the same as in lib/legal/terms.ts.
 
 export type FaqEntry = FaqItem & { id: string };
 
@@ -12,21 +12,11 @@ export type FaqGroup = {
 };
 
 type FaqContent = {
-  badge: string;
-  title: string;
-  intro: string;
   groups: FaqGroup[];
-  ctaTitle: string;
-  ctaText: string;
-  browseLabel: string;
-  contactLabel: string;
 };
 
 export const faqContent: Localized<FaqContent> = {
   en: {
-    badge: "Help",
-    title: "Frequently asked questions",
-    intro: "Short, clear answers about Lunch Boxes, payment, pickup and selling on ArGadaagdo.",
     groups: [
       {
         id: "ordering",
@@ -178,15 +168,8 @@ export const faqContent: Localized<FaqContent> = {
         ],
       },
     ],
-    ctaTitle: "Still have a question?",
-    ctaText: "Write to us, or see what's available today.",
-    browseLabel: "Browse offers",
-    contactLabel: "Contact us",
   },
   ka: {
-    badge: "დახმარება",
-    title: "ხშირად დასმული კითხვები",
-    intro: "მოკლე და მკაფიო პასუხები ლანჩ ბოქსებზე, გადახდაზე, წაღებასა და ბიზნესებისთვის გაყიდვის პირობებზე.",
     groups: [
       {
         id: "ordering",
@@ -338,21 +321,45 @@ export const faqContent: Localized<FaqContent> = {
         ],
       },
     ],
-    ctaTitle: "კიდევ გაქვს კითხვა?",
-    ctaText: "მოგვწერე ან ნახე, რა არის დღეს ხელმისაწვდომი.",
-    browseLabel: "შეთავაზებების ნახვა",
-    contactLabel: "დაგვიკავშირდი",
   },
 };
 
 /** The FAQ entries with these ids, in the order given (used by /support). */
-export function pickFaqItems(groups: FaqGroup[], ids: string[]): FaqEntry[] {
-  const byId = new Map(
-    groups.flatMap((group) => group.items).map((item) => [item.id, item])
-  );
+// The Help centre (/support and /faq) shows the same answers in four
+// categories, every question collapsed. Old links like /faq#pickup still land
+// in the right category (legacyGroups).
+export type HelpCategoryId = "orders" | "payment" | "account" | "businesses";
 
-  return ids.flatMap((id) => {
-    const item = byId.get(id);
-    return item ? [item] : [];
-  });
-}
+export type HelpCategory = {
+  id: HelpCategoryId;
+  title: Localized<string>;
+  itemIds: string[];
+  legacyGroups: FaqGroup["id"][];
+};
+
+export const HELP_CATEGORIES: HelpCategory[] = [
+  {
+    id: "orders",
+    title: { ka: "შეკვეთა და წაღება", en: "Orders & pickup" },
+    itemIds: ["what", "reserve", "limits", "pickup", "miss", "allergens", "ratings", "where", "why"],
+    legacyGroups: ["ordering", "pickup", "general"],
+  },
+  {
+    id: "payment",
+    title: { ka: "გადახდა და დაბრუნება", en: "Payment & refunds" },
+    itemIds: ["pay", "cancel", "problem"],
+    legacyGroups: [],
+  },
+  {
+    id: "account",
+    title: { ka: "ანგარიში", en: "Account" },
+    itemIds: ["notifications", "delete"],
+    legacyGroups: ["account"],
+  },
+  {
+    id: "businesses",
+    title: { ka: "ბიზნესისთვის", en: "For businesses" },
+    itemIds: ["join", "documents", "cost", "publish", "handover", "noshow"],
+    legacyGroups: ["businesses"],
+  },
+];

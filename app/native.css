@@ -24,7 +24,7 @@ html.native-screen body:not(:has(.native-main))::after {
   inset: 0;
   z-index: 30;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect x='20' y='22' width='150' height='26' rx='10' fill='%23B8E6C4' fill-opacity='.14'/%3E%3Crect x='20' y='70' width='240' height='30' rx='10' fill='%23B8E6C4' fill-opacity='.12'/%3E%3Crect x='20' y='118' width='350' height='48' rx='18' fill='%23F7F1E3' fill-opacity='.09'/%3E%3Crect x='20' y='180' width='70' height='36' rx='18' fill='%23B8E6C4' fill-opacity='.14'/%3E%3Crect x='98' y='180' width='96' height='36' rx='18' fill='%23B8E6C4' fill-opacity='.1'/%3E%3Crect x='202' y='180' width='96' height='36' rx='18' fill='%23B8E6C4' fill-opacity='.1'/%3E%3Crect x='20' y='236' width='350' height='112' rx='24' fill='%230A2622' fill-opacity='.55' stroke='%23B8E6C4' stroke-opacity='.18'/%3E%3Crect x='20' y='362' width='350' height='112' rx='24' fill='%230A2622' fill-opacity='.55' stroke='%23B8E6C4' stroke-opacity='.18'/%3E%3Crect x='20' y='488' width='350' height='112' rx='24' fill='%230A2622' fill-opacity='.55' stroke='%23B8E6C4' stroke-opacity='.18'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'%3E%3Crect x='20' y='22' width='130' height='22' rx='10' fill='%230F3A32' fill-opacity='.06'/%3E%3Crect x='20' y='66' width='210' height='24' rx='10' fill='%230F3A32' fill-opacity='.06'/%3E%3Crect x='20' y='110' width='350' height='46' rx='16' fill='%23FFFDF8' fill-opacity='.8' stroke='%230F3A32' stroke-opacity='.08'/%3E%3Crect x='20' y='170' width='64' height='34' rx='17' fill='%230F3A32' fill-opacity='.08'/%3E%3Crect x='92' y='170' width='90' height='34' rx='17' fill='%230F3A32' fill-opacity='.05'/%3E%3Crect x='190' y='170' width='90' height='34' rx='17' fill='%230F3A32' fill-opacity='.05'/%3E%3Crect x='20' y='222' width='350' height='96' rx='20' fill='%23FFFDF8' fill-opacity='.8' stroke='%230F3A32' stroke-opacity='.08'/%3E%3Crect x='20' y='330' width='350' height='96' rx='20' fill='%23FFFDF8' fill-opacity='.8' stroke='%230F3A32' stroke-opacity='.08'/%3E%3Crect x='20' y='438' width='350' height='96' rx='20' fill='%23FFFDF8' fill-opacity='.8' stroke='%230F3A32' stroke-opacity='.08'/%3E%3C/svg%3E")
       top center / 100% auto no-repeat,
     var(--native-ground);
 }
@@ -62,7 +62,7 @@ html.native-screen body:not(:has(.native-main))::after {
 
 /* Secondary app screens: their own top bar, no website chrome. */
 .native-topbar {
-  background: rgba(10, 38, 34, 0.72);
+  background: rgba(247, 241, 227, 0.82);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
@@ -72,47 +72,49 @@ html.native-screen body:not(:has(.native-main))::after {
 }
 
 /* ---------------------------------------------------------------------
-   App ground, design D (docs/design-v3/backgrounds.html): deep green, mint
-   lines and floating leaves (components/native/NativeBackground.tsx), with
-   frosted-glass cards. App only: the website keeps its cream look.
+   App ground: design D in its light version (docs/design-v3/backgrounds.html).
+   Warm beige, faint green lines and small leaves (NativeBackground.tsx),
+   white frosted cards with thin borders. Dark green only for accents:
+   buttons, the tab bar, the active tab. App only.
    --------------------------------------------------------------------- */
 html.native-app {
-  color-scheme: dark;
-  --native-ground: radial-gradient(120% 80% at 80% 0%, #1c5a4b 0%, #0f3a32 55%, #0a2622 100%);
+  color-scheme: light;
+  --native-ground: linear-gradient(180deg, #fbf7ee 0%, #f7f1e3 42%, #f1e9d6 100%);
   --page: transparent;
-  --page-deep: #0a2622;
-  --card: rgba(10, 38, 34, 0.55);
-  --card-2: rgba(10, 38, 34, 0.55);
-  --well: rgba(247, 241, 227, 0.08);
-  --line: rgba(184, 230, 196, 0.2);
-  --line-strong: #4f7a6c;
-  --cream: #f7f1e3;
-  --body: #c3ddcb;
-  --body-2: #c3ddcb;
-  --body-light: #c3ddcb;
-  --muted: #9dbfa8;
-  --mint: #b8e6c4;
-  --mint-strong: #a4dab2;
-  --sage: #9dbfa8;
-  --moss: rgba(184, 230, 196, 0.14);
-  --moss-light: rgba(184, 230, 196, 0.14);
-  --ink: #0f3a32;
-  --warning: #f3d98c;
-  --warning-soft: rgba(243, 217, 140, 0.16);
-  --warning-line: rgba(243, 217, 140, 0.32);
-  --danger: #f8bcbc;
-  --danger-soft: rgba(244, 120, 120, 0.18);
-  --danger-line: rgba(244, 120, 120, 0.38);
-  --shadow-card: none;
+  --page-deep: #f7f1e3;
+  --card: rgba(255, 253, 248, 0.8);
+  --card-2: rgba(255, 253, 248, 0.8);
+  --well: rgba(239, 231, 211, 0.55);
+  --line: rgba(15, 58, 50, 0.09);
+  --line-strong: #0f3a32;
+  --cream: #0b2b26;
+  --body: #5b736b;
+  --body-2: #5b736b;
+  --body-light: #5b736b;
+  --muted: #7f9189;
+  --mint: #0f3a32;
+  --mint-strong: #164a3f;
+  --sage: #6f8a7f;
+  --moss: #e1f0e4;
+  --moss-light: #e1f0e4;
+  --ink: #f7f1e3;
+  --warning: #6b4a00;
+  --warning-soft: #f9e7bd;
+  --warning-line: #e7c777;
+  --danger: #9c2b16;
+  --danger-soft: #fbe3da;
+  --danger-line: #eeb6a3;
+  --shadow-card: 0 1px 2px rgba(15, 58, 50, 0.03), 0 8px 24px rgba(15, 58, 50, 0.05);
 }
 
 html.native-app body {
-  background: var(--native-ground) fixed #0a2622;
+  background: var(--native-ground) fixed #f7f1e3;
 }
 
-/* The status bar strip: glass instead of an opaque bar. */
-html.native-app body::before {
-  background: rgba(10, 38, 34, 0.78);
+/* The status bar strip stays dark green (light icons) until the app confirms
+   it switched the status bar to dark icons (NativeShell), then turns beige. */
+html.native-app.native-light-bars body::before {
+  background: rgba(247, 241, 227, 0.86);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
@@ -134,9 +136,9 @@ html.native-app body::before {
 
 .native-bg-leaf {
   position: absolute;
-  opacity: 0.5;
+  opacity: 0.55;
   will-change: transform;
-  animation: native-sway 14s ease-in-out infinite;
+  animation: native-sway 16s ease-in-out infinite;
 }
 
 .native-bg-leaf svg {
@@ -151,7 +153,7 @@ html.native-app body::before {
     transform: translate(0, 0) rotate(-8deg);
   }
   50% {
-    transform: translate(10px, -18px) rotate(12deg);
+    transform: translate(8px, -14px) rotate(10deg);
   }
 }
 
@@ -161,25 +163,31 @@ html.native-app body::before {
   }
 }
 
-/* Frosted glass: the cards blur the lines and leaves behind them. */
+/* Frosted cards: white glass with a thin border over the beige ground. */
 html.native-app .bg-card,
 html.native-app .ui-card,
 html.native-app .premium-card,
 html.native-app .premium-surface {
   background: var(--card);
   border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
-/* Website pages shown inside the app (terms, FAQ...) sit on the same ground. */
+/* Website pages shown inside the app (terms, FAQ...) sit on the same ground,
+   with calmer headings. */
 html.native-app .app-shell {
   background: transparent;
 }
 
-/* Deep green header blocks and their decorations give way to the ground. */
-html.native-app .native-main header.bg-brand-forest {
-  background: transparent;
+html.native-app .theme-web h1 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+html.native-app .theme-web h2 {
+  font-size: 1.125rem;
 }
 
 html.native-app .wave-edge,
@@ -187,10 +195,80 @@ html.native-app .leaf-decor {
   display: none;
 }
 
-/* The floating tab bar, as in the mock-up. */
+/* The floating tab bar: the one solid dark green surface. */
 html.native-app .tab-pill {
-  background: rgba(5, 22, 19, 0.8);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  background: #0f3a32;
+  box-shadow: 0 10px 28px rgba(15, 58, 50, 0.22);
+}
+
+/* Profile: the impact plant grows in once, then sways (ImpactPlant.tsx). */
+.impact-stem {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: impact-stem 700ms ease-out 100ms forwards;
+}
+
+.impact-leaf {
+  transform-box: fill-box;
+  transform-origin: 0 100%;
+  transform: scale(0);
+  animation: impact-leaf 420ms cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+.impact-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: impact-sway 6s ease-in-out 1.6s infinite;
+}
+
+@keyframes impact-stem {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes impact-leaf {
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes impact-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .impact-stem,
+  .impact-leaf,
+  .impact-sway {
+    animation: none;
+    stroke-dashoffset: 0;
+    transform: none;
+  }
+}
+
+/* Bottom sheet (share preview, push prompt). */
+@keyframes native-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+.native-sheet {
+  animation: native-sheet-in 220ms ease-out;
+}
+
+/* Offer photo tiles: the category colour, softened towards the beige ground. */
+html.native-app .photo-leaf,
+html.native-app .photo-leaf-sm,
+html.native-app .photo-hero {
+  background: var(--cat-soft, var(--well));
+  background: color-mix(in srgb, var(--cat-soft, #efe7d3) 60%, #fbf7ee);
 }

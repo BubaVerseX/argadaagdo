@@ -10,6 +10,8 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
     "@fontsource/noto-sans": "^5.3.0",
     "@fontsource/noto-sans-georgian": "^5.3.0",
     "@fontsource/noto-serif": "^5.3.0",

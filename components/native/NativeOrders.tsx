@@ -1,6 +1,5 @@
 "use client";
 
-import { LeafDecor } from "@/components/design/Decor";
 import { LeafIcon } from "@/components/icons";
 import Notice from "@/components/Notice";
 import { CollectSlider } from "@/components/orders/CollectSlider";
@@ -430,7 +429,7 @@ export default function NativeOrders() {
   return (
     <main className="native-main">
       <header className="flex items-center justify-between gap-3 px-4 pb-1 pt-4">
-        <h1 className="min-w-0 truncate whitespace-nowrap font-serif text-[1.25rem] font-bold min-[380px]:text-[1.5rem]">{t("nav.orders")}</h1>
+        <h1 className="min-w-0 truncate whitespace-nowrap font-serif text-[1.25rem] font-bold">{t("nav.orders")}</h1>
         <div className="flex rounded-full bg-well p-1" role="tablist">
           {(["active", "history"] as const).map((option) => (
             <button
@@ -468,7 +467,7 @@ export default function NativeOrders() {
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-forest">
               <LeafIcon className="h-9 w-9 text-brand-mint" strokeWidth={1.6} />
             </div>
-            <h2 className="mt-5 font-serif text-2xl font-bold">
+            <h2 className="mt-5 text-lg font-semibold">
               {t("native.orders.emptyTitle")}
             </h2>
             <Link
@@ -490,14 +489,13 @@ export default function NativeOrders() {
 
             return (
               <div key={order.id}>
-                <div className="theme-forest relative overflow-hidden rounded-[30px] bg-brand-forest text-brand-ground">
-                  <LeafDecor className="-right-12 -top-12 h-52 w-52 text-brand-forest-2" />
+                <div className="relative overflow-hidden rounded-[24px] bg-card text-cream">
 
                   <div className="relative px-[18px] pt-[18px]">
-                    <p className="text-[13px] font-medium text-brand-mint">
+                    <p className="text-[13px] font-medium text-body">
                       {getCustomerStatusLabel(status, language)}
                     </p>
-                    <h2 className="mt-1 font-serif text-xl font-bold">
+                    <h2 className="mt-0.5 text-lg font-semibold">
                       {order.offers?.businesses?.name || t("common.businessUnavailable")}
                     </h2>
                     {order.offers && (
@@ -508,23 +506,23 @@ export default function NativeOrders() {
                     )}
                   </div>
 
-                  <div className="theme-cream relative mx-[18px] mt-4 rounded-[22px] p-4 text-center">
-                    <p className="text-[13px] text-brand-secondary">
+                  <div className="relative mx-[18px] mt-3 rounded-[18px] bg-well p-4 text-center">
+                    <p className="text-[13px] text-body">
                       {t("native.orders.code")}
                     </p>
                     {confirmed ? (
-                      <p className="mt-1 whitespace-nowrap font-mono text-[2.75rem] font-semibold leading-tight tracking-[0.08em] text-brand-ink">
+                      <p className="mt-1 whitespace-nowrap font-mono text-[2.5rem] font-semibold leading-tight tracking-[0.08em] text-brand-forest">
                         {order.pickup_code
                           ? formatCode(order.pickup_code)
                           : t("common.pending")}
                       </p>
                     ) : (
-                      <p className="mt-2 font-bold text-brand-ink">
+                      <p className="mt-2 font-semibold text-cream">
                         {t("native.orders.pending")}
                       </p>
                     )}
                     {confirmed && (
-                      <p className="mt-1 text-[13px] text-brand-secondary">
+                      <p className="mt-1 text-[13px] text-body">
                         {t("native.orders.show")}
                       </p>
                     )}
@@ -535,7 +533,7 @@ export default function NativeOrders() {
                       <button
                         type="button"
                         onClick={() => setCollectingOrder(order)}
-                        className="native-press min-h-14 rounded-2xl bg-brand-honey text-base font-bold text-brand-ink"
+                        className="native-press min-h-12 rounded-2xl bg-brand-forest text-[15px] font-semibold text-brand-ground"
                       >
                         {t("native.orders.collect")}
                       </button>
@@ -549,7 +547,7 @@ export default function NativeOrders() {
                           )}
                           target="_blank"
                           rel="noreferrer"
-                          className="native-press flex min-h-[3.25rem] flex-1 items-center justify-center rounded-2xl bg-brand-mint text-sm font-bold text-brand-forest"
+                          className="native-press flex min-h-11 flex-1 items-center justify-center rounded-2xl border border-line bg-card text-sm font-semibold text-cream"
                         >
                           {t("native.orders.route")}
                         </a>
@@ -559,7 +557,7 @@ export default function NativeOrders() {
                           type="button"
                           disabled={cancellingOrderId !== null}
                           onClick={() => void cancelOrder(order)}
-                          className="native-press min-h-[3.25rem] flex-1 rounded-2xl bg-brand-forest-2 text-sm font-bold text-brand-ground disabled:opacity-60"
+                          className="native-press min-h-11 flex-1 rounded-2xl border border-line bg-card text-sm font-semibold text-body disabled:opacity-60"
                         >
                           {cancellingOrderId === order.id
                             ? "…"
@@ -575,7 +573,7 @@ export default function NativeOrders() {
                           current === order.id ? null : order.id
                         )
                       }
-                      className="min-h-11 text-sm font-bold text-brand-mint"
+                      className="min-h-10 text-[13px] font-medium text-body"
                     >
                       {t(
                         openOrderId === order.id
@@ -591,7 +589,7 @@ export default function NativeOrders() {
           })}
 
         {!loading && tab === "history" && pastOrders.length === 0 && (
-          <p className="rounded-[22px] bg-well p-8 text-center font-bold">
+          <p className="rounded-[20px] bg-card p-6 text-center text-sm text-body">
             {t("native.orders.emptyHistory")}
           </p>
         )}

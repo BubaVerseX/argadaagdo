@@ -1,20 +1,31 @@
 "use client";
 
 import {
-  BellIcon,
   ChevronRightIcon,
-  InfoIcon,
+  HeartIcon,
+  HelpCircleIcon,
   type IconProps,
   LayoutGridIcon,
   ReceiptIcon,
   SettingsIcon,
+  ShareIcon,
   ShieldIcon,
   TagIcon,
+  UserPlusIcon,
+  XIcon,
 } from "@/components/icons";
 import { getProfileById } from "@/lib/auth";
-import { getAppVersionLabel, openExternal, socialLinks, supportEmail } from "@/lib/appLinks";
+import { getAppVersionLabel, openSocial, socialLinks, supportEmail } from "@/lib/appLinks";
 import { OPERATOR_LOCATION, OPERATOR_SHORT } from "@/lib/legal/shared";
 import { calculateImpact, formatKg } from "@/lib/impact";
+import {
+  formatMemberSince,
+  formatNextLevel,
+  getImpactProgress,
+  IMPACT_LEVELS,
+} from "@/lib/impactLevels";
+import { shareImage, shareLink } from "@/lib/share";
+import { isNativeApp } from "@/lib/native";
 import { readPrivateMemory, writePrivateMemory } from "@/lib/nativeData";
 import { isCollectedOrderStatus } from "@/lib/orderStatus";
 import { supabase } from "@/lib/supabase";
@@ -23,6 +34,7 @@ import { useLanguage } from "@/lib/useLanguage";
 import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState, type ComponentType } from "react";
 import Link from "./AppLink";
+import ImpactPlant, { LevelGlyph } from "./ImpactPlant";
 
 type ProfileSummary = {
   role: string;
@@ -72,8 +84,10 @@ function initials(name: string) {
   return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "A";
 }
 
-// Short and clean: who you are and what you saved, five rows, and a small
-// footer with the legal pages, support and the app version.
+const INVITE_URL = "https://argadaagdo.ge";
+
+// Calm and personal: who you are, what you saved (with a plant that grows
+// with every box and a level), share and invite, five rows, a small footer.
 export default function NativeProfile() {
   const { language } = useLanguage();
   const isGeorgian = language === "ka";
@@ -84,6 +98,9 @@ export default function NativeProfile() {
     readPrivateMemory<ProfileSummary>(MEMORY_KEY)
   );
   const [version, setVersion] = useState("");
+  const [sharing, setSharing] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [toast, setToast] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -107,20 +124,69 @@ export default function NativeProfile() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(""), 2400);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  useEffect(() => () => {
+    if (preview) URL.revokeObjectURL(preview);
+  }, [preview]);
+
   const metadata = session?.user.user_metadata || {};
   const name =
     (metadata.display_name as string | undefined) ||
     (metadata.full_name as string | undefined) ||
     session?.user.email?.split("@")[0] ||
     "";
-  const impact = calculateImpact(summary?.bags || 0);
+  const firstName = name.split(/\s+/)[0] || name;
+  const boxes = summary?.bags || 0;
+  const impact = calculateImpact(boxes);
+  const level = getImpactProgress(boxes);
+
+  async function shareImpact() {
+    if (!summary || sharing) return;
+    setSharing(true);
+    try {
+      const { drawImpactCard } = await import("@/lib/impactCard");
+      const blob = await drawImpactCard({
+        boxes,
+        moneySaved: summary.moneySaved,
+        co2Kg: impact.co2Kg,
+        level: level.current,
+        language,
+      });
+      const result = await shareImage(blob, {
+        fileName: "argadaagdo-impact.png",
+        title: L("ჩემი გავლენა", "My impact"),
+      });
+      if (result === "unsupported") setPreview(URL.createObjectURL(blob));
+    } catch {
+      setToast(L("სურათი ვერ შეიქმნა", "Couldn't create the image"));
+    } finally {
+      setSharing(false);
+    }
+  }
+
+  async function invite() {
+    const result = await shareLink({
+      title: "ArGadaagdo",
+      text: L(
+        "ფასდაკლებული ლანჩ ბოქსები თბილისის კაფეებიდან და საცხობებიდან. სცადე არ გადააგდო:",
+        "Discounted Lunch Boxes from Tbilisi cafés and bakeries. Try ArGadaagdo:"
+      ),
+      url: INVITE_URL,
+    });
+    if (result === "copied") setToast(L("ბმული დაკოპირდა", "Link copied"));
+  }
 
   const rows: Row[] = session
     ? [
         { href: "/orders", label: L("ჩემი შეკვეთები", "My orders"), Icon: ReceiptIcon },
+        { href: "/favorites", label: L("რჩეულები", "Favourites"), Icon: HeartIcon },
         { href: "/payment", label: L("გადახდა", "Payment"), Icon: TagIcon },
-        { href: "/notifications", label: L("შეტყობინებები", "Notifications"), Icon: BellIcon },
-        { href: "/support", label: L("დახმარება", "Help"), Icon: InfoIcon },
+        { href: "/support", label: L("დახმარება", "Help"), Icon: HelpCircleIcon },
         { href: "/settings", label: L("პარამეტრები", "Settings"), Icon: SettingsIcon },
         ...(summary?.role === "business"
           ? [{ href: "/business/dashboard", label: L("ბიზნეს პანელი", "Business panel"), Icon: LayoutGridIcon }]
@@ -131,7 +197,7 @@ export default function NativeProfile() {
       ]
     : [
         { href: "/payment", label: L("გადახდა", "Payment"), Icon: TagIcon },
-        { href: "/support", label: L("დახმარება", "Help"), Icon: InfoIcon },
+        { href: "/support", label: L("დახმარება", "Help"), Icon: HelpCircleIcon },
       ];
 
   const footerLinks = [
@@ -145,46 +211,43 @@ export default function NativeProfile() {
 
   return (
     <main className="native-main">
-      <header className="px-5 pb-4 pt-5">
+      <header className="px-5 pb-3 pt-5">
         {!ready ? (
-          <div className="flex items-center gap-4">
-            <div className="native-skeleton h-16 w-16 rounded-full" />
-            <div className="native-skeleton h-6 w-40 rounded-lg" />
+          <div className="flex items-center gap-3">
+            <div className="native-skeleton h-12 w-12 rounded-full" />
+            <div className="native-skeleton h-5 w-36 rounded-lg" />
           </div>
         ) : session ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span
               aria-hidden="true"
-              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-mint font-serif text-2xl font-bold text-ink"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-moss text-base font-semibold text-mint"
             >
               {initials(name)}
             </span>
             <div className="min-w-0">
-              <p className="truncate font-serif text-2xl font-bold text-cream">{name}</p>
-              <p className="truncate text-sm text-body">{session.user.email}</p>
+              <p className="truncate text-lg font-semibold leading-tight text-cream">{firstName}</p>
+              <p className="truncate text-xs text-body">
+                {formatMemberSince(session.user.created_at, language)}
+              </p>
             </div>
           </div>
         ) : (
-          <div className="rounded-[24px] bg-card p-5">
-            <p className="font-serif text-2xl font-bold text-cream">
-              {L("გამარჯობა!", "Hello!")}
+          <div className="rounded-[22px] bg-card p-4">
+            <p className="text-lg font-semibold text-cream">{L("გამარჯობა!", "Hello!")}</p>
+            <p className="mt-0.5 text-sm text-body">
+              {L("შედი და ნახე შენი გავლენა.", "Sign in to see your impact.")}
             </p>
-            <p className="mt-1 text-sm leading-6 text-body">
-              {L(
-                "შედი, რომ დაჯავშნო ლანჩ ბოქსები და ნახო, რამდენი დაზოგე.",
-                "Sign in to reserve Lunch Boxes and see how much you've saved."
-              )}
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-2">
               <Link
                 href="/login?tab=signup"
-                className="native-press flex min-h-12 items-center justify-center rounded-2xl bg-mint text-[15px] font-bold text-ink"
+                className="native-press flex min-h-11 items-center justify-center rounded-2xl bg-brand-forest text-sm font-semibold text-brand-ground"
               >
                 {L("რეგისტრაცია", "Sign up")}
               </Link>
               <Link
                 href="/login?tab=signin"
-                className="native-press flex min-h-12 items-center justify-center rounded-2xl border border-line text-[15px] font-bold text-cream"
+                className="native-press flex min-h-11 items-center justify-center rounded-2xl border border-line bg-card text-sm font-semibold text-cream"
               >
                 {L("შესვლა", "Sign in")}
               </Link>
@@ -195,47 +258,102 @@ export default function NativeProfile() {
 
       <div className="grid gap-3 px-5">
         {session && (
-          <section
-            aria-label={L("შენი გავლენა", "Your impact")}
-            className="grid grid-cols-3 gap-2 rounded-[24px] bg-card p-3"
-          >
-            {[
-              { value: summary ? String(summary.bags) : "", label: L("ბოქსი", "boxes") },
-              { value: summary ? `${summary.moneySaved} ₾` : "", label: L("დაზოგე", "saved") },
-              {
-                value: summary ? formatKg(impact.co2Kg, language) : "",
-                label: L("CO₂ ნაკლები", "less CO₂"),
-              },
-            ].map((stat) => (
-              <div key={stat.label} className="rounded-2xl bg-well px-2 py-3 text-center">
-                {stat.value ? (
-                  <p className="font-serif text-xl font-bold text-mint">{stat.value}</p>
-                ) : (
-                  <div className="native-skeleton mx-auto h-7 w-12 rounded-lg" />
-                )}
-                <p className="mt-0.5 text-xs font-medium text-body">{stat.label}</p>
+          <>
+            <section aria-label={L("ჩემი გავლენა", "My impact")} className="rounded-[22px] bg-card p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-[13px] font-semibold text-body">
+                    {L("ჩემი გავლენა", "My impact")}
+                  </h2>
+                  <dl className="mt-2 grid grid-cols-3 gap-2">
+                    {[
+                      { value: summary ? String(boxes) : "", label: L("ბოქსი", "boxes") },
+                      { value: summary ? `${summary.moneySaved} ₾` : "", label: L("დაზოგე", "saved") },
+                      { value: summary ? formatKg(impact.co2Kg, language) : "", label: "CO₂" },
+                    ].map((stat) => (
+                      <div key={stat.label} className="min-w-0">
+                        <dd className="truncate text-lg font-semibold leading-tight text-cream">
+                          {stat.value || <span className="native-skeleton inline-block h-5 w-10 rounded" />}
+                        </dd>
+                        <dt className="truncate text-[11px] text-body">{stat.label}</dt>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                {summary && <ImpactPlant boxes={boxes} size={52} />}
               </div>
-            ))}
-          </section>
+
+              <div className="mt-3 border-t border-line pt-3">
+                <div className="flex items-center gap-1.5">
+                  {IMPACT_LEVELS.map((item) => {
+                    const reached = boxes >= item.min;
+                    const current = level.current?.id === item.id;
+                    return (
+                      <span
+                        key={item.id}
+                        title={item.name[language]}
+                        aria-label={`${item.name[language]}${reached ? "" : ` · ${item.min}+`}`}
+                        className={`flex h-7 w-7 items-center justify-center rounded-full ${
+                          reached ? "bg-moss text-mint" : "bg-well text-muted opacity-60"
+                        } ${current ? "ring-1 ring-[rgba(15,58,50,0.3)]" : ""}`}
+                      >
+                        <LevelGlyph id={item.id} className="h-4 w-4" />
+                      </span>
+                    );
+                  })}
+                  <p className="ml-1.5 min-w-0 flex-1 truncate text-[13px] font-semibold text-cream">
+                    {level.current ? level.current.name[language] : L("დასაწყისი", "Getting started")}
+                  </p>
+                </div>
+                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-well">
+                  <div
+                    className="h-full rounded-full bg-brand-forest transition-[width] duration-700"
+                    style={{ width: `${Math.round(level.progress * 100)}%` }}
+                  />
+                </div>
+                <p className="mt-1.5 truncate text-xs text-body">{formatNextLevel(level, language)}</p>
+              </div>
+            </section>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => void shareImpact()}
+                disabled={!summary || sharing}
+                className="native-press flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-brand-forest px-2 text-[13px] font-semibold text-brand-ground disabled:opacity-60"
+              >
+                <ShareIcon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                <span className="truncate">{L("გააზიარე", "Share my impact")}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => void invite()}
+                className="native-press flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-line bg-card px-2 text-[13px] font-semibold text-cream"
+              >
+                <UserPlusIcon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                <span className="truncate">{L("მოიწვიე მეგობარი", "Invite a friend")}</span>
+              </button>
+            </div>
+          </>
         )}
 
-        <nav className="overflow-hidden rounded-[24px] bg-card">
+        <nav className="overflow-hidden rounded-[22px] bg-card">
           {rows.map(({ href, label, Icon }, index) => (
             <Link
               key={href}
               href={href}
-              className={`native-press flex min-h-14 items-center gap-3 px-4 font-medium text-cream ${
+              className={`native-press flex min-h-[3.25rem] items-center gap-3 px-4 text-[15px] text-cream ${
                 index > 0 ? "border-t border-line" : ""
               }`}
             >
-              <Icon className="h-5 w-5 shrink-0 text-sage" strokeWidth={1.8} />
+              <Icon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
               <span className="min-w-0 flex-1 truncate">{label}</span>
               <ChevronRightIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
             </Link>
           ))}
         </nav>
 
-        <footer className="px-1 pb-2 pt-3 text-center text-xs leading-6 text-body">
+        <footer className="px-1 pb-2 pt-2 text-center text-[11px] leading-5 text-body">
           <p className="flex flex-wrap justify-center gap-x-3">
             {footerLinks.map((link) => (
               <Link key={link.href} href={link.href} className="underline-offset-2 hover:underline">
@@ -246,7 +364,7 @@ export default function NativeProfile() {
           <p className="mt-1 flex flex-wrap justify-center gap-x-3">
             <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
             {socialLinks.map((link) => (
-              <button key={link.href} type="button" onClick={() => openExternal(link.href)}>
+              <button key={link.href} type="button" onClick={() => openSocial(link)}>
                 {link.label}
               </button>
             ))}
@@ -257,6 +375,64 @@ export default function NativeProfile() {
           </p>
         </footer>
       </div>
+
+      {preview && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={L("ჩემი გავლენა", "My impact")}
+          className="fixed inset-0 z-[70] flex items-end bg-black/35"
+          onClick={() => setPreview(null)}
+        >
+          <div
+            className="native-sheet w-full rounded-t-[28px] bg-[#fbf7ee] px-5 pb-[calc(1.25rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] pt-4"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-[15px] font-semibold text-cream">{L("ჩემი გავლენა", "My impact")}</p>
+              <button
+                type="button"
+                onClick={() => setPreview(null)}
+                aria-label={L("დახურვა", "Close")}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-card text-cream"
+              >
+                <XIcon className="h-4 w-4" strokeWidth={2} />
+              </button>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element -- a local blob, not an optimisable image */}
+            <img
+              src={preview}
+              alt={L("ჩემი გავლენის ბარათი", "My impact card")}
+              className="mx-auto mt-3 max-h-[58vh] w-auto rounded-2xl border border-line"
+            />
+            <p className="mt-3 text-center text-xs text-body">
+              {L(
+                "ხანგრძლივად დააჭირე სურათს, რომ შეინახო და სთორიში გააზიარო.",
+                "Press and hold the image to save it, then add it to your story."
+              )}
+            </p>
+            {/* The app shell can't open a blob download; there, press and hold. */}
+            {!isNativeApp() && (
+              <a
+                href={preview}
+                download="argadaagdo-impact.png"
+                className="native-press mt-3 flex min-h-11 items-center justify-center rounded-2xl bg-brand-forest text-sm font-semibold text-brand-ground"
+              >
+                {L("სურათის შენახვა", "Save image")}
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <p
+          role="status"
+          className="native-fixed-bottom fixed inset-x-0 z-[60] mx-auto mb-20 w-max max-w-[90vw] rounded-full bg-brand-forest px-4 py-2 text-[13px] font-medium text-brand-ground"
+        >
+          {toast}
+        </p>
+      )}
     </main>
   );
 }

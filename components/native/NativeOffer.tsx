@@ -1,6 +1,6 @@
 "use client";
 
-import { LeafDecor, WaveEdge } from "@/components/design/Decor";
+import { WaveEdge } from "@/components/design/Decor";
 import { ReviewReportControl, useReviewReporterId } from "@/components/reviews/ReviewReportControl";
 import {
   ArrowLeftIcon,
@@ -180,7 +180,7 @@ export default function NativeOffer() {
     <Link
       href="/"
       aria-label={t("native.back")}
-      className="absolute left-4 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink"
+      className="absolute left-4 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-cream"
     >
       <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
     </Link>
@@ -225,12 +225,9 @@ export default function NativeOffer() {
   return (
     <main className="native-main relative">
       <div className={getOfferCategoryTone(offer.category)}>
-        <section className="relative overflow-hidden bg-cat px-4 pb-1 pt-3 text-cat-ink">
-          <span
-            aria-hidden="true"
-            className="absolute -left-16 top-10 h-64 w-64 rounded-full bg-cat-soft"
-          />
-          <LeafDecor className="-right-8 -top-6 h-48 w-48 text-cat-soft" />
+        {/* Calm: the beige ground shows through; the photo tile carries the
+            category colour (softened in app/native.css). */}
+        <section className="relative overflow-hidden px-4 pb-1 pt-3 text-cream">
 
           {backButton}
           <button
@@ -241,7 +238,7 @@ export default function NativeOffer() {
             aria-label={
               isFavorite ? t("offers.removeFavorite") : t("offers.addFavorite")
             }
-            className="absolute right-4 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-brand-ground text-brand-ink disabled:opacity-60"
+            className="absolute right-4 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-cream disabled:opacity-60"
           >
             <HeartIcon className="h-5 w-5" strokeWidth={2} filled={isFavorite} />
           </button>
@@ -269,7 +266,7 @@ export default function NativeOffer() {
         <p className="text-xs font-bold text-body">
           {getGreenBagLabel(offer, language)}
         </p>
-        <h1 className="mt-1 font-serif text-2xl font-bold leading-[1.25]">
+        <h1 className="mt-1 font-serif text-xl font-bold leading-[1.3]">
           {offer.businesses?.name || t("common.business")}
         </h1>
 

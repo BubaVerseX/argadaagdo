@@ -53,6 +53,7 @@ export const NativeLoginScreen = lazyScreen(() => import("./NativeLogin"));
 export const NativeSettingsScreen = lazyScreen(() => import("./NativeSettings"));
 export const NativeNotificationsScreen = lazyScreen(() => import("./NativeNotifications"));
 export const NativePaymentScreen = lazyScreen(() => import("./NativePayment"));
+export const NativeFavoritesScreen = lazyScreen(() => import("./NativeFavorites"));
 export const NativeSubpageBar = lazyScreen(() => import("./NativeSubpageBar"));
 export const NativeShell = lazyScreen(() => import("./NativeShell"));
 
@@ -73,6 +74,7 @@ if (typeof window !== "undefined" && isNativeApp()) {
   else if (path === "/settings") void NativeSettingsScreen.preload();
   else if (path === "/notifications") void NativeNotificationsScreen.preload();
   else if (path === "/payment") void NativePaymentScreen.preload();
+  else if (path === "/favorites") void NativeFavoritesScreen.preload();
   else void NativeSubpageBar.preload();
 }
 

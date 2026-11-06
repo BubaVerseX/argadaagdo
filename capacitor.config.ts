@@ -18,7 +18,7 @@ const config: CapacitorConfig = {
   webDir: 'native-shell',
   // Same deep green as the site, so launching doesn't flash white before
   // the remote page paints.
-  backgroundColor: '#051f20',
+  backgroundColor: '#f7f1e3',
   server: {
     url: 'https://argadaagdo.ge',
     androidScheme: 'https',
@@ -32,9 +32,10 @@ const config: CapacitorConfig = {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
     SystemBars: {
-      // Light status-bar icons on the dark green app (Android; iOS follows
-      // UIUserInterfaceStyle=Dark in Info.plist).
-      style: 'DARK',
+      // Dark status-bar icons on the beige app (Android; iOS follows
+      // UIUserInterfaceStyle=Light in Info.plist). NativeShell also sets it
+      // at runtime for builds made before the beige design.
+      style: 'LIGHT',
     },
   },
 };
