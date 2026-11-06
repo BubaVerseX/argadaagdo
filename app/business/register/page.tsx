@@ -13,7 +13,8 @@ import {
   getProfileById,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
-import { getUserErrorMessage } from "@/lib/errors";
+import { getUserErrorMessage, logAppError } from "@/lib/errors";
+import type { LatLng } from "@/lib/location";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { notifyBusinessRegistrationSubmitted } from "@/lib/notifications";
 import { supabase } from "@/lib/supabase";
@@ -40,6 +41,7 @@ export default function BusinessRegisterPage() {
   const [messageTone, setMessageTone] = useState<"success" | "error" | "warning">("error");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [pinFailed, setPinFailed] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -50,7 +52,8 @@ export default function BusinessRegisterPage() {
       if (!active) return;
 
       if (authResult.status === "signed_out") {
-        router.replace("/login?redirect=/business/register");
+        // New businesses land on "Create account"; the tab still switches.
+        router.replace("/login?tab=signup&redirect=/business/register");
         return;
       }
 
@@ -80,7 +83,7 @@ export default function BusinessRegisterPage() {
 
       const { data: businesses } = await supabase
         .from("businesses")
-        .select("id, name, business_type, address, approved, rejected_at, rejection_reason")
+        .select("id, name, business_type, address, latitude, longitude, approved, rejected_at, rejection_reason")
         .eq("owner_id", authResult.user.id);
 
       if (!active) return;
@@ -122,8 +125,16 @@ export default function BusinessRegisterPage() {
           idCode: verification?.id_code || "",
           legalForm: (verification?.legal_form as LegalForm) || "llc",
           ownerFullName: verification?.owner_full_name || "",
+          location:
+            rejected.latitude != null && rejected.longitude != null
+              ? { latitude: rejected.latitude, longitude: rejected.longitude }
+              : null,
         };
-        hasExistingBag = Boolean(count);
+        // Box templates are readable only by approved owners, so a rejected
+        // owner's count is 0 even when the bag exists. A saved verification
+        // row means submit_business_application ran, and it saves the first
+        // bag in the same transaction, so the bag is there.
+        hasExistingBag = Boolean(count) || Boolean(verification);
       }
 
       setSetup({
@@ -141,6 +152,26 @@ export default function BusinessRegisterPage() {
       active = false;
     };
   }, [router]);
+
+  async function saveBusinessLocation(businessId: number, location: LatLng) {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const { error } = await supabase.rpc("set_business_location", {
+        p_business_id: businessId,
+        p_latitude: location.latitude,
+        p_longitude: location.longitude,
+      });
+
+      if (!error) return true;
+
+      logAppError("Business map pin could not be saved", error, {
+        operation: "set_business_location",
+        businessId,
+        attempt,
+      });
+    }
+
+    return false;
+  }
 
   async function submitApplication(application: BusinessApplication) {
     if (submitting || !setup) return;
@@ -186,6 +217,14 @@ export default function BusinessRegisterPage() {
     setSubmitting(false);
 
     if (error) {
+      // Only reachable if the "bag already saved" guess was wrong: show the
+      // bag form and let the owner add it.
+      if (setup.hasExistingBag && /first bag/i.test(error.message || "")) {
+        setSetup({ ...setup, hasExistingBag: false });
+        setMessage(isGeorgian ? "დაამატე პირველი ლანჩ ბოქსი." : "Add your first bag.");
+        return;
+      }
+
       setMessage(
         getUserErrorMessage(
           error,
@@ -195,19 +234,16 @@ export default function BusinessRegisterPage() {
       return;
     }
 
-    // The map pin is saved separately and never blocks the application: if it
-    // fails, admin can set it later.
+    // The map pin is saved separately (submit_business_application has no
+    // coordinates) and never blocks the application. The owner may call
+    // set_business_location before approval; one retry, then admin sets it.
+    let pinSaved = true;
     if (company.location && businessId) {
-      await supabase
-        .rpc("set_business_location", {
-          p_business_id: businessId,
-          p_latitude: company.location.latitude,
-          p_longitude: company.location.longitude,
-        })
-        .then(() => undefined, () => undefined);
+      pinSaved = await saveBusinessLocation(Number(businessId), company.location);
     }
 
     clearBusinessRegistrationDraft();
+    setPinFailed(!pinSaved);
     setSubmitted(true);
     notifyBusinessRegistrationSubmitted({ businessName: company.name });
   }
@@ -217,13 +253,12 @@ export default function BusinessRegisterPage() {
       <Navbar />
 
       <section className="mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-10">
-        <h1 className="text-3xl font-semibold text-cream sm:text-4xl">
-          {t("businessRegister.title")}
+        <h1 className="text-2xl font-semibold text-cream sm:text-4xl">
+          {isGeorgian ? "ბიზნესის რეგისტრაცია" : "Register your business"}
         </h1>
-        <p className="mt-2 text-body">{t("businessRegister.subtitle")}</p>
 
         {setup?.rejectionReason && !submitted && (
-          <div className="mt-5">
+          <div className="mt-4">
             <Notice tone="warning">
               {isGeorgian ? "უარის მიზეზი: " : "Reason for rejection: "}
               {setup.rejectionReason}
@@ -231,7 +266,7 @@ export default function BusinessRegisterPage() {
           </div>
         )}
 
-        <div className="mt-6">
+        <div className="mt-5">
           {submitted ? (
             <div className="ui-card rounded-3xl p-6 sm:p-8">
               <h2 className="text-2xl font-semibold text-cream">
@@ -239,9 +274,16 @@ export default function BusinessRegisterPage() {
               </h2>
               <p className="mt-2 text-body">
                 {isGeorgian
-                  ? "დამტკიცების შემდეგ ელფოსტით მოგწერთ."
-                  : "We'll email you once it's approved."}
+                  ? "დამტკიცების შემდეგ მოგწერთ."
+                  : "We'll email you once approved."}
               </p>
+              {pinFailed && (
+                <p className="mt-2 text-sm font-semibold text-warning">
+                  {isGeorgian
+                    ? "რუკის ნიშნული ვერ შეინახა — ადმინი დაამატებს."
+                    : "Map pin not saved — admin will add it."}
+                </p>
+              )}
               <Link href="/business/dashboard" className="premium-button mt-5 px-6 py-3">
                 {t("nav.dashboard")}
               </Link>

@@ -267,8 +267,9 @@ export function BusinessOnboardingWizard({
     }
   }
 
-  const inputClass = "premium-input p-4 font-medium";
-  const labelClass = "grid gap-2 text-sm font-semibold text-body";
+  // min-w-0/w-full: a long option (legal form) must not widen the page.
+  const inputClass = "premium-input w-full min-w-0 p-4 font-medium";
+  const labelClass = "grid min-w-0 gap-2 text-sm font-semibold text-body";
 
   return (
     <div className="ui-card rounded-3xl p-5 sm:p-8">
@@ -291,7 +292,7 @@ export function BusinessOnboardingWizard({
         />
       </div>
 
-      <div className="mt-6 grid gap-4">
+      <div className="mt-6 grid grid-cols-1 gap-4">
         {step === 1 && (
           <>
             <label className={labelClass}>
@@ -410,10 +411,7 @@ export function BusinessOnboardingWizard({
                 className={inputClass}
               />
               <span className="text-xs font-medium">
-                {text(
-                  "ანგარიშის მფლობელი უნდა ემთხვეოდეს იურიდიულ სახელს.",
-                  "The account holder must match the legal name."
-                )}
+                {text("ანგარიში იურიდიული სახელით", "Account in the legal name")}
               </span>
             </label>
             <label className={labelClass}>
@@ -425,10 +423,7 @@ export function BusinessOnboardingWizard({
                 className={inputClass}
               />
               <span className="text-xs font-medium">
-                {text(
-                  "PDF ან JPG, 10 მბ-მდე. მხოლოდ ადმინი ნახავს.",
-                  "PDF or JPG, up to 10 MB. Only our admins can see it."
-                )}
+                {text("PDF ან JPG, 10 მბ-მდე", "PDF or JPG, up to 10 MB")}
               </span>
             </label>
           </>
