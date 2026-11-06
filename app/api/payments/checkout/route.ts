@@ -163,7 +163,8 @@ export async function POST(request: Request) {
     // Native split: the business's share goes straight to its payout account.
     // The IBAN table is server-only, so it is read with the service role. A
     // business without an IBAN on file falls back to an unsplit payment (full
-    // amount to us, paid out manually) rather than blocking the sale.
+    // amount to us, paid out manually) rather than blocking the sale. While
+    // TBC_SPLIT_ENABLED is off, lib/payments/tbc.ts ignores the split too.
     const { data: payoutAccount } = await createServiceRoleSupabaseClient()
       .from("business_payout_accounts")
       .select("iban")

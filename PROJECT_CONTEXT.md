@@ -53,7 +53,11 @@ are now per business (30% default)**. Each file ends with a commented Down block
   for pilot partners), admin/service-role only (trigger + 
   `set_business_platform_fee_rate`; admin dashboard has a per-business
   input). `create_provider_payment_order` reads it for `platform_fee` /
-  `business_amount`, so the TBC split (`extra2`) follows. **New businesses
+  `business_amount`, so the TBC split (`extra2`) follows. Split is only sent
+  when `TBC_SPLIT_ENABLED=true` (TBC hasn't activated it yet); until then
+  payments are unsplit with all methods and business shares are paid out
+  manually. Split payments are limited to methods 5/9/14 (card, Apple Pay,
+  Google Pay). **New businesses
   start at 30%; set each pilot partner to 0 when they onboard.** The demo
   bakery (14) and Old Town Bakery (2) are at 0. `lib/paymentArchitecture.ts` exports
   `defaultPlatformFeeRate = 0.3` as the analytics fallback only.
