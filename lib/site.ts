@@ -45,4 +45,5 @@ export function buildPageMetadata({
   };
 }
 
-export const appStoreUrl = "https://apps.apple.com/app/id6827484439";
+// Storefront + slug: the bare /app/id… URL returns 404 outside Georgia.
+export const appStoreUrl = "https://apps.apple.com/ge/app/argadaagdo/id6827484439";

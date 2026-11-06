@@ -12,6 +12,11 @@ Authentication → Users if lost.
 Nothing has been uploaded to Play Console yet. Sections 3–7 are what to
 enter there; the copy page has the same values with Copy buttons.
 
+**1.0.1 (versionCode 7) update, 2026-11-06:** the app now asks for location
+(optional, foreground only) and notifications (optional, FCM). The
+permissions, App access, Data safety and risk sections below are updated
+for that; upload versionCode 7, not the 1.0.0 bundle.
+
 ## 1. Build
 
 | | |
@@ -21,7 +26,7 @@ enter there; the copy page has the same values with Copy buttons.
 | minSdk / target & compile SDK | 24 (Android 7.0) / 36 (Android 16) |
 | Loads | `https://argadaagdo.ge` (`capacitor.config.ts` → `server.url`), offline page `native-shell/offline.html` |
 | Icon / splash | leaf icon (adaptive: foreground + `#051F20` background) and dark-green splash, generated 2026-10-27 by `npx capacitor-assets generate` from `assets/` |
-| Plugins | `@capacitor/app`, `@capacitor/browser` (TBC payment page opens in a Custom Tab) |
+| Plugins | `@capacitor/app`, `@capacitor/browser` (TBC payment page opens in a Custom Tab); since 1.0.1 also `geolocation`, `push-notifications` (FCM), `share`, `filesystem` |
 | Output | `android/app/build/outputs/bundle/release/app-release.aab` (gitignored), 4.4 MB, copy at `~/Desktop/play-upload/ArGadaagdo-1.0.0-1.aab` |
 
 Built and verified 2026-11-01: `jarsigner -verify` passes, the bundle's
@@ -30,16 +35,21 @@ targetSdk 36.
 
 ### Permissions (merged manifest of the release bundle)
 
+1.0.1 (versionCode 7):
+
 | Permission | Why | Sensitive? |
 |---|---|---|
-| `android.permission.INTERNET` | loads the web app | No |
-| `com.argadaagdo.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | signature-level permission AndroidX adds automatically for its own broadcast receivers; invisible to users | No |
+| `android.permission.INTERNET`, `ACCESS_NETWORK_STATE` | loads the web app, offline page | No |
+| `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` | optional, foreground only: sort Nearby by distance and show the user on the map; asked only after the user taps to turn it on | Yes (runtime prompt) |
+| `POST_NOTIFICATIONS` | optional push (order/pickup reminders, new boxes from favourites); asked after sign-in | Yes (runtime prompt) |
+| `WAKE_LOCK`, `com.google.android.c2dm.permission.RECEIVE` | added by Firebase Cloud Messaging | No |
+| `com.argadaagdo.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | signature-level permission AndroidX adds for its own receivers; invisible to users | No |
 
-Nothing else: no location, camera, storage, contacts, notifications,
-`AD_ID`, or `QUERY_ALL_PACKAGES`. The `<queries>` block comes from
-`@capacitor/browser` (to find a Custom Tabs browser) and is not a
-permission. The FileProvider in the manifest is Capacitor boilerplate and
-needs no permission. There is nothing to remove.
+No background location, camera, storage, contacts, `AD_ID` or
+`QUERY_ALL_PACKAGES`. The code only asks for low-accuracy fixes, so
+`ACCESS_FINE_LOCATION` could be dropped in a later build. The `<queries>`
+block (from `@capacitor/browser`) and the FileProvider are not
+permissions.
 
 ### Target API level
 
@@ -254,18 +264,20 @@ credential sets (name / username / password from the copy page):
 - "Business demo (dashboard, verify pickup)" —
   `argadaagdo.support+review.business@gmail.com`
 
-Instructions text (1,221 characters):
+Instructions text (about 1,500 characters):
 
 ```
-ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Browsing works without an account; reserving, the Orders tab and the business dashboard need sign-in (email and password only, no third-party login).
+ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Tabs at the bottom: Nearby, Orders, Profile. Browsing works without an account; reserving, Orders and the business panel need sign-in (email and password only).
 
-The two demo accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) offer "Demo surprise bag (free, App Review)". Reserving it takes no payment and opens no bank page. Real offers depend on partner businesses and may be absent for newly registered accounts.
+The two demo accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) box "Demo surprise bag (free, App Review)". Reserving it takes no payment and opens no bank page. Real offers depend on partner businesses and may be absent for new accounts.
 
-CUSTOMER: Tap the person icon (top right) and sign in with the customer account > Discover > open "Demo surprise bag (free, App Review)" > Continue to checkout > tick "I understand the pickup and cancellation rules." > Pay and reserve. The Orders tab shows the reservation with a 6-digit pickup code; it can be cancelled there.
+CUSTOMER: Profile > Sign in with the customer account > Nearby > tap "Demo surprise bag (free, App Review)" > Reserve. Checkout shows the box, the price and one button, "Pay · ₾0.00"; tap it. Orders shows the reservation with its large pickup code; it can be cancelled there.
 
-BUSINESS: ... menu icon (top right) > Logout, then sign in with the business account > Dashboard > Reservations > Verify & Complete Pickup > enter the customer's code. The order is completed and the customer can rate the business.
+BUSINESS: Profile > Settings > Sign out, then sign in with the business account > Profile > "Business panel" > under Pickups, tap "Enter code" next to the order > type the customer's code. The order is completed and the customer can rate the business.
 
-ACCOUNT DELETION: ... menu icon (top right) > Settings > Delete my account > type DELETE > confirm. Please test deletion with an account you register yourself; deleting a demo account breaks further review.
+PERMISSIONS: location (sort by distance, show you on the map; used only on the device) and notifications (order and pickup reminders) are both optional; everything works without them.
+
+ACCOUNT DELETION: Profile > Settings > Delete account > type DELETE > confirm. Please test deletion with an account you register yourself; deleting a demo account breaks further review.
 ```
 
 ### Content rating (IARC questionnaire)
@@ -310,7 +322,7 @@ Overall answers:
 |---|---|
 | Does your app collect or share any of the required user data types? | **Yes** |
 | Is all user data collected by your app encrypted in transit? | **Yes** (HTTPS only: Vercel, Supabase, TBC) |
-| Do you provide a way for users to request that their data is deleted? | **Yes** (in-app deletion in Settings, plus email) |
+| Do you provide a way for users to request that their data is deleted? | **Yes** (in the app, on the website, or by email) |
 | Independent security review | No |
 
 Account creation / deletion block (shown once you say the app lets users
@@ -320,15 +332,15 @@ create an account):
 |---|---|
 | Does your app allow users to create an account? | Yes, with email and password |
 | Deletion URL (web page where users can request deletion) | `https://argadaagdo.ge/privacy#delete-account` |
-| Does the in-app path let users delete their account? | Yes: ... menu icon → Settings → Delete my account |
+| Does the in-app path let users delete their account? | Yes: Profile → Settings → Delete account |
 | Do you provide a way to request deletion of some data without deleting the account? | Yes, by email to `argadaagdo.support@gmail.com` (privacy page says so) |
 
-The `#delete-account` anchor was added to the privacy page in this branch
-(`app/privacy/page.tsx`); it is live once the branch is merged and
-deployed. Until then the plain `/privacy` URL works too, the section is
-near the bottom.
+The `#delete-account` section explains the in-app/website path **and** the
+request path without the app (email from the account's address with the
+subject "Delete my account", done within 30 days), which Google requires.
+It also lists what is deleted and what is kept anonymised.
 
-Data types (all **Collected**, none **Shared**, none processed
+Data types (all **Collected**, none **Shared**; only location is processed
 ephemerally; purposes as listed). Sharing: data reaches Supabase, Vercel
 and the email provider only as service providers, which Google excludes
 from "sharing"; the customer's email shown to the business after a
@@ -346,14 +358,24 @@ address only if you prefer the conservative reading.
 | Financial info | Purchase history | Required | App functionality | reservations and their payment status |
 | Photos and videos | Photos | Optional (business accounts) | App functionality | offer photos uploaded by businesses |
 | App activity | Other user-generated content | Optional | App functionality | ratings and review comments |
+| Device or other IDs | Device or other IDs | Optional | App functionality | FCM push token (and Firebase installation ID), stored with the account to send order/pickup reminders and new boxes from favourites; removed on push off, sign-out or deletion |
+| Location | Approximate location | Optional | App functionality | see note; processed ephemerally: **Yes** |
 
-Not collected (leave unticked): Location, User payment info (card details
-are typed on TBC Bank's own page and never reach the app), Credit score,
-Health and fitness, Messages, Audio, Files and docs, Calendar, Contacts,
-App interactions, In-app search history, Installed apps, Web browsing
-history, Crash logs, Diagnostics, Device or other IDs. There is no
-analytics, crash-reporting or advertising SDK in the app, and the web app
-sets only its own session and language cookies/storage.
+Approximate location, why declare it: the position never reaches our
+servers; the phone uses it to sort by distance and centre the map. But
+the map then loads OpenFreeMap tiles for that area, so the area leaves
+the device in real time. Google counts data sent off the device as
+"collected", so the conservative answer is: collected, optional,
+ephemeral, App functionality, not shared (OpenFreeMap only serves tiles
+for us). Don't declare Precise location: only low-accuracy fixes are
+used and nothing precise leaves the device.
+
+Not collected (leave unticked): Precise location, User payment info (card
+details are typed on TBC Bank's own page and never reach the app), Credit
+score, Health and fitness, Messages, Audio, Files and docs, Calendar,
+Contacts, App interactions, In-app search history, Installed apps, Web
+browsing history, Crash logs, Diagnostics. There is no analytics,
+crash-reporting or advertising SDK in the app.
 
 ### Government apps
 
@@ -446,25 +468,20 @@ First Android release: browse Lunch Boxes from Tbilisi bakeries, cafes and resta
 
 ## 8. Rejection risks, most likely first
 
-1. **User-generated content policy.** Play requires UGC apps to offer an
-   in-app way to report objectionable content and to block/remove it.
-   Review comments are public and the app has no Report button (same gap
-   Apple may raise). Cheapest fix before the production application: a
-   "Report" link on each review that emails support, plus the existing
-   admin removal. Mention moderation in the content rating answers (done).
+1. **Data safety mismatch for 1.0.1.** The form must include Device or
+   other IDs and Approximate location (section 5) before versionCode 7
+   rolls out. (UGC: reviews have an in-app Report control and admins can
+   hide them.)
 2. **Minimum functionality / webview.** The app is the website in a
-   Capacitor WebView. Play allows this when you own the site and the app
-   works as an app (it has an offline page, in-app payment tab, native
-   icon/splash, no browser chrome). If rejected under "Minimum
-   functionality", the fix is a native feature such as push notifications
-   for pickup reminders.
+   Capacitor WebView, but 1.0.1 adds native push, location and share, so
+   this is much less likely.
 3. **Pre-launch report sign-in failures.** The report's crawler uses the
    App access credentials; if the demo customer login or demo box is
    missing it flags "login failed", which reviewers read. Keep section 2
    healthy.
-4. **Data safety mismatch.** Google compares the form with observed
-   traffic. The app has no SDKs, so only what is listed above is sent;
-   don't add analytics without updating the form.
+4. **Data safety vs traffic.** Google compares the form with observed
+   traffic. The only SDK is Firebase Cloud Messaging; don't add analytics
+   without updating the form.
 5. **Target audience.** Choosing 18+ keeps the app out of the Families
    policy; don't later tick a younger age group without reading that
    policy.
@@ -473,13 +490,11 @@ First Android release: browse Lunch Boxes from Tbilisi bakeries, cafes and resta
 
 - Upload and fill everything in Play Console (sections 3–7); nothing was
   uploaded.
-- Merge this branch and deploy so `/privacy#delete-account` resolves (the
-  deletion text is already live at `/privacy`).
+- Deploy the updated privacy page before entering the deletion URL
+  `https://argadaagdo.ge/privacy#delete-account`.
 - Gather at least 12 testers with Google accounts and Android phones;
   send them the opt-in link the day the closed test goes live.
 - Copy `~/Documents/argadaagdo-keys/` somewhere off this Mac.
 - Native-speaker check of the Georgian listing text.
-- Decide on the Report button for reviews (risk 1) before applying for
-  production.
 - When the custom domain goes live: new `server.url`, versionCode 2,
   rebuild, new release (`docs/domain-day-checklist.md`).

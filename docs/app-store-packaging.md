@@ -109,9 +109,8 @@ defaults (no `server.url`) or fails on a missing resource.
 
 - No app icons/splash screens generated — Capacitor's defaults are still in
   place in both native projects.
-- No push notification setup (`@capacitor/push-notifications` isn't
-  installed) — nothing in the current app sends native push, this would be
-  new scope.
+- No push notification setup at the time. (Outdated: 1.0.1 added
+  `@capacitor/push-notifications` with APNs/FCM.)
 - No real device or simulator testing of either native shell — impossible
   without the tooling above.
 - Payments/BOG/TBC — unrelated to this packaging work, being handled

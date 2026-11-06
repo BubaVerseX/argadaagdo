@@ -3,13 +3,15 @@ import { getNativeBrowser, isNativeApp } from "@/lib/native";
 
 // Official social profiles (from the owner, 6 Nov 2026), shown in the website
 // footer and the app's profile footer. A Vercel env handle (without the @)
-// overrides each one.
+// overrides Instagram. X is shown only when NEXT_PUBLIC_X_HANDLE is set (the
+// old default handle returned 404).
 const instagramHandle =
   (process.env.NEXT_PUBLIC_INSTAGRAM_HANDLE || "").replace(/^@/, "").trim() || "ar_gadaagdo_app";
-const xHandle = (process.env.NEXT_PUBLIC_X_HANDLE || "").replace(/^@/, "").trim() || "Przemos3k";
+const xHandle = (process.env.NEXT_PUBLIC_X_HANDLE || "").replace(/^@/, "").trim();
 
 export const instagramUrl = `https://www.instagram.com/${encodeURIComponent(instagramHandle)}/`;
-export const xUrl = `https://x.com/${encodeURIComponent(xHandle)}`;
+/** Empty when no X handle is configured; callers hide the link then. */
+export const xUrl = xHandle ? `https://x.com/${encodeURIComponent(xHandle)}` : "";
 
 export type SocialLink = { label: string; href: string; appUrl: string };
 
@@ -19,11 +21,15 @@ export const socialLinks: SocialLink[] = [
     href: instagramUrl,
     appUrl: `instagram://user?username=${encodeURIComponent(instagramHandle)}`,
   },
-  {
-    label: "X",
-    href: xUrl,
-    appUrl: `twitter://user?screen_name=${encodeURIComponent(xHandle)}`,
-  },
+  ...(xUrl
+    ? [
+        {
+          label: "X",
+          href: xUrl,
+          appUrl: `twitter://user?screen_name=${encodeURIComponent(xHandle)}`,
+        },
+      ]
+    : []),
 ];
 
 /**
