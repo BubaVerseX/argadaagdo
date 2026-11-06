@@ -4,7 +4,9 @@ export const supportedLanguages = ["en", "ka"] as const;
 
 export type Language = (typeof supportedLanguages)[number];
 
-export const defaultLanguage: Language = "en";
+// Georgian first: most visitors are in Georgia, and the server renders this
+// language before the saved choice is read.
+export const defaultLanguage: Language = "ka";
 
 export const languageNames: Record<Language, string> = {
   en: "🇬🇧 English",

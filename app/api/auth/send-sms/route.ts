@@ -1,7 +1,9 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { isValidStandardWebhook } from "@/lib/sms/standardWebhook";
 import { sendOtpSms, SmsSendError } from "@/lib/sms/ubill";
+import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 // Supabase's Send SMS hook. Auth calls this instead of a built-in SMS provider.
 // It accepts Georgian numbers and accounts that already have an email, so nobody
@@ -61,6 +63,27 @@ export async function POST(request: Request) {
 
   if (!payload.user?.email) {
     return hookError("Phone-only accounts are not supported", 400);
+  }
+
+  // Every SMS costs money: cap per number, per account and per day
+  // (public.note_sms_send). Only hashes are stored. Fails closed.
+  const sha256 = (value: string) => createHash("sha256").update(value).digest("hex");
+  const { data: smsAllowed, error: smsCapError } = await createServiceRoleSupabaseClient().rpc(
+    "note_sms_send",
+    {
+      p_phone_hash: sha256(phone),
+      p_account_hash: sha256(payload.user.email.toLowerCase()),
+    }
+  );
+
+  if (smsCapError) {
+    logger.error("SMS cap check failed", { error: smsCapError.message });
+    return hookError("SMS could not be sent", 500);
+  }
+
+  if (smsAllowed !== "ok") {
+    logger.warn("SMS refused by cap", { reason: smsAllowed });
+    return hookError("Too many codes requested. Please try again later.", 429);
   }
 
   try {

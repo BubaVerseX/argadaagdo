@@ -155,6 +155,12 @@ export async function getCurrentRole() {
 }
 
 export async function logoutUser() {
+  // Stop this device's push notifications for the account first (needs the
+  // session). No-op on the website. The next account can turn them on again.
+  if (typeof window !== "undefined") {
+    const { disablePush } = await import("@/lib/push/client");
+    await disablePush({ turnedOff: false });
+  }
   // "local" signs out this browser/app only. The default ("global") also
   // ended the user's sessions on every other device.
   await supabase.auth.signOut({ scope: "local" });
