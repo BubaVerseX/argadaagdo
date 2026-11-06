@@ -101,6 +101,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: nativeBootScript }} />
       </head>
       <body className="flex min-h-full flex-col">
+        {/* App only: puts the launch animation on screen before anything else
+            paints (lib/nativeLaunch.ts). Does nothing on the website. */}
+        <script dangerouslySetInnerHTML={{ __html: "window.__argLaunch&&window.__argLaunch()" }} />
         {children}
         <NotificationCenter />
         <ServiceWorkerRegistration />

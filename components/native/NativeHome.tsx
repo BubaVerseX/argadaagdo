@@ -1,6 +1,14 @@
 "use client";
 
-import { BellIcon, ClockIcon, FilterIcon, LeafIcon, SearchIcon } from "@/components/icons";
+import {
+  BellIcon,
+  ClockIcon,
+  FilterIcon,
+  LeafIcon,
+  MapPinIcon,
+  MenuIcon,
+  SearchIcon,
+} from "@/components/icons";
 import OfferImage from "@/components/OfferImage";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
@@ -26,6 +34,9 @@ import {
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "./AppLink";
 import NativeHero from "./NativeHero";
+import NativePlaces from "./NativePlaces";
+import NativeWelcome from "./NativeWelcome";
+import { supabase } from "@/lib/supabase";
 import { useEffect, useMemo, useState } from "react";
 
 function NativeOfferCard({
@@ -56,7 +67,12 @@ function NativeOfferCard({
           offer.category
         )} photo-leaf-sm relative isolate h-[4.5rem] w-[4.5rem] shrink-0`}
       >
-        <OfferImage src={offer.image_url} alt={offer.title} sizes="72px" priority={priority} />
+        <OfferImage
+          src={offer.image_url}
+          alt={offer.title}
+          sizes="72px"
+          priority={priority}
+        />
         {discount !== null && (
           <span className="absolute bottom-1 left-1 rounded-full bg-brand-forest px-1.5 py-0.5 text-[10px] font-semibold text-brand-ground">
             −{discount}%
@@ -75,18 +91,23 @@ function NativeOfferCard({
             {offer.businesses?.name || t("common.business")}
           </span>
           {rating && rating.rating_count > 0 && (
-            <span className="shrink-0 text-xs font-medium text-[#3b8a55]">★ {rating.average_rating.toFixed(1)}</span>
+            <span className="shrink-0 text-xs font-medium text-[#3b8a55]">
+              ★ {rating.average_rating.toFixed(1)}
+            </span>
           )}
         </p>
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="native-time-chip min-w-0 text-[12px] font-medium">
             <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
             <span className="min-w-0 truncate">
-              {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
+              {getOfferDateLabel(offer, language)}{" "}
+              {formatPickupTimeRange(offer, language)}
             </span>
           </p>
           <p className="shrink-0 whitespace-nowrap text-right leading-none">
-            <span className="text-base font-semibold text-mint">{formatMoney(offer.price)}</span>
+            <span className="text-base font-semibold text-mint">
+              {formatMoney(offer.price)}
+            </span>
           </p>
         </div>
       </div>
@@ -111,10 +132,36 @@ function initialCategory(): OfferCategory | "all" {
     : "all";
 }
 
-export default function NativeHome() {
+// Nearby (the first tab): what's on today as a list, or by place (Map).
+// People who aren't signed in see the welcome screen here instead.
+export default function NativeHome({
+  initialView = "list",
+}: {
+  initialView?: "list" | "map";
+}) {
   const { language, setLanguage, t } = useLanguage();
+  const [view, setView] = useState<"list" | "map">(initialView);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => active && setSignedIn(Boolean(data.session)));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) =>
+      setSignedIn(Boolean(session))
+    );
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
   const { feed, loading, failed, retry } = useNativeFeed();
-  const [category, setCategory] = useState<OfferCategory | "all">(initialCategory);
+  const [category, setCategory] = useState<OfferCategory | "all">(
+    initialCategory
+  );
   const [query, setQuery] = useState("");
 
   // Warm the next screens so opening one doesn't wait for its code.
@@ -131,7 +178,9 @@ export default function NativeHome() {
   const presentCategories = useMemo(
     () =>
       OFFER_CATEGORIES.filter((option) =>
-        offers.some((offer) => normalizeOfferCategory(offer.category) === option)
+        offers.some(
+          (offer) => normalizeOfferCategory(offer.category) === option
+        )
       ),
     [offers]
   );
@@ -144,18 +193,58 @@ export default function NativeHome() {
       return false;
     }
     if (!normalizedQuery) return true;
-    return [offer.title, offer.businesses?.name, offer.businesses?.business_type]
+    return [
+      offer.title,
+      offer.businesses?.name,
+      offer.businesses?.business_type,
+    ]
       .filter(Boolean)
       .some((text) => text!.toLocaleLowerCase().includes(normalizedQuery));
   });
   const nothingAtAll = !loading && !failed && offers.length === 0;
+
+  // Until we know who's here: the plain ground, so neither screen flashes.
+  if (signedIn === null) return <main className="native-main" />;
+  if (!signedIn) return <NativeWelcome />;
+
+  const viewButton = (option: "list" | "map") => (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={view === option}
+      aria-label={
+        option === "list"
+          ? language === "ka"
+            ? "სია"
+            : "List"
+          : language === "ka"
+          ? "რუკა"
+          : "Map"
+      }
+      onClick={() => setView(option)}
+      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+        view === option ? "bg-brand-mint text-brand-forest" : "text-body"
+      }`}
+    >
+      {option === "list" ? (
+        <MenuIcon className="h-4 w-4" strokeWidth={2} />
+      ) : (
+        <MapPinIcon className="h-4 w-4" strokeWidth={2} />
+      )}
+    </button>
+  );
 
   return (
     <main className="native-main">
       <NativeHero className="px-4 pb-1 pt-3">
         <header>
           <div className="flex items-center gap-2.5">
-            <svg width="28" height="28" viewBox="0 0 200 200" aria-hidden="true">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 200 200"
+              aria-hidden="true"
+            >
               <rect width="200" height="200" rx="46" fill="var(--brand-mint)" />
               <path
                 d="M44 156 C44 96, 88 50, 158 42 C162 112, 118 158, 50 160 Z"
@@ -169,7 +258,9 @@ export default function NativeHome() {
             <button
               type="button"
               onClick={() => setLanguage(language === "ka" ? "en" : "ka")}
-              aria-label={language === "ka" ? "Switch to English" : "ქართულზე გადართვა"}
+              aria-label={
+                language === "ka" ? "Switch to English" : "ქართულზე გადართვა"
+              }
               className="native-press flex h-9 min-w-9 items-center justify-center rounded-full bg-card px-2.5 text-xs font-semibold text-brand-mint"
             >
               {language === "ka" ? "KA" : "EN"}
@@ -184,11 +275,16 @@ export default function NativeHome() {
           </div>
 
           <h1 className="mt-5 font-serif text-[1.375rem] font-bold leading-snug text-cream">
-            {language === "ka" ? "დღეს გადაარჩინე ლანჩ ბოქსი" : "Rescue a Lunch Box today"}
+            {language === "ka"
+              ? "დღეს გადაარჩინე ლანჩ ბოქსი"
+              : "Rescue a Lunch Box today"}
           </h1>
 
           <div className="mt-3 flex h-11 items-center gap-2.5 rounded-2xl bg-card pl-3.5 pr-1.5">
-            <SearchIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
+            <SearchIcon
+              className="h-4 w-4 shrink-0 text-muted"
+              strokeWidth={2}
+            />
             <input
               type="search"
               value={query}
@@ -206,33 +302,47 @@ export default function NativeHome() {
             </Link>
           </div>
 
-          {presentCategories.length > 0 && (
-            <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
-              <button
-                type="button"
-                onClick={() => setCategory("all")}
-                aria-pressed={category === "all"}
-                className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
-                  category === "all" ? "border-transparent bg-brand-mint text-brand-forest" : "border-line bg-card text-body"
-                }`}
-              >
-                {t("native.home.all")}
-              </button>
-              {presentCategories.map((option) => (
+          <div className="mt-3 flex items-center gap-2">
+            <div
+              role="tablist"
+              aria-label={language === "ka" ? "ხედი" : "View"}
+              className="flex flex-none rounded-full bg-card p-0.5"
+            >
+              {viewButton("list")}
+              {viewButton("map")}
+            </div>
+            {presentCategories.length > 0 && (
+              <div className="no-scrollbar -mr-4 flex min-w-0 flex-1 gap-2 overflow-x-auto pr-4">
                 <button
-                  key={option}
                   type="button"
-                  onClick={() => setCategory(option)}
-                  aria-pressed={category === option}
+                  onClick={() => setCategory("all")}
+                  aria-pressed={category === "all"}
                   className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
-                    category === option ? "border-transparent bg-brand-mint text-brand-forest" : "border-line bg-card text-body"
+                    category === "all"
+                      ? "border-transparent bg-brand-mint text-brand-forest"
+                      : "border-line bg-card text-body"
                   }`}
                 >
-                  {getOfferCategoryLabel(option, language)}
+                  {t("native.home.all")}
                 </button>
-              ))}
-            </div>
-          )}
+                {presentCategories.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setCategory(option)}
+                    aria-pressed={category === option}
+                    className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
+                      category === option
+                        ? "border-transparent bg-brand-mint text-brand-forest"
+                        : "border-line bg-card text-body"
+                    }`}
+                  >
+                    {getOfferCategoryLabel(option, language)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </header>
       </NativeHero>
 
@@ -257,8 +367,12 @@ export default function NativeHome() {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-moss">
               <LeafIcon className="h-6 w-6 text-mint" strokeWidth={1.6} />
             </div>
-            <h2 className="mt-4 text-[17px] font-semibold">{t("native.home.emptyTitle")}</h2>
-            <p className="mt-1 text-sm text-body">{t("native.home.emptyText")}</p>
+            <h2 className="mt-4 text-[17px] font-semibold">
+              {t("native.home.emptyTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-body">
+              {t("native.home.emptyText")}
+            </p>
             <Link
               href="/businesses"
               className="native-press mt-5 flex min-h-11 items-center justify-center rounded-2xl bg-brand-forest px-6 text-sm font-semibold text-brand-ground"
@@ -274,18 +388,22 @@ export default function NativeHome() {
           </p>
         )}
 
-        <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5">
-          {shown.map((offer, index) => (
-            <NativeOfferCard
-              key={offer.id}
-              offer={offer}
-              language={language}
-              t={t}
-              rating={feed?.ratings[offer.business_id]}
-              priority={index < 2}
-            />
-          ))}
-        </div>
+        {view === "map" ? (
+          shown.length > 0 && <NativePlaces offers={shown} />
+        ) : (
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5">
+            {shown.map((offer, index) => (
+              <NativeOfferCard
+                key={offer.id}
+                offer={offer}
+                language={language}
+                t={t}
+                rating={feed?.ratings[offer.business_id]}
+                priority={index < 2}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
