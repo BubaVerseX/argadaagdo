@@ -3,7 +3,12 @@
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { ChevronDownIcon, MailIcon, SearchIcon } from "@/components/icons";
-import { faqContent, HELP_CATEGORIES, type FaqEntry, type HelpCategoryId } from "@/lib/legal/faq";
+import {
+  faqContent,
+  HELP_CATEGORIES,
+  type FaqEntry,
+  type HelpCategoryId,
+} from "@/lib/legal/faq";
 import { SUPPORT_EMAIL } from "@/lib/legal/shared";
 import { useLanguage } from "@/lib/useLanguage";
 import { useEffect, useMemo, useState } from "react";
@@ -14,11 +19,17 @@ import { useEffect, useMemo, useState } from "react";
 const COPY = {
   help: {
     title: { ka: "დახმარება", en: "Help" },
-    intro: { ka: "პასუხები შეკვეთაზე, გადახდასა და ანგარიშზე.", en: "Answers about orders, payment and your account." },
+    intro: {
+      ka: "პასუხები შეკვეთაზე, გადახდასა და ანგარიშზე.",
+      en: "Answers about orders, payment and your account.",
+    },
   },
   faq: {
     title: { ka: "ხშირი კითხვები", en: "FAQ" },
-    intro: { ka: "მოკლე პასუხები ყველაზე ხშირ კითხვებზე.", en: "Short answers to the most common questions." },
+    intro: {
+      ka: "მოკლე პასუხები ყველაზე ხშირ კითხვებზე.",
+      en: "Short answers to the most common questions.",
+    },
   },
 };
 
@@ -27,7 +38,12 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
   const ka = language === "ka";
   const content = faqContent[language];
   const byId = useMemo(
-    () => new Map(content.groups.flatMap((group) => group.items).map((item) => [item.id, item])),
+    () =>
+      new Map(
+        content.groups
+          .flatMap((group) => group.items)
+          .map((item) => [item.id, item])
+      ),
     [content]
   );
   const [category, setCategory] = useState<HelpCategoryId>("orders");
@@ -39,7 +55,10 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
     const hash = decodeURIComponent(window.location.hash.slice(1));
     if (!hash) return;
     const match = HELP_CATEGORIES.find(
-      (item) => item.id === hash || item.itemIds.includes(hash) || item.legacyGroups.includes(hash as never)
+      (item) =>
+        item.id === hash ||
+        item.itemIds.includes(hash) ||
+        item.legacyGroups.includes(hash as never)
     );
     if (!match) return;
     // Reading the URL hash is only possible after mount.
@@ -48,7 +67,9 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
     if (match.itemIds.includes(hash)) setOpenId(hash);
   }, []);
 
-  const search = query.trim().toLocaleLowerCase(language === "ka" ? "ka" : "en");
+  const search = query
+    .trim()
+    .toLocaleLowerCase(language === "ka" ? "ka" : "en");
   const items: FaqEntry[] = search
     ? [...byId.values()].filter((item) =>
         `${item.question} ${item.answer}`.toLocaleLowerCase().includes(search)
@@ -63,20 +84,38 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
 
       <section className="px-4 pb-10 pt-5 sm:px-6 sm:pt-10">
         <div className="mx-auto max-w-2xl">
-          <h1 className="text-2xl font-semibold text-cream sm:text-4xl">{COPY[variant].title[language]}</h1>
-          <p className="mt-1 text-sm text-body">{COPY[variant].intro[language]}</p>
+          {/* In the app this block is the green header with a wave (app/native.css). */}
+          <div className="help-hero">
+            <h1 className="text-2xl font-semibold text-cream sm:text-4xl">
+              {COPY[variant].title[language]}
+            </h1>
+            <p className="mt-1 text-sm text-body">
+              {COPY[variant].intro[language]}
+            </p>
 
-          <label className="mt-4 flex h-12 items-center gap-2.5 rounded-2xl border border-line bg-card px-4 focus-within:border-mint">
-            <SearchIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={ka ? "მოძებნე კითხვა" : "Search questions"}
-              aria-label={ka ? "მოძებნე კითხვა" : "Search questions"}
-              className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-cream outline-none placeholder:text-muted"
-            />
-          </label>
+            <label className="mt-4 flex h-12 items-center gap-2.5 rounded-2xl border border-line bg-card px-4 focus-within:border-mint">
+              <SearchIcon
+                className="h-4 w-4 shrink-0 text-muted"
+                strokeWidth={2}
+              />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={ka ? "მოძებნე კითხვა" : "Search questions"}
+                aria-label={ka ? "მოძებნე კითხვა" : "Search questions"}
+                className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-cream outline-none placeholder:text-muted"
+              />
+            </label>
+          </div>
+          <svg
+            className="help-hero-wave"
+            viewBox="0 0 390 50"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path d="M0 0 H390 V18 C300 50 210 0 120 26 C70 40 30 38 0 28 Z" />
+          </svg>
 
           {!search && (
             <div
@@ -114,7 +153,11 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
               {items.map((item, index) => {
                 const open = openId === item.id;
                 return (
-                  <div key={item.id} id={item.id} className={index > 0 ? "border-t border-line" : ""}>
+                  <div
+                    key={item.id}
+                    id={item.id}
+                    className={index > 0 ? "border-t border-line" : ""}
+                  >
                     <button
                       type="button"
                       aria-expanded={open}
@@ -124,12 +167,17 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
                     >
                       <span className="min-w-0 flex-1">{item.question}</span>
                       <ChevronDownIcon
-                        className={`h-4 w-4 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+                        className={`h-4 w-4 shrink-0 text-muted transition-transform ${
+                          open ? "rotate-180" : ""
+                        }`}
                         strokeWidth={2}
                       />
                     </button>
                     {open && (
-                      <p id={`${item.id}-answer`} className="px-4 pb-4 text-sm leading-6 text-body">
+                      <p
+                        id={`${item.id}-answer`}
+                        className="px-4 pb-4 text-sm leading-6 text-body"
+                      >
                         {item.answer}
                       </p>
                     )}
@@ -139,12 +187,16 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
             </div>
           ) : (
             <p className="mt-3 rounded-[22px] border border-line bg-card p-5 text-center text-sm text-body">
-              {ka ? "ვერაფერი მოიძებნა. მოგვწერე და დაგეხმარებით." : "Nothing found. Write to us and we'll help."}
+              {ka
+                ? "ვერაფერი მოიძებნა. მოგვწერე და დაგეხმარებით."
+                : "Nothing found. Write to us and we'll help."}
             </p>
           )}
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-body">{ka ? "ვერ იპოვე პასუხი?" : "Didn't find an answer?"}</p>
+            <p className="text-sm text-body">
+              {ka ? "ვერ იპოვე პასუხი?" : "Didn't find an answer?"}
+            </p>
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
               className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-forest px-6 text-[15px] font-semibold text-brand-ground sm:w-auto"

@@ -15,7 +15,12 @@ import {
   XIcon,
 } from "@/components/icons";
 import { getProfileById } from "@/lib/auth";
-import { getAppVersionLabel, openSocial, socialLinks, supportEmail } from "@/lib/appLinks";
+import {
+  getAppVersionLabel,
+  openSocial,
+  socialLinks,
+  supportEmail,
+} from "@/lib/appLinks";
 import { OPERATOR_LOCATION, OPERATOR_SHORT } from "@/lib/legal/shared";
 import { calculateImpact, formatKg } from "@/lib/impact";
 import {
@@ -35,6 +40,7 @@ import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState, type ComponentType } from "react";
 import Link from "./AppLink";
 import ImpactPlant, { LevelGlyph } from "./ImpactPlant";
+import NativeHero from "./NativeHero";
 
 type ProfileSummary = {
   role: string;
@@ -57,11 +63,13 @@ async function loadSummary(userId: string): Promise<ProfileSummary> {
       .limit(500),
   ]);
 
-  const collected = ((ordersResult.data || []) as unknown as {
-    status: OrderStatus;
-    amount: number | string | null;
-    offers: { old_price: number | string | null } | null;
-  }[]).filter((order) => isCollectedOrderStatus(order.status));
+  const collected = (
+    (ordersResult.data || []) as unknown as {
+      status: OrderStatus;
+      amount: number | string | null;
+      offers: { old_price: number | string | null } | null;
+    }[]
+  ).filter((order) => isCollectedOrderStatus(order.status));
 
   // Saved = the shop's usual price minus what was paid, when the shop gave one.
   const moneySaved = collected.reduce((sum, order) => {
@@ -80,7 +88,10 @@ async function loadSummary(userId: string): Promise<ProfileSummary> {
 }
 
 function initials(name: string) {
-  const parts = name.replace(/@.*/, "").split(/[\s._-]+/).filter(Boolean);
+  const parts = name
+    .replace(/@.*/, "")
+    .split(/[\s._-]+/)
+    .filter(Boolean);
   return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "A";
 }
 
@@ -130,9 +141,12 @@ export default function NativeProfile() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  useEffect(() => () => {
-    if (preview) URL.revokeObjectURL(preview);
-  }, [preview]);
+  useEffect(
+    () => () => {
+      if (preview) URL.revokeObjectURL(preview);
+    },
+    [preview]
+  );
 
   const metadata = session?.user.user_metadata || {};
   const name =
@@ -183,13 +197,35 @@ export default function NativeProfile() {
 
   const rows: Row[] = session
     ? [
-        { href: "/orders", label: L("ჩემი შეკვეთები", "My orders"), Icon: ReceiptIcon },
-        { href: "/favorites", label: L("რჩეულები", "Favourites"), Icon: HeartIcon },
+        {
+          href: "/orders",
+          label: L("ჩემი შეკვეთები", "My orders"),
+          Icon: ReceiptIcon,
+        },
+        {
+          href: "/favorites",
+          label: L("რჩეულები", "Favourites"),
+          Icon: HeartIcon,
+        },
         { href: "/payment", label: L("გადახდა", "Payment"), Icon: TagIcon },
-        { href: "/support", label: L("დახმარება", "Help"), Icon: HelpCircleIcon },
-        { href: "/settings", label: L("პარამეტრები", "Settings"), Icon: SettingsIcon },
+        {
+          href: "/support",
+          label: L("დახმარება", "Help"),
+          Icon: HelpCircleIcon,
+        },
+        {
+          href: "/settings",
+          label: L("პარამეტრები", "Settings"),
+          Icon: SettingsIcon,
+        },
         ...(summary?.role === "business"
-          ? [{ href: "/business/dashboard", label: L("ბიზნეს პანელი", "Business panel"), Icon: LayoutGridIcon }]
+          ? [
+              {
+                href: "/business/dashboard",
+                label: L("ბიზნეს პანელი", "Business panel"),
+                Icon: LayoutGridIcon,
+              },
+            ]
           : []),
         ...(summary?.role === "admin"
           ? [{ href: "/admin", label: L("ადმინი", "Admin"), Icon: ShieldIcon }]
@@ -197,7 +233,11 @@ export default function NativeProfile() {
       ]
     : [
         { href: "/payment", label: L("გადახდა", "Payment"), Icon: TagIcon },
-        { href: "/support", label: L("დახმარება", "Help"), Icon: HelpCircleIcon },
+        {
+          href: "/support",
+          label: L("დახმარება", "Help"),
+          Icon: HelpCircleIcon,
+        },
       ];
 
   const footerLinks = [
@@ -209,112 +249,143 @@ export default function NativeProfile() {
     { href: "/for-businesses", label: L("ბიზნესისთვის", "For businesses") },
   ];
 
+  const impactCard = (
+    <section
+      aria-label={L("ჩემი გავლენა", "My impact")}
+      className="rounded-[22px] bg-card p-4"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[13px] font-semibold text-body">
+            {L("ჩემი გავლენა", "My impact")}
+          </h2>
+          <dl className="mt-2 grid grid-cols-3 gap-2">
+            {[
+              {
+                value: summary ? String(boxes) : "",
+                label: L("ბოქსი", "boxes"),
+              },
+              {
+                value: summary ? `${summary.moneySaved} ₾` : "",
+                label: L("დაზოგე", "saved"),
+              },
+              {
+                value: summary ? formatKg(impact.co2Kg, language) : "",
+                label: "CO₂",
+              },
+            ].map((stat) => (
+              <div key={stat.label} className="min-w-0">
+                <dd className="truncate text-lg font-semibold leading-tight text-cream">
+                  {stat.value || (
+                    <span className="native-skeleton inline-block h-5 w-10 rounded" />
+                  )}
+                </dd>
+                <dt className="truncate text-[11px] text-body">{stat.label}</dt>
+              </div>
+            ))}
+          </dl>
+        </div>
+        {summary && <ImpactPlant boxes={boxes} size={52} />}
+      </div>
+
+      <div className="mt-3 border-t border-line pt-3">
+        <div className="flex items-center gap-1.5">
+          {IMPACT_LEVELS.map((item) => {
+            const reached = boxes >= item.min;
+            const current = level.current?.id === item.id;
+            return (
+              <span
+                key={item.id}
+                title={item.name[language]}
+                aria-label={`${item.name[language]}${
+                  reached ? "" : ` · ${item.min}+`
+                }`}
+                className={`flex h-7 w-7 items-center justify-center rounded-full ${
+                  reached
+                    ? "bg-moss text-mint"
+                    : "bg-well text-muted opacity-60"
+                } ${current ? "ring-1 ring-mint" : ""}`}
+              >
+                <LevelGlyph id={item.id} className="h-4 w-4" />
+              </span>
+            );
+          })}
+          <p className="ml-1.5 min-w-0 flex-1 truncate text-[13px] font-semibold text-cream">
+            {level.current
+              ? level.current.name[language]
+              : L("დასაწყისი", "Getting started")}
+          </p>
+        </div>
+        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-well">
+          <div
+            className="h-full rounded-full bg-mint transition-[width] duration-700"
+            style={{ width: `${Math.round(level.progress * 100)}%` }}
+          />
+        </div>
+        <p className="mt-1.5 truncate text-xs text-body">
+          {formatNextLevel(level, language)}
+        </p>
+      </div>
+    </section>
+  );
+
   return (
     <main className="native-main">
-      <header className="px-5 pb-3 pt-5">
-        {!ready ? (
-          <div className="flex items-center gap-3">
-            <div className="native-skeleton h-12 w-12 rounded-full" />
-            <div className="native-skeleton h-5 w-36 rounded-lg" />
-          </div>
-        ) : session ? (
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-moss text-base font-semibold text-mint"
-            >
-              {initials(name)}
-            </span>
-            <div className="min-w-0">
-              <p className="truncate text-lg font-semibold leading-tight text-cream">{firstName}</p>
-              <p className="truncate text-xs text-body">
-                {formatMemberSince(session.user.created_at, language)}
+      <NativeHero className="px-5 pb-1 pt-5">
+        <header>
+          {!ready ? (
+            <div className="flex items-center gap-3">
+              <div className="native-skeleton h-12 w-12 rounded-full" />
+              <div className="native-skeleton h-5 w-36 rounded-lg" />
+            </div>
+          ) : session ? (
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-moss text-base font-semibold text-mint"
+              >
+                {initials(name)}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-lg font-semibold leading-tight text-cream">
+                  {firstName}
+                </p>
+                <p className="truncate text-xs text-body">
+                  {formatMemberSince(session.user.created_at, language)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-[22px] bg-card p-4">
+              <p className="text-lg font-semibold text-cream">
+                {L("გამარჯობა!", "Hello!")}
               </p>
+              <p className="mt-0.5 text-sm text-body">
+                {L("შედი და ნახე შენი გავლენა.", "Sign in to see your impact.")}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Link
+                  href="/login?tab=signup"
+                  className="native-press flex min-h-11 items-center justify-center rounded-2xl bg-brand-mint text-sm font-semibold text-brand-forest"
+                >
+                  {L("რეგისტრაცია", "Sign up")}
+                </Link>
+                <Link
+                  href="/login?tab=signin"
+                  className="native-press flex min-h-11 items-center justify-center rounded-2xl border border-line bg-card text-sm font-semibold text-cream"
+                >
+                  {L("შესვლა", "Sign in")}
+                </Link>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="rounded-[22px] bg-card p-4">
-            <p className="text-lg font-semibold text-cream">{L("გამარჯობა!", "Hello!")}</p>
-            <p className="mt-0.5 text-sm text-body">
-              {L("შედი და ნახე შენი გავლენა.", "Sign in to see your impact.")}
-            </p>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <Link
-                href="/login?tab=signup"
-                className="native-press flex min-h-11 items-center justify-center rounded-2xl bg-brand-forest text-sm font-semibold text-brand-ground"
-              >
-                {L("რეგისტრაცია", "Sign up")}
-              </Link>
-              <Link
-                href="/login?tab=signin"
-                className="native-press flex min-h-11 items-center justify-center rounded-2xl border border-line bg-card text-sm font-semibold text-cream"
-              >
-                {L("შესვლა", "Sign in")}
-              </Link>
-            </div>
-          </div>
-        )}
-      </header>
+          )}
+        </header>
+        {session && <div className="mt-4">{impactCard}</div>}
+      </NativeHero>
 
-      <div className="grid gap-3 px-5">
+      <div className="relative z-[1] grid gap-3 px-5">
         {session && (
           <>
-            <section aria-label={L("ჩემი გავლენა", "My impact")} className="rounded-[22px] bg-card p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-[13px] font-semibold text-body">
-                    {L("ჩემი გავლენა", "My impact")}
-                  </h2>
-                  <dl className="mt-2 grid grid-cols-3 gap-2">
-                    {[
-                      { value: summary ? String(boxes) : "", label: L("ბოქსი", "boxes") },
-                      { value: summary ? `${summary.moneySaved} ₾` : "", label: L("დაზოგე", "saved") },
-                      { value: summary ? formatKg(impact.co2Kg, language) : "", label: "CO₂" },
-                    ].map((stat) => (
-                      <div key={stat.label} className="min-w-0">
-                        <dd className="truncate text-lg font-semibold leading-tight text-cream">
-                          {stat.value || <span className="native-skeleton inline-block h-5 w-10 rounded" />}
-                        </dd>
-                        <dt className="truncate text-[11px] text-body">{stat.label}</dt>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-                {summary && <ImpactPlant boxes={boxes} size={52} />}
-              </div>
-
-              <div className="mt-3 border-t border-line pt-3">
-                <div className="flex items-center gap-1.5">
-                  {IMPACT_LEVELS.map((item) => {
-                    const reached = boxes >= item.min;
-                    const current = level.current?.id === item.id;
-                    return (
-                      <span
-                        key={item.id}
-                        title={item.name[language]}
-                        aria-label={`${item.name[language]}${reached ? "" : ` · ${item.min}+`}`}
-                        className={`flex h-7 w-7 items-center justify-center rounded-full ${
-                          reached ? "bg-moss text-mint" : "bg-well text-muted opacity-60"
-                        } ${current ? "ring-1 ring-[rgba(15,58,50,0.3)]" : ""}`}
-                      >
-                        <LevelGlyph id={item.id} className="h-4 w-4" />
-                      </span>
-                    );
-                  })}
-                  <p className="ml-1.5 min-w-0 flex-1 truncate text-[13px] font-semibold text-cream">
-                    {level.current ? level.current.name[language] : L("დასაწყისი", "Getting started")}
-                  </p>
-                </div>
-                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-well">
-                  <div
-                    className="h-full rounded-full bg-brand-forest transition-[width] duration-700"
-                    style={{ width: `${Math.round(level.progress * 100)}%` }}
-                  />
-                </div>
-                <p className="mt-1.5 truncate text-xs text-body">{formatNextLevel(level, language)}</p>
-              </div>
-            </section>
-
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -323,7 +394,9 @@ export default function NativeProfile() {
                 className="native-press flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-brand-forest px-2 text-[13px] font-semibold text-brand-ground disabled:opacity-60"
               >
                 <ShareIcon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                <span className="truncate">{L("გააზიარე", "Share my impact")}</span>
+                <span className="truncate">
+                  {L("გააზიარე", "Share my impact")}
+                </span>
               </button>
               <button
                 type="button"
@@ -331,7 +404,9 @@ export default function NativeProfile() {
                 className="native-press flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-line bg-card px-2 text-[13px] font-semibold text-cream"
               >
                 <UserPlusIcon className="h-4 w-4 shrink-0" strokeWidth={2} />
-                <span className="truncate">{L("მოიწვიე მეგობარი", "Invite a friend")}</span>
+                <span className="truncate">
+                  {L("მოიწვიე მეგობარი", "Invite a friend")}
+                </span>
               </button>
             </div>
           </>
@@ -346,9 +421,15 @@ export default function NativeProfile() {
                 index > 0 ? "border-t border-line" : ""
               }`}
             >
-              <Icon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
+              <Icon
+                className="h-[18px] w-[18px] shrink-0 text-sage"
+                strokeWidth={1.8}
+              />
               <span className="min-w-0 flex-1 truncate">{label}</span>
-              <ChevronRightIcon className="h-4 w-4 shrink-0 text-muted" strokeWidth={2} />
+              <ChevronRightIcon
+                className="h-4 w-4 shrink-0 text-muted"
+                strokeWidth={2}
+              />
             </Link>
           ))}
         </nav>
@@ -356,7 +437,11 @@ export default function NativeProfile() {
         <footer className="px-1 pb-2 pt-2 text-center text-[11px] leading-5 text-body">
           <p className="flex flex-wrap justify-center gap-x-3">
             {footerLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="underline-offset-2 hover:underline">
+              <Link
+                key={link.href}
+                href={link.href}
+                className="underline-offset-2 hover:underline"
+              >
                 {link.label}
               </Link>
             ))}
@@ -364,7 +449,11 @@ export default function NativeProfile() {
           <p className="mt-1 flex flex-wrap justify-center gap-x-3">
             <a href={`mailto:${supportEmail}`}>{supportEmail}</a>
             {socialLinks.map((link) => (
-              <button key={link.href} type="button" onClick={() => openSocial(link)}>
+              <button
+                key={link.href}
+                type="button"
+                onClick={() => openSocial(link)}
+              >
                 {link.label}
               </button>
             ))}
@@ -389,7 +478,9 @@ export default function NativeProfile() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <p className="text-[15px] font-semibold text-cream">{L("ჩემი გავლენა", "My impact")}</p>
+              <p className="text-[15px] font-semibold text-cream">
+                {L("ჩემი გავლენა", "My impact")}
+              </p>
               <button
                 type="button"
                 onClick={() => setPreview(null)}

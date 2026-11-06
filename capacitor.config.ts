@@ -32,10 +32,9 @@ const config: CapacitorConfig = {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
     SystemBars: {
-      // Dark status-bar icons on the beige app (Android; iOS follows
-      // UIUserInterfaceStyle=Light in Info.plist). NativeShell also sets it
-      // at runtime for builds made before the beige design.
-      style: 'LIGHT',
+      // Light status-bar icons over the deep green screen headers.
+      // NativeShell also sets it at runtime for older builds.
+      style: 'DARK',
     },
   },
 };
