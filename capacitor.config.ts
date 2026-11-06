@@ -27,6 +27,10 @@ const config: CapacitorConfig = {
     errorPath: 'offline.html',
   },
   plugins: {
+    // Show notifications even while the app is open.
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
     SystemBars: {
       // Light status-bar icons on the dark green app (Android; iOS follows
       // UIUserInterfaceStyle=Dark in Info.plist).

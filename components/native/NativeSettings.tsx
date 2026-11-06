@@ -3,6 +3,7 @@
 import Notice from "@/components/Notice";
 import { ChevronRightIcon, LockIcon, LogOutIcon, MailIcon, TrashIcon } from "@/components/icons";
 import { logoutUser } from "@/lib/auth";
+import { disablePush } from "@/lib/push/client";
 import { supabase } from "@/lib/supabase";
 import { meetsPasswordRule } from "@/lib/useAuthForm";
 import { translateUserMessage } from "@/lib/messageTranslations";
@@ -122,11 +123,13 @@ export default function NativeSettings() {
       return;
     }
 
+    await disablePush({ turnedOff: false });
     await supabase.auth.signOut().catch(() => undefined);
     router.replace("/?account=deleted");
   }
 
   async function signOut() {
+    await disablePush({ turnedOff: false });
     await logoutUser();
     router.replace("/");
     router.refresh();

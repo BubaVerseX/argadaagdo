@@ -13,6 +13,8 @@ import { notifyNativeRouteChange } from "./NativeSwitch";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { whenIdle } from "@/lib/whenIdle";
+import { startPush } from "@/lib/push/client";
+import PushPrompt from "./PushPrompt";
 import Link from "./AppLink";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useLayoutEffect, useState } from "react";
@@ -88,6 +90,9 @@ export default function NativeShell() {
     { href: "/profile", label: t("nav.profile"), Icon: UserIcon },
   ];
 
+  // Notification taps open their screen; a registered device refreshes its token.
+  useEffect(() => startPush((path) => router.push(path)), [router]);
+
   // The tabs are prefetched once the first screen is up, never during it.
   useEffect(
     () =>
@@ -119,6 +124,7 @@ export default function NativeShell() {
       <Suspense fallback={null}>
         <ScreenClassSync />
       </Suspense>
+      <PushPrompt />
 
       {!HIDE_BAR.test(pathname) && (
         <nav
