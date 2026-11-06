@@ -2,11 +2,10 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@400;700&family=Noto+Sans+Georgian:wght@300;400;500;700&display=swap">
 <style>
-/* Layout: three launch-animation phones in a row, then the refined welcome screen, then the 3-tab proposal. */
+/* Layout: one launch animation (rings + drawn leaf) that flows into the welcome screen; two welcome variants. */
 :root{
   --page:#E9E4D6; --ink:#0B2B26; --muted:#4E6B63;
-  --green:#0F3A32; --green2:#164A3F; --mint:#B8E6C4; --cream:#F7F1E3; --sage:#EEF3E6;
-  --honey:#F4C15D; --coral:#F2997A;
+  --green:#0F3A32; --green2:#164A3F; --mint:#B8E6C4; --cream:#F7F1E3; --honey:#F4C15D;
   --serif:'Noto Serif Georgian',Georgia,serif; --sans:'Noto Sans Georgian',system-ui,sans-serif;
 }
 body{background:var(--page);color:var(--ink);font-family:var(--sans);margin:0}
@@ -15,8 +14,7 @@ h1{font-family:var(--serif);font-size:30px;margin:0 0 6px;text-wrap:balance}
 h2{font-family:var(--serif);font-size:21px;margin:0 0 4px}
 .lead{color:var(--muted);margin:0;max-width:62ch;line-height:1.6}
 .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;margin-top:18px}
-.row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (max-width:900px){.row,.row.two{grid-template-columns:1fr;justify-items:center}}
+@media (max-width:900px){.row{grid-template-columns:1fr;justify-items:center}}
 figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
 figcaption{text-align:center;max-width:300px}
 figcaption b{font-family:var(--serif);font-size:17px;display:block;margin-bottom:4px}
@@ -24,184 +22,141 @@ figcaption span{color:var(--muted);font-size:14px;line-height:1.5}
 .phone{position:relative;width:280px;max-width:100%;aspect-ratio:280/580;border-radius:42px;overflow:hidden;box-shadow:0 0 0 9px #111,0 26px 50px rgba(11,43,38,.22)}
 .replay{font:inherit;font-size:13px;font-weight:700;padding:8px 14px;border-radius:10px;border:1px solid var(--green);background:transparent;color:var(--green);cursor:pointer}
 .replay:focus-visible{outline:2px solid var(--green);outline-offset:2px}
-.stage{position:absolute;inset:0;display:grid;place-items:center}
-.name{position:absolute;left:0;right:0;bottom:118px;text-align:center;font-family:var(--serif);font-size:22px;letter-spacing:.04em;opacity:0}
-.sub{position:absolute;left:0;right:0;bottom:96px;text-align:center;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:0}
 
-/* ---------- A · Line Leaf (green) ---------- */
-.a{background:var(--green)}
-.a svg{width:170px;height:170px}
-.a .outline{fill:none;stroke:var(--mint);stroke-width:1.6;stroke-dasharray:520;stroke-dashoffset:520;animation:draw 1.1s .1s cubic-bezier(.6,0,.3,1) forwards}
-.a .rib{fill:none;stroke:var(--mint);stroke-width:1.4;stroke-dasharray:160;stroke-dashoffset:160;animation:draw .6s .9s ease-out forwards}
-.a .v{fill:none;stroke:var(--mint);stroke-width:1;stroke-dasharray:40;stroke-dashoffset:40;stroke-linecap:round}
-.a .v1{animation:draw .35s 1.25s ease-out forwards}.a .v2{animation:draw .35s 1.32s ease-out forwards}.a .v3{animation:draw .35s 1.39s ease-out forwards}
-.a .v4{animation:draw .35s 1.46s ease-out forwards}.a .v5{animation:draw .35s 1.53s ease-out forwards}.a .v6{animation:draw .35s 1.6s ease-out forwards}
-.a .fill{fill:var(--mint);opacity:0;animation:fillin .7s 1.75s ease-out forwards}
-.a .name{color:var(--cream);animation:fade .6s 2.1s ease-out forwards}
-.a .sub{color:var(--mint);animation:fade .6s 2.3s ease-out forwards}
-
-/* ---------- B · Rescued (cream) ---------- */
-.b{background:var(--cream)}
-.b svg{width:180px;height:180px;overflow:visible}
-.b .plate{fill:none;stroke:var(--green);stroke-width:1.6;stroke-dasharray:440;stroke-dashoffset:440;animation:draw .9s .1s cubic-bezier(.6,0,.3,1) forwards}
-.b .plate2{fill:none;stroke:var(--green);stroke-width:1;opacity:.35;stroke-dasharray:330;stroke-dashoffset:330;animation:draw .9s .3s cubic-bezier(.6,0,.3,1) forwards}
-.b .drop{animation:fall .9s .9s cubic-bezier(.5,0,.4,1.3) both}
-.b .drop path{transform-origin:100px 100px}
-.b .shadow{fill:var(--green);opacity:0;transform-origin:100px 140px;animation:shadow .5s 1.6s ease-out forwards}
-.b .name{color:var(--green);animation:fade .6s 1.9s ease-out forwards}
-.b .sub{color:var(--muted);animation:fade .6s 2.1s ease-out forwards}
-
-/* ---------- C · Breathing Leaf (green, contour lines) ---------- */
-.c{background:radial-gradient(90% 70% at 50% 45%,#1C5A4B,var(--green) 70%)}
-.c svg{width:200px;height:200px}
-.c .ln{fill:none;stroke:var(--mint);stroke-width:1;opacity:0;transform-origin:100px 100px}
-.c .l1{animation:ripple 1.4s .1s ease-out forwards}.c .l2{animation:ripple 1.4s .25s ease-out forwards}.c .l3{animation:ripple 1.4s .4s ease-out forwards}.c .l4{animation:ripple 1.4s .55s ease-out forwards}
-.c .core{transform-origin:100px 100px;transform:scale(0) rotate(-30deg);animation:grow .8s 1s cubic-bezier(.3,1.5,.5,1) forwards}
-.c .breathe{transform-origin:100px 100px;animation:breathe 2.4s 1.9s ease-in-out infinite}
-.c .name{color:var(--cream);animation:fade .6s 1.7s ease-out forwards}
-.c .sub{color:var(--mint);animation:fade .6s 1.9s ease-out forwards}
-
+/* ---------- shared mark: rings + line-drawn leaf ---------- */
+.mark .ln{fill:none;stroke:var(--mint);stroke-width:1;opacity:0;transform-origin:100px 100px}
+.mark .l1{animation:ripple 1.4s .05s ease-out forwards}.mark .l2{animation:ripple 1.4s .2s ease-out forwards}
+.mark .l3{animation:ripple 1.4s .35s ease-out forwards}.mark .l4{animation:ripple 1.4s .5s ease-out forwards}
+.mark .outline{fill:none;stroke:var(--mint);stroke-width:1.6;stroke-dasharray:420;stroke-dashoffset:420;animation:draw 1s .55s cubic-bezier(.6,0,.3,1) forwards}
+.mark .rib{fill:none;stroke:var(--mint);stroke-width:1.3;stroke-dasharray:130;stroke-dashoffset:130;animation:draw .55s 1.25s ease-out forwards}
+.mark .v{fill:none;stroke:var(--mint);stroke-width:.9;stroke-dasharray:30;stroke-dashoffset:30;stroke-linecap:round}
+.mark .v1{animation:draw .3s 1.5s ease-out forwards}.mark .v2{animation:draw .3s 1.56s ease-out forwards}.mark .v3{animation:draw .3s 1.62s ease-out forwards}
+.mark .v4{animation:draw .3s 1.68s ease-out forwards}.mark .v5{animation:draw .3s 1.74s ease-out forwards}.mark .v6{animation:draw .3s 1.8s ease-out forwards}
+.mark .fill{fill:var(--mint);opacity:0;animation:fillin .6s 1.9s ease-out forwards}
+.mark .glow{fill:var(--mint);opacity:0;filter:blur(18px);animation:glow 1.2s 1.9s ease-out forwards}
+@keyframes ripple{0%{opacity:0;transform:scale(.35)}40%{opacity:.55}100%{opacity:.2;transform:scale(1)}}
 @keyframes draw{to{stroke-dashoffset:0}}
-@keyframes fillin{to{opacity:.95}}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@keyframes fall{0%{transform:translate(0,-160px) rotate(-40deg);opacity:0}30%{opacity:1}100%{transform:none;opacity:1}}
-@keyframes shadow{to{opacity:.12}}
-@keyframes ripple{0%{opacity:0;transform:scale(.4)}40%{opacity:.6}100%{opacity:.22;transform:scale(1)}}
-@keyframes grow{to{transform:scale(1) rotate(0)}}
-@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes fillin{to{opacity:.16}}
+@keyframes glow{0%{opacity:0}50%{opacity:.35}100%{opacity:.12}}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* ---------- Welcome (refined option 1) ---------- */
-.wel{background:var(--cream)}
-.wel .top{position:absolute;left:0;right:0;top:0;height:62%;background:var(--green);overflow:hidden}
-.wel .top svg.bigleaf{position:absolute;right:-40px;top:40px;width:230px;height:230px;opacity:.14}
-.wel .wave{position:absolute;left:0;right:0;top:calc(62% - 1px)}
-.wel .ui{position:absolute;inset:0;display:flex;flex-direction:column;padding:52px 22px 26px;box-sizing:border-box}
-.wel .brand{display:flex;align-items:center;justify-content:space-between;color:var(--cream)}
-.wel .brand b{font-family:var(--serif);font-size:15px;display:flex;align-items:center;gap:8px}
-.wel .lang{font-size:11px;font-weight:700;color:var(--mint);border:1px solid rgba(184,230,196,.35);padding:4px 9px;border-radius:999px}
-.wel h3{font-family:var(--serif);font-weight:400;font-size:31px;line-height:1.15;color:var(--cream);margin:auto 0 10px}
-.wel h3 em{font-style:normal;color:var(--honey)}
-.wel .live{display:flex;align-items:center;gap:8px;color:var(--mint);font-size:12.5px;margin-bottom:64px}
-.wel .dot{width:8px;height:8px;border-radius:50%;background:#8FD19E;box-shadow:0 0 0 0 rgba(143,209,158,.7);animation:pulse 1.8s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(143,209,158,0)}100%{box-shadow:0 0 0 0 rgba(143,209,158,0)}}
-.wel .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
-.wel .stats div{background:#fff;border-radius:14px;padding:10px 6px;text-align:center;box-shadow:0 4px 14px rgba(11,43,38,.06)}
-.wel .stats b{display:block;font-size:16px;color:var(--green)}
-.wel .stats span{font-size:10px;color:var(--muted)}
-.wel .btn{display:block;text-align:center;padding:14px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none;background:var(--green);color:var(--cream)}
-.wel .ghost{display:block;text-align:center;font-size:13px;color:var(--green);padding:10px 0 0;text-decoration:none}
+/* ---------- 1 · launch ---------- */
+.launch{background:radial-gradient(90% 70% at 50% 42%,#1C5A4B,var(--green) 70%)}
+.launch .stage{position:absolute;inset:0;display:grid;place-items:center}
+.launch svg{width:210px;height:210px;margin-top:-30px}
+.launch .name{position:absolute;left:0;right:0;bottom:120px;text-align:center;font-family:var(--serif);font-size:22px;letter-spacing:.05em;color:var(--cream);opacity:0;animation:fade .6s 2.05s ease-out forwards}
 
-/* ---------- Tabs ---------- */
-.list{background:#fff;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.list h3{margin:0;font-family:var(--serif);font-size:17px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tabs span{padding:8px 12px;border-radius:12px;font-size:13px;font-weight:700}
-.old span{background:#F2ECDD;color:var(--muted);text-decoration:line-through}
-.new span{background:var(--green);color:var(--cream)}
-.list ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;line-height:1.7}
+/* ---------- welcome W1 · full green, mark stays on top ---------- */
+.w1{background:radial-gradient(90% 60% at 50% 28%,#1C5A4B,var(--green) 72%)}
+.w1 .ui,.w2 .ui{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;padding:70px 26px 30px;box-sizing:border-box;text-align:center}
+.w1 svg{width:160px;height:160px}
+.w1 .title{font-family:var(--serif);font-size:30px;color:var(--cream);margin:10px 0 8px;opacity:0;animation:fade .6s 2.1s ease-out forwards}
+.w1 .line{font-size:14px;font-weight:300;color:var(--mint);line-height:1.6;max-width:22ch;opacity:0;animation:fade .6s 2.3s ease-out forwards}
+.w1 .grow{flex:1}
+.w1 .btns{width:100%;display:flex;flex-direction:column;gap:6px;opacity:0;animation:fade .6s 2.5s ease-out forwards}
+.btn{display:block;text-align:center;padding:14px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none}
+.btn.mint{background:var(--mint);color:var(--green)}
+.btn.ghost{color:var(--cream);font-weight:400;font-size:13px;padding:10px}
+.lang{position:absolute;top:44px;right:20px;font-size:11px;font-weight:700;color:var(--mint);border:1px solid rgba(184,230,196,.35);padding:4px 9px;border-radius:999px}
 
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.a .outline,.a .rib,.a .v,.b .plate,.b .plate2{stroke-dashoffset:0}.a .fill{opacity:.95}.name,.sub,.c .ln{opacity:1}.c .core{transform:none}}
+/* ---------- welcome W2 · green top, cream bottom ---------- */
+.w2{background:var(--cream)}
+.w2 .top{position:absolute;left:0;right:0;top:0;height:60%;background:radial-gradient(90% 70% at 50% 40%,#1C5A4B,var(--green) 72%)}
+.w2 .wave{position:absolute;left:0;right:0;top:calc(60% - 1px)}
+.w2 svg.m{width:150px;height:150px}
+.w2 .title{font-family:var(--serif);font-size:28px;color:var(--cream);margin:6px 0 0;opacity:0;animation:fade .6s 2.1s ease-out forwards}
+.w2 .grow{flex:1}
+.w2 .line{font-size:14px;color:var(--muted);line-height:1.6;max-width:24ch;margin:0 0 18px;opacity:0;animation:fade .6s 2.3s ease-out forwards}
+.w2 .btns{width:100%;display:flex;flex-direction:column;gap:6px;opacity:0;animation:fade .6s 2.5s ease-out forwards}
+.btn.green{background:var(--green);color:var(--cream)}
+.btn.ghost.dark{color:var(--green)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.mark .outline,.mark .rib,.mark .v{stroke-dashoffset:0}.mark .fill{opacity:.16}.mark .ln{opacity:.2}.name,.title,.line,.btns{opacity:1!important}}
 </style>
 
 <div class="wrap">
   <header>
     <h1>The first 5 seconds</h1>
-    <p class="lead">Three new launch animations, all minimal, all under 2.5 seconds. Then the welcome screen (option 1, refined). Tap "Play again" under each phone.</p>
+    <p class="lead">Rings spread out (from C), then one fine line draws the detailed leaf (from A). On the welcome screen the same mark stays at the top, so the launch flows straight into it. Tap "Play again" under each phone.</p>
   </header>
 
   <section>
-    <h2>Launch animation</h2>
     <div class="row">
       <figure>
-        <div class="phone a" data-anim>
+        <div class="phone launch" data-anim>
           <div class="stage">
-            <svg viewBox="0 0 200 200" aria-hidden="true">
-              <path class="fill" d="M46 160 C40 104 78 52 160 40 C168 112 122 160 50 164 Z"/>
-              <path class="outline" d="M46 160 C40 104 78 52 160 40 C168 112 122 160 50 164 Z"/>
-              <path class="rib" d="M50 162 C82 128 118 90 156 44"/>
-              <path class="v v1" d="M74 134 L66 108"/><path class="v v2" d="M90 116 L84 86"/><path class="v v3" d="M108 96 L104 68"/>
-              <path class="v v4" d="M78 130 L104 132"/><path class="v v5" d="M96 110 L124 108"/><path class="v v6" d="M114 90 L140 84"/>
-            </svg>
-          </div>
-          <div class="name">არ გადააგდო</div>
-          <div class="sub">save good food</div>
-        </div>
-        <button class="replay" type="button">Play again</button>
-        <figcaption><b>A · Line Leaf</b><span>One fine line draws a detailed leaf (outline, midrib, six veins), then it softly fills with mint. Calm and precise.</span></figcaption>
-      </figure>
-
-      <figure>
-        <div class="phone b" data-anim>
-          <div class="stage">
-            <svg viewBox="0 0 200 200" aria-hidden="true">
-              <ellipse class="shadow" cx="100" cy="140" rx="34" ry="5"/>
-              <circle class="plate" cx="100" cy="100" r="70"/>
-              <circle class="plate2" cx="100" cy="100" r="52"/>
-              <g class="drop">
-                <path d="M74 128 C70 96 90 70 132 64 C136 102 112 128 78 130 Z" fill="#0F3A32"/>
-                <path d="M76 128 C92 110 110 90 130 66" stroke="#B8E6C4" stroke-width="1.6" fill="none"/>
-                <path d="M88 116 L84 100 M98 104 L95 88 M108 92 L106 78 M90 114 L104 114 M100 102 L114 100 M110 90 L122 88" stroke="#B8E6C4" stroke-width="1" fill="none" stroke-linecap="round"/>
-              </g>
-            </svg>
-          </div>
-          <div class="name">არ გადააგდო</div>
-          <div class="sub">save good food</div>
-        </div>
-        <button class="replay" type="button">Play again</button>
-        <figcaption><b>B · Rescued</b><span>A plate draws itself, then a leaf gently falls onto it and lands. The idea of the app in one picture: food saved, not thrown away.</span></figcaption>
-      </figure>
-
-      <figure>
-        <div class="phone c" data-anim>
-          <div class="stage">
-            <svg viewBox="0 0 200 200" aria-hidden="true">
+            <svg class="mark" viewBox="0 0 200 200" aria-hidden="true">
               <circle class="ln l1" cx="100" cy="100" r="40"/><circle class="ln l2" cx="100" cy="100" r="58"/>
               <circle class="ln l3" cx="100" cy="100" r="76"/><circle class="ln l4" cx="100" cy="100" r="94"/>
-              <g class="core"><g class="breathe">
-                <path d="M70 136 C66 102 88 72 134 64 C140 106 112 134 74 138 Z" fill="#B8E6C4"/>
-                <path d="M72 136 C92 114 112 92 132 68" stroke="#0F3A32" stroke-width="1.6" fill="none"/>
-                <path d="M86 122 L82 104 M98 108 L95 90 M110 94 L108 78 M88 120 L104 120 M100 106 L116 104 M112 92 L126 90" stroke="#0F3A32" stroke-width="1" fill="none" stroke-linecap="round"/>
-              </g></g>
+              <ellipse class="glow" cx="100" cy="100" rx="40" ry="40"/>
+              <path class="fill" d="M66 140 C60 100 84 70 136 60 C142 108 112 138 70 142 Z"/>
+              <path class="outline" d="M66 140 C60 100 84 70 136 60 C142 108 112 138 70 142 Z"/>
+              <path class="rib" d="M69 141 C90 118 112 92 134 63"/>
+              <path class="v v1" d="M82 126 L77 108"/><path class="v v2" d="M94 112 L90 92"/><path class="v v3" d="M107 97 L105 78"/>
+              <path class="v v4" d="M85 124 L102 125"/><path class="v v5" d="M97 110 L116 108"/><path class="v v6" d="M110 95 L127 91"/>
             </svg>
           </div>
           <div class="name">არ გადააგდო</div>
-          <div class="sub">save good food</div>
         </div>
         <button class="replay" type="button">Play again</button>
-        <figcaption><b>C · Ripple</b><span>Soft rings spread out like water, then the detailed leaf grows in the centre and gently breathes while the app loads.</span></figcaption>
+        <figcaption><b>Launch · Rings + Line Leaf</b><span>2 seconds: rings ripple out, a single line draws the leaf with its midrib and six veins, a soft glow, then the name.</span></figcaption>
       </figure>
-    </div>
-  </section>
 
-  <section>
-    <h2>Welcome screen · option 1, refined</h2>
-    <p class="lead">Less text, a live "nearby now" signal, three small real numbers, one button.</p>
-    <div class="row two">
       <figure>
-        <div class="phone wel">
-          <div class="top"><svg class="bigleaf" viewBox="0 0 200 200" aria-hidden="true"><path d="M46 160 C40 104 78 52 160 40 C168 112 122 160 50 164 Z" fill="#B8E6C4"/><path d="M50 162 C82 128 118 90 156 44" stroke="#0F3A32" stroke-width="3" fill="none"/></svg></div>
-          <svg class="wave" viewBox="0 0 280 40" preserveAspectRatio="none" width="100%" height="40" aria-hidden="true"><path d="M0 0 H280 V14 C210 40 140 0 70 20 C40 28 18 26 0 18 Z" fill="#0F3A32"/></svg>
+        <div class="phone w1" data-anim>
+          <span class="lang">KA</span>
           <div class="ui">
-            <div class="brand"><b>არ გადააგდო</b><span class="lang">KA</span></div>
-            <h3>კარგი საკვები.<br><em>ნახევარ ფასად.</em></h3>
-            <div class="live"><span class="dot"></span>ახლა ახლოს: 12 ლანჩ ბოქსი</div>
-            <div class="stats">
-              <div><b>−50%</b><span>საშუალოდ</span></div>
-              <div><b>19:00</b><span>წაღება</span></div>
-              <div><b>1 კგ</b><span>გადარჩენილი</span></div>
+            <svg class="mark" viewBox="0 0 200 200" aria-hidden="true">
+              <circle class="ln l1" cx="100" cy="100" r="40"/><circle class="ln l2" cx="100" cy="100" r="58"/>
+              <circle class="ln l3" cx="100" cy="100" r="76"/><circle class="ln l4" cx="100" cy="100" r="94"/>
+              <ellipse class="glow" cx="100" cy="100" rx="40" ry="40"/>
+              <path class="fill" d="M66 140 C60 100 84 70 136 60 C142 108 112 138 70 142 Z"/>
+              <path class="outline" d="M66 140 C60 100 84 70 136 60 C142 108 112 138 70 142 Z"/>
+              <path class="rib" d="M69 141 C90 118 112 92 134 63"/>
+              <path class="v v1" d="M82 126 L77 108"/><path class="v v2" d="M94 112 L90 92"/><path class="v v3" d="M107 97 L105 78"/>
+              <path class="v v4" d="M85 124 L102 125"/><path class="v v5" d="M97 110 L116 108"/><path class="v v6" d="M110 95 L127 91"/>
+            </svg>
+            <div class="title">არ გადააგდო</div>
+            <div class="line">ყოველი საღამო, შენს ქალაქში.</div>
+            <div class="grow"></div>
+            <div class="btns">
+              <a class="btn mint" href="#start">დაწყება</a>
+              <a class="btn ghost" href="#start">შესვლა</a>
             </div>
-            <a class="btn" href="#start">დაწყება</a>
-            <a class="ghost" href="#start">უკვე მაქვს ანგარიში</a>
           </div>
         </div>
-        <figcaption><b>Welcome</b><span>Green top with the big soft leaf, one honey accent, a pulsing "live" dot, three tiny facts, one button.</span></figcaption>
+        <button class="replay" type="button">Play again</button>
+        <figcaption><b>Welcome · Quiet green</b><span>Only the mark, the name, one short line and two buttons. Nothing else.</span></figcaption>
       </figure>
 
-      <div class="list new" style="align-self:center">
-        <h3>Inside the app · 3 tabs</h3>
-        <div class="tabs"><span>ახლოს · Nearby</span><span>შეკვეთები · Orders</span><span>პროფილი · Profile</span></div>
-        <ul><li><b>Nearby</b>: boxes list, List / Map switch on top, category chips</li><li><b>Orders</b>: active pickup code first, history below</li><li><b>Profile</b>: impact, level, favourites, settings, help</li><li>Bell and KA/EN stay small in the top corner</li></ul>
-      </div>
+      <figure>
+        <div class="phone w2" data-anim>
+          <div class="top"></div>
+          <svg class="wave" viewBox="0 0 280 40" preserveAspectRatio="none" width="100%" height="40" aria-hidden="true"><path d="M0 0 H280 V14 C210 40 140 0 70 20 C40 28 18 26 0 18 Z" fill="#0F3A32"/></svg>
+          <span class="lang">KA</span>
+          <div class="ui">
+            <svg class="mark m" viewBox="0 0 200 200" aria-hidden="true">
+              <circle class="ln l1" cx="100" cy="100" r="40"/><circle class="ln l2" cx="100" cy="100" r="58"/>
+              <circle class="ln l3" cx="100" cy="100" r="76"/><circle class="ln l4" cx="100" cy="100" r="94"/>
+              <ellipse class="glow" cx="100" cy="100" rx="40" ry="40"/>
+              <path class="fill" d="M66 140 C60 100 84 70 136 60 C142 108 112 138 70 142 Z"/>
+              <path class="outline" d="M66 140 C60 100 84 70 136 60 C142 108 112 138 70 142 Z"/>
+              <path class="rib" d="M69 141 C90 118 112 92 134 63"/>
+              <path class="v v1" d="M82 126 L77 108"/><path class="v v2" d="M94 112 L90 92"/><path class="v v3" d="M107 97 L105 78"/>
+              <path class="v v4" d="M85 124 L102 125"/><path class="v v5" d="M97 110 L116 108"/><path class="v v6" d="M110 95 L127 91"/>
+            </svg>
+            <div class="title">არ გადააგდო</div>
+            <div class="grow"></div>
+            <p class="line">ერთად ვზრუნავთ, რომ არაფერი დაიკარგოს.</p>
+            <div class="btns">
+              <a class="btn green" href="#start">დაწყება</a>
+              <a class="btn ghost dark" href="#start">შესვლა</a>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button">Play again</button>
+        <figcaption><b>Welcome · Green and beige</b><span>The mark on green, a soft wave into beige, one warm line and two buttons. Matches the app's green-and-beige balance.</span></figcaption>
+      </figure>
     </div>
   </section>
 </div>
