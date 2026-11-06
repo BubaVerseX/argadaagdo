@@ -5,12 +5,12 @@ import { isNativeApp } from "@/lib/native";
 import {
   getProfileById,
   isEmailConfirmed,
-  SIGNUP_CONFIRM_EMAIL_MESSAGE,
   SIGNUP_VERIFIED_EMAIL_MESSAGE,
   VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
 } from "@/lib/auth";
 import { isValidEmail, normalizeEmail } from "@/lib/validation";
 import { supabase } from "@/lib/supabase";
+import type { User } from "@supabase/supabase-js";
 import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
@@ -204,6 +204,11 @@ export function useAuthForm() {
   >("success");
   const [submitting, setSubmitting] = useState(false);
   const [resendingVerification, setResendingVerification] = useState(false);
+  // Email confirmation by 6-digit code: the address waiting for its code.
+  const [codeEmail, setCodeEmail] = useState<string | null>(null);
+  const [code, setCode] = useState("");
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [resendAvailableAt, setResendAvailableAt] = useState(0);
   const [passwordHelpMode, setPasswordHelpMode] =
     useState<PasswordHelpOverride>("none");
   const [newPassword, setNewPassword] = useState("");
@@ -282,16 +287,82 @@ export function useAuthForm() {
     const signupUserIsVerified = isEmailConfirmed(data.user);
 
     setSubmitting(false);
-    setMessageTone("success");
-    setMessage(
-      signupUserIsVerified
-        ? SIGNUP_VERIFIED_EMAIL_MESSAGE
-        : SIGNUP_CONFIRM_EMAIL_MESSAGE
-    );
 
     if (signupUserIsVerified) {
+      setMessageTone("success");
+      setMessage(SIGNUP_VERIFIED_EMAIL_MESSAGE);
       setAuthMode("login");
+      return;
     }
+
+    // The email carries a 6-digit code: ask for it right here.
+    openCodeStep(normalizedEmail, true);
+  }
+
+  function openCodeStep(address: string, justSent: boolean) {
+    setCodeEmail(address);
+    setCode("");
+    setMessage("");
+    setResendAvailableAt(justSent ? Date.now() + 60_000 : 0);
+  }
+
+  function leaveCodeStep() {
+    setCodeEmail(null);
+    setCode("");
+    setMessage("");
+  }
+
+  async function verifyEmailCode(value = code) {
+    const token = value.replace(/\D/g, "");
+    if (!codeEmail || token.length !== 6 || verifyingCode) return;
+
+    setVerifyingCode(true);
+    setMessage("");
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: codeEmail,
+      token,
+      type: "email",
+    });
+
+    if (error || !data.user) {
+      setVerifyingCode(false);
+      setCode("");
+      setMessageTone("error");
+      setMessage(
+        isGeorgian
+          ? "კოდი არასწორია ან ვადა გაუვიდა."
+          : "That code is wrong or has expired."
+      );
+      return;
+    }
+
+    setVerifyingCode(false);
+    setCodeEmail(null);
+    setSubmitting(true);
+    await finishSignIn(data.user);
+  }
+
+  async function resendCode() {
+    if (!codeEmail || resendingVerification || Date.now() < resendAvailableAt) return;
+
+    setResendingVerification(true);
+    setMessage("");
+    const { error } = await supabase.auth.resend({ type: "signup", email: codeEmail });
+    setResendingVerification(false);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage(
+        isGeorgian
+          ? "კოდი ვერ გაიგზავნა. მოიცადე ცოტა და სცადე ხელახლა."
+          : "The code could not be sent. Wait a moment and try again."
+      );
+      return;
+    }
+
+    setResendAvailableAt(Date.now() + 60_000);
+    setMessageTone("success");
+    setMessage(isGeorgian ? "ახალი კოდი გამოგზავნილია." : "A new code is on its way.");
   }
 
   // The page isn't a <form> (it hosts several flows), so Enter in the email
@@ -334,6 +405,13 @@ export function useAuthForm() {
       password,
     });
 
+    if (error && /email not confirmed/i.test(error.message)) {
+      // Not confirmed yet: the code step, with "resend code" available now.
+      setSubmitting(false);
+      openCodeStep(normalizedEmail, false);
+      return;
+    }
+
     if (error) {
       setSubmitting(false);
       setMessageTone("error");
@@ -344,10 +422,16 @@ export function useAuthForm() {
     if (!authData.user || !isEmailConfirmed(authData.user)) {
       await supabase.auth.signOut();
       setSubmitting(false);
-      setMessageTone("warning");
-      setMessage(VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE);
+      openCodeStep(normalizedEmail, false);
       return;
     }
+
+    await finishSignIn(authData.user);
+  }
+
+  // After a confirmed sign-in (password or email code): route by role.
+  async function finishSignIn(user: User) {
+    const authData = { user };
 
     try {
       window.localStorage.setItem(HAS_SIGNED_IN_KEY, "1");
@@ -577,6 +661,14 @@ export function useAuthForm() {
     signIn,
     submitOnEnter,
     resendVerificationEmail,
+    codeEmail,
+    code,
+    setCode,
+    verifyingCode,
+    resendAvailableAt,
+    verifyEmailCode,
+    resendCode,
+    leaveCodeStep,
     requestPasswordReset,
     updatePassword,
   };

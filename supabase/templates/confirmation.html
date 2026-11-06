@@ -45,7 +45,7 @@
                   <tr>
                     <td lang="ka" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;">
                       <h1 style="margin:0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:24px;line-height:34px;font-weight:700;color:#0b2b26;">ერთი ნაბიჯიღა დარჩა</h1>
-                      <p style="margin:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:27px;color:#4e6b63;">მადლობა, რომ შემოგვიერთდი! დაადასტურე ელფოსტა და დაიწყე გემრიელი ლანჩ ბოქსების გადარჩენა თბილისის კაფეებიდან, საცხობებიდან და რესტორნებიდან.</p>
+                      <p style="margin:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:27px;color:#4e6b63;">მადლობა, რომ შემოგვიერთდი! ჩაწერე ეს კოდი აპში ან საიტზე.</p>
                     </td>
                   </tr>
                   <!-- Divider -->
@@ -58,37 +58,21 @@
                   <tr>
                     <td lang="en" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;">
                       <h2 style="margin:0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:19px;line-height:27px;font-weight:700;color:#0b2b26;">Just one more step</h2>
-                      <p style="margin:8px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:24px;color:#4e6b63;">Thanks for joining ArGadaagdo! Confirm your email and start rescuing tasty Lunch Boxes from cafés, bakeries and restaurants across Tbilisi.</p>
+                      <p style="margin:8px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:24px;color:#4e6b63;">Thanks for joining ArGadaagdo! Enter this code in the app or on the website.</p>
                     </td>
                   </tr>
-                  <!-- Button -->
+                  <!-- Code -->
                   <tr>
                     <td align="center" style="padding:30px 0 0;">
-                      <!--[if mso]>
-                      <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ .ConfirmationURL }}" style="height:68px;v-text-anchor:middle;width:500px;" arcsize="22%" stroke="f" fillcolor="#0f3a32">
-                        <w:anchorlock/>
-                        <center style="color:#f7f1e3;font-family:'Segoe UI',Sylfaen,Arial,sans-serif;font-size:17px;font-weight:bold;">ელფოსტის დადასტურება<br><span style="color:#b8e6c4;font-size:13px;font-weight:normal;">Confirm email</span></center>
-                      </v:roundrect>
-                      <![endif]-->
-                      <!--[if !mso]><!-->
-                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                         <tr>
-                          <td align="center" bgcolor="#0f3a32" style="background-color:#0f3a32;border-radius:16px;">
-                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:block;padding:15px 20px 14px;border-radius:16px;background-color:#0f3a32;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;text-decoration:none;text-align:center;">
-                              <span style="display:block;font-size:17px;line-height:24px;font-weight:700;color:#f7f1e3;">ელფოსტის დადასტურება</span>
-                              <span style="display:block;font-size:13px;line-height:19px;font-weight:500;color:#b8e6c4;padding-top:1px;">Confirm email</span>
-                            </a>
+                          <td align="center" bgcolor="#f3eddf" style="background-color:#f3eddf;border:1px solid #e6decb;border-radius:16px;padding:18px 28px;">
+                            <p style="margin:0 0 6px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:18px;color:#4e6b63;">შენი კოდი · Your code</p>
+                            <p style="margin:0;font-family:'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;font-size:36px;line-height:44px;letter-spacing:10px;font-weight:700;color:#0f3a32;">{{ .Token }}</p>
                           </td>
                         </tr>
                       </table>
-                      <!--<![endif]-->
-                    </td>
-                  </tr>
-                  <!-- Fallback link -->
-                  <tr>
-                    <td style="padding:22px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;">
-                      <p style="margin:0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:20px;color:#6f8780;">ღილაკი არ მუშაობს? გახსენი ეს ბმული:<br>Button not working? Open this link:</p>
-                      <p style="margin:6px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .ConfirmationURL }}" target="_blank" style="color:#164a3f;text-decoration:underline;word-break:break-all;">{{ .ConfirmationURL }}</a></p>
+                      <p style="margin:14px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', 'BPG Arial', Sylfaen, Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:19px;color:#4e6b63;">კოდი მოქმედებს 1 საათი. · The code is valid for 1 hour.</p>
                     </td>
                   </tr>
                   </table>
