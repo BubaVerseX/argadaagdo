@@ -5,7 +5,7 @@
 
 // Routes with their own app screen. `?full=1` keeps the full page reachable.
 export const nativeScreenPattern =
-  "^/($|discover$|map$|orders$|profile$|business/dashboard$|offers/\\d+$|checkout/\\d+$)";
+  "^/($|discover$|map$|orders$|profile$|login$|settings$|notifications$|payment$|business/dashboard$|offers/\\d+$|checkout/\\d+$)";
 
 export function isNativeScreenUrl(pathname: string, search: string) {
   return (

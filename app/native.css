@@ -58,3 +58,12 @@ html.native-screen body:not(:has(.native-main))::after {
   background: var(--well);
   animation: native-shimmer 1.2s ease-in-out infinite;
 }
+
+/* Secondary app screens: their own top bar, no website chrome. */
+.native-topbar {
+  background: var(--page);
+}
+
+.native-main--bare {
+  padding-bottom: calc(6.5rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
