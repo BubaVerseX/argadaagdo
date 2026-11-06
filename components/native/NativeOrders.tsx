@@ -1,18 +1,20 @@
 "use client";
 
 import NativeHero from "./NativeHero";
-import { LeafIcon } from "@/components/icons";
 import Notice from "@/components/Notice";
 import { CollectSlider } from "@/components/orders/CollectSlider";
-import { OrderCard } from "@/components/orders/OrderCard";
-import { OrdersStats } from "@/components/orders/OrdersHeader";
+import { ConfirmSheet } from "@/components/orders/ConfirmSheet";
 import {
-  getProfileById,
+  ActiveOrderCard,
+  isActiveOrder,
+  PastOrderRow,
+} from "@/components/orders/OrderCard";
+import { OrdersEmptyState } from "@/components/orders/OrdersEmptyState";
+import {
   isEmailConfirmed,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
 import { logAppError } from "@/lib/errors";
-import { createMapsSearchUrl } from "@/lib/maps";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   readPrivateMemory,
@@ -24,44 +26,24 @@ import {
   notifyPickupCompleted,
   notifyRatingSubmitted,
 } from "@/lib/notifications";
-import { getOfferCategoryTone } from "@/lib/offerCategories";
-import {
-  formatMoney,
-  formatPickupTimeRange,
-  formatReviewDate,
-  getOfferDateLabel,
-} from "@/lib/offerLifecycle";
 import { ORDER_COLUMNS } from "@/lib/orderColumns";
 import {
   getEffectiveOrderStatus,
-  isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
-  isPendingPaymentOrderStatus,
 } from "@/lib/orderStatus";
-import {
-  canShowCancellationAvailable,
-  getCancellationErrorMessage,
-  getCustomerStatusLabel,
-  getLoginRedirectUrl,
-  isCollectWindowOpen,
-} from "@/lib/orders";
+import { getCancellationErrorMessage, getLoginRedirectUrl } from "@/lib/orders";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
-import type { Order, Profile } from "@/lib/types";
+import type { Order } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import { validateTextField } from "@/lib/validation";
-import Link from "./AppLink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type Tone = "success" | "error" | "warning";
 
 const PAYMENT_RETURN_MESSAGES: Record<string, { tone: Tone; message: string }> = {
-  success: {
-    tone: "success",
-    message: "Payment confirmed. Your pickup code is ready below.",
-  },
   pending: {
     tone: "warning",
     message: "Payment is still being confirmed. Refresh this page in a moment.",
@@ -82,10 +64,6 @@ const PAYMENT_RETURN_MESSAGES: Record<string, { tone: Tone; message: string }> =
   },
 };
 
-function formatCode(code: string) {
-  return code.length === 6 ? `${code.slice(0, 3)} ${code.slice(3)}` : code;
-}
-
 // Same reads and actions as app/orders/page.tsx: only the look differs. Nothing
 // on this screen is cached. The pickup code comes straight from
 // get_my_pickup_codes, in parallel with the orders.
@@ -96,10 +74,8 @@ export default function NativeOrders() {
   const [orders, setOrders] = useState<Order[]>(
     () => readPrivateMemory<Order[]>("orders") ?? []
   );
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(() => !readPrivateMemory("orders"));
   const [tab, setTab] = useState<"active" | "history">("active");
-  const [openOrderId, setOpenOrderId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<Tone>("success");
   const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(null);
@@ -107,6 +83,7 @@ export default function NativeOrders() {
   const [ratingValues, setRatingValues] = useState<Record<number, number>>({});
   const [reviewTexts, setReviewTexts] = useState<Record<number, string>>({});
   const [collectingOrder, setCollectingOrder] = useState<Order | null>(null);
+  const [confirmCancelOrder, setConfirmCancelOrder] = useState<Order | null>(null);
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function loadOrders(userId: string) {
@@ -199,9 +176,6 @@ export default function NativeOrders() {
       }
 
       sweepExpiredOffersOnce();
-      void getProfileById(userId, 3).then((nextProfile) => {
-        if (active) setProfile(nextProfile);
-      });
       await loadOrders(userId);
 
       if (!active) return;
@@ -395,37 +369,8 @@ export default function NativeOrders() {
     setCancellingOrderId(null);
   }
 
-  const isActive = (order: Order) => {
-    const status = getEffectiveOrderStatus(order);
-    return isConfirmedOrderStatus(status) || isPendingPaymentOrderStatus(status);
-  };
-  const activeOrders = orders.filter(isActive);
-  const pastOrders = orders.filter((order) => !isActive(order));
-  const statuses = orders.map(getEffectiveOrderStatus);
-  const reliabilityStatus = profile?.reliability_status || "good";
-
-  const fullCard = (order: Order) => (
-    <div className="mt-3">
-      <OrderCard
-        order={order}
-        language={language}
-        t={t}
-        selectedRating={ratingValues[order.id] || 0}
-        reviewText={reviewTexts[order.id] || ""}
-        cancellingOrderId={cancellingOrderId}
-        ratingOrderId={ratingOrderId}
-        onCancelOrder={(selected) => void cancelOrder(selected)}
-        onOpenCollect={(selected) => setCollectingOrder(selected)}
-        onRateOrder={(selected) => void rateOrder(selected)}
-        onRatingChange={(orderId, rating) =>
-          setRatingValues((current) => ({ ...current, [orderId]: rating }))
-        }
-        onReviewChange={(orderId, value) =>
-          setReviewTexts((current) => ({ ...current, [orderId]: value }))
-        }
-      />
-    </div>
-  );
+  const activeOrders = orders.filter(isActiveOrder);
+  const pastOrders = orders.filter((order) => !isActiveOrder(order));
 
   return (
     <main className="native-main">
@@ -440,7 +385,7 @@ export default function NativeOrders() {
                 role="tab"
                 aria-selected={tab === option}
                 onClick={() => setTab(option)}
-                className={`min-h-9 rounded-full px-3.5 text-[13px] font-semibold ${
+                className={`min-h-11 rounded-full px-4 text-[13px] font-semibold ${
                   tab === option ? "bg-brand-mint text-brand-forest" : "text-cream"
                 }`}
               >
@@ -452,12 +397,6 @@ export default function NativeOrders() {
       </NativeHero>
 
       <section className="native-under-hero relative z-[1] grid gap-4 px-4">
-        {message && (
-          <Notice tone={messageTone}>
-            {translateUserMessage(message, language)}
-          </Notice>
-        )}
-
         {loading && (
           <>
             <div className="native-skeleton h-[23rem] rounded-[30px]" aria-hidden="true" />
@@ -465,131 +404,28 @@ export default function NativeOrders() {
           </>
         )}
 
-        {!loading && tab === "active" && activeOrders.length === 0 && (
-          <div className="cat-mixed relative overflow-hidden rounded-[28px] bg-cat px-6 pb-7 pt-9 text-center text-cat-ink">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand-forest">
-              <LeafIcon className="h-9 w-9 text-brand-mint" strokeWidth={1.6} />
-            </div>
-            <h2 className="mt-5 text-lg font-semibold">
-              {t("native.orders.emptyTitle")}
-            </h2>
-            <Link
-              href="/"
-              className="premium-button mt-6 w-full rounded-2xl px-6 py-3 font-bold"
-            >
-              {t("native.orders.emptyAction")}
-            </Link>
-          </div>
+        {tab === "active" &&
+          activeOrders.map((order) => (
+            <ActiveOrderCard
+              key={order.id}
+              order={order}
+              language={language}
+              t={t}
+              cancellingOrderId={cancellingOrderId}
+              onAskCancel={(selected) => setConfirmCancelOrder(selected)}
+              onOpenCollect={(selected) => setCollectingOrder(selected)}
+            />
+          ))}
+
+        {message && (
+          <Notice tone={messageTone}>
+            {translateUserMessage(message, language)}
+          </Notice>
         )}
 
-        {tab === "active" &&
-          activeOrders.map((order) => {
-            const status = getEffectiveOrderStatus(order);
-            const confirmed = isConfirmedOrderStatus(status);
-            const canCancel = confirmed && canShowCancellationAvailable(order);
-            const canCollect =
-              confirmed && Boolean(order.pickup_code) && isCollectWindowOpen(order);
-
-            return (
-              <div key={order.id}>
-                <div className="relative overflow-hidden rounded-[24px] bg-card text-cream">
-
-                  <div className="relative px-[18px] pt-[18px]">
-                    <p className="text-[13px] font-medium text-body">
-                      {getCustomerStatusLabel(status, language)}
-                    </p>
-                    <h2 className="mt-0.5 text-lg font-semibold">
-                      {order.offers?.businesses?.name || t("common.businessUnavailable")}
-                    </h2>
-                    {order.offers && (
-                      <p className="mt-0.5 text-sm text-body">
-                        {getOfferDateLabel(order.offers, language)}{" "}
-                        {formatPickupTimeRange(order.offers, language)}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="relative mx-[18px] mt-3 rounded-[18px] bg-well p-4 text-center">
-                    <p className="text-[13px] text-body">
-                      {t("native.orders.code")}
-                    </p>
-                    {confirmed ? (
-                      <p className="mt-1 whitespace-nowrap font-mono text-[2.5rem] font-semibold leading-tight tracking-[0.08em] text-brand-forest">
-                        {order.pickup_code
-                          ? formatCode(order.pickup_code)
-                          : t("common.pending")}
-                      </p>
-                    ) : (
-                      <p className="mt-2 font-semibold text-cream">
-                        {t("native.orders.pending")}
-                      </p>
-                    )}
-                    {confirmed && (
-                      <p className="mt-1 text-[13px] text-body">
-                        {t("native.orders.show")}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="relative grid gap-2 p-[18px]">
-                    {canCollect && (
-                      <button
-                        type="button"
-                        onClick={() => setCollectingOrder(order)}
-                        className="native-press min-h-12 rounded-2xl bg-brand-forest text-[15px] font-semibold text-brand-ground"
-                      >
-                        {t("native.orders.collect")}
-                      </button>
-                    )}
-                    <div className="flex gap-2">
-                      {order.offers?.businesses?.address && (
-                        <a
-                          href={createMapsSearchUrl(
-                            order.offers.businesses.address,
-                            order.offers.businesses.name
-                          )}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="native-press flex min-h-11 flex-1 items-center justify-center rounded-2xl border border-line bg-card text-sm font-semibold text-cream"
-                        >
-                          {t("native.orders.route")}
-                        </a>
-                      )}
-                      {canCancel && (
-                        <button
-                          type="button"
-                          disabled={cancellingOrderId !== null}
-                          onClick={() => void cancelOrder(order)}
-                          className="native-press min-h-11 flex-1 rounded-2xl border border-line bg-card text-sm font-semibold text-body disabled:opacity-60"
-                        >
-                          {cancellingOrderId === order.id
-                            ? "…"
-                            : t("native.orders.cancel")}
-                        </button>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      aria-expanded={openOrderId === order.id}
-                      onClick={() =>
-                        setOpenOrderId((current) =>
-                          current === order.id ? null : order.id
-                        )
-                      }
-                      className="min-h-10 text-[13px] font-medium text-body"
-                    >
-                      {t(
-                        openOrderId === order.id
-                          ? "native.orders.hide"
-                          : "native.orders.details"
-                      )}
-                    </button>
-                  </div>
-                </div>
-                {openOrderId === order.id && fullCard(order)}
-              </div>
-            );
-          })}
+        {!loading && tab === "active" && activeOrders.length === 0 && (
+          <OrdersEmptyState t={t} href="/" />
+        )}
 
         {!loading && tab === "history" && pastOrders.length === 0 && (
           <p className="rounded-[20px] bg-card p-6 text-center text-sm text-body">
@@ -597,79 +433,43 @@ export default function NativeOrders() {
           </p>
         )}
 
-        {tab === "history" &&
-          pastOrders.map((order) => {
-            const status = getEffectiveOrderStatus(order);
-            const canRate = isCollectedOrderStatus(status) && !order.rated_at;
-
-            return (
-              <div key={order.id}>
-                <button
-                  type="button"
-                  aria-expanded={openOrderId === order.id}
-                  onClick={() =>
-                    setOpenOrderId((current) =>
-                      current === order.id ? null : order.id
-                    )
-                  }
-                  className="native-press flex min-h-[4.5rem] w-full items-center gap-3 rounded-[18px] bg-card p-3 text-left"
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`${getOfferCategoryTone(
-                      order.offers?.category
-                    )} h-11 w-11 flex-none rounded-[12px_24px_12px_12px] bg-cat`}
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold">
-                      {order.offers?.businesses?.name ||
-                        t("common.businessUnavailable")}
-                    </span>
-                    <span className="block truncate text-[13px] text-body">
-                      {getCustomerStatusLabel(status, language)}
-                      {order.created_at
-                        ? ` · ${formatReviewDate(order.created_at, language)}`
-                        : ""}
-                      {order.amount ? ` · ${formatMoney(order.amount)}` : ""}
-                    </span>
-                  </span>
-                  {canRate && (
-                    <span className="flex-none text-[13px] font-bold">
-                      {t("native.orders.rate")}
-                    </span>
-                  )}
-                </button>
-                {openOrderId === order.id && fullCard(order)}
-              </div>
-            );
-          })}
-
-        {!loading && tab === "history" && orders.length > 0 && (
-          <details className="rounded-[18px] bg-card">
-            <summary className="flex min-h-14 cursor-pointer list-none items-center px-4 font-bold [&::-webkit-details-marker]:hidden">
-              {t("native.orders.stats")}
-            </summary>
-            <div className="px-3 pb-3">
-              <OrdersStats
-                t={t}
+        {tab === "history" && pastOrders.length > 0 && (
+          <div className="grid gap-2">
+            {pastOrders.map((order) => (
+              <PastOrderRow
+                key={order.id}
+                order={order}
                 language={language}
-                confirmedCount={statuses.filter(isConfirmedOrderStatus).length}
-                collectedCount={statuses.filter(isCollectedOrderStatus).length}
-                cancelledCount={statuses.filter(isCancelledOrderStatus).length}
-                profile={profile}
-                reliabilityStatus={reliabilityStatus}
-                reliabilityTone={
-                  reliabilityStatus === "excellent" || reliabilityStatus === "good"
-                    ? "green"
-                    : reliabilityStatus === "warning"
-                    ? "yellow"
-                    : "red"
+                t={t}
+                selectedRating={ratingValues[order.id] || 0}
+                reviewText={reviewTexts[order.id] || ""}
+                ratingOrderId={ratingOrderId}
+                onRateOrder={(selected) => void rateOrder(selected)}
+                onRatingChange={(orderId, rating) =>
+                  setRatingValues((current) => ({ ...current, [orderId]: rating }))
+                }
+                onReviewChange={(orderId, value) =>
+                  setReviewTexts((current) => ({ ...current, [orderId]: value }))
                 }
               />
-            </div>
-          </details>
+            ))}
+          </div>
         )}
       </section>
+
+      {confirmCancelOrder && (
+        <ConfirmSheet
+          title={t("native.orders.cancelTitle")}
+          confirmLabel={t("native.orders.cancelConfirm")}
+          cancelLabel={t("native.orders.keep")}
+          busy={cancellingOrderId !== null}
+          onConfirm={() => {
+            const order = confirmCancelOrder;
+            void cancelOrder(order).finally(() => setConfirmCancelOrder(null));
+          }}
+          onClose={() => setConfirmCancelOrder(null)}
+        />
+      )}
 
       {collectingOrder && (
         <CollectSlider

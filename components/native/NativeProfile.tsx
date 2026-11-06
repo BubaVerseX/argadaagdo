@@ -23,12 +23,7 @@ import {
 } from "@/lib/appLinks";
 import { OPERATOR_LOCATION, OPERATOR_SHORT } from "@/lib/legal/shared";
 import { calculateImpact, formatKg } from "@/lib/impact";
-import {
-  formatMemberSince,
-  formatNextLevel,
-  getImpactProgress,
-  IMPACT_LEVELS,
-} from "@/lib/impactLevels";
+import { getImpactProgress } from "@/lib/impactLevels";
 import { shareImage, shareLink } from "@/lib/share";
 import { isNativeApp } from "@/lib/native";
 import { readPrivateMemory, writePrivateMemory } from "@/lib/nativeData";
@@ -39,7 +34,7 @@ import { useLanguage } from "@/lib/useLanguage";
 import type { Session } from "@supabase/supabase-js";
 import { useEffect, useState, type ComponentType } from "react";
 import Link from "./AppLink";
-import ImpactPlant, { LevelGlyph } from "./ImpactPlant";
+import ImpactPlant from "./ImpactPlant";
 import NativeHero from "./NativeHero";
 
 type ProfileSummary = {
@@ -243,9 +238,7 @@ export default function NativeProfile() {
   const footerLinks = [
     { href: "/terms", label: L("წესები", "Terms") },
     { href: "/privacy", label: L("კონფიდენციალურობა", "Privacy") },
-    { href: "/faq", label: "FAQ" },
     { href: "/about", label: L("ჩვენ შესახებ", "About") },
-    { href: "/contact", label: L("კონტაქტი", "Contact") },
     { href: "/for-businesses", label: L("ბიზნესისთვის", "For businesses") },
   ];
 
@@ -288,44 +281,6 @@ export default function NativeProfile() {
         {summary && <ImpactPlant boxes={boxes} size={52} />}
       </div>
 
-      <div className="mt-3 border-t border-line pt-3">
-        <div className="flex items-center gap-1.5">
-          {IMPACT_LEVELS.map((item) => {
-            const reached = boxes >= item.min;
-            const current = level.current?.id === item.id;
-            return (
-              <span
-                key={item.id}
-                title={item.name[language]}
-                aria-label={`${item.name[language]}${
-                  reached ? "" : ` · ${item.min}+`
-                }`}
-                className={`flex h-7 w-7 items-center justify-center rounded-full ${
-                  reached
-                    ? "bg-moss text-mint"
-                    : "bg-well text-muted opacity-60"
-                } ${current ? "ring-1 ring-mint" : ""}`}
-              >
-                <LevelGlyph id={item.id} className="h-4 w-4" />
-              </span>
-            );
-          })}
-          <p className="ml-1.5 min-w-0 flex-1 truncate text-[13px] font-semibold text-cream">
-            {level.current
-              ? level.current.name[language]
-              : L("დასაწყისი", "Getting started")}
-          </p>
-        </div>
-        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-well">
-          <div
-            className="h-full rounded-full bg-mint transition-[width] duration-700"
-            style={{ width: `${Math.round(level.progress * 100)}%` }}
-          />
-        </div>
-        <p className="mt-1.5 truncate text-xs text-body">
-          {formatNextLevel(level, language)}
-        </p>
-      </div>
     </section>
   );
 
@@ -349,9 +304,6 @@ export default function NativeProfile() {
               <div className="min-w-0">
                 <p className="truncate text-lg font-semibold leading-tight text-cream">
                   {firstName}
-                </p>
-                <p className="truncate text-xs text-body">
-                  {formatMemberSince(session.user.created_at, language)}
                 </p>
               </div>
             </div>

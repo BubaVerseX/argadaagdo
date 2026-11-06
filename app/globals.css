@@ -767,46 +767,6 @@ html.has-session .public-home {
   }
 }
 
-/* Trust/partner marquee strip: continuous left-scroll, pauses on hover,
-   fades out at both edges. */
-.trust-marquee {
-  position: relative;
-  overflow: hidden;
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 8%,
-    black 92%,
-    transparent
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 8%,
-    black 92%,
-    transparent
-  );
-}
-
-.trust-marquee__track {
-  display: flex;
-  width: max-content;
-  animation: trust-marquee-scroll 28s linear infinite;
-}
-
-.trust-marquee:hover .trust-marquee__track {
-  animation-play-state: paused;
-}
-
-@keyframes trust-marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 /* Swipe-to-collect confirmation (components/orders/CollectSlider.tsx). */
 @keyframes collect-pop {
   0% { transform: scale(0.85); opacity: 0; }

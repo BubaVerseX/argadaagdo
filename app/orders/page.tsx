@@ -4,14 +4,16 @@ import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeOrdersScreen } from "@/components/native/screens";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
-import { LoadingState } from "@/components/LoadingState";
 import { CollectSlider } from "@/components/orders/CollectSlider";
-import { OrderCard } from "@/components/orders/OrderCard";
+import { ConfirmSheet } from "@/components/orders/ConfirmSheet";
+import {
+  ActiveOrderCard,
+  isActiveOrder,
+  PastOrderRow,
+} from "@/components/orders/OrderCard";
 import { OrdersEmptyState } from "@/components/orders/OrdersEmptyState";
-import { OrdersHeader, OrdersStats } from "@/components/orders/OrdersHeader";
 import {
   getConfirmedUser,
-  getProfileById,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
 import { logAppError } from "@/lib/errors";
@@ -24,7 +26,6 @@ import {
 } from "@/lib/notifications";
 import {
   getEffectiveOrderStatus,
-  isCancelledOrderStatus,
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
 } from "@/lib/orderStatus";
@@ -34,7 +35,7 @@ import {
 } from "@/lib/orders";
 import { ORDER_COLUMNS } from "@/lib/orderColumns";
 import { supabase, uniqueChannelName } from "@/lib/supabase";
-import type { Order, Profile } from "@/lib/types";
+import type { Order } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import { validateTextField } from "@/lib/validation";
@@ -54,12 +55,8 @@ function getInitialPaymentReturnMessage():
     "payment"
   );
 
-  if (paymentStatus === "success") {
-    return {
-      tone: "success",
-      message: "Payment confirmed. Your pickup code is ready below.",
-    };
-  }
+  // "success" shows no message: the pickup code on top is the confirmation
+  // (and a free reservation was never a payment).
 
   if (paymentStatus === "pending") {
     return {
@@ -100,7 +97,6 @@ function OrdersPage() {
   const { language, t } = useLanguage();
   useMinuteTick();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<MessageTone>("success");
   const [loading, setLoading] = useState(true);
@@ -111,6 +107,7 @@ function OrdersPage() {
   const [ratingValues, setRatingValues] = useState<Record<number, number>>({});
   const [reviewTexts, setReviewTexts] = useState<Record<number, string>>({});
   const [collectingOrder, setCollectingOrder] = useState<Order | null>(null);
+  const [confirmCancelOrder, setConfirmCancelOrder] = useState<Order | null>(null);
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function loadOrders(userId: string, showLoading = false) {
@@ -415,9 +412,6 @@ function OrdersPage() {
       }
 
       const userId = authResult.user.id;
-      const currentProfile = await getProfileById(userId, 3);
-      if (active) setProfile(currentProfile);
-
       await loadOrders(userId, true);
 
       if (!active) return;
@@ -449,120 +443,76 @@ function OrdersPage() {
     };
   }, [router]);
 
-  const confirmedCount = orders.filter((order) =>
-    isConfirmedOrderStatus(getEffectiveOrderStatus(order))
-  ).length;
-  const collectedCount = orders.filter((order) =>
-    isCollectedOrderStatus(getEffectiveOrderStatus(order))
-  ).length;
-  const cancelledCount = orders.filter((order) =>
-    isCancelledOrderStatus(getEffectiveOrderStatus(order))
-  ).length;
-  const reliabilityStatus = profile?.reliability_status || "good";
-  const reliabilityTone =
-    reliabilityStatus === "excellent" || reliabilityStatus === "good"
-      ? "green"
-      : reliabilityStatus === "warning"
-      ? "yellow"
-      : "red";
-  const shouldShowRatingEducation =
-    !loading && orders.length > 0 && collectedCount === 0;
+  const activeOrders = orders.filter(isActiveOrder);
+  const pastOrders = orders.filter((order) => !isActiveOrder(order));
 
   return (
     <main className="app-shell">
       <Navbar />
 
-      <section className="px-4 py-6 sm:px-5 sm:py-8 md:px-12 md:py-14">
-        <OrdersHeader t={t} />
+      <section className="mx-auto grid max-w-xl gap-4 px-4 py-6 sm:px-5 sm:py-8">
+        {loading && (
+          <div className="h-80 animate-pulse rounded-[24px] bg-well" aria-busy="true" />
+        )}
+
+        {activeOrders.map((order) => (
+          <ActiveOrderCard
+            key={order.id}
+            order={order}
+            language={language}
+            t={t}
+            cancellingOrderId={cancellingOrderId}
+            onAskCancel={(selected) => setConfirmCancelOrder(selected)}
+            onOpenCollect={(selected) => setCollectingOrder(selected)}
+          />
+        ))}
 
         {message && (
-          <div className="mt-5 sm:mt-6">
-            <Notice tone={messageTone}>
-              {translateUserMessage(message, language)}
-            </Notice>
-          </div>
+          <Notice tone={messageTone}>
+            {translateUserMessage(message, language)}
+          </Notice>
         )}
 
-        {shouldShowRatingEducation && (
-          <div className="premium-card mt-6 rounded-3xl p-5 sm:p-6">
-            <p className="text-lg font-semibold text-mint">
-              {t("orders.ratingEducationTitle")}
-            </p>
-            <p className="mt-2 leading-7 text-body">
-              {t("orders.ratingEducationText")}
-            </p>
-          </div>
-        )}
+        {!loading && activeOrders.length === 0 && <OrdersEmptyState t={t} />}
 
-        {loading && (
-          <LoadingState
-            className="mt-8"
-            title={t("orders.loading")}
-            description={{
-              en: "Preparing your reservations, pickup codes and order history.",
-              ka: "მზადდება შენი ჯავშნები, წაღების კოდები და შეკვეთების ისტორია.",
-            }}
-          />
-        )}
-
-        {!loading && orders.length === 0 && <OrdersEmptyState t={t} />}
-
-        <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5">
-          {orders.map((order) => (
-            <OrderCard
-              key={order.id}
-              order={order}
-              language={language}
-              t={t}
-              selectedRating={ratingValues[order.id] || 0}
-              reviewText={reviewTexts[order.id] || ""}
-              cancellingOrderId={cancellingOrderId}
-              ratingOrderId={ratingOrderId}
-              onCancelOrder={(selectedOrder) => void cancelOrder(selectedOrder)}
-              onOpenCollect={(selectedOrder) => setCollectingOrder(selectedOrder)}
-              onRateOrder={(selectedOrder) => void rateOrder(selectedOrder)}
-              onRatingChange={(orderId, rating) =>
-                setRatingValues((currentRatings) => ({
-                  ...currentRatings,
-                  [orderId]: rating,
-                }))
-              }
-              onReviewChange={(orderId, value) =>
-                setReviewTexts((currentReviews) => ({
-                  ...currentReviews,
-                  [orderId]: value,
-                }))
-              }
-            />
-          ))}
-        </div>
-
-        {!loading && orders.length > 0 && (
-          <div className="premium-card mt-5 rounded-3xl p-5 sm:mt-6 sm:p-6">
-            <p className="text-lg font-semibold text-cream">
-              {t("orders.pickupInstructionTitle")}
-            </p>
-            <p className="mt-2 leading-7 text-body">
-              {t("orders.pickupInstructionText")}
-            </p>
-          </div>
-        )}
-
-        {!loading && orders.length > 0 && (
-          <div className="mt-6">
-            <OrdersStats
-              t={t}
-              language={language}
-              confirmedCount={confirmedCount}
-              collectedCount={collectedCount}
-              cancelledCount={cancelledCount}
-              profile={profile}
-              reliabilityStatus={reliabilityStatus}
-              reliabilityTone={reliabilityTone}
-            />
+        {pastOrders.length > 0 && (
+          <div className="mt-2 grid gap-2">
+            <h2 className="text-sm font-semibold text-body">{t("native.orders.history")}</h2>
+            {pastOrders.map((order) => (
+              <PastOrderRow
+                key={order.id}
+                order={order}
+                language={language}
+                t={t}
+                selectedRating={ratingValues[order.id] || 0}
+                reviewText={reviewTexts[order.id] || ""}
+                ratingOrderId={ratingOrderId}
+                onRateOrder={(selected) => void rateOrder(selected)}
+                onRatingChange={(orderId, rating) =>
+                  setRatingValues((current) => ({ ...current, [orderId]: rating }))
+                }
+                onReviewChange={(orderId, value) =>
+                  setReviewTexts((current) => ({ ...current, [orderId]: value }))
+                }
+              />
+            ))}
           </div>
         )}
       </section>
+
+      {confirmCancelOrder && (
+        <ConfirmSheet
+          title={t("native.orders.cancelTitle")}
+          confirmLabel={t("native.orders.cancelConfirm")}
+          cancelLabel={t("native.orders.keep")}
+          busy={cancellingOrderId !== null}
+          onConfirm={() => {
+            const order = confirmCancelOrder;
+            void cancelOrder(order).finally(() => setConfirmCancelOrder(null));
+          }}
+          onClose={() => setConfirmCancelOrder(null)}
+        />
+      )}
 
       {collectingOrder && (
         <CollectSlider

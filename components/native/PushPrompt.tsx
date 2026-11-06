@@ -13,8 +13,10 @@ import { useLanguage } from "@/lib/useLanguage";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Asked once, after the first sign-in: a friendly sheet first, and the
-// system's own permission dialog only if the person taps Allow.
+// Asked once, after the first sign-in: a short sheet first, then the
+// system's own permission dialog. Apple 5.1.1(iv): the sheet only explains
+// and continues to the system prompt (no "Allow / Not now" of our own); the
+// small × closes it without asking.
 const QUIET = /^\/(login|checkout\/|offers\/|staff\/)/;
 
 function askedBefore() {
@@ -65,13 +67,13 @@ export default function PushPrompt() {
 
   if (!show) return null;
 
-  async function allow() {
+  async function proceed() {
     setBusy(true);
     await enablePush();
     setShow(false);
   }
 
-  function later() {
+  function close() {
     markAsked();
     setShow(false);
   }
@@ -82,34 +84,35 @@ export default function PushPrompt() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="push-prompt-title"
-        className="native-sheet w-full rounded-t-[28px] bg-[#fbf7ee] px-6 pb-[calc(1.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] pt-6 text-center"
+        className="native-sheet relative w-full rounded-t-[28px] bg-[#fbf7ee] px-6 pb-[calc(1.5rem+var(--safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))] pt-6 text-center"
       >
+        <button
+          type="button"
+          onClick={close}
+          aria-label={L("დახურვა", "Close")}
+          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-xl leading-none text-body"
+        >
+          ×
+        </button>
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-moss text-mint">
           <BellIcon className="h-6 w-6" strokeWidth={1.8} />
         </span>
         <h2 id="push-prompt-title" className="mt-4 text-lg font-semibold text-cream">
-          {L("ჩავრთოთ შეტყობინებები?", "Allow notifications?")}
+          {L("შეტყობინებები", "Notifications")}
         </h2>
         <p className="mt-1 text-sm leading-6 text-body">
           {L(
-            "შეგახსენებთ წაღებას და გეტყვით, როცა რჩეულ ადგილას ახალი ბოქსი გამოჩნდება.",
-            "We'll remind you about your pickup and tell you when a favourite place has new boxes."
+            "შეგახსენებთ წაღებას და გეტყვით ახალ ბოქსებზე.",
+            "We'll remind you about pickups and new boxes."
           )}
         </p>
         <button
           type="button"
-          onClick={() => void allow()}
+          onClick={() => void proceed()}
           disabled={busy}
           className="native-press mt-5 flex min-h-12 w-full items-center justify-center rounded-2xl bg-brand-forest text-[15px] font-semibold text-brand-ground disabled:opacity-60"
         >
-          {L("დაშვება", "Allow")}
-        </button>
-        <button
-          type="button"
-          onClick={later}
-          className="mt-1 min-h-11 w-full text-sm font-medium text-body"
-        >
-          {L("ახლა არა", "Not now")}
+          {L("გაგრძელება", "Continue")}
         </button>
       </div>
     </div>

@@ -25,10 +25,7 @@ import {
   type NativeOffer as NativeOfferType,
   type NativeOfferDetail,
 } from "@/lib/nativeData";
-import {
-  getGreenBagLabel,
-  getOfferCategoryTone,
-} from "@/lib/offerCategories";
+import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -42,25 +39,8 @@ import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "./AppLink";
 import { useParams } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { askForAccount } from "@/lib/accountGate";
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <details className="group rounded-[22px] bg-card">
-      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 font-bold [&::-webkit-details-marker]:hidden">
-        {title}
-        <ChevronDownIcon
-          className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
-          strokeWidth={2}
-        />
-      </summary>
-      <div className="px-4 pb-4 text-[15px] leading-relaxed text-body">
-        {children}
-      </div>
-    </details>
-  );
-}
 
 export default function NativeOffer() {
   const params = useParams<{ id: string }>();
@@ -185,7 +165,7 @@ export default function NativeOffer() {
     <Link
       href="/"
       aria-label={t("native.back")}
-      className="absolute left-4 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-cream"
+      className="absolute left-4 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-card text-cream"
     >
       <ArrowLeftIcon className="h-5 w-5" strokeWidth={2} />
     </Link>
@@ -243,7 +223,7 @@ export default function NativeOffer() {
             aria-label={
               isFavorite ? t("offers.removeFavorite") : t("offers.addFavorite")
             }
-            className="absolute right-4 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-cream disabled:opacity-60"
+            className="absolute right-4 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-card text-cream disabled:opacity-60"
           >
             <HeartIcon className="h-5 w-5" strokeWidth={2} filled={isFavorite} />
           </button>
@@ -268,52 +248,34 @@ export default function NativeOffer() {
       </div>
 
       <section className="px-4 pt-1">
-        <p className="text-xs font-bold text-body">
-          {getGreenBagLabel(offer, language)}
-        </p>
-        <h1 className="mt-1 font-serif text-xl font-bold leading-[1.3]">
-          {offer.businesses?.name || t("common.business")}
+        <h1 className="font-serif text-xl font-bold leading-[1.3]">
+          {offer.title}
         </h1>
+        <Link
+          href={`/businesses/${offer.business_id}`}
+          className="mt-0.5 block truncate text-[13px] text-body"
+        >
+          {[offer.businesses?.name || t("common.business"), offer.businesses?.address]
+            .filter(Boolean)
+            .join(" · ")}
+        </Link>
 
-        <div className="mt-4 grid grid-cols-2 gap-2.5">
-          <div className="rounded-[22px] bg-card p-4">
-            <p className="text-[13px] text-body">{t("common.price")}</p>
-            <p className="mt-0.5 text-[1.625rem] font-bold leading-tight">
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <p className="flex items-baseline gap-2">
+            <span className="text-[1.625rem] font-bold leading-tight">
               {formatMoney(offer.price)}
-            </p>
-            {oldPrice !== null && (
-              <p className="text-[13px] text-body line-through">
-                {formatMoney(oldPrice)}
-              </p>
-            )}
-          </div>
-          <div className="rounded-[22px] bg-card p-4">
-            <p className="flex items-center gap-1.5 text-[13px] text-body">
-              <ClockIcon className="h-3.5 w-3.5" strokeWidth={2} />
-              {t("native.offer.pickup")}
-            </p>
-            <p className="mt-0.5 text-[1.0625rem] font-bold leading-snug">
-              {formatPickupTimeRange(offer, language)}
-            </p>
-            <p className="text-[13px] text-body">
-              {getOfferDateLabel(offer, language)}
-            </p>
-          </div>
-        </div>
-
-        {offer.businesses?.address && (
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="native-press mt-2.5 flex min-h-14 items-center gap-3 rounded-[22px] bg-card px-4 font-medium"
-          >
-            <MapPinIcon className="h-5 w-5 shrink-0" strokeWidth={2} />
-            <span className="min-w-0 flex-1 truncate">
-              {offer.businesses.address}
             </span>
-          </a>
-        )}
+            {oldPrice !== null && (
+              <span className="text-[13px] text-body line-through">
+                {formatMoney(oldPrice)}
+              </span>
+            )}
+          </p>
+          <p className="flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-[15px] font-semibold">
+            <ClockIcon className="h-4 w-4" strokeWidth={2} />
+            {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
+          </p>
+        </div>
 
         {notice && (
           <div className="mt-3">
@@ -323,70 +285,61 @@ export default function NativeOffer() {
           </div>
         )}
 
-        <div className="mt-2.5 grid gap-2.5">
-          <Section title={t("native.offer.details")}>
-            <p className="font-bold text-cream">{offer.title}</p>
-            {offer.description && <p className="mt-1">{offer.description}</p>}
-            <p className="mt-3 font-bold text-cream">{t("offerDetail.allergens")}</p>
-            <p className="mt-1">{offer.allergens || t("offerDetail.allergensAsk")}</p>
-            <p className="mt-3">{t("native.offer.contents")}</p>
-          </Section>
-
-          <Section
-            title={
-              rating && rating.rating_count > 0
-                ? `${t("native.offer.reviews")} · ★ ${Number(
-                    rating.average_rating
-                  ).toFixed(1)} (${rating.rating_count})`
-                : t("native.offer.reviews")
-            }
-          >
+        <details className="group mt-4 rounded-[22px] bg-card">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-4 font-bold [&::-webkit-details-marker]:hidden">
+            {t("native.offer.details")}
+            <ChevronDownIcon
+              className="h-5 w-5 shrink-0 transition-transform group-open:rotate-180"
+              strokeWidth={2}
+            />
+          </summary>
+          <div className="grid gap-3 px-4 pb-4 text-[15px] leading-relaxed text-body">
+            <p className="text-xs font-bold">{getGreenBagLabel(offer, language)}</p>
+            {offer.description && <p>{offer.description}</p>}
+            <p>
+              <span className="font-bold text-cream">{t("offerDetail.allergens")}: </span>
+              {offer.allergens || t("offerDetail.allergensAsk")}
+            </p>
+            <p>{t("native.offer.contents")}</p>
+            {offer.businesses?.address && (
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="native-press flex min-h-11 items-center gap-2 font-semibold text-cream"
+              >
+                <MapPinIcon className="h-5 w-5 shrink-0" strokeWidth={2} />
+                {t("native.orders.route")}
+              </a>
+            )}
+            <p className="font-bold text-cream">
+              {rating && rating.rating_count > 0
+                ? `${t("native.offer.reviews")} · ★ ${Number(rating.average_rating).toFixed(1)} (${rating.rating_count})`
+                : t("native.offer.reviews")}
+            </p>
             {reviews.length === 0 && <p>{t("common.noReviews")}</p>}
-            <div className="grid gap-3">
-              {reviews.map((review) => (
-                <div key={review.id} className="rounded-2xl bg-well p-3.5">
-                  <p className="flex justify-between gap-3 font-bold text-cream">
-                    <span>★ {review.rating}</span>
-                    <span className="text-[13px] font-normal text-body">
-                      {formatReviewDate(review.created_at, language)}
-                    </span>
-                  </p>
-                  <p className="mt-1">
-                    {review.review?.trim() || t("common.noWrittenReview")}
-                  </p>
-                  <ReviewReportControl reviewId={review.id} reporterId={reporterId} />
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          <div className="grid grid-cols-3 gap-2.5">
-            <Link
-              href={`/businesses/${offer.business_id}`}
-              className="native-press flex min-h-14 items-center justify-center rounded-[18px] bg-card px-2 text-center text-[13px] font-bold"
-            >
-              {t("native.offer.business")}
-            </Link>
-            <Link
-              href="/faq"
-              className="native-press flex min-h-14 items-center justify-center rounded-[18px] bg-card px-2 text-center text-[13px] font-bold"
-            >
-              {t("nav.faq")}
-            </Link>
-            <Link
-              href="/support"
-              className="native-press flex min-h-14 items-center justify-center rounded-[18px] bg-card px-2 text-center text-[13px] font-bold"
-            >
+            {reviews.map((review) => (
+              <div key={review.id} className="rounded-2xl bg-well p-3.5">
+                <p className="flex justify-between gap-3 font-bold text-cream">
+                  <span>★ {review.rating}</span>
+                  <span className="text-[13px] font-normal text-body">
+                    {formatReviewDate(review.created_at, language)}
+                  </span>
+                </p>
+                <p className="mt-1">
+                  {review.review?.trim() || t("common.noWrittenReview")}
+                </p>
+                <ReviewReportControl reviewId={review.id} reporterId={reporterId} />
+              </div>
+            ))}
+            <Link href="/support" className="flex min-h-11 items-center font-semibold text-cream">
               {t("native.offer.help")}
             </Link>
           </div>
-        </div>
+        </details>
       </section>
 
-      <div className="theme-forest native-fixed-bottom fixed inset-x-3 z-40 flex items-center gap-3.5 rounded-3xl bg-brand-forest py-3 pl-[18px] pr-3">
-        <p className="whitespace-nowrap text-[1.375rem] font-bold text-brand-ground">
-          {formatMoney(offer.price)}
-        </p>
+      <div className="theme-forest native-fixed-bottom fixed inset-x-3 z-40 flex items-center rounded-3xl bg-brand-forest p-3">
         {reservable ? (
           <Link
             href={`/checkout/${offer.id}`}

@@ -4,11 +4,10 @@ import {
   getEffectiveOrderStatus,
   isCancelledOrderStatus,
   isCollectedOrderStatus,
-  isConfirmedOrderStatus,
   isFailedCheckoutOrder,
   isPendingPaymentOrderStatus,
 } from "@/lib/orderStatus";
-import type { Order, OrderStatus } from "@/lib/types";
+import type { Order } from "@/lib/types";
 import type { TimelineStep } from "@/components/TimelineSteps";
 
 function normalizeTime(value: string | null | undefined) {
@@ -124,41 +123,6 @@ export function isCollectWindowOpen(order: Order) {
   );
 }
 
-export function getPickupReminderMessage(order: Order, language: Language) {
-  if (!isConfirmedOrderStatus(getEffectiveOrderStatus(order))) return "";
-
-  const pickupStart = getPickupDateTime(order, "pickup_start");
-  const pickupEnd = getPickupDateTime(order, "pickup_end");
-
-  if (!pickupStart || !pickupEnd) return "";
-
-  const now = new Date();
-
-  if (now >= pickupStart && now <= pickupEnd) {
-    return language === "ka"
-      ? "წაღების დრო ახლა აქტიურია. არ დაგავიწყდეს კოდის ჩვენება."
-      : "Pickup is open now. Do not forget your pickup code.";
-  }
-
-  const minutesUntilPickup = Math.ceil(
-    (pickupStart.getTime() - now.getTime()) / 60000
-  );
-
-  if (minutesUntilPickup < 0 || minutesUntilPickup > 120) return "";
-
-  if (minutesUntilPickup <= 60) {
-    return language === "ka"
-      ? `წაღება იწყება ${minutesUntilPickup} წუთში. არ დაგავიწყდეს კოდი.`
-      : `Pickup starts in ${minutesUntilPickup} minute${minutesUntilPickup === 1 ? "" : "s"}. Do not forget your pickup code.`;
-  }
-
-  const hoursUntilPickup = Math.ceil(minutesUntilPickup / 60);
-
-  return language === "ka"
-    ? `წაღება იწყება ${hoursUntilPickup} საათში. არ დაგავიწყდეს კოდი.`
-    : `Pickup starts in ${hoursUntilPickup} hours. Do not forget your pickup code.`;
-}
-
 export function getCustomerTimelineSteps(
   order: Order,
   language: Language
@@ -216,29 +180,4 @@ export function getCustomerTimelineSteps(
         ? "current"
         : "pending",
   }));
-}
-
-export function getCustomerStatusLabel(
-  status: OrderStatus,
-  language: Language
-) {
-  if (isPendingPaymentOrderStatus(status)) {
-    return language === "ka" ? "გადახდა მუშავდება" : "Payment pending";
-  }
-  if (isConfirmedOrderStatus(status)) {
-    return language === "ka" ? "წაღების მოლოდინში" : "Waiting for pickup";
-  }
-  if (isCollectedOrderStatus(status)) {
-    return language === "ka" ? "წაღებულია" : "Collected";
-  }
-  if (status === "no_show") {
-    return language === "ka" ? "წაღება გამოტოვებულია" : "Missed Pickup";
-  }
-  if (status === "expired") {
-    return language === "ka" ? "ვადაგასულია" : "Expired";
-  }
-  if (isCancelledOrderStatus(status)) {
-    return language === "ka" ? "გაუქმებულია" : "Cancelled";
-  }
-  return language === "ka" ? "უცნობი" : "Unknown";
 }

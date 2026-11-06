@@ -161,19 +161,11 @@ const georgianMessageEntries: Array<[string, string]> = [
     "ჯავშნის დასრულება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
-    "Please confirm that you understand the pickup and cancellation rules.",
-    "გთხოვ, დაადასტურე, რომ გესმის წაღებისა და გაუქმების წესები.",
-  ],
-  [
     "This offer is no longer available for reservation.",
     "ეს შეთავაზება დასაჯავშნად აღარ არის ხელმისაწვდომი.",
   ],
 
   // Orders page (including the payment return messages).
-  [
-    "Payment confirmed. Your pickup code is ready below.",
-    "გადახდა დადასტურდა. წაღების კოდი ქვემოთ გელოდება.",
-  ],
   [
     "Payment is still being confirmed. Refresh this page in a moment.",
     "გადახდა ჯერ კიდევ მოწმდება. ცოტა ხანში განაახლე ეს გვერდი.",

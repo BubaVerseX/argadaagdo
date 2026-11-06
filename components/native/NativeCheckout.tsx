@@ -1,7 +1,7 @@
 "use client";
 
 import { WaveEdge } from "@/components/design/Decor";
-import { ArrowLeftIcon, LockIcon } from "@/components/icons";
+import { ArrowLeftIcon } from "@/components/icons";
 import Notice from "@/components/Notice";
 import OfferImage from "@/components/OfferImage";
 import {
@@ -17,7 +17,7 @@ import {
   sweepExpiredOffersOnce,
   type NativeOffer,
 } from "@/lib/nativeData";
-import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
+import { getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupTimeRange,
@@ -49,7 +49,6 @@ export default function NativeCheckout() {
   );
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(true);
-  const [rulesAccepted, setRulesAccepted] = useState(false);
   const [paying, setPaying] = useState(false);
   const payingRef = useRef(false);
   const [message, setMessage] = useState("");
@@ -115,14 +114,6 @@ export default function NativeCheckout() {
     setMessage("");
 
     if (!offer) return;
-
-    if (!rulesAccepted) {
-      setMessageTone("warning");
-      setMessage(
-        "Please confirm that you understand the pickup and cancellation rules."
-      );
-      return;
-    }
 
     if (!isOfferReservable(offer)) {
       setMessageTone("warning");
@@ -231,7 +222,7 @@ export default function NativeCheckout() {
   }
 
   const oldPrice = offer ? getOriginalPrice(offer) : null;
-  const savings = offer && oldPrice !== null ? oldPrice - Number(offer.price) : 0;
+  const free = offer ? Number(offer.price) === 0 : false;
   const unavailable = !loading && !offer;
 
   return (
@@ -241,7 +232,7 @@ export default function NativeCheckout() {
           <Link
             href={offer ? `/offers/${offer.id}` : "/"}
             aria-label={t("native.back")}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-card text-cream"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-card text-cream"
           >
             <ArrowLeftIcon className="h-[18px] w-[18px]" strokeWidth={2} />
           </Link>
@@ -275,11 +266,11 @@ export default function NativeCheckout() {
                 <OfferImage src={offer.image_url} alt={offer.title} sizes="72px" priority />
               </div>
               <div className="relative min-w-0 flex-1">
-                <p className="truncate font-serif text-base font-bold">
-                  {offer.businesses?.name || t("common.business")}
+                <p className="font-serif text-base font-bold leading-snug">
+                  {offer.title}
                 </p>
                 <p className="truncate text-[13px] text-cat-ink-2">
-                  {getGreenBagLabel(offer, language)}
+                  {offer.businesses?.name || t("common.business")}
                 </p>
                 <p className="truncate text-[13px] font-medium text-cat-ink-2">
                   {getOfferDateLabel(offer, language)}{" "}
@@ -288,53 +279,17 @@ export default function NativeCheckout() {
               </div>
             </div>
 
-            <div className="rounded-[22px] bg-card p-4 shadow-[var(--shadow-card)]">
-              {oldPrice !== null && (
-                <>
-                  <p className="flex justify-between text-sm text-body">
-                    <span>{t("native.checkout.regular")}</span>
-                    <span className="line-through">{formatMoney(oldPrice)}</span>
-                  </p>
-                  <p className="mt-1.5 flex justify-between text-sm font-bold text-cream">
-                    <span>{t("native.checkout.save")}</span>
-                    <span>−{formatMoney(savings)}</span>
-                  </p>
-                  <div className="my-3 h-px bg-line" />
-                </>
-              )}
-              <p className="flex items-baseline justify-between font-bold">
-                <span>{t("native.checkout.total")}</span>
+            <p className="flex items-baseline justify-between rounded-[22px] bg-card p-4 font-bold shadow-[var(--shadow-card)]">
+              <span>{t("native.checkout.total")}</span>
+              <span className="flex items-baseline gap-2">
+                {oldPrice !== null && (
+                  <span className="text-sm font-normal text-body line-through">
+                    {formatMoney(oldPrice)}
+                  </span>
+                )}
                 <span className="text-[1.625rem]">{formatMoney(offer.price)}</span>
-              </p>
-            </div>
-
-            <p className="flex items-center gap-2.5 rounded-[18px] bg-well px-4 py-3 text-[13px] leading-snug">
-              <LockIcon className="h-[18px] w-[18px] shrink-0" strokeWidth={2} />
-              {t("native.checkout.secure")}
-            </p>
-
-            {Number(offer.price) === 0 && (
-              <Notice tone="success">
-                {language === "ka"
-                  ? "სადემონსტრაციო ჯავშანი App Review-სთვის: გადახდა არ ხდება."
-                  : "Demo reservation for App Review: no payment is taken."}
-              </Notice>
-            )}
-
-            <label className="flex min-h-11 items-start gap-3 px-1 text-sm leading-snug">
-              <input
-                type="checkbox"
-                checked={rulesAccepted}
-                onChange={(event) => setRulesAccepted(event.target.checked)}
-                className="mt-0.5 h-[22px] w-[22px] shrink-0 accent-brand-forest"
-              />
-              <span>
-                {t("native.checkout.rules")}{" "}
-                <Link href="/terms" className="font-bold underline underline-offset-2">
-                  {t("native.checkout.rulesLink")}
-                </Link>
               </span>
-            </label>
+            </p>
           </>
         )}
 
@@ -368,15 +323,24 @@ export default function NativeCheckout() {
           <button
             type="button"
             onClick={() => void confirm()}
-            disabled={paying || blocked || !rulesAccepted || !isOfferReservable(offer)}
+            disabled={paying || blocked || !isOfferReservable(offer)}
             className="native-press flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand-mint text-base font-bold text-brand-forest disabled:cursor-not-allowed disabled:bg-brand-forest-2 disabled:text-brand-mint"
           >
             {paying
               ? t("checkout.reserving")
               : !isOfferReservable(offer)
               ? t("common.unavailable")
+              : free
+              ? t("native.offer.reserve")
               : `${t("native.checkout.pay")} · ${formatMoney(offer.price)}`}
           </button>
+          <p className="mt-2 text-center text-[11px] leading-snug text-brand-ground/80">
+            {t(free ? "native.checkout.freeNote" : "native.checkout.payNote")}
+            {" · "}
+            <Link href="/terms" className="underline underline-offset-2">
+              {t("native.checkout.cancelNote")}
+            </Link>
+          </p>
         </div>
       )}
     </main>

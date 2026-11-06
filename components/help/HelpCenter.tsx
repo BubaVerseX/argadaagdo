@@ -33,18 +33,46 @@ const COPY = {
   },
 };
 
+// Help-centre-only answers (the FAQ text itself lives in lib/legal/faq.ts).
+const EXTRA_ITEMS: Record<"ka" | "en", FaqEntry[]> = {
+  ka: [
+    {
+      id: "password",
+      question: "დამავიწყდა პაროლი ან მინდა შევცვალო",
+      answer:
+        "შესვლის გვერდზე აირჩიე „დაგავიწყდა პაროლი?“ და ელფოსტაზე ბმულს მიიღებ. აპში პაროლს პარამეტრებშიც შეცვლი — ჯერ ახლანდელი პაროლი ჩაწერე.",
+    },
+  ],
+  en: [
+    {
+      id: "password",
+      question: "Forgot your password or want to change it?",
+      answer:
+        "On the sign-in page tap \"Forgot password?\" and we'll email you a link. In the app you can also change it in Settings — enter your current password first.",
+    },
+  ],
+};
+const EXTRA_CATEGORY: Partial<Record<HelpCategoryId, string[]>> = {
+  account: ["password"],
+};
+
+function entriesFor(language: "ka" | "en") {
+  return new Map(
+    [
+      ...faqContent[language].groups.flatMap((group) => group.items),
+      ...EXTRA_ITEMS[language],
+    ].map((item) => [item.id, item])
+  );
+}
+
 export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
   const { language } = useLanguage();
   const ka = language === "ka";
-  const content = faqContent[language];
-  const byId = useMemo(
-    () =>
-      new Map(
-        content.groups
-          .flatMap((group) => group.items)
-          .map((item) => [item.id, item])
-      ),
-    [content]
+  const byId = useMemo(() => entriesFor(language), [language]);
+  // Search looks in both languages, whichever one is on screen.
+  const otherById = useMemo(
+    () => entriesFor(language === "ka" ? "en" : "ka"),
+    [language]
   );
   const [category, setCategory] = useState<HelpCategoryId>("orders");
   const [query, setQuery] = useState("");
@@ -54,27 +82,33 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
   useEffect(() => {
     const hash = decodeURIComponent(window.location.hash.slice(1));
     if (!hash) return;
+    const inCategory = (id: HelpCategoryId, itemIds: string[]) =>
+      itemIds.includes(hash) || (EXTRA_CATEGORY[id] || []).includes(hash);
     const match = HELP_CATEGORIES.find(
       (item) =>
         item.id === hash ||
-        item.itemIds.includes(hash) ||
+        inCategory(item.id, item.itemIds) ||
         item.legacyGroups.includes(hash as never)
     );
     if (!match) return;
     // Reading the URL hash is only possible after mount.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCategory(match.id);
-    if (match.itemIds.includes(hash)) setOpenId(hash);
+    if (inCategory(match.id, match.itemIds)) setOpenId(hash);
   }, []);
 
-  const search = query
-    .trim()
-    .toLocaleLowerCase(language === "ka" ? "ka" : "en");
+  const search = query.trim().toLocaleLowerCase();
+  const matches = (item?: FaqEntry) =>
+    Boolean(item) &&
+    `${item!.question} ${item!.answer}`.toLocaleLowerCase().includes(search);
   const items: FaqEntry[] = search
-    ? [...byId.values()].filter((item) =>
-        `${item.question} ${item.answer}`.toLocaleLowerCase().includes(search)
+    ? [...byId.values()].filter(
+        (item) => matches(item) || matches(otherById.get(item.id))
       )
-    : (HELP_CATEGORIES.find((item) => item.id === category)?.itemIds || [])
+    : [
+        ...(HELP_CATEGORIES.find((item) => item.id === category)?.itemIds || []),
+        ...(EXTRA_CATEGORY[category] || []),
+      ]
         .map((id) => byId.get(id))
         .filter((item): item is FaqEntry => Boolean(item));
 
@@ -135,7 +169,7 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
                       setCategory(item.id);
                       setOpenId(null);
                     }}
-                    className={`h-9 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
+                    className={`h-11 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
                       active
                         ? "border-transparent bg-brand-forest text-brand-ground"
                         : "border-line bg-card text-body"
