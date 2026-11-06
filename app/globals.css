@@ -842,3 +842,23 @@ html.has-session .public-home {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Map pins (lib/mapStyle.ts): a green leaf pin, a little larger when chosen. */
+.leaf-pin {
+  cursor: pointer;
+  filter: drop-shadow(0 3px 4px rgba(15, 58, 50, 0.3));
+  transition: transform 150ms ease;
+}
+
+.leaf-pin.is-selected {
+  transform: scale(1.18);
+}
+
+.user-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #3b8a55;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 6px rgba(59, 138, 85, 0.25);
+}

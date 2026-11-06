@@ -23,6 +23,11 @@ import {
 } from "@/lib/paymentArchitecture";
 import type { Business, Profile } from "@/lib/types";
 import type { FormEvent } from "react";
+import type { LatLng } from "@/lib/location";
+import dynamicImport from "next/dynamic";
+
+// The map loads only when a pin editor is open.
+const LocationPicker = dynamicImport(() => import("@/components/map/LocationPicker"), { ssr: false });
 
 export type AdminBusiness = Business & {
   created_at?: string | null;
@@ -1207,14 +1212,21 @@ export function ApprovedBusinesses({
   updatingBusinessId,
   onMoveToPending,
   onSetFeeRate,
+  onSetLocation,
+  language,
 }: {
   businesses: AdminBusiness[];
   updatingBusinessId: number | null;
   onMoveToPending: (id: number) => void;
   /** Platform commission as a percentage (0–100). */
   onSetFeeRate: (id: number, percent: number) => void;
+  /** Saves the map pin; resolves true when saved. */
+  onSetLocation: (id: number, location: LatLng) => Promise<boolean>;
+  language: Language;
 }) {
   const [feeDrafts, setFeeDrafts] = useState<Record<number, string>>({});
+  const [pinFor, setPinFor] = useState<number | null>(null);
+  const [pinDraft, setPinDraft] = useState<LatLng | null>(null);
 
   function currentPercent(business: AdminBusiness) {
     return Math.round(Number(business.platform_fee_rate ?? 0.3) * 100);
@@ -1284,6 +1296,50 @@ export function ApprovedBusinesses({
                   Default 30%; 0% for pilot partners. Applies to new reservations.
                 </span>
               </div>
+
+              <div className="mt-3 text-sm">
+                <span className="text-body">
+                  Map pin:{" "}
+                  {business.latitude != null && business.longitude != null
+                    ? `${Number(business.latitude).toFixed(5)}, ${Number(business.longitude).toFixed(5)}`
+                    : "not set (not on the app map yet)"}
+                </span>{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPinFor(pinFor === business.id ? null : business.id);
+                    setPinDraft(
+                      business.latitude != null && business.longitude != null
+                        ? { latitude: Number(business.latitude), longitude: Number(business.longitude) }
+                        : null
+                    );
+                  }}
+                  className="premium-button-secondary ml-1 min-h-11 px-3 py-1.5 text-xs"
+                >
+                  {pinFor === business.id ? "Close" : business.latitude != null ? "Change pin" : "Set pin"}
+                </button>
+              </div>
+              {pinFor === business.id && (
+                <div className="mt-3 grid max-w-xl gap-2">
+                  <LocationPicker
+                    value={pinDraft}
+                    onChange={setPinDraft}
+                    initialQuery={business.address}
+                    language={language}
+                  />
+                  <button
+                    type="button"
+                    disabled={!pinDraft || updatingBusinessId !== null}
+                    onClick={() =>
+                      pinDraft &&
+                      void onSetLocation(business.id, pinDraft).then((saved) => saved && setPinFor(null))
+                    }
+                    className="premium-button min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Save pin
+                  </button>
+                </div>
+              )}
             </div>
 
             <button

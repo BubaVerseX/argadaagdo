@@ -1,5 +1,7 @@
 -- Business pickup location (2026-11-06). Additive.
--- STATUS: applied to production (Frankfurt) on 6 Nov 2026 (owner asked for it).
+-- STATUS: NOT applied to production yet: applying it was blocked by the
+-- assistant's permission rules, so it needs the owner's explicit OK (or the owner
+-- runs it). The app works without it: the feed falls back, pins just don't show.
 --
 -- Coordinates for the app's map pins and "nearest first" sorting. Set from an
 -- address search + draggable pin in the business sign-up and in admin. Both

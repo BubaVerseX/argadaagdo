@@ -163,7 +163,7 @@ export default function BusinessRegisterPage() {
       return;
     }
 
-    const { error } = await supabase.rpc("submit_business_application", {
+    const { data: businessId, error } = await supabase.rpc("submit_business_application", {
       p_name: company.name,
       p_business_type: company.businessType,
       p_address: company.address,
@@ -193,6 +193,18 @@ export default function BusinessRegisterPage() {
         )
       );
       return;
+    }
+
+    // The map pin is saved separately and never blocks the application: if it
+    // fails, admin can set it later.
+    if (company.location && businessId) {
+      await supabase
+        .rpc("set_business_location", {
+          p_business_id: businessId,
+          p_latitude: company.location.latitude,
+          p_longitude: company.location.longitude,
+        })
+        .then(() => undefined, () => undefined);
     }
 
     clearBusinessRegistrationDraft();

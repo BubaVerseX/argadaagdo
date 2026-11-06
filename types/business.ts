@@ -10,6 +10,9 @@ export type Business = {
   is_review_demo?: boolean | null;
   created_at?: string | null;
   description?: string | null;
+  /** Pickup pin for the app's map (set in sign-up or admin). */
+  latitude?: number | null;
+  longitude?: number | null;
   /** Tbilisi date of a store-wide "Today: no boxes"; paused while it equals today. */
   sales_paused_on?: string | null;
   /** Platform commission share (0.30 = 30%). Server-side; set by admins. */

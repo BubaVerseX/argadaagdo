@@ -27,7 +27,13 @@ export type Offer = {
   unlimited_quantity?: boolean | null;
   /** Set while the department/store has pressed "Today: no boxes". */
   paused_at?: string | null;
-  businesses?: Pick<Business, "name" | "address" | "business_type"> | null;
+  businesses?:
+    | (Pick<Business, "name" | "address" | "business_type"> & {
+        /** Pickup location, when the business has a pin (map, nearest first). */
+        latitude?: number | null;
+        longitude?: number | null;
+      })
+    | null;
   departments?: { id: number; name: string } | null;
 };
 

@@ -34,7 +34,19 @@ import {
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "./AppLink";
 import NativeHero from "./NativeHero";
-import NativePlaces from "./NativePlaces";
+import {
+  businessLocation,
+  distanceKm,
+  formatDistance,
+  getLocationChoice,
+  getLocationIfAllowed,
+  requestLocation,
+  setLocationChoice,
+  type LatLng,
+} from "@/lib/location";
+
+// The map (and MapLibre) loads only when the Map view opens.
+const NativeMapView = lazy(() => import("./NativeMapView"));
 import NativeWelcome from "./NativeWelcome";
 import {
   askForAccount,
@@ -42,7 +54,7 @@ import {
   markWelcomeSeen,
 } from "@/lib/accountGate";
 import { supabase } from "@/lib/supabase";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 function NativeOfferCard({
   offer,
@@ -50,12 +62,15 @@ function NativeOfferCard({
   t,
   rating,
   priority,
+  distance,
 }: {
   offer: NativeOffer;
   language: Language;
   t: (key: TranslationKey) => string;
   rating?: RatingSummary;
   priority: boolean;
+  /** Km from the person, when they shared their location. */
+  distance?: number | null;
 }) {
   const discount = getDiscountPercent(offer);
   const quantity = Number(offer.quantity || 0);
@@ -95,6 +110,11 @@ function NativeOfferCard({
           <span className="min-w-0 flex-1 truncate text-[15px] font-semibold leading-snug">
             {offer.businesses?.name || t("common.business")}
           </span>
+          {distance != null && (
+            <span className="shrink-0 text-xs text-body">
+              {formatDistance(distance, language)}
+            </span>
+          )}
           {rating && rating.rating_count > 0 && (
             <span className="shrink-0 text-xs font-medium text-[#3b8a55]">
               ★ {rating.average_rating.toFixed(1)}
@@ -149,6 +169,34 @@ export default function NativeHome({
   const [view, setView] = useState<"list" | "map">(initialView);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [welcomed, setWelcomed] = useState(hasSeenWelcome);
+  const [userLocation, setUserLocation] = useState<LatLng | null>(null);
+  const [locationChoice, setLocationChoiceState] = useState(getLocationChoice);
+  const [locating, setLocating] = useState(false);
+
+  // Nearest first, only with the person's OK (asked in a small card below).
+  useEffect(() => {
+    let active = true;
+    void getLocationIfAllowed().then(
+      (location) => active && location && setUserLocation(location)
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function turnOnLocation() {
+    setLocating(true);
+    const location = await requestLocation();
+    setLocating(false);
+    setLocationChoice(location ? "on" : "off");
+    setLocationChoiceState(location ? "on" : "off");
+    if (location) setUserLocation(location);
+  }
+
+  function notNowLocation() {
+    setLocationChoice("off");
+    setLocationChoiceState("off");
+  }
 
   useEffect(() => {
     let active = true;
@@ -192,7 +240,7 @@ export default function NativeHome({
     [offers]
   );
   const normalizedQuery = query.trim().toLocaleLowerCase();
-  const shown = offers.filter((offer) => {
+  const filtered = offers.filter((offer) => {
     if (
       category !== "all" &&
       normalizeOfferCategory(offer.category) !== category
@@ -208,6 +256,25 @@ export default function NativeHome({
       .filter(Boolean)
       .some((text) => text!.toLocaleLowerCase().includes(normalizedQuery));
   });
+  const distanceOf = (offer: NativeOffer) => {
+    const place = businessLocation(offer.businesses);
+    return userLocation && place ? distanceKm(userLocation, place) : null;
+  };
+  // With a location: nearest first; places without a pin keep their order after.
+  const shown = userLocation
+    ? filtered
+        .map((offer, index) => ({ offer, index, distance: distanceOf(offer) }))
+        .sort((a, b) =>
+          a.distance == null && b.distance == null
+            ? a.index - b.index
+            : a.distance == null
+            ? 1
+            : b.distance == null
+            ? -1
+            : a.distance - b.distance
+        )
+        .map((item) => item.offer)
+    : filtered;
   const nothingAtAll = !loading && !failed && offers.length === 0;
 
   // Until we know who's here: the plain ground, so neither screen flashes.
@@ -410,8 +477,42 @@ export default function NativeHome({
           </p>
         )}
 
+        {locationChoice === null && feed && shown.length > 0 && (
+          <div className="mb-2.5 flex items-center gap-3 rounded-[20px] bg-card p-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-moss text-mint">
+              <MapPinIcon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            </span>
+            <p className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-cream">
+              {language === "ka"
+                ? "ნახე, რა არის შენთან ახლოს"
+                : "See what's closest to you"}
+            </p>
+            <button
+              type="button"
+              onClick={notNowLocation}
+              className="shrink-0 px-1 text-xs font-medium text-body"
+            >
+              {language === "ka" ? "ახლა არა" : "Not now"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void turnOnLocation()}
+              disabled={locating}
+              className="native-press min-h-9 shrink-0 rounded-full bg-brand-forest px-3.5 text-xs font-semibold text-brand-ground disabled:opacity-60"
+            >
+              {locating ? "…" : language === "ka" ? "ჩართვა" : "Turn on"}
+            </button>
+          </div>
+        )}
+
         {view === "map" ? (
-          shown.length > 0 && <NativePlaces offers={shown} />
+          <Suspense
+            fallback={
+              <div className="native-skeleton h-[calc(100dvh-25rem)] min-h-[15rem] rounded-[22px]" />
+            }
+          >
+            <NativeMapView offers={shown} userLocation={userLocation} />
+          </Suspense>
         ) : (
           <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5">
             {shown.map((offer, index) => (
@@ -422,6 +523,7 @@ export default function NativeHome({
                 t={t}
                 rating={feed?.ratings[offer.business_id]}
                 priority={index < 2}
+                distance={distanceOf(offer)}
               />
             ))}
           </div>
