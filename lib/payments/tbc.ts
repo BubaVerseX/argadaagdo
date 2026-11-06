@@ -47,6 +47,16 @@ function getTbcConfig(): TbcConfig {
   };
 }
 
+// TBC payment method ids (TBC developer docs, "Payment Methods"):
+// 5 = card, 7 = internet bank login (needs activation in the TBC back-office),
+// 9 = Apple Pay, 14 = Google Pay. Split payments are limited to card and the
+// wallets.
+const TBC_SPLIT_PAYMENT_METHODS = [5, 9, 14];
+
+function isTbcSplitEnabled() {
+  return process.env.TBC_SPLIT_ENABLED === "true";
+}
+
 function asRecord(value: unknown): UnknownRecord {
   return value && typeof value === "object" ? (value as UnknownRecord) : {};
 }
@@ -178,13 +188,15 @@ export async function createTbcPaymentSession(
         expirationMinutes: 12,
         language: "KA",
         // TBC split: `extra` is the recipient's TBC IBAN and `extra2` the amount
-        // transferred to it. TBC only allows split on some payment methods
-        // (5 = Web QR, 7 = card, 9 = internet bank), so they are pinned here.
-        ...(input.split
+        // transferred to it. Split is only sent once TBC has activated it for
+        // this merchant (TBC_SPLIT_ENABLED=true); until then every payment is a
+        // normal one with all methods, and business shares are paid out
+        // manually.
+        ...(input.split && isTbcSplitEnabled()
           ? {
               extra: input.split.iban,
               extra2: input.split.amount.toFixed(2),
-              methods: [5, 7, 9],
+              methods: TBC_SPLIT_PAYMENT_METHODS,
             }
           : {}),
       }),
