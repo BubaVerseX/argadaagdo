@@ -165,7 +165,7 @@ export default function NativeCheckout() {
           Authorization: `Bearer ${session.access_token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ offerId: offer.id, provider: "tbc" }),
+        body: JSON.stringify({ offerId: offer.id, provider: "tbc", language }),
       });
     } catch {
       setMessageTone("error");

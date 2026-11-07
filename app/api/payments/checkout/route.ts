@@ -187,6 +187,7 @@ export async function POST(request: Request) {
       amount: Number(pendingPayment.amount),
       currency: "GEL",
       externalOrderId: pendingPayment.external_order_id,
+      language: body.language === "en" ? "en" : "ka",
       split: payoutAccount?.iban
         ? {
             iban: payoutAccount.iban,
