@@ -35,6 +35,15 @@ const orderEvents = new Set<TransactionalEmailEvent>([
   "rating_reminder",
 ]);
 
+function readTokenClaim(token: string, claim: string) {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split(".")[1] || "", "base64url").toString("utf8"));
+    return typeof payload?.[claim] === "string" ? (payload[claim] as string) : null;
+  } catch {
+    return null;
+  }
+}
+
 function extractBearerToken(request: Request) {
   const authHeader = request.headers.get("authorization") || "";
   const match = authHeader.match(/^Bearer\s+(.+)$/i);
@@ -100,7 +109,11 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServiceRoleSupabaseClient();
-    const role = await getUserRole(supabase, user.id);
+    const profileRole = await getUserRole(supabase, user.id);
+    // Admin rights need the 2-step sign-in (aal2), like private.is_admin().
+    // The token was just verified by getUser, so its claims can be read.
+    const role =
+      profileRole === "admin" && readTokenClaim(accessToken, "aal") !== "aal2" ? "customer" : profileRole;
 
     if (event === "business_approval") {
       const businessId = toPositiveNumber(body.businessId);
