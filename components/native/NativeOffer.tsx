@@ -262,7 +262,7 @@ export default function NativeOffer() {
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           <p className="flex items-baseline gap-2">
-            <span className="text-[1.625rem] font-bold leading-tight">
+            <span className="action-text text-[1.625rem] font-bold leading-tight">
               {formatMoney(offer.price)}
             </span>
             {oldPrice !== null && (
@@ -349,7 +349,7 @@ export default function NativeOffer() {
                 askForAccount(`/checkout/${offer.id}`);
               }
             }}
-            className="native-press flex min-h-[3.25rem] flex-1 items-center justify-center rounded-2xl bg-brand-mint text-base font-bold text-brand-forest"
+            className="native-press action-pill flex min-h-[3.25rem] flex-1 items-center justify-center rounded-2xl text-base font-bold"
           >
             {t("native.offer.reserve")}
           </Link>

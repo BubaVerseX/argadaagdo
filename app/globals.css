@@ -44,6 +44,21 @@
   --danger-line: #eeb6a3;
   --danger-solid: #b83232;
 
+  /* Action colour (design B, 7 Nov 2026): electric purple, only for things
+     you press or pay: primary buttons, the active tab, the selected filter
+     chip, prices, the discount sticker and text links. Everything else stays
+     in the green brand. Contrast (WCAG): white on the gradient's middle 5.5:1,
+     on #6D28D9 7.1:1; #6D28D9 text on white 7.1:1, on cream 6.3:1. #8B5CF6
+     alone carries white text only at 4.2:1, so it is the top of a gradient,
+     never a flat fill behind small text. */
+  --action: #8b5cf6;
+  --action-strong: #6d28d9;
+  --action-glow: #b794ff;
+  --action-fill: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
+  --action-text: #6d28d9;
+  --on-action: #ffffff;
+  --action-shadow: 0 6px 18px rgba(139, 92, 246, 0.35);
+
   /* Effects */
   --shadow-card: 0 8px 24px rgba(15, 58, 50, 0.08);
   --glow-cta: none;
@@ -175,6 +190,7 @@
   --warning-soft: var(--cat-soft);
   --warning-line: var(--cat-photo);
   --shadow-card: none;
+  --action-text: #4c1d95;
   color: var(--cat-ink);
 }
 
@@ -207,6 +223,8 @@
   --danger-soft: rgba(244, 120, 120, 0.18);
   --danger-line: rgba(244, 120, 120, 0.38);
   --shadow-card: none;
+  --action-text: #cdb6ff;
+  --action-shadow: 0 6px 20px rgba(183, 148, 255, 0.35);
   color: var(--cream);
 }
 
@@ -584,8 +602,8 @@ html.has-session .public-home {
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
-    background: var(--brand-forest);
-    color: var(--brand-ground);
+    background: var(--action-fill);
+    color: var(--on-action);
     font-size: 0.8125rem;
     font-weight: 700;
     transform: rotate(-8deg);
@@ -600,14 +618,15 @@ html.has-session .public-home {
     align-items: center;
     justify-content: center;
     border-radius: 14px;
-    background: var(--mint);
-    color: var(--ink);
+    background: var(--action-fill);
+    color: var(--on-action);
     font-weight: 600;
     border: 1px solid transparent;
+    box-shadow: var(--action-shadow);
   }
 
   .premium-button:hover {
-    background: var(--mint-strong);
+    background: var(--action-strong);
   }
 
   .premium-button:active {
@@ -628,11 +647,37 @@ html.has-session .public-home {
 
   /* Subtle glow — only behind the page's main call to action. */
   .cta-glow {
-    background: var(--mint);
+    background: var(--action-fill);
+    box-shadow: 0 8px 26px rgba(183, 148, 255, 0.55);
   }
 
   .cta-glow:hover {
-    background: var(--mint-strong);
+    background: var(--action-strong);
+  }
+
+  /* Selected / active controls: the active tab, the selected filter chip,
+     the app's main buttons. */
+  .action-pill {
+    background: var(--action-fill);
+    color: var(--on-action);
+    box-shadow: var(--action-shadow);
+  }
+
+  .action-pill:disabled,
+  .action-pill[aria-disabled="true"] {
+    background: var(--well);
+    color: var(--cream);
+    box-shadow: none;
+  }
+
+  /* Prices and text links. */
+  .action-text {
+    color: var(--action-text);
+  }
+
+  a.underline:not(.premium-button):not(.premium-button-secondary),
+  button.underline:not(.premium-button):not(.premium-button-secondary) {
+    color: var(--action-text);
   }
 
   .premium-button-secondary {
@@ -705,8 +750,8 @@ html.has-session .public-home {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
-    background: var(--amber);
-    color: var(--amber-ink);
+    background: var(--action-fill);
+    color: var(--on-action);
     font-size: 0.8125rem;
     font-weight: 700;
     transform: rotate(-8deg);

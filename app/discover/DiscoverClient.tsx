@@ -535,7 +535,7 @@ function DiscoverClient() {
                     }}
                     className={`flex min-h-11 flex-none items-center rounded-full px-4 text-[13px] transition ${
                       category === "all"
-                        ? "cat-mixed bg-cat text-cat-ink"
+                        ? "action-pill"
                         : `${getOfferCategoryTone(category)} bg-cat text-cat-ink`
                     } ${selected ? "font-bold outline outline-2 outline-offset-2 outline-brand-ground" : "font-medium"}`}
                   >

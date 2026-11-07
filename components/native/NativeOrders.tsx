@@ -386,7 +386,7 @@ export default function NativeOrders() {
                 aria-selected={tab === option}
                 onClick={() => setTab(option)}
                 className={`min-h-11 rounded-full px-4 text-[13px] font-semibold ${
-                  tab === option ? "bg-brand-mint text-brand-forest" : "text-cream"
+                  tab === option ? "action-pill" : "text-cream"
                 }`}
               >
                 {t(option === "active" ? "native.orders.active" : "native.orders.history")}

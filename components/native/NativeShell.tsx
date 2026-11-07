@@ -165,7 +165,7 @@ export default function NativeShell() {
                   aria-current={active ? "page" : undefined}
                   className={`flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-2xl text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-mint ${
                     active
-                      ? "bg-brand-mint px-3.5 text-brand-forest"
+                      ? "action-pill px-3.5"
                       : "text-brand-mint"
                   }`}
                 >

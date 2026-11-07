@@ -119,7 +119,7 @@ export default function NativeFavorites() {
                     <span className="min-w-0 truncate">
                       {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
                     </span>
-                    <span className="ml-auto shrink-0 pl-2 font-semibold text-mint">{formatMoney(offer.price)}</span>
+                    <span className="action-text ml-auto shrink-0 pl-2 font-semibold">{formatMoney(offer.price)}</span>
                   </p>
                 )}
               </div>

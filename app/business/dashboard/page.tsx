@@ -2363,7 +2363,7 @@ function BusinessDashboardPage() {
                   }}
                   className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold transition ${
                     offerManagementFilter === filter.value
-                      ? "ui-well text-mint"
+                      ? "action-pill"
                       : "ui-card text-body hover:text-mint"
                   }`}
                 >

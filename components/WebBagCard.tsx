@@ -63,7 +63,7 @@ export function WebBagCard({
 
         <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-[13px] text-body">
           <span>
-            <span className="text-[19px] font-medium text-cream">{formatMoney(offer.price)}</span>{" "}
+            <span className="action-text text-[19px] font-medium">{formatMoney(offer.price)}</span>{" "}
             {originalPrice !== null && <s>{formatMoney(originalPrice)}</s>}
           </span>
           <span>{formatPickupWindow(offer, language)}</span>

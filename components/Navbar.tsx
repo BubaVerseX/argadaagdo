@@ -282,7 +282,7 @@ function Navbar({
                   href={tabItem.href}
                   aria-current={ariaCurrent(tabItem.href)}
                   className={`inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${ active
-                      ? "ui-well text-mint"
+                      ? "action-pill"
                       : "text-body hover:text-cream"
                   }`}
                 >
@@ -546,7 +546,7 @@ function Navbar({
               const active = tabItem.kind === "link" && isActivePath(tabItem.href);
               const label = tabItem.shortLabel ?? tabItem.label;
               const pillClass = `flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-2xl text-xs font-bold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint ${
-                active ? "bg-mint px-3 text-ink" : "text-mint"
+                active ? "action-pill px-3" : "text-mint"
               }`;
               const content = (
                 <>
@@ -588,7 +588,7 @@ function Navbar({
               active ? "text-mint" : "text-body-2"
             }`;
             const iconClass = `flex h-7 w-12 items-center justify-center rounded-full transition ${
-              active ? "bg-mint text-ink" : ""
+              active ? "action-pill" : ""
             }`;
 
             if (tabItem.kind === "action") {

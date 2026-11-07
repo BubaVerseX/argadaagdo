@@ -302,7 +302,7 @@ export default function NativeCheckout() {
                     {formatMoney(oldPrice)}
                   </span>
                 )}
-                <span className="text-[1.625rem]">{formatMoney(offer.price)}</span>
+                <span className="action-text text-[1.625rem]">{formatMoney(offer.price)}</span>
               </span>
             </p>
           </>
@@ -339,7 +339,7 @@ export default function NativeCheckout() {
             type="button"
             onClick={() => void confirm()}
             disabled={paying || blocked || needsPhone || !isOfferReservable(offer)}
-            className="native-press flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand-mint text-base font-bold text-brand-forest disabled:cursor-not-allowed disabled:bg-brand-forest-2 disabled:text-brand-mint"
+            className="native-press action-pill flex min-h-14 w-full items-center justify-center rounded-2xl text-base font-bold disabled:cursor-not-allowed"
           >
             {paying
               ? t("checkout.reserving")
