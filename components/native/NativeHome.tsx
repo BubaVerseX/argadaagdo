@@ -202,11 +202,6 @@ export default function NativeHome({
     if (location) setUserLocation(location);
   }
 
-  function notNowLocation() {
-    setLocationChoice("off");
-    setLocationChoiceState("off");
-  }
-
   useEffect(() => {
     let active = true;
     void supabase.auth
@@ -491,6 +486,8 @@ export default function NativeHome({
           </p>
         )}
 
+        {/* One button that leads to the phone's own permission dialog, where
+            people allow or decline (Apple 5.1.1(iv): no "Not now" of ours). */}
         {locationChoice === null && feed && shown.length > 0 && (
           <div className="mb-2.5 flex items-center gap-3 rounded-[20px] bg-card p-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-moss text-mint">
@@ -501,13 +498,6 @@ export default function NativeHome({
                 ? "ნახე, რა არის შენთან ახლოს"
                 : "See what's closest to you"}
             </p>
-            <button
-              type="button"
-              onClick={notNowLocation}
-              className="min-h-11 shrink-0 px-1 text-xs font-medium text-body"
-            >
-              {language === "ka" ? "ახლა არა" : "Not now"}
-            </button>
             <button
               type="button"
               onClick={() => void turnOnLocation()}

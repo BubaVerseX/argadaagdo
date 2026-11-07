@@ -30,6 +30,8 @@
 	<string>ArGadaagdo uses the camera only when you take a profile photo. / არ გადააგდო კამერას იყენებს მხოლოდ მაშინ, როცა პროფილის ფოტოს იღებ.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>ArGadaagdo opens your photos only so you can choose a profile photo. / არ გადააგდო შენს ფოტოებს ხსნის მხოლოდ იმისთვის, რომ პროფილის ფოტო აირჩიო.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>ArGadaagdo saves your impact picture to Photos only when you choose to. / არ გადააგდო შენს „გადარჩენილი საკვების“ სურათს ფოტოებში ინახავს მხოლოდ მაშინ, როცა ამას შენ აირჩევ.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>ArGadaagdo uses your location only to show the Lunch Boxes closest to you. / არ გადააგდო შენს მდებარეობას იყენებს მხოლოდ იმისთვის, რომ ახლოს მყოფი ლანჩ ბოქსები გაჩვენოს.</string>
 	<key>UILaunchStoryboardName</key>
