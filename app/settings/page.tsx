@@ -1,5 +1,6 @@
 "use client";
 
+import PasswordInput from "@/components/PasswordInput";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
@@ -161,13 +162,12 @@ function SettingsPage() {
                       disabled={deletingAccount}
                       className="min-h-12 rounded-2xl border border-danger-line bg-well px-4 font-semibold text-danger outline-none focus:border-danger"
                     />
-                    <input
+                    <PasswordInput
                       value={deletePassword}
                       onChange={(event) => setDeletePassword(event.target.value)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter") void deleteAccount();
                       }}
-                      type="password"
                       autoComplete="current-password"
                       aria-label={L("პაროლი", "Password")}
                       placeholder={L("პაროლი", "Password")}

@@ -1,5 +1,6 @@
 "use client";
 
+import PasswordInput from "@/components/PasswordInput";
 import Notice from "@/components/Notice";
 import { LeafIcon } from "@/components/icons";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
@@ -57,19 +58,17 @@ export default function NativeLogin() {
                 "At least 8 characters, with a lowercase and an uppercase letter and a number."
               )}
             </p>
-            <input
+            <PasswordInput
               value={form.newPassword}
               onChange={(event) => form.setNewPassword(event.target.value)}
-              type="password"
               autoComplete="new-password"
               aria-label={L("ახალი პაროლი", "New password")}
               placeholder={L("ახალი პაროლი", "New password")}
               className={field}
             />
-            <input
+            <PasswordInput
               value={form.confirmNewPassword}
               onChange={(event) => form.setConfirmNewPassword(event.target.value)}
-              type="password"
               autoComplete="new-password"
               aria-label={L("გაიმეორე პაროლი", "Repeat password")}
               placeholder={L("გაიმეორე პაროლი", "Repeat password")}
@@ -142,11 +141,10 @@ export default function NativeLogin() {
               placeholder={L("ელფოსტა", "Email")}
               className={field}
             />
-            <input
+            <PasswordInput
               value={form.password}
               onChange={(event) => form.setPassword(event.target.value)}
               onKeyDown={form.submitOnEnter}
-              type="password"
               autoComplete={isLogin ? "current-password" : "new-password"}
               aria-label={L("პაროლი", "Password")}
               placeholder={L("პაროლი", "Password")}
