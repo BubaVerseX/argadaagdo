@@ -1,8 +1,5 @@
 import { absoluteBusinessUrl } from "@/lib/businessArea";
-import {
-  formatPickupWindow,
-  getTbilisiDateKey,
-} from "@/lib/offerLifecycle";
+import { getTbilisiDateKey } from "@/lib/offerLifecycle";
 import { absoluteSiteUrl } from "@/lib/site";
 import { sendTransactionalEmail } from "@/lib/email/send";
 import { sendOrderPush } from "@/lib/push/notify";
@@ -36,9 +33,12 @@ export type EmailOrderContext = {
   user_id: string;
   status: string | null;
   pickup_code: string | null;
+  /** What the customer paid; set when the order is created. */
+  amount?: number | string | null;
   offers: {
     id: number;
     title: string | null;
+    price?: number | string | null;
     pickup_date: string | null;
     pickup_start: string | null;
     pickup_end: string | null;
@@ -67,6 +67,24 @@ type BusinessRejectionEmailContext = {
   rejected_at: string | null;
   rejection_reason: string | null;
 };
+
+// Everything the order emails show: box, seller, pickup time, code and price.
+const ORDER_EMAIL_COLUMNS = `
+  id,
+  user_id,
+  status,
+  pickup_code,
+  amount,
+  offers(
+    id,
+    title,
+    price,
+    pickup_date,
+    pickup_start,
+    pickup_end,
+    businesses(id, owner_id, name, address, business_type, approved)
+  )
+`;
 
 function fromTable<T>(
   supabase: SupabaseLikeClient,
@@ -100,20 +118,7 @@ export async function getOrderEmailContext(
   const { data, error } = await fromTable<EmailOrderContext>(
     supabase,
     "orders",
-    `
-      id,
-      user_id,
-      status,
-      pickup_code,
-      offers(
-        id,
-        title,
-        pickup_date,
-        pickup_start,
-        pickup_end,
-        businesses(id, owner_id, name, address, business_type, approved)
-      )
-    `
+    ORDER_EMAIL_COLUMNS
   )
     .eq("id", orderId)
     .maybeSingle();
@@ -143,11 +148,17 @@ function getOrderPayload(order: EmailOrderContext) {
   const business = offer?.businesses;
 
   return {
-    offerTitle: offer?.title || "Lunch Box",
-    businessName: business?.name || "ArGadaagdo business",
+    offerTitle: offer?.title || null,
+    businessName: business?.name || null,
     businessAddress: business?.address || null,
-    pickupWindow: offer ? formatPickupWindow(offer, "en") : null,
+    // Raw date and times: the template writes them out for both languages.
+    pickupDate: offer?.pickup_date || null,
+    pickupStart: offer?.pickup_start || null,
+    pickupEnd: offer?.pickup_end || null,
     pickupCode: order.pickup_code || null,
+    // What the customer paid (the offer's price may have changed since), like
+    // the Orders screen; 0 is a free demo order.
+    amount: order.amount ?? offer?.price ?? null,
     orderId: order.id,
     actionUrl: absoluteSiteUrl("/orders"),
     supportUrl: absoluteSiteUrl("/support"),
@@ -395,20 +406,7 @@ export async function sendDuePickupReminderEmails(
   const { data, error } = await fromTable<EmailOrderContext[]>(
     supabase,
     "orders",
-    `
-      id,
-      user_id,
-      status,
-      pickup_code,
-      offers(
-        id,
-        title,
-        pickup_date,
-        pickup_start,
-        pickup_end,
-        businesses(id, owner_id, name, address, business_type, approved)
-      )
-    `
+    ORDER_EMAIL_COLUMNS
   )
     .in("status", ["reserved", "confirmed"])
     .order("id", { ascending: false })
