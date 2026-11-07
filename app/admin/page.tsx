@@ -44,6 +44,7 @@ import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
   isFailedCheckoutOrder,
+  isUnpaidCheckoutOrder,
 } from "@/lib/orderStatus";
 import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
@@ -891,17 +892,23 @@ export default function AdminPage() {
   const offersCreatedToday = offers.filter(
     (offer) => getTbilisiDateKeyFromValue(offer.created_at) === todayDateKey
   );
-  const todayOfferIds = new Set(
-    offers
-      .filter((offer) => offer.pickup_date === todayDateKey)
-      .map((offer) => offer.id)
+  // Orders placed today (Tbilisi), by the order's own date: offers like the
+  // App Review demo box are re-dated every day and carry all their old
+  // orders. Checkouts that were never paid don't count.
+  const todayReservations = orders.filter(
+    (order) =>
+      getTbilisiDateKeyFromValue(order.created_at) === todayDateKey &&
+      !isUnpaidCheckoutOrder(order)
   );
-  const todayReservations = orders.filter((order) =>
-    todayOfferIds.has(order.offer_id)
+  const todayPickups = orders.filter(
+    (order) =>
+      isCollectedOrderStatus(order.status) &&
+      getTbilisiDateKeyFromValue(order.completed_at || order.created_at) ===
+        todayDateKey
   );
-  const todayPickups = todayReservations.filter((order) =>
-    isCollectedOrderStatus(order.status)
-  );
+  // Commission on today's orders that are paid and not refunded.
+  const todayCommission =
+    calculatePaymentSummary(todayReservations).platformRevenue;
   const businessIdsWithOffers = new Set(offers.map((offer) => offer.business_id));
   const businessIdsWithActiveOffers = new Set(
     activeOffers.map((offer) => offer.business_id)
@@ -963,8 +970,8 @@ export default function AdminPage() {
       value: todayReservations.length,
     },
     {
-      title: text("საკომისიო", "Commission"),
-      value: formatAnalyticsMoney(marketplaceAnalytics.estimatedMarketplaceRevenue),
+      title: text("დღევანდელი საკომისიო", "Commission today"),
+      value: formatAnalyticsMoney(todayCommission),
       tone: "green",
     },
   ];
