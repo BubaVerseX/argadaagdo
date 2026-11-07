@@ -64,7 +64,7 @@ export function DepartmentsPanel({
   }
 
   return (
-    // The store-wide "Today: no bags" switch is a quick action at the top.
+    // The store-wide "Stop sales for today" switch is a quick action at the top.
     <div id="business-departments" className="scroll-mt-24">
       <div>
         <div className="grid gap-3">
@@ -246,8 +246,8 @@ export function DepartmentsPanel({
                       ? "ისევ ჩართვა"
                       : "Turn back on"
                     : isGeorgian
-                    ? "დღეს ლანჩ ბოქსები არ არის"
-                    : "Today: no boxes"}
+                    ? "დღეს გაყიდვის შეჩერება"
+                    : "Stop sales for today"}
                 </button>
               </div>
             );

@@ -134,7 +134,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "publish",
             question: "How do I publish Lunch Boxes?",
             answer:
-              "Set up a Lunch Box template once in your dashboard: category, size, price, how many per day (or until you stop), pickup window, weekdays and when it goes live (a time on the same day or the day before). It goes live automatically at that time (we check every 10 minutes), or you can publish it yourself. On a day with nothing left, tap Today: no bags.",
+              "Set up a Lunch Box template once in your dashboard: category, size, price, how many per day (or until you stop), pickup window, weekdays and when it goes live (a time on the same day or the day before). It goes live automatically at that time (we check every 10 minutes), or you can publish it yourself. On a day with nothing left, tap Stop sales for today.",
           },
           {
             id: "handover",
@@ -287,7 +287,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "publish",
             question: "როგორ გამოვაქვეყნო ლანჩ ბოქსები?",
             answer:
-              "პანელში ლანჩ ბოქსის შაბლონს ერთხელ აწყობ: კატეგორია, ზომა, ფასი, დღეში რამდენი (ან სანამ არ შეაჩერებ), წაღების დრო, კვირის დღეები და როდის გამოქვეყნდეს (დრო იმავე ან წინა დღეს). ის ამ დროს ავტომატურად ქვეყნდება (ვამოწმებთ ყოველ 10 წუთში), ან შეგიძლია თავად გამოაქვეყნო. თუ დღეს გასაყიდი აღარაფერი გაქვს, დააჭირე „დღეს: ლანჩ ბოქსები აღარ არის“.",
+              "პანელში ლანჩ ბოქსის შაბლონს ერთხელ აწყობ: კატეგორია, ზომა, ფასი, დღეში რამდენი (ან სანამ არ შეაჩერებ), წაღების დრო, კვირის დღეები და როდის გამოქვეყნდეს (დრო იმავე ან წინა დღეს). ის ამ დროს ავტომატურად ქვეყნდება (ვამოწმებთ ყოველ 10 წუთში), ან შეგიძლია თავად გამოაქვეყნო. თუ დღეს გასაყიდი აღარაფერი გაქვს, დააჭირე „დღეს გაყიდვის შეჩერება“.",
           },
           {
             id: "handover",

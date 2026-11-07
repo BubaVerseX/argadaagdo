@@ -409,8 +409,8 @@ export default function StaffDepartmentPage() {
                     ? "ჩართვა"
                     : "Resume sales"
                   : isGeorgian
-                  ? "დღეს ლანჩ ბოქსები არ არის"
-                  : "Today: no boxes"}
+                  ? "დღეს გაყიდვის შეჩერება"
+                  : "Stop sales for today"}
               </button>
             </div>
           </div>

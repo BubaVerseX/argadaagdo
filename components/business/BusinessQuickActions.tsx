@@ -62,8 +62,8 @@ export function BusinessQuickActions({
             ? "გაყიდვების განახლება"
             : "Resume sales"
           : isGeorgian
-            ? "დღეს: ლანჩ ბოქსები აღარ არის"
-            : "Today: no bags"}
+            ? "დღეს გაყიდვის შეჩერება"
+            : "Stop sales for today"}
       </button>
     </div>
   );

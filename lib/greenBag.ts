@@ -23,7 +23,7 @@ export function formatWeekdays(days: number[], language: Language) {
     .join(" · ");
 }
 
-/** "Today: no boxes" is stored as the Tbilisi date it was pressed on. */
+/** "Stop sales for today" is stored as the Tbilisi date it was pressed on. */
 export function isSalesPausedToday(value: string | null | undefined) {
   return Boolean(value) && value === getTbilisiDateKey();
 }

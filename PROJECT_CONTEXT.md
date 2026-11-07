@@ -72,7 +72,7 @@ are now per business (30% default)**. Each file ends with a commented Down block
   owner can "Unlock locked devices" or set a new PIN from the dashboard.
   The staff RPCs (`staff_session`, `staff_collect`, `staff_pause`) return
   statuses instead of raising, because a raising RPC rolls back the
-  recorded failed attempt (`20261101160000_staff_pin_status.sql`). The
+  recorded failed attempt (`20261101113914_staff_pin_status.sql`). The
   first raising versions still exist without EXECUTE grants.
 - **Deploy order**: see `docs/green-bag-deploy-checklist.md` — migrations
   1–3 ✓ → merge PR #28 ✓ → deploy ✓ → migration 4 ✓ → demo bakery + fixtures
@@ -272,7 +272,7 @@ pre-shutdown check, safe to ignore indefinitely but worth knowing about:**
   never had a PR opened: `qa-a11y-audit-pass` (2026-07-08) and
   `docs/wrap-up-session-notes` (2026-07-13). Checked both line by line —
   nothing is at risk: the RLS migration in `qa-a11y-audit-pass` was already
-  independently re-tracked via the merged `20260710120000_track_business_owner_update_policy.sql`;
+  independently re-tracked via the merged `20260709212309_track_business_owner_update_policy.sql`;
   its color-contrast fix is moot (superseded by the August redesign, which
   removed every class it touched); its `PROJECT_CONTEXT.md` edits are long
   superseded. The one genuinely still-missing piece: **the order

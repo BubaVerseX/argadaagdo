@@ -61,6 +61,8 @@ function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [completedPickups, setCompletedPickups] = useState(0);
+  // Business and admin accounts don't collect boxes: no customer impact block.
+  const [isCustomer, setIsCustomer] = useState(true);
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
@@ -102,6 +104,7 @@ function ProfilePage() {
     const savedLanguage = getMetadataText(metadata, "preferred_language");
 
     setUser(profileResult.user);
+    setIsCustomer(!profileResult.profile || profileResult.profile.role === "customer");
     setPhoneVerified(
       Boolean(profileResult.user.phone_confirmed_at && profileResult.user.phone)
     );
@@ -290,7 +293,7 @@ function ProfilePage() {
             </label>
           </div>
 
-          <ImpactCard language={language} bags={completedPickups} subject="you" />
+          {isCustomer && <ImpactCard language={language} bags={completedPickups} subject="you" />}
 
           <Link
             href="/settings"

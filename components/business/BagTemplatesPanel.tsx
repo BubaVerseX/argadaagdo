@@ -657,6 +657,8 @@ export function BagTemplatesPanel({
                       : "until stopped"
                     : isGeorgian
                     ? `${template.daily_quantity} ლანჩ ბოქსი დღეში`
+                    : template.daily_quantity === 1
+                    ? "1 box per day"
                     : `${template.daily_quantity} boxes per day`}{" "}
                   · {template.pickup_start.slice(0, 5)}–{template.pickup_end.slice(0, 5)} ·{" "}
                   {formatWeekdays(template.days_of_week || [], language)}

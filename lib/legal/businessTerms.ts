@@ -44,7 +44,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         bullets: [
           "A Lunch Box contains good food that you didn't sell that day. Describe it honestly: category, size, price, how many and when it can be picked up.",
           "You set the price. If you show an original price, it must be the real usual price of the contents.",
-          "Templates go live automatically at the time you choose; you can pause them or tap Today: no bags at any time. Boxes already sold must still be handed over.",
+          "Templates go live automatically at the time you choose; you can pause them or tap Stop sales for today at any time. Boxes already sold must still be handed over.",
         ],
       },
       {
@@ -145,7 +145,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         bullets: [
           "ლანჩ ბოქსში დევს ვარგისი საკვები, რომელიც იმ დღეს ვერ გაყიდე. აღწერე ის პატიოსნად: კატეგორია, ზომა, ფასი, რაოდენობა და წაღების დრო.",
           "ფასს შენ ადგენ. თუ საწყის ფასს უთითებ, ის შიგთავსის ნამდვილი ჩვეულებრივი ფასი უნდა იყოს.",
-          "შაბლონები ავტომატურად შენ მიერ არჩეულ დროს ქვეყნდება; ნებისმიერ დროს შეგიძლია შეაჩერო ან დააჭირო „დღეს: ლანჩ ბოქსები აღარ არის“. უკვე გაყიდული ბოქსები მაინც უნდა გადასცე.",
+          "შაბლონები ავტომატურად შენ მიერ არჩეულ დროს ქვეყნდება; ნებისმიერ დროს შეგიძლია შეაჩერო ან დააჭირო „დღეს გაყიდვის შეჩერება“. უკვე გაყიდული ბოქსები მაინც უნდა გადასცე.",
         ],
       },
       {
