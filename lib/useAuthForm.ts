@@ -564,11 +564,7 @@ export function useAuthForm() {
     }
 
     if (resolvedRole === "business") {
-      const { data: ownedBusinesses } = await supabase
-        .from("businesses")
-        .select("id")
-        .eq("owner_id", authData.user.id)
-        .limit(1);
+      const { data: ownedBusinesses } = await supabase.rpc("get_my_businesses");
 
       router.push(
         ownedBusinesses && ownedBusinesses.length > 0

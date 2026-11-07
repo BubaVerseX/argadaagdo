@@ -58,11 +58,9 @@ function BusinessReport() {
         return;
       }
 
-      const { data: businessRow, error: businessError } = await supabase
-        .from("businesses")
-        .select("*")
-        .eq("id", businessId)
-        .maybeSingle();
+      // The owner's own businesses only (get_my_businesses), every column.
+      const { data: ownRows, error: businessError } = await supabase.rpc("get_my_businesses");
+      const businessRow = ((ownRows || []) as { id: number }[]).find((row) => row.id === businessId) || null;
 
       if (businessError || !businessRow) {
         if (businessError) {

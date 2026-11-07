@@ -1,5 +1,6 @@
 "use client";
 
+import type { Business } from "@/types/business";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import {
@@ -81,14 +82,11 @@ export default function BusinessRegisterPage() {
         return;
       }
 
-      const { data: businesses } = await supabase
-        .from("businesses")
-        .select("id, name, business_type, address, latitude, longitude, approved, rejected_at, rejection_reason")
-        .eq("owner_id", authResult.user.id);
+      const { data: businesses } = await supabase.rpc("get_my_businesses");
 
       if (!active) return;
 
-      const rows = businesses || [];
+      const rows = (businesses || []) as Business[];
       const rejected = rows.find((row) => row.rejected_at);
 
       if (!rejected && rows.some((row) => !row.approved)) {

@@ -20,4 +20,13 @@ export type Business = {
   /** Set when an admin rejects the application; cleared when the owner resubmits. */
   rejected_at?: string | null;
   rejection_reason?: string | null;
+  /** Public profile (20261107130000): pictures live in offer-images/business-<id>/. */
+  logo_url?: string | null;
+  cover_url?: string | null;
+  /** {"1": {"open": "09:00", "close": "20:00"}, ..., "7": null}; 1 = Monday. */
+  opening_hours?: OpeningHours | null;
+  deleted_at?: string | null;
 };
+
+export type OpeningHoursDay = { open: string; close: string } | null;
+export type OpeningHours = Partial<Record<"1" | "2" | "3" | "4" | "5" | "6" | "7", OpeningHoursDay>>;

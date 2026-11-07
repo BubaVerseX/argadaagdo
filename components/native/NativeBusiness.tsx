@@ -123,11 +123,7 @@ export default function NativeBusiness() {
       // In parallel; the full dashboard asks one after the other.
       const [profile, businessResult] = await Promise.all([
         getProfileById(session.user.id, 3),
-        supabase
-          .from("businesses")
-          .select("*")
-          .eq("owner_id", session.user.id)
-          .order("id", { ascending: false }),
+        supabase.rpc("get_my_businesses"),
       ]);
 
       if (!active) return;

@@ -90,7 +90,7 @@ function OfferDetailPage() {
       const [{ data, error }, summaries] = await Promise.all([
         supabase
           .from("offers")
-          .select("*, businesses(id, name, business_type, address, phone, approved)")
+          .select("*, businesses(id, name, business_type, address, approved)")
           .eq("id", offerId)
           .maybeSingle(),
         loadBusinessRatingSummaries(),

@@ -24,8 +24,35 @@ function extractBearerToken(request: Request) {
   return match?.[1] || "";
 }
 
-// The privacy policy promises this: the owner's name, phone and registry extract
-// go; the company's legal name, ID code and IBAN stay for payout records.
+// Business pictures (logo, cover, offer and template photos) live in the
+// public offer-images bucket under business-<id>/; they go with the account.
+async function removeBusinessImages(
+  serviceClient: ReturnType<typeof createServiceRoleSupabaseClient>,
+  businessIds: number[]
+) {
+  const bucket = serviceClient.storage.from("offer-images");
+
+  for (const businessId of businessIds) {
+    const folder = `business-${businessId}`;
+    const { data: files, error } = await bucket.list(folder, { limit: 1000 });
+
+    if (error) {
+      logger.error("Business images could not be listed", { businessId, error: error.message });
+      continue;
+    }
+
+    if (files && files.length > 0) {
+      const { error: removeError } = await bucket.remove(files.map((file) => `${folder}/${file.name}`));
+      if (removeError) {
+        logger.error("Business images could not be removed", { businessId, error: removeError.message });
+      }
+    }
+  }
+}
+
+// The privacy policy promises this: the owner's name, phone, IBAN and registry
+// extract go (anonymize_account_for_deletion); the company's legal name and ID
+// code stay with the order records for 6 years.
 async function removeVerificationPersonalData(
   serviceClient: ReturnType<typeof createServiceRoleSupabaseClient>,
   userId: string,
@@ -157,11 +184,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: DELETE_FAILED_MESSAGE }, { status: 500 });
     }
 
-    await removeVerificationPersonalData(
-      serviceClient,
-      user.id,
-      (ownedBusinesses || []).map((business: { id: number }) => business.id)
-    );
+    const ownedBusinessIds = (ownedBusinesses || []).map((business: { id: number }) => business.id);
+
+    await removeVerificationPersonalData(serviceClient, user.id, ownedBusinessIds);
+    await removeBusinessImages(serviceClient, ownedBusinessIds);
 
     // The profile photo (private bucket, one file per person). Removing a
     // file that isn't there is not an error.
