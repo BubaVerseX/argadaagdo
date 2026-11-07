@@ -4,6 +4,7 @@ import {
   businessSiteUrl,
   isBusinessHostname,
   isBusinessHostPath,
+  NATIVE_APP_COOKIE,
 } from "@/lib/businessArea";
 import { siteUrl } from "@/lib/site";
 
@@ -29,7 +30,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/for-businesses") {
+  // The apps show /for-businesses on this host (Profile → For businesses);
+  // their WebView carries NATIVE_APP_COOKIE. Browsers go to the business site.
+  if (pathname === "/for-businesses" && !request.cookies.has(NATIVE_APP_COOKIE)) {
     return NextResponse.redirect(`${businessSiteUrl}/`);
   }
 

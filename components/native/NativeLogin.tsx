@@ -3,11 +3,11 @@
 import Notice from "@/components/Notice";
 import { LeafIcon } from "@/components/icons";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
-import { businessLoginUrl } from "@/lib/businessArea";
 import SignupConsent from "@/components/legal/SignupConsent";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { useAuthForm } from "@/lib/useAuthForm";
 import EmailCodeStep from "@/components/EmailCodeStep";
+import Link from "./AppLink";
 import NativeTopBar from "./NativeTopBar";
 
 const field =
@@ -197,12 +197,13 @@ export default function NativeLogin() {
             )}
 
             {!isLogin && (
-              <a
-                href={`${businessLoginUrl}?tab=signup`}
+              // Stays in the app: the business host would open the browser.
+              <Link
+                href="/for-businesses"
                 className="mt-2 inline-flex min-h-11 items-center justify-center text-sm font-bold text-body"
               >
                 {L("ბიზნესისთვის →", "For businesses →")}
-              </a>
+              </Link>
             )}
           </div>
           </>

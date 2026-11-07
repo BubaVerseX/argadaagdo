@@ -27,6 +27,13 @@ export function absoluteBusinessUrl(path: string) {
 /** Where businesses sign in. Linked from the customer login even before the env var is set. */
 export const businessLoginUrl = `${businessSiteUrl || "https://business.argadaagdo.ge"}/login`;
 
+/**
+ * Set by the native apps (components/native/NativeRoot.tsx) so proxy.ts can
+ * tell them apart from browsers: the apps wrap the customer host, and sending
+ * them to the business host would open Safari / Chrome and leave the app.
+ */
+export const NATIVE_APP_COOKIE = "argadaagdo-app";
+
 /** The link in the customer site's footer. */
 export function businessHomeUrl() {
   return businessSiteUrl ? `${businessSiteUrl}/` : "/for-businesses";
