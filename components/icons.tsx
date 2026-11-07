@@ -192,6 +192,22 @@ export const LockIcon = base(
   </>
 );
 
+export const EyeIcon = base(
+  <>
+    <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+    <circle cx="12" cy="12" r="3" />
+  </>
+);
+
+export const EyeOffIcon = base(
+  <>
+    <path d="M3.5 3.5l17 17" />
+    <path d="M10.6 5.6c.46-.07.93-.1 1.4-.1 6 0 9.5 6.5 9.5 6.5a16.6 16.6 0 0 1-3 3.8" />
+    <path d="M6.6 6.6C3.9 8.3 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3.05-.4 4.3-1.1" />
+    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+  </>
+);
+
 export const MailIcon = base(
   <>
     <rect x="3.5" y="5.5" width="17" height="13" rx="2" />

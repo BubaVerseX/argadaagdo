@@ -1,5 +1,6 @@
 "use client";
 
+import PasswordInput from "@/components/PasswordInput";
 import { businessLoginUrl } from "@/lib/businessArea";
 import Navbar from "@/components/Navbar";
 import Captcha from "@/components/Captcha";
@@ -76,22 +77,20 @@ function LoginPage() {
                     ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი."
                     : "At least 8 characters, with a lowercase and an uppercase letter and a number."}
                 </p>
-                <input
+                <PasswordInput
                   value={form.newPassword}
                   onChange={(event) => form.setNewPassword(event.target.value)}
-                  type="password"
                   autoComplete="new-password"
                   aria-label={isGeorgian ? "ახალი პაროლი" : "New password"}
                   placeholder={isGeorgian ? "ახალი პაროლი" : "New password"}
                   className="premium-input px-4 py-3"
                 />
-                <input
+                <PasswordInput
                   value={form.confirmNewPassword}
                   onChange={(event) => form.setConfirmNewPassword(event.target.value)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") void form.updatePassword();
                   }}
-                  type="password"
                   autoComplete="new-password"
                   aria-label={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
                   placeholder={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
@@ -195,11 +194,10 @@ function LoginPage() {
                 className="premium-input px-4 py-3"
               />
 
-              <input
+              <PasswordInput
                 value={form.password}
                 onChange={(event) => form.setPassword(event.target.value)}
                 onKeyDown={form.submitOnEnter}
-                type="password"
                 autoComplete={isLogin ? "current-password" : "new-password"}
                 aria-label={t("login.password")}
                 placeholder={t("login.password")}

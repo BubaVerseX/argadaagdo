@@ -1,5 +1,6 @@
 "use client";
 
+import PasswordInput from "@/components/PasswordInput";
 import Notice from "@/components/Notice";
 import { ChevronRightIcon, LockIcon, LogOutIcon, MailIcon, TrashIcon } from "@/components/icons";
 import {
@@ -203,8 +204,7 @@ export default function NativeSettings() {
           </button>
           {panel === "password" && (
             <div className="grid gap-3 border-t border-line p-4">
-              <input
-                type="password"
+              <PasswordInput
                 autoComplete="current-password"
                 value={currentPassword}
                 onChange={(event) => setCurrentPassword(event.target.value)}
@@ -212,8 +212,7 @@ export default function NativeSettings() {
                 aria-label={L("ახლანდელი პაროლი", "Current password")}
                 className={field}
               />
-              <input
-                type="password"
+              <PasswordInput
                 autoComplete="new-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -221,8 +220,7 @@ export default function NativeSettings() {
                 aria-label={L("ახალი პაროლი", "New password")}
                 className={field}
               />
-              <input
-                type="password"
+              <PasswordInput
                 autoComplete="new-password"
                 value={repeat}
                 onChange={(event) => setRepeat(event.target.value)}
@@ -276,10 +274,9 @@ export default function NativeSettings() {
                 autoCapitalize="characters"
                 className={field}
               />
-              <input
+              <PasswordInput
                 value={deletePassword}
                 onChange={(event) => setDeletePassword(event.target.value)}
-                type="password"
                 autoComplete="current-password"
                 aria-label={L("პაროლი", "Password")}
                 placeholder={L("პაროლი", "Password")}
