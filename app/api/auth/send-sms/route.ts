@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHmac } from "node:crypto";
 import { NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { isValidStandardWebhook } from "@/lib/sms/standardWebhook";
@@ -67,7 +67,10 @@ export async function POST(request: Request) {
 
   // Every SMS costs money: cap per number, per account and per day
   // (public.note_sms_send). Only hashes are stored. Fails closed.
-  const sha256 = (value: string) => createHash("sha256").update(value).digest("hex");
+  // Keyed hashes (HMAC), so the log can't be matched against a list of all
+  // Georgian numbers. The key never leaves the server.
+  const hashKey = process.env.SMS_LOG_HASH_KEY || process.env.SEND_SMS_HOOK_SECRET || "";
+  const sha256 = (value: string) => createHmac("sha256", hashKey).update(value).digest("hex");
   const { data: smsAllowed, error: smsCapError } = await createServiceRoleSupabaseClient().rpc(
     "note_sms_send",
     {

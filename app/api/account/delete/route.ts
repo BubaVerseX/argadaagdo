@@ -15,6 +15,9 @@ const ACTIVE_RESERVATIONS_MESSAGE =
   "You have a reservation in progress. Pick it up or cancel it, then delete your account.";
 const BUSINESS_ACTIVE_RESERVATIONS_MESSAGE =
   "Your business has reservations in progress. Complete or resolve them, then delete your account.";
+const PASSWORD_REQUIRED_MESSAGE = "Enter your password to delete your account.";
+const PASSWORD_WRONG_MESSAGE = "That password is wrong.";
+const PASSWORD_LOCKED_MESSAGE = "Too many wrong passwords. Please wait 15 minutes and try again.";
 const DELETE_FAILED_MESSAGE =
   "Your account could not be deleted. Please try again or contact support.";
 
@@ -121,6 +124,12 @@ export async function POST(request: Request) {
       );
     }
 
+    const password = typeof body?.password === "string" ? body.password : "";
+
+    if (!password) {
+      return NextResponse.json({ error: PASSWORD_REQUIRED_MESSAGE }, { status: 400 });
+    }
+
     const userClient = createUserScopedSupabaseClient(accessToken);
     const {
       data: { user },
@@ -135,6 +144,26 @@ export async function POST(request: Request) {
     }
 
     const serviceClient = createServiceRoleSupabaseClient();
+
+    // A session alone isn't enough: the password must match (check-2 #33).
+    const { data: passwordCheck, error: passwordError } = await serviceClient.rpc("check_user_password", {
+      p_user_id: user.id,
+      p_password: password,
+    });
+
+    if (passwordError) {
+      logger.error("Password check failed before deletion", { userId: user.id, error: passwordError.message });
+      return NextResponse.json({ error: DELETE_FAILED_MESSAGE }, { status: 500 });
+    }
+
+    if (passwordCheck === "locked") {
+      return NextResponse.json({ error: PASSWORD_LOCKED_MESSAGE }, { status: 429 });
+    }
+
+    if (passwordCheck !== "ok") {
+      return NextResponse.json({ error: PASSWORD_WRONG_MESSAGE }, { status: 403 });
+    }
+
     const { data: profile } = await serviceClient
       .from("profiles")
       .select("role")

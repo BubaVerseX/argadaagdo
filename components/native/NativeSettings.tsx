@@ -35,6 +35,7 @@ export default function NativeSettings() {
   const [session, setSession] = useState<Session | null>(null);
   const [panel, setPanel] = useState<"none" | "password" | "delete">("none");
   const [currentPassword, setCurrentPassword] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
   const [password, setPassword] = useState("");
   const [repeat, setRepeat] = useState("");
   const [deleteWord, setDeleteWord] = useState("");
@@ -93,31 +94,25 @@ export default function NativeSettings() {
     }
 
     setBusy(true);
-    // Supabase doesn't ask for the old password: check it here first.
-    const { error: currentError } = await supabase.auth.signInWithPassword({
-      email,
-      password: currentPassword,
-    });
-
-    if (currentError) {
-      setBusy(false);
-      setNote({
-        tone: "error",
-        text: L("ახლანდელი პაროლი არასწორია.", "Your current password is wrong."),
-      });
-      return;
-    }
-
-    const { error } = await supabase.auth.updateUser({ password });
+    // The server checks the current password (5 wrong tries lock it for 15
+    // minutes) and sets the new one: app/api/account/password.
+    const response = await fetch("/api/account/password", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session?.access_token || ""}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ currentPassword, newPassword: password }),
+    }).catch(() => null);
     setBusy(false);
 
-    if (error) {
+    if (!response?.ok) {
+      const result = (await response?.json().catch(() => null)) as { error?: string } | null;
       setNote({
         tone: "error",
-        text: L(
-          "პაროლი ვერ შეიცვალა. სცადე ხელახლა.",
-          "The password couldn't be changed. Please try again."
-        ),
+        text: result?.error
+          ? translateUserMessage(result.error, language)
+          : L("პაროლი ვერ შეიცვალა. სცადე ხელახლა.", "The password couldn't be changed. Please try again."),
       });
       return;
     }
@@ -130,11 +125,11 @@ export default function NativeSettings() {
   }
 
   async function deleteAccount() {
-    if (!isDeleteConfirmed(deleteWord) || busy) return;
+    if (!isDeleteConfirmed(deleteWord) || !deletePassword || busy) return;
 
     setBusy(true);
     setNote(null);
-    const result = await deleteMyAccount();
+    const result = await deleteMyAccount(deletePassword);
 
     if (result.status === "signed_out") {
       router.replace(getLoginRedirectUrl("/settings"));
@@ -281,10 +276,19 @@ export default function NativeSettings() {
                 autoCapitalize="characters"
                 className={field}
               />
+              <input
+                value={deletePassword}
+                onChange={(event) => setDeletePassword(event.target.value)}
+                type="password"
+                autoComplete="current-password"
+                aria-label={L("პაროლი", "Password")}
+                placeholder={L("პაროლი", "Password")}
+                className={field}
+              />
               <button
                 type="button"
                 onClick={() => void deleteAccount()}
-                disabled={busy || !isDeleteConfirmed(deleteWord)}
+                disabled={busy || !isDeleteConfirmed(deleteWord) || !deletePassword}
                 className="native-press min-h-11 rounded-2xl bg-danger-solid text-sm font-semibold text-white disabled:opacity-50"
               >
                 {busy ? L("იშლება...", "Deleting...") : L("სამუდამოდ წაშლა", "Delete for good")}

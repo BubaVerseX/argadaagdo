@@ -860,8 +860,8 @@ function BusinessDashboardPage() {
       });
       setMessageTone("error");
       setMessage(
-        error.message.includes("4 to 8 digits")
-          ? "The staff PIN must be 4 to 8 digits."
+        error.message.includes("6 digits") || error.message.includes("4 to 8 digits")
+          ? "The staff PIN must be 6 digits."
           : "The staff PIN could not be saved. Please try again."
       );
       return false;
