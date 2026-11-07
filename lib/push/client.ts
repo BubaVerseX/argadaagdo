@@ -1,6 +1,7 @@
 "use client";
 
 import { isNativeApp, removeNativeListener } from "@/lib/native";
+import { PUSH_CONSENT_VERSION, recordConsent } from "@/lib/consents";
 import { supabase } from "@/lib/supabase";
 
 // Push notifications in the app (Capacitor Push Notifications plugin, which
@@ -29,9 +30,28 @@ type CapacitorGlobal = {
 };
 
 const TOKEN_KEY = "argadaagdo-push-token";
-// Set when the person turns notifications off in Settings.
-const OFF_KEY = "argadaagdo-push-off";
+// Per account on this phone (check-2 #10): a second account is asked again
+// instead of inheriting the first one's notifications.
+// - asked: the one-time ask was shown to this account;
+// - on: this account turned order notifications on here;
+// - off: this account turned them off in Settings.
 export const PUSH_ASKED_KEY = "argadaagdo-push-asked";
+const pushAskedKey = (userId: string) => `${PUSH_ASKED_KEY}:${userId}`;
+const pushOnKey = (userId: string) => `argadaagdo-push-on:${userId}`;
+const pushOffKey = (userId: string) => `argadaagdo-push-off:${userId}`;
+
+async function currentUserId() {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user.id ?? null;
+}
+
+export function wasPushAsked(userId: string) {
+  return storage("get", pushAskedKey(userId)) === "1";
+}
+
+export function markPushAsked(userId: string) {
+  storage("set", pushAskedKey(userId), "1");
+}
 function capacitor() {
   return isNativeApp()
     ? ((window as unknown as { Capacitor?: CapacitorGlobal }).Capacitor ?? null)
@@ -153,8 +173,10 @@ async function enablePushOnce(): Promise<EnableResult> {
     return "unsupported";
   }
 
-  storage("set", PUSH_ASKED_KEY, "1");
-  storage("remove", OFF_KEY);
+  const userId = await currentUserId();
+  if (!userId) return "failed";
+  markPushAsked(userId);
+  storage("remove", pushOffKey(userId));
   let permission: Permission;
   try {
     permission = (await push.checkPermissions()).receive;
@@ -164,7 +186,10 @@ async function enablePushOnce(): Promise<EnableResult> {
   } catch {
     return "failed";
   }
-  if (permission !== "granted") return "denied";
+  if (permission !== "granted") {
+    void recordConsent("push_orders", PUSH_CONSENT_VERSION, false, os);
+    return "denied";
+  }
 
   try {
     const token = await registerDevice(push);
@@ -177,6 +202,9 @@ async function enablePushOnce(): Promise<EnableResult> {
       return "failed";
     }
     storage("set", TOKEN_KEY, token);
+    const wasOn = storage("get", pushOnKey(userId)) === "1";
+    storage("set", pushOnKey(userId), "1");
+    if (!wasOn) void recordConsent("push_orders", PUSH_CONSENT_VERSION, true, os);
     return "on";
   } catch {
     return "failed";
@@ -191,7 +219,14 @@ async function enablePushOnce(): Promise<EnableResult> {
 export async function disablePush({ turnedOff = true } = {}) {
   const token = storage("get", TOKEN_KEY);
   storage("remove", TOKEN_KEY);
-  if (turnedOff) storage("set", OFF_KEY, "1");
+  if (turnedOff) {
+    const userId = await currentUserId();
+    if (userId) {
+      storage("set", pushOffKey(userId), "1");
+      storage("remove", pushOnKey(userId));
+      void recordConsent("push_orders", PUSH_CONSENT_VERSION, false, platform() ?? "app");
+    }
+  }
   if (!token) return;
   await supabase.rpc("unregister_push_device", { p_token: token }).then(
     () => undefined,
@@ -225,11 +260,34 @@ export function startPush(openPath: (path: string) => void) {
  * couldn't save last time. `refresh` re-sends an existing registration.
  */
 export async function ensurePushRegistered({ refresh = false } = {}) {
-  if (storage("get", OFF_KEY) === "1") return;
+  const userId = await currentUserId();
+  // Only an account that turned notifications on here, never a second
+  // account on the same phone without asking it first.
+  if (!userId || storage("get", pushOnKey(userId)) !== "1") return;
+  if (storage("get", pushOffKey(userId)) === "1") return;
   if (!refresh && storage("get", TOKEN_KEY)) return;
   if (!(await isPushSupported()) || (await getPushPermission()) !== "granted") return;
-  const { data } = await supabase.auth.getSession();
-  if (data.session) await enablePush();
+  await enablePush();
+}
+
+/** The "new boxes from places you saved" choice for this account on this device. */
+export async function getNewBoxesPush() {
+  const token = storage("get", TOKEN_KEY);
+  if (!token) return false;
+  const { data } = await supabase.rpc("get_my_push_device", { p_token: token });
+  const row = (Array.isArray(data) ? data[0] : data) as { notify_new_boxes?: boolean } | null;
+  return Boolean(row?.notify_new_boxes);
+}
+
+export async function setNewBoxesPush(on: boolean) {
+  const token = storage("get", TOKEN_KEY);
+  if (!token) return false;
+  const { data, error } = await supabase.rpc("set_push_new_boxes", {
+    p_token: token,
+    p_on: on,
+    p_version: PUSH_CONSENT_VERSION,
+  });
+  return !error && data === true;
 }
 
 /**

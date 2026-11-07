@@ -5,11 +5,13 @@ import {
   canOpenPhoneSettings,
   disablePush,
   enablePush,
+  getNewBoxesPush,
   getPushPermission,
   isPushOn,
   isPushSupported,
   openPhoneNotificationSettings,
   pushNeedsAppUpdate,
+  setNewBoxesPush,
 } from "@/lib/push/client";
 import { useLanguage } from "@/lib/useLanguage";
 import { useEffect, useState } from "react";
@@ -32,6 +34,9 @@ export default function PushToggle({
   const [denied, setDenied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Marketing: new boxes from places this account saved (off until turned on).
+  const [newBoxes, setNewBoxes] = useState(false);
+  const [newBoxesBusy, setNewBoxesBusy] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -50,6 +55,10 @@ export default function PushToggle({
       setSupported(true);
       setOn(isOn);
       setDenied(permission === "denied");
+      if (isOn) {
+        const marketing = await getNewBoxesPush();
+        if (active) setNewBoxes(marketing);
+      }
     };
     void refresh();
     // Coming back from iPhone Settings: show the new permission state.
@@ -101,6 +110,7 @@ export default function PushToggle({
       if (on) {
         await disablePush();
         setOn(false);
+        setNewBoxes(false);
       } else {
         const result = await enablePush();
         setOn(result === "on");
@@ -114,8 +124,17 @@ export default function PushToggle({
     }
   }
 
-  // One switch, nothing else. If the phone's own setting blocks it, the
-  // switch opens iPhone Settings (Android: one short line where to look).
+  async function toggleNewBoxes() {
+    setNewBoxesBusy(true);
+    const next = !newBoxes;
+    const ok = await setNewBoxesPush(next);
+    if (ok) setNewBoxes(next);
+    setNewBoxesBusy(false);
+  }
+
+  // Order updates, and under it (only while that is on) new boxes from saved
+  // places. If the phone's own setting blocks it, the first switch opens
+  // iPhone Settings (Android: one short line where to look).
   return (
     <section className="rounded-[22px] bg-card px-4 py-2.5">
       <div className="flex min-h-11 items-center gap-3">
@@ -124,13 +143,13 @@ export default function PushToggle({
           strokeWidth={1.8}
         />
         <p className="min-w-0 flex-1 text-[15px] text-cream">
-          {L("შეტყობინებები", "Notifications")}
+          {L("შეკვეთების განახლებები", "Order updates")}
         </p>
         <button
           type="button"
           role="switch"
           aria-checked={on}
-          aria-label={L("შეტყობინებები", "Notifications")}
+          aria-label={L("შეკვეთების განახლებები", "Order updates")}
           disabled={busy || (denied && !on && !canOpenPhoneSettings())}
           onClick={() => void toggle()}
           className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
@@ -156,6 +175,31 @@ export default function PushToggle({
         <p className="pb-1 text-xs leading-5 text-danger">
           {L("ვერ ჩაირთო. სცადე ხელახლა.", "Couldn't turn on. Try again.")}
         </p>
+      )}
+      {on && !compact && (
+        <div className="flex min-h-11 items-center gap-3 border-t border-line pt-2">
+          <span aria-hidden="true" className="h-[18px] w-[18px] shrink-0" />
+          <p className="min-w-0 flex-1 text-[15px] leading-5 text-cream">
+            {L("ახალი ბოქსები შენახული ადგილებიდან", "New boxes from places you saved")}
+          </p>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={newBoxes}
+            aria-label={L("ახალი ბოქსები შენახული ადგილებიდან", "New boxes from places you saved")}
+            disabled={newBoxesBusy}
+            onClick={() => void toggleNewBoxes()}
+            className={`relative h-8 w-14 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+              newBoxes ? "bg-mint" : "bg-[rgba(15,58,50,0.16)]"
+            }`}
+          >
+            <span
+              className={`absolute left-0 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+                newBoxes ? "translate-x-7" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
       )}
     </section>
   );

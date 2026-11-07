@@ -35,15 +35,19 @@ type OrderLike = {
 
 type Copy = { title: string; body: string };
 
-async function devicesFor(client: ServiceClient, userIds: string[]) {
+// kind: "orders" = order updates, "new_boxes" = new boxes from saved places
+// (marketing, only where the account turned it on: 20261107140000).
+async function devicesFor(client: ServiceClient, userIds: string[], kind: "orders" | "new_boxes") {
   if (userIds.length === 0) return [];
   const { data, error } = await client
     .from("push_devices")
-    .select("token, platform, language, user_id")
+    .select("token, platform, language, user_id, notify_orders, notify_new_boxes")
     .in("user_id", userIds);
   // The table may not exist yet (migration not applied): treat as no devices.
   if (error || !Array.isArray(data)) return [];
-  return data as (Device & { user_id: string })[];
+  return (data as (Device & { user_id: string; notify_orders?: boolean; notify_new_boxes?: boolean })[]).filter(
+    (device) => (kind === "orders" ? device.notify_orders !== false : device.notify_new_boxes === true)
+  );
 }
 
 async function deliver(
@@ -100,7 +104,7 @@ export async function sendOrderPush(client: unknown, order: OrderLike | null, ki
   if (!order || !isPushConfigured()) return { sent: 0 };
   try {
     const service = client as ServiceClient;
-    const devices = await devicesFor(service, [order.user_id]);
+    const devices = await devicesFor(service, [order.user_id], "orders");
     const dateKey = order.offers?.pickup_date || getTbilisiDateKey();
     const sent = await deliver(
       service,
@@ -143,7 +147,7 @@ export async function sendFavouriteBoxesPush(
       }
     }
 
-    const devices = await devicesFor(service, [...firstPlace.keys()]);
+    const devices = await devicesFor(service, [...firstPlace.keys()], "new_boxes");
     const today = getTbilisiDateKey();
     let sent = 0;
 
