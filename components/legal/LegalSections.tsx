@@ -7,7 +7,14 @@ import { useEffect, useState } from "react";
 // Legal sections as tap-to-open rows on phones, so a long policy fits on about
 // one screen; all open on wider screens. A section named in the URL hash
 // (e.g. /privacy#delete-account) opens and scrolls into view.
-export default function LegalSections({ sections }: { sections: ContentSection[] }) {
+export default function LegalSections({
+  sections,
+  alwaysOpen = false,
+}: {
+  sections: ContentSection[];
+  /** Short pages (refund, pickup) show every section open on phones too. */
+  alwaysOpen?: boolean;
+}) {
   const [openAll, setOpenAll] = useState(false);
   const [hash, setHash] = useState("");
 
@@ -36,7 +43,7 @@ export default function LegalSections({ sections }: { sections: ContentSection[]
         <details
           key={`${section.title}-${openAll}-${hash}`}
           id={section.id}
-          open={openAll || (Boolean(section.id) && section.id === hash)}
+          open={alwaysOpen || openAll || (Boolean(section.id) && section.id === hash)}
           className="group scroll-mt-24 rounded-2xl ui-card md:rounded-3xl"
         >
           <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 py-3 md:px-8 md:py-6 [&::-webkit-details-marker]:hidden">

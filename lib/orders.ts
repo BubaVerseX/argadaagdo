@@ -109,7 +109,8 @@ export function isPickupWindowOpen(order: Order) {
 }
 
 // The in-app "Collected" slider is offered from one hour before the pickup
-// window until two hours after it (mirrors collect_my_order in the database).
+// window until it ends (mirrors collect_my_order in the database). After the
+// window only the business can still hand the box over, with the code.
 export function isCollectWindowOpen(order: Order) {
   const pickupStart = getPickupDateTime(order, "pickup_start");
   const pickupEnd = getPickupDateTime(order, "pickup_end");
@@ -117,10 +118,23 @@ export function isCollectWindowOpen(order: Order) {
   if (!pickupStart || !pickupEnd) return false;
 
   const now = Date.now();
-  return (
-    now >= pickupStart.getTime() - 60 * 60 * 1000 &&
-    now <= pickupEnd.getTime() + 2 * 60 * 60 * 1000
-  );
+  return now >= pickupStart.getTime() - 60 * 60 * 1000 && now <= pickupEnd.getTime();
+}
+
+/** Free cancellation ends 2 h before pickup starts (begin_customer_refund). */
+export function getCancellationDeadline(offer: {
+  pickup_date?: string | null;
+  pickup_start?: string | null;
+} | null | undefined) {
+  if (!offer?.pickup_date || !offer.pickup_start) return null;
+  const start = new Date(`${offer.pickup_date}T${normalizeTime(offer.pickup_start)}:00+04:00`);
+  if (Number.isNaN(start.getTime())) return null;
+  return new Date(start.getTime() - 2 * 60 * 60 * 1000);
+}
+
+/** Whether a box reserved now could still be cancelled (deadline in the future). */
+export function isCancellationOpen(deadline: Date | null) {
+  return deadline ? deadline.getTime() > Date.now() : true;
 }
 
 export function getCustomerTimelineSteps(

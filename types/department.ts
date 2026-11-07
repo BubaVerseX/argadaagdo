@@ -25,6 +25,10 @@ export type BagTemplate = {
   pickup_end: string;
   /** ISO weekdays, 1 = Monday ... 7 = Sunday. */
   days_of_week: number[];
+  /** "HH:MM" Tbilisi time at which the box goes on sale. */
+  publish_time?: string | null;
+  /** 0 = on the pickup day, 1 = the day before. */
+  publish_days_before?: number | null;
   image_url: string | null;
   active: boolean;
   created_at?: string | null;

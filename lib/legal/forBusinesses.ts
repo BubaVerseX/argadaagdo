@@ -6,7 +6,7 @@ import type { Localized } from "@/lib/legal/shared";
 //   (supabase/migrations/20261105120000_business_verification.sql)
 // - commission per business, set by admins: 20261104081140_platform_fee_rate.sql
 // - TBC split to the business IBAN: lib/payments/tbc.ts, app/api/payments/checkout
-// - bag templates published nightly for the next day, "Today: no bags",
+// - bag templates go live at their own publish time (pg_cron every 10 min), "Today: no bags",
 //   departments + staff PIN page: 20261101110658_departments_and_bag_templates.sql
 // - monthly impact report (CSV / printable): app/business/report
 
@@ -82,7 +82,7 @@ export const forBusinessesContent: Localized<ForBusinessesContent> = {
       },
       {
         title: "Publish",
-        text: "Set the category, size, price, quantity per day, pickup window and weekdays. Boxes are published every evening for the next day, and Today: no bags pauses sales in one tap.",
+        text: "Set the category, size, price, quantity per day, pickup window, weekdays and when each box goes live. Boxes are published automatically at that time, and Today: no bags pauses sales in one tap.",
       },
       {
         title: "Hand over",
@@ -103,9 +103,10 @@ export const forBusinessesContent: Localized<ForBusinessesContent> = {
     paidTitle: "How you get paid",
     paidItems: [
       "Customers pay online through TBC Bank when they reserve, so every order you hand over is already paid.",
-      "Your share goes directly to your TBC account through TBC Bank's split payment; our commission is deducted automatically.",
+      "TBC Bank splits each payment automatically: your share goes straight to your company's TBC account and our commission to ours. We never hold your money; TBC credits it on its usual settlement schedule.",
       "If a customer cancels at least 2 hours before pickup, they get a full refund and the box goes back on sale.",
-      "If a customer doesn't show up, the order is marked as a missed pickup and the sale stands.",
+      "If a customer misses the pickup window, the order is marked as a missed pickup and the sale stands. You may still hand it over if they come later.",
+      "If an order is refunded (a cancellation in time, or an order you couldn't hand over), TBC returns the full amount to the customer, including your share.",
       "Your dashboard shows reservations, revenue and ratings, plus a monthly impact report you can download or print.",
     ],
     ctaTitle: "Ready to stop throwing food away?",
@@ -154,7 +155,7 @@ export const forBusinessesContent: Localized<ForBusinessesContent> = {
       },
       {
         title: "გამოქვეყნება",
-        text: "მიუთითე კატეგორია, ზომა, ფასი, დღიური რაოდენობა, წაღების დრო და კვირის დღეები. ბოქსები ყოველ საღამოს მომდევნო დღისთვის ქვეყნდება, ღილაკით „დღეს: ლანჩ ბოქსები აღარ არის“ კი გაყიდვას ერთი შეხებით შეაჩერებ.",
+        text: "მიუთითე კატეგორია, ზომა, ფასი, დღიური რაოდენობა, წაღების დრო, კვირის დღეები და როდის გამოქვეყნდეს ბოქსი. ბოქსები ამ დროს ავტომატურად ქვეყნდება, ღილაკით „დღეს: ლანჩ ბოქსები აღარ არის“ კი გაყიდვას ერთი შეხებით შეაჩერებ.",
       },
       {
         title: "გადაცემა",
@@ -175,9 +176,10 @@ export const forBusinessesContent: Localized<ForBusinessesContent> = {
     paidTitle: "როგორ იღებ თანხას",
     paidItems: [
       "მომხმარებელი დაჯავშნისას ონლაინ იხდის TBC ბანკის მეშვეობით, ასე რომ ყოველი შეკვეთა, რომელსაც გადასცემ, უკვე გადახდილია.",
-      "შენი წილი TBC ბანკის გაყოფილი გადახდის (split) საშუალებით პირდაპირ შენს TBC ანგარიშზე ირიცხება; ჩვენი საკომისიო ავტომატურად აკლდება.",
+      "TBC ბანკი თითოეულ გადახდას ავტომატურად ყოფს (split): შენი წილი პირდაპირ კომპანიის TBC ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე. შენს თანხას ჩვენ არ ვფლობთ; TBC მას ჩვეულებრივი ანგარიშსწორების ვადებში ჩაგირიცხავს.",
       "თუ მომხმარებელი ჯავშანს წაღებამდე არაუგვიანეს 2 საათისა გააუქმებს, თანხა სრულად უბრუნდება, ბოქსი კი ისევ გასაყიდად ბრუნდება.",
-      "თუ მომხმარებელი არ მოვიდა, შეკვეთა გამოტოვებულ წაღებად მოინიშნება და გაყიდვა ძალაში რჩება.",
+      "თუ მომხმარებელმა წაღების დრო გამოტოვა, შეკვეთა გამოტოვებულ წაღებად მოინიშნება და გაყიდვა ძალაში რჩება. თუ მოგვიანებით მოვიდა, შეგიძლია მაინც გადასცე.",
+      "თუ შეკვეთის თანხა ბრუნდება (დროული გაუქმება ან შეკვეთა, რომელიც ვერ გადაეცი), TBC მომხმარებელს სრულ თანხას უბრუნებს, შენი წილის ჩათვლით.",
       "პანელში ხედავ ჯავშნებს, შემოსავალსა და შეფასებებს, ასევე ყოველთვიურ ანგარიშს გადარჩენილ საკვებზე, რომლის ჩამოტვირთვა ან დაბეჭდვაც შეგიძლია.",
     ],
     ctaTitle: "მზად ხარ, შეწყვიტო საკვების გადაყრა?",

@@ -7,13 +7,16 @@ import {
   type Localized,
 } from "@/lib/legal/shared";
 
-// Facts behind this page (checked 6 Nov 2026):
+// Facts behind this page (checked 7 Nov 2026):
 // - cancel up to 2 h before pickup_start, full refund: begin_customer_refund
-//   (supabase/migrations/20261016104256_payment_safety.sql) + /api/payments/refund
-// - missed pickup = no_show, no refund: process_expired_marketplace / mark_order_no_show
+//   (supabase/migrations/20261016104256_payment_safety.sql) + /api/payments/refund;
+//   bought later = no cancel, shown at checkout (components/CheckoutRules.tsx)
+// - missed pickup = no_show as soon as the window ends, no refund; the business
+//   may still hand it over for 12 h (complete_pickup / staff_collect):
+//   20261107110000_schedules_and_pickup_rules.sql
 // - reliability: -2 cancel, -15 no-show, +1 pickup, < 50 = restricted (can't reserve)
 // - max 3 active reservations, one per offer: create_provider_payment_order
-// - slider 1 h before → 2 h after the window, 2-minute undo: 20261101110702_swipe_to_collect.sql
+// - slider 1 h before the window until it ends, 2-minute undo
 // - 5 wrong pickup codes lock the order: 20261016141833_pickup_code_attempt_limit.sql
 // - commission per business: 20261104081140_platform_fee_rate.sql; TBC split: lib/payments/tbc.ts
 
@@ -72,21 +75,25 @@ export const termsContent: Localized<TermsContent> = {
         ],
       },
       {
+        id: "pickup",
         title: "Pickup",
         bullets: [
           "Collect your order in person from the business during the pickup window shown.",
           "At pickup, show staff your 6-digit pickup code, or slide to collect in the app in front of them.",
-          "The slider is available from 1 hour before the pickup window until 2 hours after it ends. Slide only once the box is in your hands, because sliding completes the order. If you slide by mistake, you can undo it within 2 minutes.",
+          "The slider is available from 1 hour before the pickup window until the window ends. Slide only once the box is in your hands, because sliding completes the order. If you slide by mistake, you can undo it within 2 minutes.",
+          "If you miss the pickup window, the order counts as a missed pickup and the payment isn't refunded. The business may still hand the box over if you come later, but it doesn't have to.",
           "After 5 incorrect code entries, the order is locked for security. Contact us to unlock it.",
         ],
       },
       {
+        id: "cancellations",
         title: "Cancellations and refunds",
         bullets: [
           "You can cancel a reservation in Orders up to 2 hours before the pickup window starts. You receive a full refund to the card or account you paid with. TBC Bank processes the refund; when it appears depends on your bank.",
-          "In the last 2 hours before pickup, cancellation is no longer possible, because the business is already preparing your box.",
-          "If you don't collect your order during the pickup window, it is marked as a missed pickup and the payment is not refunded.",
-          "Cancellations and missed pickups lower your reliability score, which businesses can see. If the score falls too low, new reservations are blocked on your account. If you think this is a mistake, contact us.",
+          "In the last 2 hours before pickup starts, cancellation is no longer possible, because the business is already preparing your box. If you reserve within those 2 hours, the reservation can't be cancelled; checkout tells you this before you pay.",
+          "A missed pickup isn't refunded (see Pickup above).",
+          "Your reliability score starts at 100: +1 for each pickup, −2 for each cancellation and −15 for each missed pickup. Businesses can see it. Below 50, new reservations are blocked automatically. If you think this is a mistake, write to us and a person will review it.",
+          "Lunch Boxes are food that spoils quickly and is sold for a specific date, so the 14-day right of withdrawal for distance purchases doesn't apply to them. You can cancel as described above instead.",
           `If the business can't hand over your paid order, write to ${SUPPORT_EMAIL} with your order details, and we'll refund the full amount to the card or account you paid with. For any other problem with an order, write to us too, and we'll resolve it with you and the business.`,
         ],
       },
@@ -99,11 +106,12 @@ export const termsContent: Localized<TermsContent> = {
         ],
       },
       {
+        id: "businesses",
         title: "For businesses",
         bullets: [
           "A business can sell only after we approve it. The application includes the company's legal details, a phone number confirmed by SMS, a TBC Bank IBAN and an extract from the Public Registry. We review every application. We may decline an application (and tell you why) or pause a business for further review.",
           "The business is responsible for the food it sells: its safety and quality, compliance with food safety rules, accurate descriptions and allergen information, and handing over every paid order during the stated pickup window.",
-          "ArGadaagdo charges a commission on each paid order, at a rate agreed with each business in advance. There is no monthly fee. The business's share is paid directly to its TBC account through TBC Bank's split payment.",
+          "ArGadaagdo charges a commission on each paid order, at a rate agreed with each business in advance. There is no monthly fee. TBC Bank splits every payment automatically: the business's share goes straight to the business's TBC account and our commission to ours, so we never hold the business's money.",
         ],
       },
       {
@@ -185,21 +193,25 @@ export const termsContent: Localized<TermsContent> = {
         ],
       },
       {
+        id: "pickup",
         title: "წაღება",
         bullets: [
           "შეკვეთა ბიზნესიდან თავად წაიღე, მითითებულ წაღების დროს.",
           "წაღებისას თანამშრომელს აჩვენე 6-ნიშნა წაღების კოდი ან მის თვალწინ აპლიკაციაში გადაასრიალე წაღების ღილაკი.",
-          "წაღების ღილაკი აქტიურდება წაღების დაწყებამდე 1 საათით ადრე და აქტიური რჩება დასრულებიდან 2 საათის განმავლობაში. გადაასრიალე მხოლოდ მაშინ, როცა ბოქსი უკვე ხელში გაქვს, რადგან ეს შეკვეთას ასრულებს. შემთხვევით გადასრიალებას 2 წუთის განმავლობაში გააუქმებ.",
+          "წაღების ღილაკი აქტიურდება წაღების დაწყებამდე 1 საათით ადრე და აქტიური რჩება წაღების დროის დასრულებამდე. გადაასრიალე მხოლოდ მაშინ, როცა ბოქსი უკვე ხელში გაქვს, რადგან ეს შეკვეთას ასრულებს. შემთხვევით გადასრიალებას 2 წუთის განმავლობაში გააუქმებ.",
+          "თუ წაღების დროს გამოტოვებ, შეკვეთა გამოტოვებულ წაღებად ჩაითვლება და თანხა არ დაგიბრუნდება. ბიზნესს შეუძლია ბოქსი მოგვიანებით მოსულსაც გადმოგცეს, მაგრამ ეს მისი ნებაა.",
           "კოდის 5-ჯერ არასწორად შეყვანის შემდეგ შეკვეთა უსაფრთხოების მიზნით იბლოკება. განსაბლოკად მოგვწერე.",
         ],
       },
       {
+        id: "cancellations",
         title: "გაუქმება და თანხის დაბრუნება",
         bullets: [
           "ჯავშნის გაუქმება „შეკვეთებიდან“ შეგიძლია წაღების დაწყებამდე არაუგვიანეს 2 საათისა. სრული თანხა დაგიბრუნდება იმ ბარათზე ან ანგარიშზე, რომლითაც გადაიხადე. დაბრუნებას TBC ბანკი ამუშავებს, ანგარიშზე ასახვის დრო კი შენს ბანკზეა დამოკიდებული.",
-          "წაღების დაწყებამდე ბოლო 2 საათში ჯავშანს ვეღარ გააუქმებ, რადგან ბიზნესი შენს ბოქსს უკვე ამზადებს.",
-          "თუ შეკვეთას წაღების დროს არ წაიღებ, ის გამოტოვებულ წაღებად მოინიშნება და თანხა არ ბრუნდება.",
-          "გაუქმება და გამოტოვებული წაღება ამცირებს შენს სანდოობის ქულას, რომელსაც ბიზნესი ხედავს. თუ ქულა ძალიან დაბლა ჩამოვა, ახალი ჯავშნები შენს ანგარიშზე შეიზღუდება. თუ ფიქრობ, რომ ეს შეცდომაა, მოგვწერე.",
+          "წაღების დაწყებამდე ბოლო 2 საათში ჯავშანს ვეღარ გააუქმებ, რადგან ბიზნესი შენს ბოქსს უკვე ამზადებს. თუ ამ 2 საათში დაჯავშნი, ჯავშანი გაუქმებას არ ექვემდებარება; ამას გადახდამდე გაჩვენებთ.",
+          "გამოტოვებული წაღების თანხა არ ბრუნდება (იხ. „წაღება“ ზემოთ).",
+          "სანდოობის ქულა 100-დან იწყება: ყოველი წაღება +1, ყოველი გაუქმება −2, ყოველი გამოტოვებული წაღება −15. ქულას ბიზნესი ხედავს. 50-ზე დაბლა ახალი ჯავშნები ავტომატურად იზღუდება. თუ ფიქრობ, რომ ეს შეცდომაა, მოგვწერე და საკითხს ადამიანი განიხილავს.",
+          "ლანჩ ბოქსი სწრაფად მალფუჭებადი საკვებია, რომელიც კონკრეტული დღისთვის იყიდება, ამიტომ დისტანციური ნასყიდობისას უკან დაბრუნების 14-დღიანი უფლება მასზე არ ვრცელდება. სამაგიეროდ, ჯავშნის გაუქმება შეგიძლია ზემოთ აღწერილი წესით.",
           `თუ ბიზნესმა გადახდილი შეკვეთა ვერ გადმოგცა, მოგვწერე ${SUPPORT_EMAIL}-ზე შეკვეთის დეტალებით და სრულ თანხას დაგიბრუნებთ იმ ბარათზე ან ანგარიშზე, რომლითაც გადაიხადე. შეკვეთასთან დაკავშირებული სხვა პრობლემის შემთხვევაშიც მოგვწერე და საკითხს შენთან და ბიზნესთან ერთად მოვაგვარებთ.`,
         ],
       },
@@ -212,11 +224,12 @@ export const termsContent: Localized<TermsContent> = {
         ],
       },
       {
+        id: "businesses",
         title: "ბიზნესებისთვის",
         bullets: [
           "ბიზნესი გაყიდვას მხოლოდ დამტკიცების შემდეგ იწყებს. განაცხადი მოიცავს კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, TBC ბანკის IBAN-ს და საჯარო რეესტრის ამონაწერს. ყველა განაცხადს ვამოწმებთ. შეიძლება განაცხადი არ დავამტკიცოთ (მიზეზს მოგწერთ) ან ბიზნესი დამატებითი შემოწმებისთვის დროებით შევაჩეროთ.",
           "ბიზნესი პასუხს აგებს მის მიერ გაყიდულ საკვებზე: მის უვნებლობასა და ხარისხზე, სურსათის უვნებლობის მოთხოვნების დაცვაზე, ზუსტ აღწერასა და ალერგენების შესახებ ინფორმაციაზე, ასევე ყველა გადახდილი შეკვეთის მითითებულ დროს გადაცემაზე.",
-          "თითოეულ გადახდილ შეკვეთაზე არ გადააგდო იღებს საკომისიოს, რომლის განაკვეთიც თითოეულ ბიზნესთან წინასწარ თანხმდება. ყოველთვიური გადასახადი არ არის. ბიზნესის წილი TBC ბანკის გაყოფილი გადახდის (split) საშუალებით პირდაპირ მის TBC ანგარიშზე ირიცხება.",
+          "თითოეულ გადახდილ შეკვეთაზე არ გადააგდო იღებს საკომისიოს, რომლის განაკვეთიც თითოეულ ბიზნესთან წინასწარ თანხმდება. ყოველთვიური გადასახადი არ არის. TBC ბანკი თითოეულ გადახდას ავტომატურად ყოფს (split): ბიზნესის წილი პირდაპირ ბიზნესის TBC ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე, ასე რომ ბიზნესის თანხას ჩვენ არ ვფლობთ.",
         ],
       },
       {

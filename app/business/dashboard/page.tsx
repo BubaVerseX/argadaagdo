@@ -912,8 +912,8 @@ function BusinessDashboardPage() {
     setMessageTone("success");
     setMessage(
       templateId
-        ? "Template updated. Tomorrow's box will use the new details."
-        : "Template saved. Tomorrow's box is created automatically at 19:00; use \"Publish for today\" to start now."
+        ? "Template updated. The next box that goes live will use the new details."
+        : "Template saved. It goes live automatically at its publish time; use \"Today\" to start now."
     );
     await loadDashboard();
     return true;

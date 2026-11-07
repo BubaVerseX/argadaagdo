@@ -68,13 +68,13 @@ export const faqContent: Localized<FaqContent> = {
             id: "cancel",
             question: "Can I cancel?",
             answer:
-              "Yes, in Orders, up to 2 hours before the pickup window starts. You get a full refund to the card or account you paid with; when it appears depends on your bank. In the last 2 hours before pickup, cancellation is no longer possible.",
+              "Yes, in Orders, up to 2 hours before the pickup window starts. You get a full refund to the card or account you paid with; when it appears depends on your bank. In the last 2 hours before pickup, cancellation is no longer possible, and a box reserved in that time can't be cancelled (checkout shows this before you pay).",
           },
           {
             id: "miss",
             question: "What if I miss the pickup?",
             answer:
-              "If you don't collect your order during the pickup window, it's marked as a missed pickup and the payment isn't refunded. Missed pickups lower your reliability score, and if it falls too low, new reservations are blocked on your account.",
+              "If you don't collect your order during the pickup window, it counts as a missed pickup and the payment isn't refunded. The business may still hand it over if you come later, but it doesn't have to. A missed pickup lowers your reliability score by 15 points; below 50, new reservations are blocked on your account.",
           },
           {
             id: "problem",
@@ -128,13 +128,13 @@ export const faqContent: Localized<FaqContent> = {
             id: "cost",
             question: "What does it cost?",
             answer:
-              "There's no monthly fee. We charge a commission only on paid orders, at a rate agreed with you before you start. Your share goes directly to your TBC account through TBC Bank's split payment.",
+              "There's no monthly fee. We charge a commission only on paid orders, at a rate agreed with you before you start. TBC Bank splits each payment automatically: your share goes straight to your company's TBC account and our commission to ours, so we never hold your money. It's credited on TBC Bank's usual settlement schedule.",
           },
           {
             id: "publish",
             question: "How do I publish Lunch Boxes?",
             answer:
-              "Set up a Lunch Box once in your dashboard: category, size, price, how many per day (or until you stop), pickup window and weekdays. It's published automatically every evening for the next day, or you can publish it yourself. On a day with nothing left, tap Today: no bags.",
+              "Set up a Lunch Box template once in your dashboard: category, size, price, how many per day (or until you stop), pickup window, weekdays and when it goes live (a time on the same day or the day before). It goes live automatically at that time (we check every 10 minutes), or you can publish it yourself. On a day with nothing left, tap Today: no bags.",
           },
           {
             id: "handover",
@@ -146,7 +146,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "noshow",
             question: "What if a customer doesn't show up?",
             answer:
-              "After the pickup window ends, the order is marked as a missed pickup. The customer isn't refunded, so the sale stands.",
+              "When the pickup window ends, the order is marked as a missed pickup. The customer isn't refunded, so the sale stands. If the customer turns up later, you may still hand it over with the code within 12 hours; that clears the missed pickup from their score.",
           },
         ],
       },
@@ -221,13 +221,13 @@ export const faqContent: Localized<FaqContent> = {
             id: "cancel",
             question: "შემიძლია ჯავშნის გაუქმება?",
             answer:
-              "კი, „შეკვეთებიდან“, წაღების დაწყებამდე არაუგვიანეს 2 საათისა. სრული თანხა დაგიბრუნდება იმ ბარათზე ან ანგარიშზე, რომლითაც გადაიხადე; ასახვის დრო შენს ბანკზეა დამოკიდებული. წაღებამდე ბოლო 2 საათში ჯავშანს ვეღარ გააუქმებ.",
+              "კი, „შეკვეთებიდან“, წაღების დაწყებამდე არაუგვიანეს 2 საათისა. სრული თანხა დაგიბრუნდება იმ ბარათზე ან ანგარიშზე, რომლითაც გადაიხადე; ასახვის დრო შენს ბანკზეა დამოკიდებული. წაღებამდე ბოლო 2 საათში ჯავშანს ვეღარ გააუქმებ, ამ დროს გაკეთებული ჯავშანი კი გაუქმებას არ ექვემდებარება (ამას გადახდამდე გაჩვენებთ).",
           },
           {
             id: "miss",
             question: "რა მოხდება, თუ შეკვეთას დროზე ვერ წავიღებ?",
             answer:
-              "თუ შეკვეთას წაღების დროს არ წაიღებ, ის გამოტოვებულ წაღებად მოინიშნება და თანხა არ ბრუნდება. გამოტოვებული წაღება ამცირებს სანდოობის ქულას, ძალიან დაბალი ქულის შემთხვევაში კი ახალი ჯავშნები შენს ანგარიშზე იზღუდება.",
+              "თუ შეკვეთას წაღების დროს არ წაიღებ, ის გამოტოვებულ წაღებად ჩაითვლება და თანხა არ ბრუნდება. ბიზნესს შეუძლია ბოქსი მოგვიანებით მოსულსაც გადმოგცეს, მაგრამ ეს მისი ნებაა. გამოტოვებული წაღება სანდოობის ქულას 15-ით ამცირებს; 50-ზე დაბლა ახალი ჯავშნები შენს ანგარიშზე იზღუდება.",
           },
           {
             id: "problem",
@@ -281,13 +281,13 @@ export const faqContent: Localized<FaqContent> = {
             id: "cost",
             question: "რა ღირს?",
             answer:
-              "ყოველთვიური გადასახადი არ არის. საკომისიოს ვიღებთ მხოლოდ გადახდილ შეკვეთებზე, განაკვეთით, რომელზეც დაწყებამდე შევთანხმდებით. შენი წილი TBC ბანკის გაყოფილი გადახდის (split) საშუალებით პირდაპირ შენს TBC ანგარიშზე ირიცხება.",
+              "ყოველთვიური გადასახადი არ არის. საკომისიოს ვიღებთ მხოლოდ გადახდილ შეკვეთებზე, განაკვეთით, რომელზეც დაწყებამდე შევთანხმდებით. TBC ბანკი თითოეულ გადახდას ავტომატურად ყოფს (split): შენი წილი პირდაპირ კომპანიის TBC ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე, ასე რომ შენს თანხას ჩვენ არ ვფლობთ. თანხა TBC ბანკის ჩვეულებრივი ანგარიშსწორების ვადებში ირიცხება.",
           },
           {
             id: "publish",
             question: "როგორ გამოვაქვეყნო ლანჩ ბოქსები?",
             answer:
-              "პანელში ლანჩ ბოქსს ერთხელ აწყობ: კატეგორია, ზომა, ფასი, დღეში რამდენი (ან სანამ არ შეაჩერებ), წაღების დრო და კვირის დღეები. ის ყოველ საღამოს მომდევნო დღისთვის ავტომატურად ქვეყნდება, ან შეგიძლია თავად გამოაქვეყნო. თუ დღეს გასაყიდი აღარაფერი გაქვს, დააჭირე „დღეს: ლანჩ ბოქსები აღარ არის“.",
+              "პანელში ლანჩ ბოქსის შაბლონს ერთხელ აწყობ: კატეგორია, ზომა, ფასი, დღეში რამდენი (ან სანამ არ შეაჩერებ), წაღების დრო, კვირის დღეები და როდის გამოქვეყნდეს (დრო იმავე ან წინა დღეს). ის ამ დროს ავტომატურად ქვეყნდება (ვამოწმებთ ყოველ 10 წუთში), ან შეგიძლია თავად გამოაქვეყნო. თუ დღეს გასაყიდი აღარაფერი გაქვს, დააჭირე „დღეს: ლანჩ ბოქსები აღარ არის“.",
           },
           {
             id: "handover",
@@ -299,7 +299,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "noshow",
             question: "რა ხდება, თუ მომხმარებელი არ მოვიდა?",
             answer:
-              "წაღების დროის დასრულების შემდეგ შეკვეთა გამოტოვებულ წაღებად მოინიშნება. მომხმარებელს თანხა არ უბრუნდება, ასე რომ გაყიდვა ძალაში რჩება.",
+              "წაღების დროის დასრულებისთანავე შეკვეთა გამოტოვებულ წაღებად მოინიშნება. მომხმარებელს თანხა არ უბრუნდება, ასე რომ გაყიდვა ძალაში რჩება. თუ მომხმარებელი მოგვიანებით მოვიდა, 12 საათის განმავლობაში შეგიძლია მაინც გასცე კოდით; ეს მის ქულას გამოტოვებულ წაღებას მოუხსნის.",
           },
         ],
       },
