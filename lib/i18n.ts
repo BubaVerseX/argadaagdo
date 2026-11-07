@@ -732,7 +732,7 @@ const translations = {
     "nav.discover": "აღმოჩენა",
     "nav.orders": "შეკვეთები",
     "nav.favorites": "რჩეულები",
-    "nav.faq": "FAQ",
+    "nav.faq": "ხშირი კითხვები",
     "nav.support": "მხარდაჭერა",
     "nav.contact": "კონტაქტი",
     "nav.about": "ჩვენ შესახებ",

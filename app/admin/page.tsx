@@ -33,6 +33,7 @@ import {
 import { triggerTransactionalEmail } from "@/lib/email/client";
 import { logAppError } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   formatMoney,
   getEffectiveOfferStatus,
@@ -293,7 +294,7 @@ export default function AdminPage() {
       )
     );
     setMessageTone("success");
-    setMessage(`Commission set to ${percent}%.`);
+    setMessage(text(`საკომისიო: ${percent}%.`, `Commission set to ${percent}%.`));
   }
 
   async function setBusinessLocation(id: number, location: { latitude: number; longitude: number }) {
@@ -523,7 +524,7 @@ export default function AdminPage() {
     }
 
     setMessageTone("success");
-    setMessage(`Order #${orderId} unlocked.`);
+    setMessage(text(`შეკვეთა #${orderId} განიბლოკა.`, `Order #${orderId} unlocked.`));
     setUnlockingOrderId(null);
     await checkAdminAndLoadData();
   }
@@ -1094,7 +1095,9 @@ export default function AdminPage() {
 
         {message && (
           <div className="mt-5">
-            <Notice tone={messageTone}>{message}</Notice>
+            <Notice tone={messageTone}>
+              {translateUserMessage(message, language)}
+            </Notice>
           </div>
         )}
 

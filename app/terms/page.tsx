@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { LEGAL_LAST_UPDATED } from "@/lib/legal/shared";
 import { termsContent } from "@/lib/legal/terms";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 import { useLanguage } from "@/lib/useLanguage";
 import LegalSections from "@/components/legal/LegalSections";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import Link from "next/link";
 export default function TermsPage() {
   const { language } = useLanguage();
   const content = termsContent[language];
+  useDocumentTitle(content.title, language);
 
   return (
     <main className="app-shell theme-web">

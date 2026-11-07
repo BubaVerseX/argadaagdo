@@ -728,6 +728,83 @@ const georgianMessageEntries: Array<[string, string]> = [
     "This reset link has expired or was already used. Enter your email to get a new one.",
     "ეს ბმული ვადაგასულია ან უკვე გამოყენებულია. ჩაწერე ელფოსტა და ახალს გამოგიგზავნით.",
   ],
+  // app/admin/page.tsx
+  ["Admin data could not be loaded.", "ადმინის მონაცემები ვერ ჩაიტვირთა."],
+  [
+    "The commission must be between 0 and 100 percent.",
+    "საკომისიო უნდა იყოს 0-დან 100 პროცენტამდე.",
+  ],
+  [
+    "The commission could not be saved. Please try again.",
+    "საკომისიო ვერ შეინახა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Map pins need the database update (20261106150000_business_location.sql) first.",
+    "რუკის ნიშნულებს ჯერ ბაზის განახლება სჭირდება (20261106150000_business_location.sql).",
+  ],
+  [
+    "The map pin could not be saved. Please try again.",
+    "რუკის ნიშნული ვერ შეინახა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Map pin saved.", "რუკის ნიშნული შენახულია."],
+  [
+    "The IBAN confirmation could not be saved. Please try again.",
+    "IBAN-ის დადასტურება ვერ შეინახა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "The registry extract could not be opened.",
+    "რეესტრის ამონაწერი ვერ გაიხსნა.",
+  ],
+  [
+    "Business could not be approved. Please refresh and try again.",
+    "ბიზნესი ვერ დამტკიცდა. განაახლე გვერდი და სცადე ხელახლა.",
+  ],
+  [
+    "Business could not be approved. Please try again.",
+    "ბიზნესი ვერ დამტკიცდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Business verification is incomplete",
+    "ბიზნესის ვერიფიკაცია დასრულებული არ არის.",
+  ],
+  [
+    "Confirm that the IBAN holder matches the legal name first",
+    "ჯერ დაადასტურე, რომ IBAN-ის მფლობელი იურიდიულ სახელს ემთხვევა.",
+  ],
+  ["Business approved.", "ბიზნესი დამტკიცდა."],
+  [
+    "Business status could not be updated. Please try again.",
+    "ბიზნესის სტატუსი ვერ განახლდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Business moved to pending.", "ბიზნესი მოლოდინში დაბრუნდა."],
+  [
+    "Pickup code could not be unlocked. Please try again.",
+    "წაღების კოდი ვერ განიბლოკა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "Business could not be rejected. Please refresh and try again.",
+    "ბიზნესი ვერ უარიყო. განაახლე გვერდი და სცადე ხელახლა.",
+  ],
+  ["Rejected. Owner emailed.", "უარყოფილია. მფლობელს ელფოსტა გაეგზავნა."],
+  [
+    "Rejected. Email failed; the owner sees the reason in the dashboard.",
+    "უარყოფილია. ელფოსტა ვერ გაიგზავნა; მფლობელი მიზეზს პანელში ნახავს.",
+  ],
+  [
+    "The review could not be hidden. Please try again.",
+    "შეფასება ვერ დაიმალა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Review hidden.", "შეფასება დაიმალა."],
+  [
+    "The review could not be unhidden. Please try again.",
+    "შეფასება ვერ გამოჩნდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Review is public again.", "შეფასება ისევ საჯაროა."],
+  [
+    "The report could not be dismissed. Please refresh and try again.",
+    "საჩივარი ვერ დაიხურა. განაახლე გვერდი და სცადე ხელახლა.",
+  ],
+  ["Report dismissed.", "საჩივარი დაიხურა."],
 ];
 
 const georgianMessages = new Map<string, string>(georgianMessageEntries);
