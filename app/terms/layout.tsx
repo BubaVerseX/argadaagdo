@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { buildPageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Terms of Use",
+  // Georgian first, like the page the server renders; the tab title then
+  // follows the chosen language (lib/useDocumentTitle.ts).
+  title: "გამოყენების წესები · Terms of Use",
   description:
-    "The rules for reserving, paying for and collecting food rescue offers on ArGadaagdo.",
+    "„არ გადააგდოს“ ლანჩ ბოქსების დაჯავშნის, გადახდისა და წაღების წესები. The rules for reserving, paying for and collecting food rescue offers on ArGadaagdo.",
   path: "/terms",
 });
 

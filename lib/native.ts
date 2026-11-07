@@ -33,6 +33,19 @@ export function isNativeApp() {
 }
 
 /**
+ * Tells the server this is the app (a cookie, see NATIVE_APP_COOKIE), so
+ * proxy.ts keeps app pages like /for-businesses on this host. The server
+ * can't see window.Capacitor; the cookie lives only in the app's WebView.
+ */
+export function markNativeAppForServer(cookieName: string) {
+  try {
+    document.cookie = `${cookieName}=1; Path=/; Max-Age=31536000; SameSite=Lax; Secure`;
+  } catch {
+    // Cookies blocked: /for-businesses opens the business site, as before.
+  }
+}
+
+/**
  * The installed app's platform and build number (CFBundleVersion on iOS,
  * versionCode on Android); null on the website. `build` is null when the
  * App plugin can't tell.

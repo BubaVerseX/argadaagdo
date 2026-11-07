@@ -9,6 +9,7 @@ import {
   MenuIcon,
   SearchIcon,
 } from "@/components/icons";
+import AccountDeletedNotice from "@/components/AccountDeletedNotice";
 import OfferImage from "@/components/OfferImage";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import {
@@ -333,6 +334,7 @@ export default function NativeHome({
 
   return (
     <main className="native-main">
+      <AccountDeletedNotice />
       <NativeHero className="px-4 pb-1 pt-3">
         <header>
           <div className="flex items-center gap-2.5">

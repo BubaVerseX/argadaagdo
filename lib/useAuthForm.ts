@@ -16,7 +16,13 @@ import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
 import { DATA_TRANSFER_CONSENT_VERSION } from "@/lib/consents";
-import { useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+} from "react";
 
 // Sign in, create account, resend confirmation, forgot and reset password.
 // Shared by the website's /login page and the app's login screen, so both run
@@ -114,12 +120,31 @@ function readPasswordHelpMode(): PasswordHelpMode {
   const hash = window.location.hash.toLowerCase();
 
   if (mode === "forgot-password") return "forgot";
-  if (mode === "reset-password" || hash.includes("type=recovery")) {
+  if (
+    mode === "reset-password" ||
+    mode === "reset" ||
+    params.get("type") === "recovery" ||
+    hash.includes("type=recovery")
+  ) {
     return "reset";
   }
 
   return "none";
 }
+
+// The reset email (supabase/templates/recovery.html) links straight here with
+// ?mode=reset&token_hash=…&type=recovery; the page verifies the token itself.
+// Older emails go through Supabase's /verify page and arrive already signed
+// in (#access_token=…&type=recovery), which detectSessionInUrl handles.
+function readRecoveryTokenHash() {
+  if (typeof window === "undefined") return null;
+
+  const params = new URLSearchParams(window.location.search);
+  return params.get("type") === "recovery" ? params.get("token_hash") : null;
+}
+
+const RECOVERY_LINK_FAILED_MESSAGE =
+  "This reset link has expired or was already used. Enter your email to get a new one.";
 
 export function getRedirectMessage(
   path: string | null,
@@ -216,6 +241,43 @@ export function useAuthForm() {
     useState<PasswordHelpOverride>("none");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const recoveryTokenHash = useSyncExternalStore(
+    subscribeToPasswordHelpModeChanges,
+    readRecoveryTokenHash,
+    () => null
+  );
+  const [recoveryChecked, setRecoveryChecked] = useState(false);
+  const recoveryStarted = useRef(false);
+  const recoveryChecking = Boolean(recoveryTokenHash) && !recoveryChecked;
+
+  // Exchanges the emailed token for a session, once, then drops it from the
+  // address bar so a reload doesn't try a used token again.
+  useEffect(() => {
+    if (!recoveryTokenHash || recoveryStarted.current) return;
+    recoveryStarted.current = true;
+
+    void supabase.auth
+      .verifyOtp({ type: "recovery", token_hash: recoveryTokenHash })
+      .then(({ error }) => ({ failed: Boolean(error) }))
+      .catch(() => ({ failed: true }))
+      .then(({ failed }) => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("token_hash");
+        url.searchParams.delete("type");
+        window.history.replaceState(
+          window.history.state,
+          "",
+          `${url.pathname}${url.search}${url.hash}`
+        );
+
+        setRecoveryChecked(true);
+        if (failed) {
+          setPasswordHelpMode("forgot");
+          setMessageTone("error");
+          setMessage(RECOVERY_LINK_FAILED_MESSAGE);
+        }
+      });
+  }, [recoveryTokenHash]);
   const authModeOptions = [
     {
       value: "login" as const,
@@ -596,6 +658,8 @@ export function useAuthForm() {
   }
 
   async function updatePassword() {
+    if (recoveryChecking || submitting) return;
+
     setMessage("");
     setMessageTone("error");
 
@@ -668,6 +732,7 @@ export function useAuthForm() {
     setNewPassword,
     confirmNewPassword,
     setConfirmNewPassword,
+    recoveryChecking,
     createAccount,
     signIn,
     submitOnEnter,

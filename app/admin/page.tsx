@@ -33,6 +33,7 @@ import {
 import { triggerTransactionalEmail } from "@/lib/email/client";
 import { logAppError } from "@/lib/errors";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import {
   formatMoney,
   getEffectiveOfferStatus,
@@ -44,6 +45,7 @@ import {
   isCollectedOrderStatus,
   isConfirmedOrderStatus,
   isFailedCheckoutOrder,
+  isUnpaidCheckoutOrder,
 } from "@/lib/orderStatus";
 import { calculatePaymentSummary } from "@/lib/paymentArchitecture";
 import { paginateItems } from "@/lib/pagination";
@@ -144,6 +146,8 @@ export default function AdminPage() {
     null
   );
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Admin-only RPCs wait for this: a guest's call only fails and logs an error.
+  const [adminConfirmed, setAdminConfirmed] = useState(false);
 
   const checkAdminAndLoadData = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -153,10 +157,12 @@ export default function AdminPage() {
       profileResult.profile.role !== "admin"
     ) {
       setRealtimeReady(false);
+      setAdminConfirmed(false);
       router.replace("/");
       return;
     }
 
+    setAdminConfirmed(true);
     await processExpiredMarketplace();
 
     const [
@@ -292,7 +298,7 @@ export default function AdminPage() {
       )
     );
     setMessageTone("success");
-    setMessage(`Commission set to ${percent}%.`);
+    setMessage(text(`საკომისიო: ${percent}%.`, `Commission set to ${percent}%.`));
   }
 
   async function setBusinessLocation(id: number, location: { latitude: number; longitude: number }) {
@@ -352,9 +358,10 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
+    if (!adminConfirmed) return;
     const initialLoad = window.setTimeout(() => void loadBusinessVerifications(), 0);
     return () => window.clearTimeout(initialLoad);
-  }, [loadBusinessVerifications]);
+  }, [adminConfirmed, loadBusinessVerifications]);
 
   async function confirmIbanHolder(id: number, confirmed: boolean) {
     const { error } = await supabase.rpc("admin_confirm_iban_holder", {
@@ -522,7 +529,7 @@ export default function AdminPage() {
     }
 
     setMessageTone("success");
-    setMessage(`Order #${orderId} unlocked.`);
+    setMessage(text(`შეკვეთა #${orderId} განიბლოკა.`, `Order #${orderId} unlocked.`));
     setUnlockingOrderId(null);
     await checkAdminAndLoadData();
   }
@@ -891,17 +898,23 @@ export default function AdminPage() {
   const offersCreatedToday = offers.filter(
     (offer) => getTbilisiDateKeyFromValue(offer.created_at) === todayDateKey
   );
-  const todayOfferIds = new Set(
-    offers
-      .filter((offer) => offer.pickup_date === todayDateKey)
-      .map((offer) => offer.id)
+  // Orders placed today (Tbilisi), by the order's own date: offers like the
+  // App Review demo box are re-dated every day and carry all their old
+  // orders. Checkouts that were never paid don't count.
+  const todayReservations = orders.filter(
+    (order) =>
+      getTbilisiDateKeyFromValue(order.created_at) === todayDateKey &&
+      !isUnpaidCheckoutOrder(order)
   );
-  const todayReservations = orders.filter((order) =>
-    todayOfferIds.has(order.offer_id)
+  const todayPickups = orders.filter(
+    (order) =>
+      isCollectedOrderStatus(order.status) &&
+      getTbilisiDateKeyFromValue(order.completed_at || order.created_at) ===
+        todayDateKey
   );
-  const todayPickups = todayReservations.filter((order) =>
-    isCollectedOrderStatus(order.status)
-  );
+  // Commission on today's orders that are paid and not refunded.
+  const todayCommission =
+    calculatePaymentSummary(todayReservations).platformRevenue;
   const businessIdsWithOffers = new Set(offers.map((offer) => offer.business_id));
   const businessIdsWithActiveOffers = new Set(
     activeOffers.map((offer) => offer.business_id)
@@ -963,8 +976,8 @@ export default function AdminPage() {
       value: todayReservations.length,
     },
     {
-      title: text("საკომისიო", "Commission"),
-      value: formatAnalyticsMoney(marketplaceAnalytics.estimatedMarketplaceRevenue),
+      title: text("დღევანდელი საკომისიო", "Commission today"),
+      value: formatAnalyticsMoney(todayCommission),
       tone: "green",
     },
   ];
@@ -1087,7 +1100,9 @@ export default function AdminPage() {
 
         {message && (
           <div className="mt-5">
-            <Notice tone={messageTone}>{message}</Notice>
+            <Notice tone={messageTone}>
+              {translateUserMessage(message, language)}
+            </Notice>
           </div>
         )}
 

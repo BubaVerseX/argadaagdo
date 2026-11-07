@@ -4,16 +4,22 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { businessAreaUrl } from "@/lib/businessArea";
 import { forBusinessesContent } from "@/lib/legal/forBusinesses";
+import { isNativeApp } from "@/lib/native";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 
 // Registration lives in the business area (business.argadaagdo.ge once
-// NEXT_PUBLIC_BUSINESS_SITE_URL is set; same host until then).
+// NEXT_PUBLIC_BUSINESS_SITE_URL is set; same host until then). The apps keep
+// it on this host: another host would open the browser and leave the app.
 const registerHref = businessAreaUrl("/business/register");
+const subscribe = () => () => {};
+const serverFalse = () => false;
 
 export default function ForBusinessesPage() {
   const { language } = useLanguage();
   const content = forBusinessesContent[language];
+  const inApp = useSyncExternalStore(subscribe, isNativeApp, serverFalse);
 
   return (
     <main className="app-shell theme-web">
@@ -27,7 +33,10 @@ export default function ForBusinessesPage() {
             </h1>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link href={registerHref} className="premium-button px-8 py-3.5">
+              <Link
+                href={inApp ? "/business/register" : registerHref}
+                className="premium-button px-8 py-3.5"
+              >
                 {content.registerLabel}
               </Link>
               <Link href="/contact" className="premium-button-secondary px-8 py-3.5">

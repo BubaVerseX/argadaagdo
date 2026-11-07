@@ -10,6 +10,7 @@ import {
   type HelpCategoryId,
 } from "@/lib/legal/faq";
 import { SUPPORT_EMAIL } from "@/lib/legal/shared";
+import { useDocumentTitle } from "@/lib/useDocumentTitle";
 import { useLanguage } from "@/lib/useLanguage";
 import { useEffect, useMemo, useState } from "react";
 
@@ -19,6 +20,7 @@ import { useEffect, useMemo, useState } from "react";
 const COPY = {
   help: {
     title: { ka: "დახმარება", en: "Help" },
+    tabTitle: { ka: "დახმარება", en: "Help & Support" },
     intro: {
       ka: "პასუხები შეკვეთაზე, გადახდასა და ანგარიშზე.",
       en: "Answers about orders, payment and your account.",
@@ -26,6 +28,7 @@ const COPY = {
   },
   faq: {
     title: { ka: "ხშირი კითხვები", en: "FAQ" },
+    tabTitle: { ka: "ხშირი კითხვები", en: "Frequently Asked Questions" },
     intro: {
       ka: "მოკლე პასუხები ყველაზე ხშირ კითხვებზე.",
       en: "Short answers to the most common questions.",
@@ -68,6 +71,7 @@ function entriesFor(language: "ka" | "en") {
 export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
   const { language } = useLanguage();
   const ka = language === "ka";
+  useDocumentTitle(COPY[variant].tabTitle[language], language);
   const byId = useMemo(() => entriesFor(language), [language]);
   // Search looks in both languages, whichever one is on screen.
   const otherById = useMemo(

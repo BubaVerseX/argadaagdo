@@ -29,6 +29,7 @@ function LoginPage() {
     t,
   } = form;
   const isLogin = authMode === "login";
+  const isResetting = effectivePasswordHelpMode === "reset";
 
   return (
     <main className="app-shell theme-web">
@@ -63,6 +64,72 @@ function LoginPage() {
           <div className="premium-card rounded-3xl p-5 sm:p-8 md:p-10">
             {form.codeEmail ? (
               <EmailCodeStep form={form} tone="app" />
+            ) : isResetting ? (
+              // From the reset email: only the new password, nothing to mix up.
+              <div className="grid gap-3">
+                <h1 className="text-2xl font-semibold text-cream sm:text-3xl">
+                  {isGeorgian ? "აირჩიე ახალი პაროლი" : "Choose a new password"}
+                </h1>
+                <p className="text-sm leading-6 text-body">
+                  {isGeorgian
+                    ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი."
+                    : "At least 8 characters, with a lowercase and an uppercase letter and a number."}
+                </p>
+                <input
+                  value={form.newPassword}
+                  onChange={(event) => form.setNewPassword(event.target.value)}
+                  type="password"
+                  autoComplete="new-password"
+                  aria-label={isGeorgian ? "ახალი პაროლი" : "New password"}
+                  placeholder={isGeorgian ? "ახალი პაროლი" : "New password"}
+                  className="premium-input px-4 py-3"
+                />
+                <input
+                  value={form.confirmNewPassword}
+                  onChange={(event) => form.setConfirmNewPassword(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void form.updatePassword();
+                  }}
+                  type="password"
+                  autoComplete="new-password"
+                  aria-label={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
+                  placeholder={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
+                  className="premium-input px-4 py-3"
+                />
+                <button
+                  type="button"
+                  onClick={form.updatePassword}
+                  disabled={submitting || form.recoveryChecking}
+                  className="premium-button cta-glow mt-1 w-full py-3 disabled:cursor-not-allowed disabled:opacity-60 sm:py-4"
+                >
+                  {form.recoveryChecking
+                    ? isGeorgian
+                      ? "ბმული მოწმდება..."
+                      : "Checking the link..."
+                    : submitting
+                    ? isGeorgian
+                      ? "ახლდება..."
+                      : "Updating..."
+                    : isGeorgian
+                    ? "პაროლის განახლება"
+                    : "Update password"}
+                </button>
+                {message && (
+                  <Notice tone={messageTone}>
+                    {translateUserMessage(message, language)}
+                  </Notice>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    form.setMessage("");
+                    form.setPasswordHelpMode("hidden");
+                  }}
+                  className="min-h-11 text-sm font-semibold text-mint underline-offset-4 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                >
+                  {isGeorgian ? "შესვლაზე დაბრუნება" : "Back to sign in"}
+                </button>
+              </div>
             ) : (
               <>
             <div
@@ -181,51 +248,6 @@ function LoginPage() {
                       : isGeorgian
                       ? "აღდგენის ბმულის გაგზავნა"
                       : "Send reset link"}
-                  </button>
-                </div>
-              )}
-
-              {isLogin && effectivePasswordHelpMode === "reset" && (
-                <div className="ui-card grid gap-3 rounded-2xl p-4">
-                  <h2 className="font-semibold text-cream">
-                    {isGeorgian ? "აირჩიე ახალი პაროლი" : "Choose a new password"}
-                  </h2>
-                  <p className="text-sm leading-6 text-body">
-                    {isGeorgian
-                      ? "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი."
-                      : "At least 8 characters, with a lowercase and an uppercase letter and a number."}
-                  </p>
-                  <input
-                    value={form.newPassword}
-                    onChange={(event) => form.setNewPassword(event.target.value)}
-                    type="password"
-                    autoComplete="new-password"
-                    aria-label={isGeorgian ? "ახალი პაროლი" : "New password"}
-                    placeholder={isGeorgian ? "ახალი პაროლი" : "New password"}
-                    className="premium-input p-4 font-medium"
-                  />
-                  <input
-                    value={form.confirmNewPassword}
-                    onChange={(event) => form.setConfirmNewPassword(event.target.value)}
-                    type="password"
-                    autoComplete="new-password"
-                    aria-label={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
-                    placeholder={isGeorgian ? "გაიმეორე ახალი პაროლი" : "Confirm new password"}
-                    className="premium-input p-4 font-medium"
-                  />
-                  <button
-                    type="button"
-                    onClick={form.updatePassword}
-                    disabled={submitting}
-                    className="premium-button min-h-11 w-full py-3 disabled:opacity-60"
-                  >
-                    {submitting
-                      ? isGeorgian
-                        ? "ახლდება..."
-                        : "Updating..."
-                      : isGeorgian
-                      ? "პაროლის განახლება"
-                      : "Update password"}
                   </button>
                 </div>
               )}

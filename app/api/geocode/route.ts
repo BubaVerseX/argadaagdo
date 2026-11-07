@@ -8,6 +8,8 @@ import { createUserScopedSupabaseClient } from "@/lib/supabaseServer";
 // https://operations.osmfoundation.org/policies/nominatim/
 
 const USER_AGENT = "ArGadaagdo/1.0 (+https://argadaagdo.ge; argadaagdo.support@gmail.com)";
+// Greater Tbilisi, a little past the city limits: west,north,east,south.
+const TBILISI_VIEWBOX = "44.58,41.86,45.06,41.59";
 const cache = new Map<string, { at: number; results: GeocodeResult[] }>();
 // Requests to Nominatim go out one after another, at most one a second, even
 // when several arrive at once (a shared promise chain, not a racy timestamp).
@@ -58,6 +60,10 @@ export async function GET(request: Request) {
   search.searchParams.set("q", query);
   search.searchParams.set("format", "jsonv2");
   search.searchParams.set("countrycodes", "ge");
+  // Tbilisi only (the marketplace is Tbilisi-only): without a box, a street
+  // name common across Georgia came back from Sukhumi or Batumi first.
+  search.searchParams.set("viewbox", TBILISI_VIEWBOX);
+  search.searchParams.set("bounded", "1");
   search.searchParams.set("limit", "5");
   search.searchParams.set("accept-language", language);
 
