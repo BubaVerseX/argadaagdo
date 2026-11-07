@@ -60,8 +60,8 @@ export function PhoneVerification({
     if (!phone) {
       setError(
         isGeorgian
-          ? "შეიყვანე ქართული მობილურის ნომერი: 5XX XXX XXX."
-          : "Enter a Georgian mobile number: 5XX XXX XXX."
+          ? "შეიყვანე საქართველოს მობილურის ნომერი: 5XX XXX XXX. უცხოური ნომრით დადასტურება ჯერ ვერ ხერხდება."
+          : "Enter a Georgian mobile number: 5XX XXX XXX. Foreign numbers can't be confirmed yet."
       );
       return;
     }
@@ -109,7 +109,7 @@ export function PhoneVerification({
       {!sentTo ? (
         <>
           <label className="grid gap-2 text-sm font-semibold text-body">
-            {isGeorgian ? "მობილურის ნომერი" : "Mobile number"}
+            {isGeorgian ? "საქართველოს მობილურის ნომერი (+995)" : "Georgian mobile number (+995)"}
             <input
               value={phoneInput}
               onChange={(event) => setPhoneInput(event.target.value)}

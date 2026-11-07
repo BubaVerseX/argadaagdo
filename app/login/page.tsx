@@ -252,6 +252,14 @@ function LoginPage() {
                 </div>
               )}
 
+              {!isLogin && (
+                <SignupConsent
+                  isGeorgian={isGeorgian}
+                  checked={form.transferConsent}
+                  onChange={form.setTransferConsent}
+                />
+              )}
+
               <button
                 type="button"
                 onClick={isLogin ? form.signIn : form.createAccount}
@@ -265,7 +273,7 @@ function LoginPage() {
                   : "Create account"}
               </button>
 
-              {!isLogin && <SignupConsent isGeorgian={isGeorgian} />}
+              
 
               {message && (
                 <Notice tone={messageTone}>

@@ -260,9 +260,12 @@ type PastOrderRowProps = RatingProps & {
 export function PastOrderRow({ order, language, t, ...rating }: PastOrderRowProps) {
   const status = getEffectiveOrderStatus(order);
   const canRate = isCollectedOrderStatus(status) && !order.rated_at;
+  // get_my_pickup_codes still returns the code of a missed order while the
+  // business can hand it over late (12 h after the window).
+  const lateCode = status === "no_show" && order.pickup_code ? order.pickup_code : null;
 
   return (
-    <details className="group rounded-[18px] bg-card">
+    <details className="group rounded-[18px] bg-card" open={lateCode ? true : undefined}>
       <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden">
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold text-cream">
@@ -286,6 +289,16 @@ export function PastOrderRow({ order, language, t, ...rating }: PastOrderRowProp
       <div className="px-4 pb-4">
         {order.offers?.businesses?.name && (
           <p className="mb-2 text-sm text-body">{order.offers.businesses.name}</p>
+        )}
+        {lateCode && (
+          <div className="mb-3 rounded-2xl bg-well px-4 py-4 text-center">
+            <p className="whitespace-nowrap font-mono text-[2rem] font-bold leading-none tracking-[0.08em] text-brand-forest">
+              {formatCode(lateCode)}
+            </p>
+            <p className="mt-2 text-[13px] leading-snug text-body">
+              {t("orders.missedLateHandover")}
+            </p>
+          </div>
         )}
         <OrderDetails order={order} language={language} t={t} rating={rating} />
       </div>

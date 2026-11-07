@@ -15,7 +15,10 @@ export default function PhoneGate({ onVerified }: { onVerified: () => void }) {
         {L("დაადასტურე ნომერი – ერთხელ", "Confirm your number – once")}
       </h2>
       <p className="text-xs leading-5 text-body">
-        {L("SMS კოდით. ერთი ნომერი — ერთი ანგარიში.", "By SMS code. One number, one account.")}
+        {L(
+          "SMS კოდით. მხოლოდ საქართველოს მობილურის ნომერი (+995 5XX). ერთი ნომერი — ერთი ანგარიში.",
+          "By SMS code. Georgian mobile numbers only (+995 5XX). One number, one account."
+        )}
       </p>
       <PhoneVerification
         onVerified={() => {

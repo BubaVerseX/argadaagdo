@@ -36,6 +36,8 @@ export type BagTemplateInput = {
   pickup_start: string;
   pickup_end: string;
   days_of_week: number[];
+  publish_time: string;
+  publish_days_before: number;
   image_url: string | null;
 };
 
@@ -65,6 +67,8 @@ type FormState = {
   pickupStart: string;
   pickupEnd: string;
   days: number[];
+  publishTime: string;
+  publishDaysBefore: 0 | 1;
   imageUrl: string;
 };
 
@@ -87,6 +91,8 @@ function emptyForm(departments: Department[], language: Language): FormState {
     pickupStart: "19:00",
     pickupEnd: "21:00",
     days: [...ISO_WEEKDAYS],
+    publishTime: "12:00",
+    publishDaysBefore: 0,
     imageUrl: "",
   };
 }
@@ -105,8 +111,28 @@ function formFromTemplate(template: BagTemplate): FormState {
     pickupStart: template.pickup_start.slice(0, 5),
     pickupEnd: template.pickup_end.slice(0, 5),
     days: template.days_of_week?.length ? [...template.days_of_week] : [...ISO_WEEKDAYS],
+    publishTime: (template.publish_time || "12:00").slice(0, 5),
+    publishDaysBefore: template.publish_days_before === 1 ? 1 : 0,
     imageUrl: template.image_url || "",
   };
+}
+
+/** "Same day 12:00" / "Day before 19:00" (Tbilisi time). */
+export function formatPublishSchedule(
+  template: Pick<BagTemplate, "publish_time" | "publish_days_before">,
+  language: Language
+) {
+  const time = (template.publish_time || "12:00").slice(0, 5);
+  const dayBefore = template.publish_days_before === 1;
+  if (language === "ka") {
+    return dayBefore ? `ქვეყნდება წინა დღეს ${time}-ზე` : `ქვეყნდება იმავე დღეს ${time}-ზე`;
+  }
+  return dayBefore ? `goes live the day before at ${time}` : `goes live the same day at ${time}`;
+}
+
+function minutesOf(value: string) {
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
 }
 
 export function BagTemplatesPanel({
@@ -204,6 +230,18 @@ export function BagTemplatesPanel({
       setFormError(isGeorgian ? "აირჩიე ერთი დღე მაინც." : "Choose at least one day of the week.");
       return;
     }
+    if (!/^\d{2}:\d{2}$/.test(form.publishTime)) {
+      setFormError(isGeorgian ? "მიუთითე გამოქვეყნების დრო." : "Add a publish time.");
+      return;
+    }
+    if (form.publishDaysBefore === 0 && form.publishTime >= form.pickupEnd) {
+      setFormError(
+        isGeorgian
+          ? "იმავე დღეს გამოქვეყნება წაღების დასრულებამდე უნდა მოხდეს."
+          : "On the same day, the box must go live before pickup ends."
+      );
+      return;
+    }
 
     setSaving(true);
     const ok = await onSave(
@@ -220,6 +258,8 @@ export function BagTemplatesPanel({
         pickup_start: form.pickupStart,
         pickup_end: form.pickupEnd,
         days_of_week: [...form.days].sort((a, b) => a - b),
+        publish_time: form.publishTime,
+        publish_days_before: form.publishDaysBefore,
         image_url: form.imageUrl.trim() || null,
       },
       editingId
@@ -239,7 +279,9 @@ export function BagTemplatesPanel({
             {isGeorgian ? "შაბლონები" : "Templates"}
           </h2>
           <p className="mt-1 text-sm text-body">
-            {isGeorgian ? "ავტომატურად ყოველ დღე 19:00-ზე" : "Auto-publish daily at 19:00"}
+            {isGeorgian
+              ? "თითო შაბლონი თავისი განრიგით ქვეყნდება"
+              : "Each template goes live on its own schedule"}
           </p>
         </div>
         <button
@@ -445,6 +487,50 @@ export function BagTemplatesPanel({
               </div>
             </div>
 
+            <div className={`${labelClass} md:col-span-2`}>
+              <span>{isGeorgian ? "გამოქვეყნება" : "Goes live"} <RequiredMark /></span>
+              <div className="flex flex-wrap items-center gap-2">
+                {([0, 1] as const).map((daysBefore) => (
+                  <button
+                    key={daysBefore}
+                    type="button"
+                    aria-pressed={form.publishDaysBefore === daysBefore}
+                    onClick={() => update("publishDaysBefore", daysBefore)}
+                    className={`${
+                      form.publishDaysBefore === daysBefore ? "premium-button" : "premium-button-secondary"
+                    } min-h-11 px-4 py-2 text-sm`}
+                  >
+                    {daysBefore === 0
+                      ? isGeorgian
+                        ? "იმავე დღეს"
+                        : "Same day"
+                      : isGeorgian
+                      ? "წინა დღეს"
+                      : "Day before"}
+                  </button>
+                ))}
+                <input
+                  value={form.publishTime}
+                  onChange={(event) => update("publishTime", event.target.value)}
+                  type="time"
+                  aria-label={isGeorgian ? "გამოქვეყნების დრო" : "Publish time"}
+                  className="premium-input w-40 p-3 font-semibold"
+                />
+              </div>
+              <span className="text-xs font-normal text-body">
+                {isGeorgian
+                  ? "მომხმარებელს გაუქმება შეუძლია წაღებამდე 2 საათით ადრე. ამის შემდეგ ნაყიდი ბოქსი აღარ უქმდება."
+                  : "Customers can cancel until 2 h before pickup starts. Boxes bought after that can't be cancelled."}
+                {form.publishDaysBefore === 0 &&
+                  form.pickupStart &&
+                  /^\d{2}:\d{2}$/.test(form.publishTime) &&
+                  minutesOf(form.pickupStart) - minutesOf(form.publishTime) < 120 &&
+                  (isGeorgian
+                    ? " ამ განრიგით ყველა ჯავშანი გაუქმების გარეშე იქნება."
+                    : " With this schedule, no order can be cancelled.")}
+              </span>
+            </div>
+
             <label className={`${labelClass} md:col-span-2`}>
               {isGeorgian ? "აღწერა" : "Description"}
               <textarea
@@ -574,6 +660,9 @@ export function BagTemplatesPanel({
                     : `${template.daily_quantity} boxes per day`}{" "}
                   · {template.pickup_start.slice(0, 5)}–{template.pickup_end.slice(0, 5)} ·{" "}
                   {formatWeekdays(template.days_of_week || [], language)}
+                </p>
+                <p className="mt-0.5 text-sm text-body">
+                  {formatPublishSchedule(template, language)}
                 </p>
               </div>
 

@@ -46,6 +46,18 @@ export default function TermsPage() {
             </p>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
+                href="/refund-policy"
+                className="premium-button-secondary px-6 py-3 text-center"
+              >
+                {language === "ka" ? "თანხის დაბრუნება" : "Refunds"}
+              </Link>
+              <Link
+                href="/pickup-policy"
+                className="premium-button-secondary px-6 py-3 text-center"
+              >
+                {language === "ka" ? "წაღების წესები" : "Pickup rules"}
+              </Link>
+              <Link
                 href="/faq"
                 className="premium-button-secondary px-6 py-3 text-center"
               >

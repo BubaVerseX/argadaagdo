@@ -15,6 +15,7 @@ import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
+import { DATA_TRANSFER_CONSENT_VERSION } from "@/lib/consents";
 import {
   useEffect,
   useRef,
@@ -199,6 +200,8 @@ export function useAuthForm() {
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Written consent to transfers abroad (PDP Law Art. 37), required to sign up.
+  const [transferConsent, setTransferConsent] = useState(false);
   // No account-type choice: each area creates its own kind of account.
   const isBusinessArea = useSyncExternalStore(
     subscribeToRedirectChanges,
@@ -322,6 +325,11 @@ export function useAuthForm() {
       return;
     }
 
+    if (!transferConsent) {
+      setMessage("Please tick the box to agree to the data transfer.");
+      return;
+    }
+
     setSubmitting(true);
     setMessage("Creating account...");
     setMessageTone("success");
@@ -331,7 +339,8 @@ export function useAuthForm() {
       email: normalizedEmail,
       password,
       options: {
-        data: { role },
+        // handle_new_user stores the consent with the server time.
+        data: { role, data_transfer_consent: DATA_TRANSFER_CONSENT_VERSION },
       },
     });
 
@@ -709,6 +718,8 @@ export function useAuthForm() {
     setEmail,
     password,
     setPassword,
+    transferConsent,
+    setTransferConsent,
     isBusinessArea,
     message,
     setMessage,

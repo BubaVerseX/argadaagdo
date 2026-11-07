@@ -69,16 +69,19 @@ export function isExpiredOrderStatus(status: OrderStatus) {
 }
 
 export function getEffectiveOrderStatus(order: Order): OrderStatus {
-  // A reservation — or a payment that never completed — whose pickup window
-  // is over can no longer be collected.
-  if (
-    (isConfirmedOrderStatus(order.status) ||
-      isPendingPaymentOrderStatus(order.status)) &&
-    isOrderPastPickupEnd(
-      order.offers,
-      getTbilisiDateKeyFromValue(order.created_at)
-    )
-  ) {
+  const pastPickupEnd = isOrderPastPickupEnd(
+    order.offers,
+    getTbilisiDateKeyFromValue(order.created_at)
+  );
+
+  // A paid reservation whose pickup window is over is a missed pickup (the
+  // database marks it within 10 minutes, see process_expired_marketplace).
+  if (isConfirmedOrderStatus(order.status) && pastPickupEnd) {
+    return "no_show";
+  }
+
+  // A payment that never completed can no longer be used.
+  if (isPendingPaymentOrderStatus(order.status) && pastPickupEnd) {
     return "expired";
   }
 
@@ -99,7 +102,7 @@ export function getOrderStatusLabel(status: OrderStatus, language: Language = "e
     return language === "ka" ? "ვადაგასული" : "Expired";
   }
   if (status === "no_show") {
-    return language === "ka" ? "არ გამოცხადდა" : "No-show";
+    return language === "ka" ? "წაღება გამოტოვებულია" : "Missed pickup";
   }
   if (status === "refund_pending") {
     return language === "ka" ? "თანხა ბრუნდება" : "Refund in progress";

@@ -256,7 +256,9 @@ const translations = {
     "orders.collected": "Collected",
     "orders.cancelled": "Cancelled",
     "orders.pickupCode": "Pickup code",
-    "orders.cancelPolicy": "You can cancel up to 2 hours before pickup for a full refund.",
+    "orders.cancelPolicy": "You can cancel up to 2 hours before pickup starts for a full refund.",
+    "orders.missedLateHandover":
+      "Missed pickup: no refund. If the business still agrees to hand it over, show this code.",
     "orders.pickupUnavailable": "Pickup details unavailable",
     "orders.statusGuideReservedTitle": "Reserved",
     "orders.statusGuideReservedText":
@@ -955,7 +957,9 @@ const translations = {
     "orders.collected": "წაღებული",
     "orders.cancelled": "გაუქმებული",
     "orders.pickupCode": "წაღების კოდი",
-    "orders.cancelPolicy": "გაუქმება შეგიძლია წაღებამდე 2 საათით ადრე სრული დაბრუნებით.",
+    "orders.cancelPolicy": "გაუქმება შეგიძლია წაღების დაწყებამდე 2 საათით ადრე, თანხის სრული დაბრუნებით.",
+    "orders.missedLateHandover":
+      "წაღება გამოტოვებულია: თანხა არ ბრუნდება. თუ ბიზნესი მაინც დაგთანხმდება, აჩვენე ეს კოდი.",
     "orders.pickupUnavailable": "წაღების ინფორმაცია მიუწვდომელია",
     "orders.statusGuideReservedTitle": "დაჯავშნილი",
     "orders.statusGuideReservedText":

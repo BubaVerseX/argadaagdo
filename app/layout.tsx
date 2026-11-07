@@ -1,3 +1,4 @@
+import ConsentGate from "@/components/ConsentGate";
 import type { Metadata, Viewport } from "next";
 import NativeRoot from "@/components/native/NativeRoot";
 import NotificationCenter from "@/components/NotificationCenter";
@@ -106,6 +107,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: "window.__argLaunch&&window.__argLaunch()" }} />
         {children}
         <NotificationCenter />
+        <ConsentGate />
         <ServiceWorkerRegistration />
         <NativeRoot />
       </body>

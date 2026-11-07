@@ -8,6 +8,7 @@ import {
   formatDisplayDateTime,
   formatMoney,
   formatPickupWindow,
+  isLateHandoverOpen,
   isOrderPastPickupEnd,
 } from "@/lib/offerLifecycle";
 import {
@@ -137,6 +138,10 @@ export function ReservationList({
           const timelineSteps = getBusinessTimelineSteps(order, language);
           const active = isConfirmedOrderStatus(order.status);
           const pastPickup = isOrderPastPickupEnd(order.offers);
+          // Missed pickup: no refund, but the business may still hand it over.
+          const lateHandover =
+            (active && pastPickup) ||
+            (order.status === "no_show" && isLateHandoverOpen(order.offers));
 
           return (
             <div key={order.id} className="ui-card rounded-2xl p-4">
@@ -162,32 +167,41 @@ export function ReservationList({
                 </span>
               </div>
 
-              {active && (
+              {(active || lateHandover) && (
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-                  {pastPickup ? (
+                  <button
+                    type="button"
+                    onClick={() => onOpenPickupVerification(order)}
+                    disabled={updatingOrderId !== null}
+                    className={`${
+                      lateHandover ? "premium-button-secondary" : "premium-button"
+                    } min-h-11 w-full px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto`}
+                  >
+                    {updatingOrderId === order.id
+                      ? text("სრულდება...", "Completing...")
+                      : lateHandover
+                      ? text("მაინც გაცემა კოდით", "Hand over late with code")
+                      : text("კოდით გაცემა", "Hand over with code")}
+                  </button>
+                  {active && pastPickup && (
                     <button
                       type="button"
                       onClick={() => onMarkNoShow(order)}
                       disabled={updatingOrderId !== null}
                       className="min-h-11 w-full rounded-full bg-danger-soft px-5 py-2.5 font-semibold text-danger transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                     >
-                      {updatingOrderId === order.id
-                        ? text("ახლდება...", "Updating...")
-                        : text("არ მოვიდა", "Mark no-show")}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => onOpenPickupVerification(order)}
-                      disabled={updatingOrderId !== null}
-                      className="premium-button min-h-11 w-full px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                    >
-                      {updatingOrderId === order.id
-                        ? text("სრულდება...", "Completing...")
-                        : text("კოდით გაცემა", "Hand over with code")}
+                      {text("არ მოვიდა", "Mark no-show")}
                     </button>
                   )}
                 </div>
+              )}
+              {lateHandover && (
+                <p className="mt-2 text-xs text-body">
+                  {text(
+                    "წაღების დრო დასრულდა: თანხა არ ბრუნდება. თუ მომხმარებელი მოვიდა, შეგიძლია მაინც გასცე 12 საათის განმავლობაში.",
+                    "The pickup window has ended: no refund. If the customer turns up, you may still hand it over within 12 hours."
+                  )}
+                </p>
               )}
 
               <details className="group mt-2">

@@ -32,6 +32,7 @@ import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/useLanguage";
 import { useMinuteTick } from "@/lib/useMinuteTick";
 import Link from "./AppLink";
+import { CheckoutRules } from "@/components/CheckoutRules";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -348,13 +349,13 @@ export default function NativeCheckout() {
               ? t("native.offer.reserve")
               : `${t("native.checkout.pay")} · ${formatMoney(offer.price)}`}
           </button>
-          <p className="mt-2 text-center text-[11px] leading-snug text-brand-ground/80">
-            {t(free ? "native.checkout.freeNote" : "native.checkout.payNote")}
-            {" · "}
-            <Link href="/terms" className="underline underline-offset-2">
-              {t("native.checkout.cancelNote")}
-            </Link>
-          </p>
+          <CheckoutRules
+            offer={offer}
+            language={language}
+            t={t}
+            free={free}
+            className="text-brand-ground/80"
+          />
         </div>
       )}
     </main>

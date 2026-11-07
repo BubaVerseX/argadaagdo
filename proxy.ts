@@ -38,7 +38,7 @@ async function isMissingOffer(rawId: string) {
       {
         headers: { apikey: key, Authorization: `Bearer ${key}` },
         cache: "no-store",
-        signal: AbortSignal.timeout(1500),
+        signal: AbortSignal.timeout(600),
       }
     );
     if (!response.ok) return false;
