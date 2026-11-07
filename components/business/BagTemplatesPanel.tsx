@@ -514,7 +514,7 @@ export function BagTemplatesPanel({
                   onChange={(event) => update("publishTime", event.target.value)}
                   type="time"
                   aria-label={isGeorgian ? "გამოქვეყნების დრო" : "Publish time"}
-                  className="premium-input w-32 p-3 font-semibold"
+                  className="premium-input w-40 p-3 font-semibold"
                 />
               </div>
               <span className="text-xs font-normal text-body">

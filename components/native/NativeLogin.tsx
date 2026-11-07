@@ -168,6 +168,14 @@ export default function NativeLogin() {
               </div>
             )}
 
+            {!isLogin && (
+              <SignupConsent
+                isGeorgian={isGeorgian}
+                checked={form.transferConsent}
+                onChange={form.setTransferConsent}
+              />
+            )}
+
             <button
               type="button"
               onClick={isLogin ? form.signIn : form.createAccount}
@@ -181,7 +189,7 @@ export default function NativeLogin() {
                 : L("ანგარიშის შექმნა", "Create account")}
             </button>
 
-            {!isLogin && <SignupConsent isGeorgian={isGeorgian} />}
+            
 
             {message && <Notice tone={messageTone}>{translateUserMessage(message, language)}</Notice>}
 
