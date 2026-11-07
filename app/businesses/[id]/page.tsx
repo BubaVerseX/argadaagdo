@@ -1,25 +1,26 @@
 "use client";
 
+import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import OfferImage from "@/components/OfferImage";
-import { HelpCard } from "@/components/help/HelpCard";
-import { InfoBanner } from "@/components/help/InfoBanner";
+import { WebBagCard } from "@/components/WebBagCard";
+import {
+  ChevronDownIcon,
+  ClockIcon,
+  LeafIcon,
+  MapPinIcon,
+  StarIcon,
+} from "@/components/icons";
 import {
   ReviewReportControl,
   useReviewReporterId,
 } from "@/components/reviews/ReviewReportControl";
-import { SupportLink } from "@/components/help/SupportLink";
-import { TrustBadge } from "@/components/help/TrustBadge";
-import { ArrowLeftIcon, ClockIcon, StarIcon } from "@/components/icons";
 import { formatBusinessType } from "@/lib/businessTypes";
+import { getWeekdayLabel, ISO_WEEKDAYS } from "@/lib/greenBag";
+import { createMapsSearchUrl } from "@/lib/maps";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
-import { getOfferCategoryLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
-  formatMoney,
-  getDiscountPercent,
-  formatPickupWindow,
   formatReviewDate,
-  isOfferReservable,
+  getRatingLabel,
   type RatingSummary,
 } from "@/lib/offerLifecycle";
 import {
@@ -28,49 +29,65 @@ import {
 } from "@/lib/ratings";
 import { supabase } from "@/lib/supabase";
 import type { Business, Offer, PublicBusinessReview } from "@/lib/types";
+import type { OpeningHours } from "@/types/business";
 import { useLanguage } from "@/lib/useLanguage";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-function isApprovedBusiness(value: boolean | string | null | undefined) {
-  return value === true || String(value) === "true";
+// The business's public page (owner decision 6): cover, logo, name, category,
+// rating, address, opening hours, description, today's boxes and reviews.
+// The same page on the website and in the app (the app swaps the header for
+// its one back button). No phone number: it stays private.
+
+const PUBLIC_COLUMNS =
+  "id, name, business_type, address, approved, created_at, latitude, longitude, sales_paused_on, description, logo_url, cover_url, opening_hours";
+
+function initials(name: string) {
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "A"
+  );
 }
 
-function getBusinessInitials(name: string) {
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
+/** ISO weekday (1 = Monday) in Tbilisi. */
+function tbilisiWeekday() {
+  const day = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "Asia/Tbilisi" }).format(new Date());
+  return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(day) + 1;
+}
 
-  return initials || "A";
+function hoursLine(hours: OpeningHours, day: number, L: (ka: string, en: string) => string) {
+  const value = hours[String(day) as keyof OpeningHours];
+  if (value === undefined) return null;
+  if (value === null) return L("დაკეტილია", "Closed");
+  return `${value.open}–${value.close}`;
 }
 
 export default function BusinessProfilePage() {
   const params = useParams<{ id: string }>();
   const { language, t } = useLanguage();
-  const isGeorgian = language === "ka";
+  const L = (ka: string, en: string) => (language === "ka" ? ka : en);
   const [business, setBusiness] = useState<Business | null>(null);
   const [offers, setOffers] = useState<Offer[]>([]);
-  const [ratingSummaries, setRatingSummaries] = useState<
-    Record<number, RatingSummary>
-  >({});
+  const [rating, setRating] = useState<RatingSummary | undefined>();
   const [reviews, setReviews] = useState<PublicBusinessReview[]>([]);
   const reviewReporterId = useReviewReporterId();
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const notFoundMessage = t("businessProfile.notFound");
+  const [missing, setMissing] = useState(false);
+  const [today, setToday] = useState(0);
 
   useEffect(() => {
     let active = true;
+    const businessId = Number(params.id);
 
-    async function loadBusiness() {
-      const businessId = Number(params.id);
-
+    async function load() {
+      setToday(tbilisiWeekday());
       if (!Number.isFinite(businessId)) {
-        setMessage(notFoundMessage);
+        setMissing(true);
         setLoading(false);
         return;
       }
@@ -78,440 +95,208 @@ export default function BusinessProfilePage() {
       // Tidies expired offers in the background; the reads below do not wait.
       void processExpiredMarketplace();
 
-      const [businessResult, offerResult, summaries, businessReviews] =
-        await Promise.all([
-          supabase
-            .from("businesses")
-            // Public columns only (guests can't read owner_id or the commission).
-            .select("id, name, business_type, address, phone, approved, created_at, latitude, longitude, sales_paused_on")
-            .eq("id", businessId)
-            .maybeSingle(),
-          supabase
-            .from("offers")
-            .select("*, businesses(name, address, business_type)")
-            .eq("business_id", businessId)
-            .eq("active", true)
-            .eq("status", "active")
-            .gt("quantity", 0)
-            .order("id", { ascending: false }),
-          loadBusinessRatingSummaries(),
-          loadPublicBusinessReviews(businessId),
-        ]);
+      const [businessResult, offerResult, summaries, businessReviews] = await Promise.all([
+        supabase.from("businesses").select(PUBLIC_COLUMNS).eq("id", businessId).maybeSingle(),
+        supabase
+          .from("offers")
+          .select("*, businesses(name, address, business_type)")
+          .eq("business_id", businessId)
+          .eq("active", true)
+          .eq("status", "active")
+          .gt("quantity", 0)
+          .order("pickup_date", { ascending: true })
+          .order("pickup_start", { ascending: true }),
+        loadBusinessRatingSummaries(),
+        loadPublicBusinessReviews(businessId),
+      ]);
 
       if (!active) return;
 
       if (businessResult.error || !businessResult.data) {
-        setMessage(notFoundMessage);
+        setMissing(true);
         setLoading(false);
         return;
       }
 
-      setBusiness(businessResult.data as Business);
+      setBusiness(businessResult.data as unknown as Business);
       setOffers((offerResult.data || []) as Offer[]);
-      setRatingSummaries(summaries);
+      setRating(summaries[businessId]);
       setReviews(businessReviews);
       setLoading(false);
     }
 
-    void loadBusiness();
-
+    void load();
     return () => {
       active = false;
     };
-  }, [params.id, notFoundMessage]);
+  }, [params.id]);
 
-  const rating = business ? ratingSummaries[business.id] : undefined;
-  const heroOffer = offers.find((offer) => offer.image_url) || offers[0];
-  const isVerified = isApprovedBusiness(business?.approved);
-  const reviewCount = rating?.rating_count || reviews.length;
-  const averageRating =
-    rating && rating.rating_count > 0 ? rating.average_rating.toFixed(1) : null;
-  const joinedDate = business?.created_at
-    ? formatReviewDate(business.created_at, language)
-    : t("offers.tbilisiPilot");
-  const businessDescription =
-    business?.description?.trim() ||
-    (isGeorgian
-      ? `დადასტურებული ბიზნესი${
-          business?.business_type
-            ? ` (${formatBusinessType(business.business_type, language)})`
-            : ""
-        }, რომელიც თბილისში მხოლოდ ადგილზე წასაღებ ლანჩ ბოქსებს გთავაზობს.`
-      : `Verified ${
-          business?.business_type || "food"
-        } business offering pickup-only Lunch Boxes in Tbilisi.`);
-  const completedPickupSignal =
-    reviewCount > 0
-      ? `${reviewCount}+`
-      : isGeorgian
-      ? "ჯერ არ გამოქვეყნებულა"
-      : "Not published yet";
+  const hours = (business?.opening_hours || {}) as OpeningHours;
+  const hasHours = Object.keys(hours).length > 0;
+  const todayLine = today ? hoursLine(hours, today, L) : null;
+  const ratingText = rating && rating.rating_count > 0 ? getRatingLabel(rating, language) : null;
 
   return (
-    <main className="app-shell">
-      <Navbar />
+    <main className="app-shell theme-web">
+      <Navbar variant="web" />
 
-      <section className="px-4 py-6 sm:px-6 sm:py-10 md:px-12 md:py-14">
-        <div className="mx-auto max-w-6xl">
-          <Link
-            href="/discover"
-            className="premium-button-secondary flex w-fit items-center gap-2 px-5 py-2.5"
-          >
-            <ArrowLeftIcon className="h-4 w-4" strokeWidth={1.8} />
-            {t("businessProfile.back")}
-          </Link>
-
+      <section className="px-4 pb-10 pt-4 sm:px-6 md:pt-8">
+        <div className="mx-auto max-w-3xl">
           {loading && (
-            <div className="mt-6 h-96 animate-pulse rounded-3xl bg-well" />
+            <div aria-busy="true" className="grid gap-3">
+              <div className="aspect-[16/7] w-full animate-pulse rounded-[28px] bg-well" />
+              <div className="h-8 w-2/3 animate-pulse rounded-xl bg-well" />
+              <div className="h-24 w-full animate-pulse rounded-3xl bg-well" />
+            </div>
           )}
 
-          {!loading && message && (
-            <div className="mt-6 rounded-[22px] bg-well p-8 text-center">
-              <p className="font-serif text-xl font-bold">{message}</p>
-              <Link
-                href="/discover"
-                className="premium-button mt-5 w-full rounded-2xl px-6 py-3 font-bold sm:w-auto"
-              >
-                {t("native.orders.emptyAction")}
+          {!loading && (missing || !business) && (
+            <div className="ui-card rounded-3xl p-6 text-center">
+              <p className="font-semibold text-cream">{t("businessProfile.notFound")}</p>
+              <Link href="/" className="premium-button mt-4 inline-flex min-h-11 items-center px-6 py-2.5">
+                {L("ლანჩ ბოქსების ნახვა", "See Lunch Boxes")}
               </Link>
             </div>
           )}
 
           {!loading && business && (
             <>
-              <div className="premium-card mt-6 overflow-hidden rounded-3xl">
-                <div className="grid lg:grid-cols-[0.95fr_1.05fr]">
-                  <div className="photo-frame relative isolate h-72 overflow-hidden bg-well sm:h-96 lg:h-full">
-                    {heroOffer ? (
-                      <OfferImage
-                        src={heroOffer.image_url}
-                        alt={business.name}
-                        sizes="(max-width: 1024px) 100vw, 45vw"
-                        priority
-                      />
-                    ) : (
-                      <div className="flex h-full min-h-72 items-center justify-center">
-                        <div className="ui-card flex h-28 w-28 items-center justify-center rounded-3xl bg-moss text-4xl font-semibold text-cream">
-                          {getBusinessInitials(business.name)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-5 sm:p-8 md:p-10">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-widest text-mint">
-                        {t("businessProfile.title")}
-                      </p>
-                      {isVerified && <TrustBadge label={t("businessProfile.verified")} />}
+              {/* Cover + logo */}
+              <div className="relative">
+                <div className="aspect-[16/7] w-full overflow-hidden rounded-[28px] bg-well">
+                  {business.cover_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={business.cover_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="hero-surface flex h-full w-full items-center justify-center">
+                      <LeafIcon className="h-12 w-12 text-mint opacity-60" strokeWidth={1.4} />
                     </div>
-
-                    <div className="mt-4 flex items-center gap-4">
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-moss text-2xl font-semibold text-cream">
-                        {getBusinessInitials(business.name)}
-                      </div>
-                      <div>
-                        <h1 className="text-3xl font-semibold text-cream sm:text-5xl">
-                          {business.name}
-                        </h1>
-                        <p className="mt-2 leading-7 text-body">
-                          {businessDescription}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 grid gap-3 premium-muted-card rounded-3xl p-4 font-semibold text-body">
-                      <p>
-                        <span className="font-semibold text-cream">
-                          {t("businessProfile.businessType")}:
-                        </span>{" "}
-                        {formatBusinessType(business.business_type, language) ||
-                          t("common.food")}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-cream">
-                          {t("businessProfile.address")}:
-                        </span>{" "}
-                        {business.address || t("common.addressUnavailable")}
-                      </p>
-                      <p>
-                        <span className="font-semibold text-cream">
-                          {isGeorgian ? "ტელეფონი" : "Phone"}:
-                        </span>{" "}
-                        {business.phone ||
-                          (isGeorgian
-                            ? "დაგვიკავშირდი არ გადააგდოს მხარდაჭერის მეშვეობით"
-                            : "Contact through ArGadaagdo support")}
-                      </p>
-                    </div>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <HelpCard
-                        title={t("businessProfile.localBusinessTitle")}
-                        text={t("businessProfile.localBusinessText")}
-                        
-                      />
-                      <HelpCard
-                        title={t("businessProfile.pickupOnlyTitle")}
-                        text={t("businessProfile.pickupOnlyText")}
-                        
-                      />
-                    </div>
-
-                    <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {t("common.rating")}
-                        </p>
-                        <p className="mt-2 text-3xl font-semibold text-cream">
-                          {averageRating ? `${averageRating}/5` : t("common.noRatings")}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {averageRating
-                            ? t("businessProfile.outOfFive")
-                            : t("common.noRatings")}
-                        </p>
-                      </div>
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {t("common.reviews")}
-                        </p>
-                        <p className="mt-2 text-3xl font-semibold text-cream">
-                          {reviewCount}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {t("businessProfile.customerReviews")}
-                        </p>
-                      </div>
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {isGeorgian
-                            ? "დასრულებული წაღებები"
-                            : "Completed pickups"}
-                        </p>
-                        <p className="mt-2 text-3xl font-semibold text-cream">
-                          {completedPickupSignal}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {isGeorgian
-                            ? "საჯარო მაჩვენებელი დასრულებული და შეფასებული წაღებებიდან"
-                            : "Public signal from completed rated pickups"}
-                        </p>
-                      </div>
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {t("businessProfile.activeOffers")}
-                        </p>
-                        <p className="mt-2 text-3xl font-semibold">
-                          {offers.length}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {t("businessProfile.activeOffersHint")}
-                        </p>
-                      </div>
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {isGeorgian ? "შემოგვიერთდა" : "Joined"}
-                        </p>
-                        <p className="mt-2 text-2xl font-semibold text-cream">
-                          {joinedDate || t("offers.tbilisiPilot")}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {isGeorgian
-                            ? "პლატფორმის დამტკიცებული ადგილობრივი წევრი"
-                            : "Approved local marketplace member"}
-                        </p>
-                      </div>
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {isGeorgian ? "პასუხის მაჩვენებელი" : "Response rate"}
-                        </p>
-                        <p className="mt-2 text-2xl font-semibold text-cream">
-                          {isGeorgian ? "პილოტის მხარდაჭერა" : "Pilot support"}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {isGeorgian
-                            ? "მხარდაჭერის მოთხოვნებს არ გადააგდო ამუშავებს"
-                            : "Support requests are handled by ArGadaagdo"}
-                        </p>
-                      </div>
-                      <div className="ui-card rounded-3xl p-5">
-                        <p className="text-sm text-body">
-                          {isGeorgian ? "სამუშაო საათები" : "Opening hours"}
-                        </p>
-                        <p className="mt-2 text-2xl font-semibold text-cream">
-                          {isGeorgian
-                            ? "იხილე თითოეულ შეთავაზებაზე"
-                            : "See each offer"}
-                        </p>
-                        <p className="mt-1 text-sm text-body">
-                          {isGeorgian
-                            ? "წაღების დროები აქტიურ შეთავაზებებზეა მითითებული"
-                            : "Pickup windows are shown on active offers"}
-                        </p>
-                      </div>
-                    </div>
-
-                    {isVerified && (
-                      <div className="mt-6">
-                        <InfoBanner
-                          title={t("businessProfile.trustTitle")}
-                          text={t("businessProfile.trustMessage")}
-                        >
-                          <div className="flex flex-wrap gap-2">
-                            <TrustBadge
-                              label={t("home.trustPickupCodeVerification")}
-                            />
-                            <TrustBadge
-                              label={t("home.trustCustomerRatings")}
-                              tone="yellow"
-                            />
-                            <TrustBadge
-                              label={
-                                isGeorgian
-                                  ? "ადგილობრივი თბილისური ბიზნესი"
-                                  : "Local Tbilisi business"
-                              }
-                            />
-                          </div>
-                        </InfoBanner>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="premium-card mt-6 rounded-3xl p-5 sm:p-8">
-                <h2 className="text-2xl font-semibold">
-                  {t("businessProfile.activeOffers")}
-                </h2>
-
-                <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                  {offers.length === 0 && (
-                    <HelpCard
-                      title={t("businessProfile.noActiveOffers")}
-                      text={t("businessProfile.noActiveOffersHint")}
-                      
-                      href="/discover"
-                      actionLabel={t("common.browseOffers")}
-                    />
                   )}
-
-                  {offers.map((offer) => {
-                    const discount = getDiscountPercent(offer);
-
-                    return (
-                      <Link
-                        key={offer.id}
-                        href={`/offers/${offer.id}`}
-                        className={`${getOfferCategoryTone(offer.category)} block rounded-[28px] bg-cat p-3 transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-mint`}
-                      >
-                        <div className="photo-frame relative isolate h-48 overflow-hidden bg-well">
-                          <OfferImage
-                            src={offer.image_url}
-                            alt={offer.title}
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                          />
-                          <span className="ui-card absolute left-2 top-2 rounded-full px-3 py-1 text-sm font-semibold text-mint">
-                            {getOfferCategoryLabel(offer.category, language)}
-                          </span>
-                          {discount !== null && (
-                            <span className="premium-discount-badge absolute right-2 top-2 px-3 py-1">
-                              {isGeorgian ? "დაზოგე" : "Save"} {discount}%
-                            </span>
-                          )}
-                        </div>
-                        <div className="pt-4">
-                          <h3 className="text-xl font-semibold text-cream">{offer.title}</h3>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            <span className="flex items-center gap-1.5 rounded-full bg-well px-3 py-2 text-sm font-semibold text-cream">
-                              <ClockIcon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.8} />
-                              {formatPickupWindow(offer, language)}
-                            </span>
-                            <span className="rounded-full bg-well px-3 py-2 text-sm font-semibold text-body">
-                              {t("common.quantity")}: {offer.quantity}
-                            </span>
-                          </div>
-                          <div className="mt-4 flex items-center justify-between gap-3">
-                            <p className="text-2xl font-semibold text-mint">
-                              {formatMoney(offer.price)}
-                            </p>
-                            <span className="rounded-full bg-well px-3 py-1 text-sm font-semibold text-body">
-                              {isOfferReservable(offer)
-                                ? t("common.available")
-                                : t("common.unavailable")}
-                            </span>
-                          </div>
-                          <p className="premium-button mt-4 inline-flex min-h-10 px-4 py-2 text-sm">
-                            {t("common.viewDetails")}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                </div>
+                <div className="absolute -bottom-9 left-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-[var(--page,#fbf7ee)] bg-card text-xl font-semibold text-cream shadow-[var(--shadow-card)]">
+                  {business.logo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={business.logo_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    initials(business.name)
+                  )}
                 </div>
               </div>
 
-              <div className="premium-card mt-6 rounded-3xl p-5 sm:p-8">
-                <h2 className="text-2xl font-semibold">
-                  {t("businessProfile.customerReviews")}
-                </h2>
-                <p className="mt-2 max-w-2xl leading-7 text-body">
-                  {t("businessProfile.reviewsIntro")}
+              {/* Name, category, rating */}
+              <div className="mt-11 px-1">
+                <h1 className="break-words text-2xl font-semibold leading-tight text-cream sm:text-3xl">
+                  {business.name}
+                </h1>
+                <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-body">
+                  {business.business_type && <span>{formatBusinessType(business.business_type, language)}</span>}
+                  {ratingText && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span className="inline-flex items-center gap-1 font-semibold text-cream">
+                        <StarIcon className="h-4 w-4 text-mint" strokeWidth={1.8} filled />
+                        {ratingText}
+                      </span>
+                    </>
+                  )}
                 </p>
+              </div>
 
-                <div className="mt-5 grid gap-4">
-                  {reviews.length === 0 && (
-                    <div className="rounded-3xl bg-well p-6 text-center">
-                      <div className="ui-well mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
-                        <StarIcon className="h-6 w-6 text-mint" strokeWidth={1.6} />
-                      </div>
-                      <p className="mt-4 text-lg font-semibold text-cream">
-                        {t("common.noReviews")}
-                      </p>
-                      <p className="mx-auto mt-2 max-w-md leading-7 text-body">
-                        {t("businessProfile.noReviewsHint")}
-                      </p>
-                      <div className="mt-5 flex justify-center">
-                        <SupportLink
-                          label={
-                            isGeorgian
-                              ? "როგორ მუშაობს შეფასებები"
-                              : "How ratings work"
-                          }
-                        />
-                      </div>
-                    </div>
+              {/* Address + hours */}
+              <div className="ui-card mt-4 grid gap-1 rounded-3xl p-2">
+                {business.address && (
+                  <a
+                    href={createMapsSearchUrl(business.address, business.name)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex min-h-12 items-center gap-3 rounded-2xl px-3 py-2 text-sm text-cream"
+                  >
+                    <MapPinIcon className="h-5 w-5 shrink-0 text-mint" strokeWidth={1.8} />
+                    <span className="min-w-0 flex-1">{business.address}</span>
+                    <span className="shrink-0 text-xs font-semibold text-mint">{L("რუკა", "Map")}</span>
+                  </a>
+                )}
+                {hasHours && (
+                  <details className="group rounded-2xl">
+                    <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-3 py-2 text-sm text-cream [&::-webkit-details-marker]:hidden">
+                      <ClockIcon className="h-5 w-5 shrink-0 text-mint" strokeWidth={1.8} />
+                      <span className="min-w-0 flex-1">
+                        {L("დღეს", "Today")}: {todayLine ?? L("არ არის მითითებული", "not set")}
+                      </span>
+                      <ChevronDownIcon className="h-4 w-4 shrink-0 text-body transition group-open:rotate-180" strokeWidth={2} />
+                    </summary>
+                    <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1 px-11 pb-3 text-sm">
+                      {ISO_WEEKDAYS.map((day) => (
+                        <div key={day} className="contents">
+                          <dt className={day === today ? "font-semibold text-cream" : "text-body"}>
+                            {getWeekdayLabel(day, language)}
+                          </dt>
+                          <dd className={day === today ? "font-semibold text-cream" : "text-body"}>
+                            {hoursLine(hours, day, L) ?? "—"}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </details>
+                )}
+              </div>
+
+              {business.description && (
+                <p className="mt-4 whitespace-pre-line px-1 text-[15px] leading-7 text-body">
+                  {business.description}
+                </p>
+              )}
+
+              {/* Boxes */}
+              <h2 className="mt-7 px-1 text-lg font-semibold text-cream">{L("ლანჩ ბოქსები", "Lunch Boxes")}</h2>
+              {offers.length === 0 ? (
+                <p className="mt-2 rounded-3xl bg-well px-4 py-5 text-center text-sm text-body">
+                  {L(
+                    "ახლა ბოქსები არ არის. შეინახე ადგილი რჩეულებში და ახალს არ გამოტოვებ.",
+                    "No boxes right now. Save this place to your favourites so you don't miss the next one."
                   )}
-
-                  {reviews.map((review) => (
-                    <div key={review.id} className="rounded-3xl bg-well p-5">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="flex items-center gap-1.5 font-semibold text-cream">
-                          <StarIcon className="h-4 w-4 text-mint" strokeWidth={1.8} filled />
-                          {review.rating}/5
-                        </p>
-                        {formatReviewDate(review.created_at, language) && (
-                          <p className="text-sm text-body">
-                            {formatReviewDate(review.created_at, language)}
-                          </p>
-                        )}
-                      </div>
-                      <p className="mt-2 text-body">
-                        {review.review?.trim() || t("common.noWrittenReview")}
-                      </p>
-                      <ReviewReportControl
-                        reviewId={review.id}
-                        reporterId={reviewReporterId}
-                      />
-                    </div>
+                </p>
+              ) : (
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {offers.map((offer, index) => (
+                    <WebBagCard
+                      key={offer.id}
+                      offer={offer}
+                      language={language}
+                      actionLabel={t("native.offer.reserve")}
+                      priority={index === 0}
+                    />
                   ))}
                 </div>
-              </div>
+              )}
+
+              {/* Reviews */}
+              {reviews.length > 0 && (
+                <>
+                  <h2 className="mt-7 px-1 text-lg font-semibold text-cream">{L("შეფასებები", "Reviews")}</h2>
+                  <div className="mt-3 grid gap-2">
+                    {reviews.slice(0, 10).map((review) => (
+                      <div key={review.id} className="rounded-3xl bg-well p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="flex items-center gap-1.5 font-semibold text-cream">
+                            <StarIcon className="h-4 w-4 text-mint" strokeWidth={1.8} filled />
+                            {review.rating}/5
+                          </p>
+                          <p className="text-sm text-body">{formatReviewDate(review.created_at, language)}</p>
+                        </div>
+                        {review.review?.trim() && <p className="mt-2 text-body">{review.review.trim()}</p>}
+                        <ReviewReportControl reviewId={review.id} reporterId={reviewReporterId} />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>
       </section>
+
+      <Footer />
     </main>
   );
 }

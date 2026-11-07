@@ -174,7 +174,10 @@ export default function AdminPage() {
       reportsResult,
     ] =
       await Promise.all([
-        fetchAllRows<AdminBusiness>("businesses", "*"),
+        // Every column (owner, phone, commission): admins only.
+        supabase
+          .rpc("admin_list_businesses")
+          .then(({ data, error }) => ({ data: (data || []) as AdminBusiness[], error })),
         fetchAllRows<Offer>("offers", "*"),
         fetchAllRows<Order>(
           "orders",

@@ -95,10 +95,7 @@ function Navbar({
       let ownsApprovedBusiness = false;
 
       if (currentUser && isVerified && currentRole === "business") {
-        const { data } = await supabase
-          .from("businesses")
-          .select("owner_id, approved")
-          .eq("owner_id", currentUser.id);
+        const { data } = await supabase.rpc("get_my_businesses");
 
         const ownedBusinesses = (data || []) as NavbarBusiness[];
 

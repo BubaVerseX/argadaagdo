@@ -12,6 +12,7 @@ import { BusinessQuickActions, type QuickPanel } from "@/components/business/Bus
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
+import type { OpeningHours } from "@/types/business";
 import { BusinessRevenueInsights } from "@/components/business/BusinessRevenueInsights";
 import {
   RejectedBusinessCard,
@@ -161,6 +162,10 @@ function BusinessDashboardPage() {
   const [profileType, setProfileType] = useState("");
   const [profileAddress, setProfileAddress] = useState("");
   const [profilePhone, setProfilePhone] = useState("");
+  const [profileDescription, setProfileDescription] = useState("");
+  const [profileLogoUrl, setProfileLogoUrl] = useState("");
+  const [profileCoverUrl, setProfileCoverUrl] = useState("");
+  const [profileHours, setProfileHours] = useState<OpeningHours>({});
   const [savingProfile, setSavingProfile] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -255,13 +260,9 @@ function BusinessDashboardPage() {
 
     await processExpiredMarketplace();
 
-    const { data: myBusinesses, error: businessError } = await supabase
-      .from("businesses")
-      // "*" so the dashboard keeps working whichever Lunch Box migrations
-      // (sales_paused_on, platform_fee_rate) have been applied so far.
-      .select("*")
-      .eq("owner_id", userId)
-      .order("id", { ascending: false });
+    // Every column of the owner's own businesses (other people can read only
+    // the public profile columns, 20261107130100).
+    const { data: myBusinesses, error: businessError } = await supabase.rpc("get_my_businesses");
 
     if (businessError) {
       logAppError("Business dashboard failed to load businesses", businessError, {
@@ -294,6 +295,10 @@ function BusinessDashboardPage() {
       setProfileType(selectedProfileBusiness.business_type || "");
       setProfileAddress(selectedProfileBusiness.address || "");
       setProfilePhone(selectedProfileBusiness.phone || "");
+      setProfileDescription(selectedProfileBusiness.description || "");
+      setProfileLogoUrl(selectedProfileBusiness.logo_url || "");
+      setProfileCoverUrl(selectedProfileBusiness.cover_url || "");
+      setProfileHours(selectedProfileBusiness.opening_hours || {});
     }
 
     setBusinessId((currentBusinessId) => {
@@ -601,18 +606,18 @@ function BusinessDashboardPage() {
     setSavingProfile(true);
     lastProfileSaveAt.current = actionTime;
 
-    const { data, error } = await supabase
-      .from("businesses")
-      .update({
-        name: nameResult.value,
-        business_type: typeResult.value,
-        address: addressResult.value,
-        phone: phoneResult.value || null,
-      })
-      .eq("id", currentBusiness.id)
-      .eq("owner_id", currentBusiness.owner_id)
-      .select("id, owner_id, name, business_type, address, phone, approved")
-      .maybeSingle();
+    const { data: rows, error } = await supabase.rpc("update_my_business_profile", {
+      p_business_id: currentBusiness.id,
+      p_name: nameResult.value,
+      p_business_type: typeResult.value,
+      p_address: addressResult.value,
+      p_phone: phoneResult.value || null,
+      p_description: profileDescription.trim() || null,
+      p_logo_url: profileLogoUrl || null,
+      p_cover_url: profileCoverUrl || null,
+      p_opening_hours: profileHours,
+    });
+    const data = Array.isArray(rows) ? rows[0] : rows;
 
     if (error || !data) {
       logAppError("Business profile update failed", error || "No business row returned", {
@@ -645,6 +650,10 @@ function BusinessDashboardPage() {
     setProfileType(updatedBusiness.business_type || "");
     setProfileAddress(updatedBusiness.address || "");
     setProfilePhone(updatedBusiness.phone || "");
+    setProfileDescription(updatedBusiness.description || "");
+    setProfileLogoUrl(updatedBusiness.logo_url || "");
+    setProfileCoverUrl(updatedBusiness.cover_url || "");
+    setProfileHours(updatedBusiness.opening_hours || {});
     setSavingProfile(false);
     setMessageTone("success");
     setMessage("Business profile updated.");
@@ -1980,7 +1989,9 @@ function BusinessDashboardPage() {
     profileName.trim() &&
       profileType.trim() &&
       profileAddress.trim() &&
-      profilePhone.trim()
+      profileDescription.trim() &&
+      profileLogoUrl &&
+      Object.keys(profileHours).length > 0
   );
   const hasBusinessImage = offers.some((offer) => Boolean(offer.image_url));
   // Setup checklist: one short line each.
@@ -2463,15 +2474,25 @@ function BusinessDashboardPage() {
                 <BusinessHealthScore checks={businessHealthChecks} />
               </div>
               <BusinessProfileSection
+                businessId={selectedBusiness.id}
                 profileName={profileName}
                 profileType={profileType}
                 profileAddress={profileAddress}
                 profilePhone={profilePhone}
+                profileDescription={profileDescription}
+                profileLogoUrl={profileLogoUrl}
+                profileCoverUrl={profileCoverUrl}
+                profileHours={profileHours}
                 savingProfile={savingProfile}
                 onProfileNameChange={setProfileName}
                 onProfileTypeChange={setProfileType}
                 onProfileAddressChange={setProfileAddress}
                 onProfilePhoneChange={setProfilePhone}
+                onProfileDescriptionChange={setProfileDescription}
+                onProfileLogoUrlChange={setProfileLogoUrl}
+                onProfileCoverUrlChange={setProfileCoverUrl}
+                onProfileHoursChange={setProfileHours}
+                onUploadImage={uploadTemplateImage}
                 onSave={(actionTime) => void saveBusinessProfile(actionTime)}
               />
             </DashboardSection>

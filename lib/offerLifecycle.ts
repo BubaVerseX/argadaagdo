@@ -150,13 +150,34 @@ export function formatReviewDate(
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
 
-  return new Intl.DateTimeFormat(language === "ka" ? "ka-GE" : "en-GB", {
+  if (language === "ka") {
+    // Browsers render the ka-GE short month as "M11"; spell it out instead.
+    const [year, month, day] = getTbilisiDateKey(date).split("-").map(Number);
+    return `${day} ${GEORGIAN_MONTHS[month - 1]} ${year}`;
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
     timeZone: TBILISI_TIME_ZONE,
   }).format(date);
 }
+
+const GEORGIAN_MONTHS = [
+  "იანვარი",
+  "თებერვალი",
+  "მარტი",
+  "აპრილი",
+  "მაისი",
+  "ივნისი",
+  "ივლისი",
+  "აგვისტო",
+  "სექტემბერი",
+  "ოქტომბერი",
+  "ნოემბერი",
+  "დეკემბერი",
+];
 
 export function getOfferDateKey(
   offer: OfferTiming,
