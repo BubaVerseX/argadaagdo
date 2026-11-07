@@ -701,7 +701,7 @@ function BusinessDashboardPage() {
     return publicUrl;
   }
 
-  // ---- Departments, "Today: no boxes", staff PINs -----------------------------
+  // ---- Departments, "Stop sales for today", staff PINs -----------------------------
 
   async function uploadTemplateImage(file: File): Promise<string | null> {
     const selectedBusinessId = Number(businessId);

@@ -459,7 +459,7 @@ grant execute on function public.note_sms_send(text, text) to service_role;
 commit;
 
 -- Down (manual): restore private.check_staff_pin / note_staff_failure from
--- 20261101160000_staff_pin_status.sql and business_can_view_customer from
+-- 20261101113914_staff_pin_status.sql and business_can_view_customer from
 -- 20261016101117_audit_fixes.sql; drop private.bump_staff_counter,
 -- public.note_sms_send and private.sms_send_log; re-create the old
 -- offer-images insert policy; re-grant the revoked privileges.

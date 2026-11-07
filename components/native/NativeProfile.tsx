@@ -347,7 +347,8 @@ export default function NativeProfile() {
             </div>
           )}
         </header>
-        {session && <div className="mt-4">{impactCard}</div>}
+        {/* Business and admin accounts don't collect boxes: no customer impact block. */}
+        {session && (!summary || summary.role === "customer" || !summary.role) && <div className="mt-4">{impactCard}</div>}
       </NativeHero>
 
       <div className="relative z-[1] grid gap-3 px-5">

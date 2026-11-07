@@ -6,7 +6,7 @@ import type { Localized } from "@/lib/legal/shared";
 //   (supabase/migrations/20261105120000_business_verification.sql)
 // - commission per business, set by admins: 20261104081140_platform_fee_rate.sql
 // - TBC split to the business IBAN: lib/payments/tbc.ts, app/api/payments/checkout
-// - bag templates go live at their own publish time (pg_cron every 10 min), "Today: no bags",
+// - bag templates go live at their own publish time (pg_cron every 10 min), "Stop sales for today",
 //   departments + staff PIN page: 20261101110658_departments_and_bag_templates.sql
 // - monthly impact report (CSV / printable): app/business/report
 
@@ -82,7 +82,7 @@ export const forBusinessesContent: Localized<ForBusinessesContent> = {
       },
       {
         title: "Publish",
-        text: "Set the category, size, price, quantity per day, pickup window, weekdays and when each box goes live. Boxes are published automatically at that time, and Today: no bags pauses sales in one tap.",
+        text: "Set the category, size, price, quantity per day, pickup window, weekdays and when each box goes live. Boxes are published automatically at that time, and Stop sales for today pauses sales in one tap.",
       },
       {
         title: "Hand over",
@@ -155,7 +155,7 @@ export const forBusinessesContent: Localized<ForBusinessesContent> = {
       },
       {
         title: "გამოქვეყნება",
-        text: "მიუთითე კატეგორია, ზომა, ფასი, დღიური რაოდენობა, წაღების დრო, კვირის დღეები და როდის გამოქვეყნდეს ბოქსი. ბოქსები ამ დროს ავტომატურად ქვეყნდება, ღილაკით „დღეს: ლანჩ ბოქსები აღარ არის“ კი გაყიდვას ერთი შეხებით შეაჩერებ.",
+        text: "მიუთითე კატეგორია, ზომა, ფასი, დღიური რაოდენობა, წაღების დრო, კვირის დღეები და როდის გამოქვეყნდეს ბოქსი. ბოქსები ამ დროს ავტომატურად ქვეყნდება, ღილაკით „დღეს გაყიდვის შეჩერება“ კი გაყიდვას ერთი შეხებით შეაჩერებ.",
       },
       {
         title: "გადაცემა",
