@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminTwoStep } from "@/components/admin/AdminTwoStep";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
 import { LoadingState } from "@/components/LoadingState";
@@ -148,6 +149,8 @@ export default function AdminPage() {
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Admin-only RPCs wait for this: a guest's call only fails and logs an error.
   const [adminConfirmed, setAdminConfirmed] = useState(false);
+  // Signed in as an admin, but the session hasn't passed the 2-step code yet.
+  const [needsTwoStep, setNeedsTwoStep] = useState(false);
 
   const checkAdminAndLoadData = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -161,6 +164,16 @@ export default function AdminPage() {
       router.replace("/");
       return;
     }
+
+    // 2-step sign-in: the database grants admin rights only to aal2 sessions.
+    const { data: assurance } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (assurance?.currentLevel !== "aal2") {
+      setAdminConfirmed(false);
+      setNeedsTwoStep(true);
+      setLoading(false);
+      return;
+    }
+    setNeedsTwoStep(false);
 
     setAdminConfirmed(true);
     await processExpiredMarketplace();
@@ -1094,6 +1107,21 @@ export default function AdminPage() {
       tone: unknownProfiles.length > 0 ? "red" : undefined,
     },
   ];
+
+  if (needsTwoStep) {
+    return (
+      <main className="app-shell">
+        <Navbar />
+        <AdminTwoStep
+          onDone={() => {
+            setNeedsTwoStep(false);
+            setLoading(true);
+            void checkAdminAndLoadData();
+          }}
+        />
+      </main>
+    );
+  }
 
   if (loading) {
     return (
