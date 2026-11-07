@@ -1,5 +1,6 @@
 "use client";
 
+import AccountDeletedNotice from "@/components/AccountDeletedNotice";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeHomeScreen } from "@/components/native/screens";
 import { AppHome } from "@/components/home/AppHome";
@@ -107,7 +108,12 @@ function Home() {
     errorMessage,
   };
 
-  return signedIn ? <AppHome {...homeProps} /> : <PublicHome {...homeProps} />;
+  return (
+    <>
+      <AccountDeletedNotice />
+      {signedIn ? <AppHome {...homeProps} /> : <PublicHome {...homeProps} />}
+    </>
+  );
 }
 
 export default withNativeScreen(Home, NativeHomeScreen);
