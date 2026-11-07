@@ -18,6 +18,8 @@ export type CreatePaymentSessionInput = {
   amount: number;
   currency: "GEL";
   externalOrderId: string;
+  /** Language of the bank page (the customer's app language). */
+  language?: "ka" | "en";
   /** Native split: send `amount` straight to the business's payout account. */
   split?: {
     iban: string;

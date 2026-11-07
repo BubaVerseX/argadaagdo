@@ -268,6 +268,7 @@ function CheckoutPage() {
         body: JSON.stringify({
           offerId: offer.id,
           provider: "tbc",
+          language,
         }),
       });
     } catch {
