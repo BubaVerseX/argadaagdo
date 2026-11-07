@@ -118,7 +118,7 @@ export default function PushPrompt() {
         type="button"
         onClick={() => void turnOn()}
         disabled={busy}
-        className="native-press flex min-h-14 w-full max-w-sm items-center justify-center rounded-2xl bg-brand-forest text-base font-semibold text-brand-ground disabled:opacity-60"
+        className="native-press action-pill flex min-h-14 w-full max-w-sm items-center justify-center rounded-2xl text-base font-semibold disabled:opacity-60"
       >
         {mode === "system" ? L("გაგრძელება", "Continue") : L("ჩართვა", "Turn on")}
       </button>

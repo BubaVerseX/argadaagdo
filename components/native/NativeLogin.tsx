@@ -14,7 +14,7 @@ import NativeTopBar from "./NativeTopBar";
 const field =
   "min-h-14 w-full rounded-2xl border border-line bg-well px-4 text-[16px] text-cream placeholder:text-muted focus:border-mint focus:outline-none";
 const primary =
-  "native-press flex min-h-14 w-full items-center justify-center rounded-2xl bg-mint font-bold text-ink disabled:opacity-60";
+  "native-press action-pill flex min-h-14 w-full items-center justify-center rounded-2xl font-bold disabled:opacity-60";
 
 // The app's sign-in screen: two clear tabs, one short form, nothing to scroll.
 // Same auth code as the website (lib/useAuthForm.ts).
@@ -117,7 +117,7 @@ export default function NativeLogin() {
                   form.setAuthMode(mode);
                 }}
                 className={`min-h-12 rounded-xl text-[15px] font-bold ${
-                  authMode === mode ? "bg-mint text-ink" : "text-body"
+                  authMode === mode ? "action-pill" : "text-body"
                 }`}
               >
                 {mode === "login" ? L("შესვლა", "Sign in") : L("ანგარიშის შექმნა", "Create account")}

@@ -96,7 +96,7 @@ function NativeOfferCard({
           priority={priority}
         />
         {discount !== null && (
-          <span className="absolute bottom-1 left-1 rounded-full bg-brand-forest px-1.5 py-0.5 text-[10px] font-semibold text-brand-ground">
+          <span className="action-pill absolute bottom-1 left-1 rounded-full px-1.5 py-0.5 text-[10px] font-semibold">
             −{discount}%
           </span>
         )}
@@ -132,7 +132,7 @@ function NativeOfferCard({
             </span>
           </p>
           <p className="shrink-0 whitespace-nowrap text-right leading-none">
-            <span className="text-base font-semibold text-mint">
+            <span className="action-text text-base font-semibold">
               {formatMoney(offer.price)}
             </span>
           </p>
@@ -417,7 +417,7 @@ export default function NativeHome({
                   aria-pressed={category === "all"}
                   className={`h-11 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
                     category === "all"
-                      ? "border-transparent bg-brand-mint text-brand-forest"
+                      ? "border-transparent action-pill"
                       : "border-line bg-card text-body"
                   }`}
                 >
@@ -431,7 +431,7 @@ export default function NativeHome({
                     aria-pressed={category === option}
                     className={`h-11 flex-none rounded-full border px-3.5 text-[13px] font-semibold ${
                       category === option
-                        ? "border-transparent bg-brand-mint text-brand-forest"
+                        ? "border-transparent action-pill"
                         : "border-line bg-card text-body"
                     }`}
                   >
@@ -502,7 +502,7 @@ export default function NativeHome({
               type="button"
               onClick={() => void turnOnLocation()}
               disabled={locating}
-              className="native-press min-h-11 shrink-0 rounded-full bg-brand-forest px-3.5 text-xs font-semibold text-brand-ground disabled:opacity-60"
+              className="native-press action-pill min-h-11 shrink-0 rounded-full px-3.5 text-xs font-semibold disabled:opacity-60"
             >
               {locating ? "…" : t("native.home.locationOn")}
             </button>

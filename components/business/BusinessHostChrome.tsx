@@ -72,7 +72,7 @@ export function BusinessHostNavbar({
               href="/business/dashboard"
               aria-current={onDashboard ? "page" : undefined}
               aria-label={text("პანელი", "Dashboard")}
-              className={`${pill} px-3 ${onDashboard ? "ui-well text-mint" : "ui-card text-body"}`}
+              className={`${pill} px-3 ${onDashboard ? "action-pill" : "ui-card text-body"}`}
             >
               <LayoutGridIcon className="h-5 w-5" strokeWidth={1.8} />
               <span className="hidden sm:inline">{text("პანელი", "Dashboard")}</span>

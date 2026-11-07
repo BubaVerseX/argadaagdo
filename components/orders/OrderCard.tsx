@@ -226,7 +226,7 @@ export function ActiveOrderCard({
           <button
             type="button"
             onClick={() => onOpenCollect?.(order)}
-            className="native-press mt-3 min-h-12 rounded-2xl bg-brand-forest text-[15px] font-semibold text-brand-ground"
+            className="native-press action-pill mt-3 min-h-12 rounded-2xl text-[15px] font-semibold"
           >
             {t("native.orders.collect")}
           </button>

@@ -109,7 +109,7 @@ export function BagCard({
           )}
 
           <div className="mt-auto flex items-baseline gap-1.5 pt-2">
-            <span className={`font-bold leading-none ${isHero ? "text-2xl" : "text-xl"}`}>
+            <span className={`action-text font-bold leading-none ${isHero ? "text-2xl" : "text-xl"}`}>
               {formatMoney(offer.price)}
             </span>
             {originalPrice !== null && (

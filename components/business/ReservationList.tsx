@@ -102,7 +102,7 @@ export function ReservationList({
               aria-pressed={isActive}
               onClick={() => onReservationFilterChange(filter.value)}
               className={`min-h-11 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                isActive ? "ui-well text-mint" : "ui-card text-body hover:text-mint"
+                isActive ? "action-pill" : "ui-card text-body hover:text-mint"
               }`}
             >
               {filter.label}

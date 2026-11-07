@@ -363,7 +363,7 @@ function OfferDetailPage() {
 
               <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
                 <p className="flex items-baseline gap-2">
-                  <span className="text-3xl font-semibold text-mint">
+                  <span className="action-text text-3xl font-semibold">
                     {formatMoney(offer.price)}
                   </span>
                   {originalPrice > currentPrice && (

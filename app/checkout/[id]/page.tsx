@@ -401,7 +401,7 @@ function CheckoutPage() {
                       {formatMoney(getOriginalPrice(offer))}
                     </span>
                   )}
-                  <span className="text-3xl font-semibold text-mint">
+                  <span className="action-text text-3xl font-semibold">
                     {formatMoney(offer.price)}
                   </span>
                 </span>

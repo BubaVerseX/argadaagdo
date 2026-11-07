@@ -132,7 +132,7 @@ export function OfferCard({
 
         <div className="mt-3 flex items-end justify-between gap-3">
           <div className="flex min-w-0 items-baseline gap-2">
-            <p className="text-[22px] font-semibold leading-none text-mint">
+            <p className="action-text text-[22px] font-semibold leading-none">
               {formatMoney(offer.price)}
             </p>
             {originalPrice !== null && (

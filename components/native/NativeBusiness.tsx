@@ -329,9 +329,9 @@ export default function NativeBusiness() {
 
         <Link
           href={`${FULL_PANEL}#create-offer`}
-          className="native-press flex items-center gap-3.5 rounded-3xl bg-brand-mint p-4 text-brand-forest"
+          className="native-press action-pill flex items-center gap-3.5 rounded-3xl p-4"
         >
-          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-brand-forest text-brand-mint">
+          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-white/20 text-white">
             <PlusIcon className="h-6 w-6" strokeWidth={2} />
           </span>
           <span className="text-base font-bold">{t("native.business.publish")}</span>
