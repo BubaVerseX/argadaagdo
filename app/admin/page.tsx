@@ -278,6 +278,18 @@ export default function AdminPage() {
       return;
     }
 
+    // Business Terms: a new rate applies only 30 days after the business was
+    // told by email (an approved business's current rate is in its report).
+    const business = businesses.find((item) => item.id === id);
+    if (business?.approved) {
+      const confirmed = window.confirm(
+        language === "ka"
+          ? "ბიზნესის წესებით ახალი საკომისიო მოქმედებს მხოლოდ ბიზნესისთვის ელფოსტით შეტყობინებიდან 30 დღის შემდეგ. შეატყობინე?"
+          : "Under the Business Terms a new rate applies only 30 days after you told the business by email. Did you tell them?"
+      );
+      if (!confirmed) return;
+    }
+
     setUpdatingBusinessId(id);
     const { error } = await supabase.rpc("set_business_platform_fee_rate", {
       p_business_id: id,

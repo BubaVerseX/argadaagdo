@@ -111,6 +111,7 @@ export const termsContent: Localized<TermsContent> = {
         bullets: [
           "A business can sell only after we approve it. The application includes the company's legal details, a phone number confirmed by SMS, a TBC Bank IBAN and an extract from the Public Registry. We review every application. We may decline an application (and tell you why) or pause a business for further review.",
           "The business is responsible for the food it sells: its safety and quality, compliance with food safety rules, accurate descriptions and allergen information, and handing over every paid order during the stated pickup window.",
+          "Businesses also accept the Business Terms (argadaagdo.ge/business-terms) when they register.",
           "ArGadaagdo charges a commission on each paid order, at a rate agreed with each business in advance. There is no monthly fee. TBC Bank splits every payment automatically: the business's share goes straight to the business's TBC account and our commission to ours, so we never hold the business's money.",
         ],
       },
@@ -229,6 +230,7 @@ export const termsContent: Localized<TermsContent> = {
         bullets: [
           "ბიზნესი გაყიდვას მხოლოდ დამტკიცების შემდეგ იწყებს. განაცხადი მოიცავს კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, TBC ბანკის IBAN-ს და საჯარო რეესტრის ამონაწერს. ყველა განაცხადს ვამოწმებთ. შეიძლება განაცხადი არ დავამტკიცოთ (მიზეზს მოგწერთ) ან ბიზნესი დამატებითი შემოწმებისთვის დროებით შევაჩეროთ.",
           "ბიზნესი პასუხს აგებს მის მიერ გაყიდულ საკვებზე: მის უვნებლობასა და ხარისხზე, სურსათის უვნებლობის მოთხოვნების დაცვაზე, ზუსტ აღწერასა და ალერგენების შესახებ ინფორმაციაზე, ასევე ყველა გადახდილი შეკვეთის მითითებულ დროს გადაცემაზე.",
+          "ბიზნესები რეგისტრაციისას ასევე ეთანხმებიან ბიზნესის წესებს (argadaagdo.ge/business-terms).",
           "თითოეულ გადახდილ შეკვეთაზე არ გადააგდო იღებს საკომისიოს, რომლის განაკვეთიც თითოეულ ბიზნესთან წინასწარ თანხმდება. ყოველთვიური გადასახადი არ არის. TBC ბანკი თითოეულ გადახდას ავტომატურად ყოფს (split): ბიზნესის წილი პირდაპირ ბიზნესის TBC ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე, ასე რომ ბიზნესის თანხას ჩვენ არ ვფლობთ.",
         ],
       },
