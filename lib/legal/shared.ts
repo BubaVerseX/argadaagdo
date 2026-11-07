@@ -72,6 +72,6 @@ export const operatorDetails: Localized<string[]> = {
 };
 
 export const LEGAL_LAST_UPDATED: Localized<string> = {
-  en: "Last updated: 6 November 2026",
-  ka: "ბოლო განახლება: 2026 წლის 6 ნოემბერი",
+  en: "Last updated: 7 November 2026",
+  ka: "ბოლო განახლება: 2026 წლის 7 ნოემბერი",
 };

@@ -293,6 +293,10 @@ const georgianMessageEntries: Array<[string, string]> = [
     "პაროლი: მინიმუმ 8 სიმბოლო, პატარა და დიდი ლათინური ასო და ციფრი.",
   ],
   [
+    "Please tick the box to agree to the data transfer.",
+    "მონიშნე ველი, რომ დაეთანხმო მონაცემების გადაცემას.",
+  ],
+  [
     "Password cannot start or end with spaces.",
     "პაროლი არ შეიძლება იწყებოდეს ან მთავრდებოდეს ჰარით.",
   ],
