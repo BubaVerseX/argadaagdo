@@ -723,6 +723,11 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   ["Locked staff devices were unlocked.", "დაბლოკილი მოწყობილობები განიბლოკა."],
   ["No staff device was locked.", "დაბლოკილი მოწყობილობა არ იყო."],
+  // lib/useAuthForm.ts — the emailed reset link.
+  [
+    "This reset link has expired or was already used. Enter your email to get a new one.",
+    "ეს ბმული ვადაგასულია ან უკვე გამოყენებულია. ჩაწერე ელფოსტა და ახალს გამოგიგზავნით.",
+  ],
 ];
 
 const georgianMessages = new Map<string, string>(georgianMessageEntries);

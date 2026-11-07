@@ -46,6 +46,58 @@ export default function NativeLogin() {
           <div className="mt-6">
             <EmailCodeStep form={form} tone="app" />
           </div>
+        ) : form.effectivePasswordHelpMode === "reset" ? (
+          // From the reset email: only the new password, nothing to mix up.
+          <div className="mt-6 grid gap-3">
+            <p className="font-bold text-cream">{L("აირჩიე ახალი პაროლი", "Choose a new password")}</p>
+            <p className="text-xs leading-5 text-body">
+              {L(
+                "მინიმუმ 8 სიმბოლო: პატარა და დიდი ლათინური ასო და ციფრი.",
+                "At least 8 characters, with a lowercase and an uppercase letter and a number."
+              )}
+            </p>
+            <input
+              value={form.newPassword}
+              onChange={(event) => form.setNewPassword(event.target.value)}
+              type="password"
+              autoComplete="new-password"
+              aria-label={L("ახალი პაროლი", "New password")}
+              placeholder={L("ახალი პაროლი", "New password")}
+              className={field}
+            />
+            <input
+              value={form.confirmNewPassword}
+              onChange={(event) => form.setConfirmNewPassword(event.target.value)}
+              type="password"
+              autoComplete="new-password"
+              aria-label={L("გაიმეორე პაროლი", "Repeat password")}
+              placeholder={L("გაიმეორე პაროლი", "Repeat password")}
+              className={field}
+            />
+            <button
+              type="button"
+              onClick={form.updatePassword}
+              disabled={submitting || form.recoveryChecking}
+              className={primary}
+            >
+              {form.recoveryChecking
+                ? L("ბმული მოწმდება...", "Checking the link...")
+                : submitting
+                ? L("ერთი წამით...", "One moment...")
+                : L("პაროლის შეცვლა", "Change password")}
+            </button>
+            {message && <Notice tone={messageTone}>{translateUserMessage(message, language)}</Notice>}
+            <button
+              type="button"
+              onClick={() => {
+                form.setMessage("");
+                form.setPasswordHelpMode("hidden");
+              }}
+              className="min-h-11 text-sm font-bold text-mint"
+            >
+              {L("შესვლაზე დაბრუნება", "Back to sign in")}
+            </button>
+          </div>
         ) : (
           <>
           <div
@@ -137,33 +189,6 @@ export default function NativeLogin() {
                   className="native-press mt-3 min-h-12 w-full rounded-xl border border-mint font-bold text-mint disabled:opacity-60"
                 >
                   {L("ბმულის გაგზავნა", "Send link")}
-                </button>
-              </div>
-            )}
-
-            {isLogin && form.effectivePasswordHelpMode === "reset" && (
-              <div className="grid gap-3 rounded-2xl bg-card p-4">
-                <p className="font-bold text-cream">{L("ახალი პაროლი", "New password")}</p>
-                <input
-                  value={form.newPassword}
-                  onChange={(event) => form.setNewPassword(event.target.value)}
-                  type="password"
-                  autoComplete="new-password"
-                  aria-label={L("ახალი პაროლი", "New password")}
-                  placeholder={L("ახალი პაროლი", "New password")}
-                  className={field}
-                />
-                <input
-                  value={form.confirmNewPassword}
-                  onChange={(event) => form.setConfirmNewPassword(event.target.value)}
-                  type="password"
-                  autoComplete="new-password"
-                  aria-label={L("გაიმეორე პაროლი", "Repeat password")}
-                  placeholder={L("გაიმეორე პაროლი", "Repeat password")}
-                  className={field}
-                />
-                <button type="button" onClick={form.updatePassword} disabled={submitting} className={primary}>
-                  {L("პაროლის შეცვლა", "Change password")}
                 </button>
               </div>
             )}
