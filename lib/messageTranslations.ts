@@ -417,8 +417,8 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   ["Business profile updated.", "ბიზნესის პროფილი განახლდა."],
   [
-    "Image upload failed. Please try a smaller JPG, PNG, or WebP file.",
-    "სურათი ვერ აიტვირთა. გთხოვ, სცადე უფრო მცირე ზომის JPG, PNG ან WebP ფაილი.",
+    "Photo upload failed. Check your connection and try again.",
+    "ფოტო ვერ აიტვირთა. შეამოწმე ინტერნეტი და სცადე ხელახლა.",
   ],
   [
     "Image is too large. Please upload a file under 5MB.",

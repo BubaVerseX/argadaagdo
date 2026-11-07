@@ -681,7 +681,7 @@ function BusinessDashboardPage() {
         type: imageFile.type,
       });
       setMessageTone("error");
-      setMessage("Image upload failed. Please try a smaller JPG, PNG, or WebP file.");
+      setMessage("Photo upload failed. Check your connection and try again.");
       return null;
     }
 
@@ -715,7 +715,7 @@ function BusinessDashboardPage() {
         fileName,
       });
       setMessageTone("error");
-      setMessage("Image upload failed. Please try a smaller JPG, PNG, or WebP file.");
+      setMessage("Photo upload failed. Check your connection and try again.");
       return null;
     }
 
