@@ -146,6 +146,8 @@ export default function AdminPage() {
     null
   );
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Admin-only RPCs wait for this: a guest's call only fails and logs an error.
+  const [adminConfirmed, setAdminConfirmed] = useState(false);
 
   const checkAdminAndLoadData = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -155,10 +157,12 @@ export default function AdminPage() {
       profileResult.profile.role !== "admin"
     ) {
       setRealtimeReady(false);
+      setAdminConfirmed(false);
       router.replace("/");
       return;
     }
 
+    setAdminConfirmed(true);
     await processExpiredMarketplace();
 
     const [
@@ -354,9 +358,10 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
+    if (!adminConfirmed) return;
     const initialLoad = window.setTimeout(() => void loadBusinessVerifications(), 0);
     return () => window.clearTimeout(initialLoad);
-  }, [loadBusinessVerifications]);
+  }, [adminConfirmed, loadBusinessVerifications]);
 
   async function confirmIbanHolder(id: number, confirmed: boolean) {
     const { error } = await supabase.rpc("admin_confirm_iban_holder", {
