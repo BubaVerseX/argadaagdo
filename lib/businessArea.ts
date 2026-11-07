@@ -49,6 +49,7 @@ const BUSINESS_HOST_PREFIXES = [
   "/settings",
   "/privacy",
   "/terms",
+  "/business-terms",
   "/contact",
   "/support",
   "/faq",

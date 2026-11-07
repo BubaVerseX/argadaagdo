@@ -10,6 +10,7 @@ import {
   type BagSize,
   type OfferCategory,
 } from "@/lib/offerCategories";
+import { BUSINESS_TERMS_VERSION, recordConsent } from "@/lib/consents";
 import { useLanguage } from "@/lib/useLanguage";
 import {
   isValidIdCode,
@@ -74,7 +75,7 @@ const emptyCompany: CompanyDetails = {
   address: "",
   legalName: "",
   idCode: "",
-  legalForm: "llc",
+  legalForm: "ie",
   ownerFullName: "",
 };
 
@@ -126,6 +127,9 @@ export function BusinessOnboardingWizard({
   const [phoneVerified, setPhoneVerified] = useState(phoneAlreadyVerified);
   const [iban, setIban] = useState("");
   const [extractFile, setExtractFile] = useState<File | null>(null);
+  // Business Terms, accepted in the last step and stored with the time.
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [recordingTerms, setRecordingTerms] = useState(false);
   const [bag, setBag] = useState<FirstBag>({
     title: isGeorgian ? "ლანჩ ბოქსი" : "Lunch Box",
     category: "Bakery",
@@ -234,7 +238,7 @@ export function BusinessOnboardingWizard({
     return "";
   }
 
-  function goNext() {
+  async function goNext() {
     const validationError = validateStep();
 
     if (validationError) {
@@ -257,7 +261,19 @@ export function BusinessOnboardingWizard({
       return;
     }
 
+    if (!termsAccepted) {
+      setError(text("დაეთანხმე ბიზნესის წესებს.", "Please accept the Business Terms."));
+      return;
+    }
+
     if (extractFile) {
+      setRecordingTerms(true);
+      const recorded = await recordConsent("business_terms", BUSINESS_TERMS_VERSION, true, "web");
+      setRecordingTerms(false);
+      if (!recorded) {
+        setError(text("ვერ შევინახეთ. სცადე ხელახლა.", "Couldn't save. Please try again."));
+        return;
+      }
       onSubmit({
         company,
         iban: normalizeIban(iban),
@@ -535,6 +551,27 @@ export function BusinessOnboardingWizard({
           ))}
       </div>
 
+      {step === steps.length && (
+        <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
+          <input
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(event) => setTermsAccepted(event.target.checked)}
+            className="mt-1 h-5 w-5 shrink-0"
+          />
+          <span>
+            {text("ვეთანხმები ", "I accept the ")}
+            <a href="/business-terms" target="_blank" rel="noreferrer" className="font-semibold text-cream underline underline-offset-2">
+              {text("ბიზნესის წესებს", "Business Terms")}
+            </a>
+            {text(
+              ": სურსათის უვნებლობა, შეკვეთების გადაცემა, საკომისიო და TBC-ის გაყოფილი გადახდა.",
+              ": food safety, handing over orders, commission and the TBC split payment."
+            )}
+          </span>
+        </label>
+      )}
+
       {error && (
         <p role="alert" className="mt-4 text-sm font-semibold text-danger">
           {error}
@@ -555,8 +592,8 @@ export function BusinessOnboardingWizard({
         </button>
         <button
           type="button"
-          onClick={goNext}
-          disabled={submitting || (step === 2 && !phoneVerified)}
+          onClick={() => void goNext()}
+          disabled={submitting || recordingTerms || (step === 2 && !phoneVerified)}
           className="premium-button px-6 py-3 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {submitting
