@@ -666,12 +666,12 @@ const georgianMessageEntries: Array<[string, string]> = [
     "შაბლონი ვერ შეინახა. გადაამოწმე დეტალები და სცადე ხელახლა.",
   ],
   [
-    "Template updated. Tomorrow's box will use the new details.",
-    "შაბლონი განახლდა. ხვალინდელი ლანჩ ბოქსი ახალ დეტალებს გამოიყენებს.",
+    "Template updated. The next box that goes live will use the new details.",
+    "შაბლონი განახლდა. შემდეგი გამოქვეყნებული ლანჩ ბოქსი ახალ დეტალებს გამოიყენებს.",
   ],
   [
-    "Template saved. Tomorrow's box is created automatically at 19:00; use \"Publish for today\" to start now.",
-    "შაბლონი შენახულია. ხვალინდელი ლანჩ ბოქსი 19:00-ზე ავტომატურად შეიქმნება; ახლავე დასაწყებად გამოიყენე „დღევანდელის გამოქვეყნება“.",
+    "Template saved. It goes live automatically at its publish time; use \"Today\" to start now.",
+    "შაბლონი შენახულია. ის თავის დროზე ავტომატურად გამოქვეყნდება; ახლავე დასაწყებად დააჭირე „დღეს“.",
   ],
   [
     "The template could not be updated. Please try again.",

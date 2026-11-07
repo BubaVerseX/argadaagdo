@@ -32,6 +32,10 @@ export const nativeTranslations = {
     "native.checkout.payNote": "Payment on TBC's secure page",
     "native.checkout.freeNote": "Free",
     "native.checkout.cancelNote": "cancel up to 2 h before pickup",
+    "native.checkout.cancelUntil": "free cancellation until {time}",
+    "native.checkout.noCancel": "No cancellation: pickup starts in less than 2 hours.",
+    "native.checkout.missedNote": "missed pickup = no refund",
+    "native.checkout.tomorrow": "tomorrow",
     "native.checkout.pay": "Pay",
     "native.checkout.fullPage": "Open full page",
 
@@ -112,6 +116,10 @@ export const nativeTranslations = {
     "native.checkout.payNote": "გადახდა TBC-ის დაცულ გვერდზე",
     "native.checkout.freeNote": "უფასოა",
     "native.checkout.cancelNote": "გაუქმება 2 სთ-ით ადრე",
+    "native.checkout.cancelUntil": "უფასო გაუქმება {time}-მდე",
+    "native.checkout.noCancel": "ამ ჯავშანს ვეღარ გააუქმებ: წაღებამდე 2 საათზე ნაკლებია.",
+    "native.checkout.missedNote": "გამოტოვებული წაღება = თანხა არ ბრუნდება",
+    "native.checkout.tomorrow": "ხვალ",
     "native.checkout.pay": "გადახდა",
     "native.checkout.fullPage": "სრული გვერდი",
 

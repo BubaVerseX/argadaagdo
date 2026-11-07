@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/payment-maintenance",
       "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/publish-green-bags",
-      "schedule": "0 15 * * *"
     }
   ]
 }

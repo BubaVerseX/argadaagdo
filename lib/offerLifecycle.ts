@@ -267,6 +267,14 @@ export function isOrderPastPickupEnd(
   return getOfferEndKey(offer, fallbackDate) < getTbilisiDateTimeKey();
 }
 
+/** The business can still hand a missed order over for 12 h after the window (complete_pickup). */
+export function isLateHandoverOpen(offer: OfferTiming | null | undefined) {
+  if (!offer?.pickup_date) return false;
+  const end = new Date(`${offer.pickup_date}T${normalizeTime(offer.pickup_end, "23:59")}:00+04:00`);
+  if (Number.isNaN(end.getTime())) return false;
+  return Date.now() <= end.getTime() + 12 * 60 * 60 * 1000;
+}
+
 export function hasPickupWindowStarted(
   offer: OfferTiming | null | undefined,
   fallbackDate?: string | null
