@@ -15,6 +15,7 @@ import type { TranslationKey } from "@/lib/i18n";
 import type { UserRole } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import { useRouter } from "next/navigation";
+import { TURNSTILE_SITE_KEY } from "@/components/Captcha";
 import { DATA_TRANSFER_CONSENT_VERSION } from "@/lib/consents";
 import {
   useEffect,
@@ -202,6 +203,27 @@ export function useAuthForm() {
   const [password, setPassword] = useState("");
   // Written consent to transfers abroad (PDP Law Art. 37), required to sign up.
   const [transferConsent, setTransferConsent] = useState(false);
+  // Turnstile token (components/Captcha.tsx); only used once the site key is set.
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
+
+  function captchaReady() {
+    if (!TURNSTILE_SITE_KEY || captchaToken) return true;
+    setMessageTone("warning");
+    setMessage("Please wait a moment for the security check, then try again.");
+    return false;
+  }
+
+  function captchaOptions() {
+    return TURNSTILE_SITE_KEY && captchaToken ? { captchaToken } : {};
+  }
+
+  function spendCaptcha() {
+    // Tokens work once: fetch a fresh one for the next request.
+    if (!TURNSTILE_SITE_KEY) return;
+    setCaptchaToken(null);
+    setCaptchaKey((key) => key + 1);
+  }
   // No account-type choice: each area creates its own kind of account.
   const isBusinessArea = useSyncExternalStore(
     subscribeToRedirectChanges,
@@ -335,14 +357,21 @@ export function useAuthForm() {
     setMessageTone("success");
     setEmail(normalizedEmail);
 
+    if (!captchaReady()) {
+      setSubmitting(false);
+      return;
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
       options: {
         // handle_new_user stores the consent with the server time.
         data: { role, data_transfer_consent: DATA_TRANSFER_CONSENT_VERSION },
+        ...captchaOptions(),
       },
     });
+    spendCaptcha();
 
     if (error) {
       setSubmitting(false);
@@ -418,7 +447,13 @@ export function useAuthForm() {
 
     setResendingVerification(true);
     setMessage("");
-    const { error } = await supabase.auth.resend({ type: "signup", email: codeEmail });
+    if (!captchaReady()) return;
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: codeEmail,
+      options: captchaOptions(),
+    });
+    spendCaptcha();
     setResendingVerification(false);
 
     if (error) {
@@ -471,10 +506,17 @@ export function useAuthForm() {
     setMessageTone("success");
     setEmail(normalizedEmail);
 
+    if (!captchaReady()) {
+      setSubmitting(false);
+      return;
+    }
+
     const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,
       password,
+      options: captchaOptions(),
     });
+    spendCaptcha();
 
     if (error && /email not confirmed/i.test(error.message)) {
       // Not confirmed yet: the code step, with "resend code" available now.
@@ -592,10 +634,16 @@ export function useAuthForm() {
     setMessageTone("success");
     setMessage("Sending verification email...");
 
+    if (!captchaReady()) {
+      setResendingVerification(false);
+      return;
+    }
     const { error } = await supabase.auth.resend({
       type: "signup",
       email: normalizedEmail,
+      options: captchaOptions(),
     });
+    spendCaptcha();
 
     setResendingVerification(false);
 
@@ -636,10 +684,15 @@ export function useAuthForm() {
         ? `${window.location.origin}/login?mode=reset-password`
         : undefined;
 
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      normalizedEmail,
-      { redirectTo }
-    );
+    if (!captchaReady()) {
+      setSubmitting(false);
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo,
+      ...captchaOptions(),
+    });
+    spendCaptcha();
 
     setSubmitting(false);
 
@@ -716,6 +769,8 @@ export function useAuthForm() {
     setPassword,
     transferConsent,
     setTransferConsent,
+    setCaptchaToken,
+    captchaKey,
     isBusinessArea,
     message,
     setMessage,

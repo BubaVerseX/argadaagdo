@@ -22,7 +22,8 @@ export type DeleteAccountResult =
   | { status: "error"; error: string | null };
 
 /** Deletes the signed-in account, then signs out locally. */
-export async function deleteMyAccount(): Promise<DeleteAccountResult> {
+/** The password is checked again on the server (check_user_password). */
+export async function deleteMyAccount(password: string): Promise<DeleteAccountResult> {
   const { data } = await supabase.auth.getSession();
 
   if (!data.session?.access_token) return { status: "signed_out" };
@@ -33,7 +34,7 @@ export async function deleteMyAccount(): Promise<DeleteAccountResult> {
       Authorization: `Bearer ${data.session.access_token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ confirm: true }),
+    body: JSON.stringify({ confirm: true, password }),
   }).catch(() => null);
 
   if (!response?.ok) {

@@ -400,6 +400,19 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Your offers could not be loaded.", "შენი შეთავაზებები ვერ ჩაიტვირთა."],
   ["Reservations could not be loaded.", "ჯავშნები ვერ ჩაიტვირთა."],
   [
+    "Please wait a moment for the security check, then try again.",
+    "დაელოდე უსაფრთხოების შემოწმებას და სცადე ხელახლა.",
+  ],
+  ["Enter your password to delete your account.", "ანგარიშის წასაშლელად ჩაწერე პაროლი."],
+  ["That password is wrong.", "პაროლი არასწორია."],
+  [
+    "Too many wrong passwords. Please wait 15 minutes and try again.",
+    "ძალიან ბევრი არასწორი პაროლი. დაელოდე 15 წუთს და სცადე ხელახლა.",
+  ],
+  ["Your current password is wrong.", "ახლანდელი პაროლი არასწორია."],
+  ["Please sign in again.", "გთხოვ, თავიდან შედი."],
+  ["The password couldn't be changed. Please try again.", "პაროლი ვერ შეიცვალა. სცადე ხელახლა."],
+  [
     "Please wait a moment before saving again.",
     "ხელახლა შენახვამდე, გთხოვ, ცოტა მოიცადე.",
   ],
@@ -646,8 +659,8 @@ const georgianMessageEntries: Array<[string, string]> = [
     "დეპარტამენტის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
-    "The staff PIN must be 4 to 8 digits.",
-    "თანამშრომლის PIN 4-დან 8 ციფრამდე უნდა იყოს.",
+    "The staff PIN must be 6 digits.",
+    "თანამშრომლის PIN 6 ციფრი უნდა იყოს.",
   ],
   [
     "The staff PIN could not be saved. Please try again.",

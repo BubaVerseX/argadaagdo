@@ -1,5 +1,6 @@
 "use client";
 
+import Captcha from "@/components/Captcha";
 import type { useAuthForm } from "@/lib/useAuthForm";
 import { useLanguage } from "@/lib/useLanguage";
 import { useEffect, useRef, useState } from "react";
@@ -107,6 +108,7 @@ export default function EmailCodeStep({
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
+        <Captcha onToken={form.setCaptchaToken} resetKey={form.captchaKey} language={form.language} />
         <button
           type="button"
           onClick={() => void form.resendCode()}

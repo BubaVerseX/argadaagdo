@@ -3,6 +3,7 @@
 import Notice from "@/components/Notice";
 import { LeafIcon } from "@/components/icons";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
+import Captcha from "@/components/Captcha";
 import SignupConsent from "@/components/legal/SignupConsent";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { useAuthForm } from "@/lib/useAuthForm";
@@ -200,6 +201,8 @@ export default function NativeLogin() {
                 onChange={form.setTransferConsent}
               />
             )}
+
+            <Captcha onToken={form.setCaptchaToken} resetKey={form.captchaKey} language={language} />
 
             <button
               type="button"

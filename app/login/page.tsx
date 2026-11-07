@@ -2,6 +2,7 @@
 
 import { businessLoginUrl } from "@/lib/businessArea";
 import Navbar from "@/components/Navbar";
+import Captcha from "@/components/Captcha";
 import SignupConsent from "@/components/legal/SignupConsent";
 import Notice from "@/components/Notice";
 import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
@@ -259,6 +260,8 @@ function LoginPage() {
                   onChange={form.setTransferConsent}
                 />
               )}
+
+              <Captcha onToken={form.setCaptchaToken} resetKey={form.captchaKey} language={language} />
 
               <button
                 type="button"

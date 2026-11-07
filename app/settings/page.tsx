@@ -32,7 +32,8 @@ function SettingsPage() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const deleteConfirmWord = getDeleteConfirmWord(language);
-  const deleteConfirmed = isDeleteConfirmed(deleteConfirmText);
+  const [deletePassword, setDeletePassword] = useState("");
+  const deleteConfirmed = isDeleteConfirmed(deleteConfirmText) && deletePassword.length > 0;
 
   async function deleteAccount() {
     if (!deleteConfirmed || deletingAccount) return;
@@ -40,7 +41,7 @@ function SettingsPage() {
     setDeletingAccount(true);
     setDeleteError("");
 
-    const result = await deleteMyAccount();
+    const result = await deleteMyAccount(deletePassword);
 
     if (result.status === "signed_out") {
       router.replace("/login?redirect=/settings");
@@ -50,8 +51,10 @@ function SettingsPage() {
     if (result.status === "error") {
       setDeletingAccount(false);
       setDeleteError(
-        result.error ||
-          "Your account could not be deleted. Please try again or contact support."
+        translateUserMessage(
+          result.error || "Your account could not be deleted. Please try again or contact support.",
+          language
+        )
       );
       return;
     }
@@ -157,6 +160,19 @@ function SettingsPage() {
                       autoCapitalize="characters"
                       disabled={deletingAccount}
                       className="min-h-12 rounded-2xl border border-danger-line bg-well px-4 font-semibold text-danger outline-none focus:border-danger"
+                    />
+                    <input
+                      value={deletePassword}
+                      onChange={(event) => setDeletePassword(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") void deleteAccount();
+                      }}
+                      type="password"
+                      autoComplete="current-password"
+                      aria-label={L("პაროლი", "Password")}
+                      placeholder={L("პაროლი", "Password")}
+                      disabled={deletingAccount}
+                      className="min-h-12 rounded-2xl border border-danger-line bg-well px-4 font-semibold text-cream outline-none focus:border-danger"
                     />
                     {deleteError && (
                       <p role="alert" className="text-sm font-semibold text-danger">

@@ -180,19 +180,19 @@ export function DepartmentsPanel({
                         onChange={(event) =>
                           setPinDrafts((drafts) => ({
                             ...drafts,
-                            [department.id]: event.target.value.replace(/\D/g, "").slice(0, 8),
+                            [department.id]: event.target.value.replace(/\D/g, "").slice(0, 6),
                           }))
                         }
                         inputMode="numeric"
                         pattern="[0-9]*"
                         autoComplete="off"
-                        placeholder={isGeorgian ? "4–8 ციფრი" : "4–8 digits"}
+                        placeholder={isGeorgian ? "6 ციფრი" : "6 digits"}
                         aria-label={isGeorgian ? "თანამშრომლის PIN" : "Staff PIN"}
                         className="premium-input p-3 font-semibold"
                       />
                       <button
                         type="button"
-                        disabled={busy || (pinDrafts[department.id] || "").length < 4}
+                        disabled={busy || (pinDrafts[department.id] || "").length !== 6}
                         onClick={async () => {
                           const ok = await onSetStaffPin(department, pinDrafts[department.id] || "");
                           if (ok) setPinEditingId(null);
