@@ -264,20 +264,22 @@ credential sets (name / username / password from the copy page):
 - "Business demo (dashboard, verify pickup)" —
   `argadaagdo.support+review.business@gmail.com`
 
-Instructions text (about 1,500 characters):
+Instructions text (updated 7 Nov 2026, check-2 #6; about 2,000 characters):
 
 ```
-ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Tabs at the bottom: Nearby, Orders, Profile. Browsing works without an account; reserving, Orders and the business panel need sign-in (email and password only).
+ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Tabs at the bottom: Nearby, Orders, Profile. The app opens in Georgian: tap the round "KA" button at the top right to switch to English. Browsing works without an account; reserving, Orders and the business panel need sign-in (email and password only).
 
-The two demo accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) box "Demo surprise bag (free, App Review)". Reserving it takes no payment and opens no bank page. Real offers depend on partner businesses and may be absent for new accounts.
+The two demo accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) box "Demo surprise bag (free, App Review)". Reserving it takes no payment. The demo accounts skip the one-time phone (SMS) check, which accepts only Georgian mobile numbers.
 
-CUSTOMER: Profile > Sign in with the customer account > Nearby > tap "Demo surprise bag (free, App Review)" > Reserve. Checkout shows the box, the price and one button, "Pay · ₾0.00"; tap it. Orders shows the reservation with its large pickup code; it can be cancelled there.
+CUSTOMER: Profile > Sign in with the customer account. After the first sign-in the app asks once for consent to data transfer to providers outside Georgia (Georgian law): tap "I agree". It then asks about order notifications (optional). Nearby > "Demo surprise bag (free, App Review)" > Reserve. Checkout shows the price, until when it can be cancelled, and one button, "Reserve". Orders shows the reservation with its large pickup code; it can be cancelled there until 2 hours before pickup starts.
 
-BUSINESS: Profile > Settings > Sign out, then sign in with the business account > Profile > "Business panel" > under Pickups, tap "Enter code" next to the order > type the customer's code. The order is completed and the customer can rate the business.
+BUSINESS: Profile > Settings > Sign out, then sign in with the business account > Profile > "Business panel" > under Pickups, "Enter code" > type the customer's code. The order is completed and the customer can rate the business.
 
-PERMISSIONS: location (sort by distance, show you on the map; used only on the device) and notifications (order and pickup reminders) are both optional; everything works without them.
+NEW ACCOUNTS: Create account needs email, password and the data-transfer checkbox; a 6-digit code arrives by email. Ordering then needs a Georgian mobile number, so please reserve with the demo accounts.
 
-ACCOUNT DELETION: Profile > Settings > Delete account > type DELETE > confirm. Please test deletion with an account you register yourself; deleting a demo account breaks further review.
+PERMISSIONS (optional): location (only on the device, to sort by distance and show you on the map) and notifications (order updates; "new boxes from places you saved" is a separate switch, off until turned on).
+
+ACCOUNT DELETION: Profile > Settings > Delete account > type DELETE and your password > confirm. Please test with an account you register yourself.
 ```
 
 ### Content rating (IARC questionnaire)
@@ -331,13 +333,13 @@ create an account):
 | Question | Answer |
 |---|---|
 | Does your app allow users to create an account? | Yes, with email and password |
-| Deletion URL (web page where users can request deletion) | `https://argadaagdo.ge/privacy#delete-account` |
+| Deletion URL (web page where users can request deletion) | `https://argadaagdo.ge/privacy?lang=en#delete-account` (opens in English; `?lang` must come before `#`) |
 | Does the in-app path let users delete their account? | Yes: Profile → Settings → Delete account |
 | Do you provide a way to request deletion of some data without deleting the account? | Yes, by email to `argadaagdo.support@gmail.com` (privacy page says so) |
 
 The `#delete-account` section explains the in-app/website path **and** the
 request path without the app (email from the account's address with the
-subject "Delete my account", done within 30 days), which Google requires.
+subject "Delete my account", done within 10 working days), which Google requires.
 It also lists what is deleted and what is kept anonymised.
 
 Data types (all **Collected**, none **Shared**; only location is processed
@@ -350,15 +352,17 @@ address only if you prefer the conservative reading.
 
 | Category | Data type | Required? | Purposes | What it is |
 |---|---|---|---|---|
-| Personal info | Email address | Required | App functionality, Account management | sign-in; reservation emails; shown to the business for the pickup |
-| Personal info | Name | Optional | Account management | optional display name; business contact name |
-| Personal info | Phone number | Optional | App functionality | optional customer phone; business phone shown on listings |
-| Personal info | Address | Optional (business accounts) | App functionality | business address shown on listings and maps |
+| Personal info | Name | Optional | Account management, App functionality | display name; a business owner's full name (business sign-up) |
+| Personal info | Email address | Required | App functionality, Account management | sign-in; order emails; shown to the business you reserve from for 30 days |
 | Personal info | User IDs | Required | Account management, App functionality | account ID |
-| Financial info | Purchase history | Required | App functionality | reservations and their payment status |
-| Photos and videos | Photos | Optional (business accounts) | App functionality | offer photos uploaded by businesses |
-| App activity | Other user-generated content | Optional | App functionality | ratings and review comments |
-| Device or other IDs | Device or other IDs | Optional | App functionality | FCM push token (and Firebase installation ID), stored with the account to send order/pickup reminders and new boxes from favourites; removed on push off, sign-out or deletion |
+| Personal info | Address | Optional (business accounts) | App functionality | business address on the public business profile |
+| Personal info | Phone number | Required | App functionality, Fraud prevention, security and compliance | confirmed by SMS before the first order (one number per account); business phone (never public) |
+| Personal info | Other info | Optional (business accounts) | App functionality, Fraud prevention, security and compliance | business identification code and Public Registry extract |
+| Financial info | Purchase history | Required | App functionality | orders and their payment status |
+| Financial info | Other financial info | Optional (business accounts) | App functionality | the business's TBC IBAN for payouts |
+| Photos and videos | Photos | Optional | App functionality | profile photo; business logo, cover and offer photos |
+| App activity | Other user-generated content | Optional | App functionality | ratings and review comments; business description |
+| Device or other IDs | Device or other IDs | Optional | App functionality | FCM push token, only if notifications are on; removed on push off, sign-out or deletion |
 | Location | Approximate location | Optional | App functionality | see note; processed ephemerally: **Yes** |
 
 Approximate location, why declare it: the position never reaches our
@@ -370,7 +374,7 @@ ephemeral, App functionality, not shared (OpenFreeMap only serves tiles
 for us). Don't declare Precise location: only low-accuracy fixes are
 used and nothing precise leaves the device.
 
-Not collected (leave unticked): Precise location, User payment info (card
+Not collected (leave unticked): Precise location, Race and ethnicity, Political or religious beliefs, Sexual orientation, User payment info (card
 details are typed on TBC Bank's own page and never reach the app), Credit
 score, Health and fitness, Messages, Audio, Files and docs, Calendar,
 Contacts, App interactions, In-app search history, Installed apps, Web

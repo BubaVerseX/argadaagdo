@@ -198,42 +198,48 @@ User-generated content still rates 4+ under Apple's tiers.
 
 ## 5. App Privacy (App Privacy → Get Started)
 
+Updated 7 Nov 2026 (check-2 #7). Matches `ios/App/App/PrivacyInfo.xcprivacy`
+and the privacy policy. Enter exactly this.
+
 - Do you or your third-party partners collect data from this app? **Yes**
 - Tracking (data used to track across other companies' apps/websites):
   **No** for every type. No ads, no analytics, no tracking SDKs, so no
   App Tracking Transparency prompt.
 
-Declare these types; unless the table says otherwise, answer **Purpose:
-App Functionality**, **Linked to the user: Yes**, **Used for tracking: No**:
+For every type below: **Purpose: App Functionality** (only), **Linked to
+the user's identity: Yes**, **Used for tracking: No**, except Coarse
+Location (Linked: **No**).
 
-| Category | Type | Why |
+| Category | Type | What it is |
 |---|---|---|
-| Contact Info | Email Address | sign-in, reservation emails; shown to the business you reserve from |
-| Contact Info | Name | optional display name (profile) |
-| Contact Info | Phone Number | optional customer phone; business phone |
-| Contact Info | Physical Address | business addresses entered by business accounts |
-| User Content | Photos or Videos | offer photos uploaded by businesses |
-| User Content | Other User Content | ratings and review comments |
-| Purchases | Purchase History | reservations and their payment status |
+| Contact Info | Name | display name (optional); a business owner's full name (business sign-up) |
+| Contact Info | Email Address | sign-in, order emails; shown to the business you reserve from for 30 days |
+| Contact Info | Phone Number | **required before the first order** (SMS check); business phone (SMS check, never public) |
+| Contact Info | Physical Address | business address (public business profile) |
+| Financial Info | Other Financial Info | a business's TBC IBAN for payouts (business sign-up) |
+| User Content | Photos or Videos | profile photo; business logo, cover and offer photos |
+| User Content | Other User Content | ratings and review comments; business description |
+| Purchases | Purchase History | orders and their payment status |
 | Identifiers | User ID | account ID |
-| Identifiers | Device ID | push token (APNs), stored with the account (`push_devices`) to send order/pickup reminders and new boxes from favourites; only if the user turns push on; removed on push off, sign-out or deletion |
+| Identifiers | Device ID | push token (APNs), only if notifications are turned on; removed on push off, sign-out or deletion |
 | Location | Coarse Location | **Linked: No.** Optional, when-in-use. See note below |
+| Other Data | Other Data Types | business verification: company identification code and Public Registry extract |
 
 Coarse Location, why declare it: the position is used only on the phone
 (sort by distance, show "you" on the map) and is never sent to our
 servers. But the map loads OpenFreeMap tiles for the visible area, so a
 third party sees the device IP and roughly where the user is looking.
 Declaring it (App Functionality, not linked, not tracking) is the
-conservative answer and matches what the reviewer sees. Precise Location
-is not declared: nothing precise leaves the device. Apple's form has no
-"optional" field; the permission prompt and the privacy policy say it is
-optional.
+conservative answer. Precise Location is not declared.
 
 Do **not** declare: Payment Info (card data is entered only on TBC Bank's
-page; the app never receives it), Precise Location, Contacts, Usage Data,
-Diagnostics (no analytics or crash SDK), Browsing History, Search History.
-Business IBANs are given to us outside the app, so they aren't app-collected
-data.
+page; the app never receives it), Precise Location, Contacts, Health,
+Sensitive Info, Search History, Browsing History, Usage Data, Diagnostics
+(no analytics or crash SDK).
+
+Age rating stays **4+**: the content has no mature themes. The 18+ rule in
+the Terms is a contract/payment requirement, not a content rating, and the
+sign-up screen states it.
 
 ## 6. App Review Information (version page, bottom)
 
@@ -241,36 +247,42 @@ data.
   `argadaagdo.support+review.customer@gmail.com`, password: the customer
   password you were given.
 - Contact: your name, phone and `argadaagdo.support@gmail.com`.
-- Notes (about 2,600 / 4,000 characters once the passwords are in — replace both `<PASSWORD>` placeholders):
+- Notes (updated 7 Nov 2026, check-2 #6; about 3,300 / 4,000 characters
+  once the passwords are in — replace both `<PASSWORD>` placeholders):
 
 ```
-ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Local bakeries, cafes and restaurants list "Lunch Boxes" of food they couldn't sell; customers reserve one in the app, pay by card, and collect it in person at the business by showing a pickup code.
+ArGadaagdo is a pickup-only food-rescue marketplace in Tbilisi, Georgia. Local bakeries, cafes and restaurants list "Lunch Boxes" of food they couldn't sell; customers reserve one, pay by card, and collect it in person at the business with a pickup code.
+
+LANGUAGE: the app opens in Georgian. Tap the round "KA" button at the top right of the first screen (or of Nearby) to switch to English.
 
 PAYMENTS AND IN-APP PURCHASE
-Customers pay for physical food that they collect in person at the business, so under guideline 3.1.3(e) the app takes card payments through TBC Bank's own checkout page (opened in an in-app Safari sheet) instead of In-App Purchase. The app sells no digital content, subscriptions or unlockable features.
+Customers pay for physical food collected in person, so under guideline 3.1.3(e) card payments go through TBC Bank's own checkout page (in-app Safari sheet), not In-App Purchase. No digital content or subscriptions are sold.
 
 DEMO ACCOUNTS (no real payment needed)
 Customer: argadaagdo.support+review.customer@gmail.com / <PASSWORD>
 Business: argadaagdo.support+review.business@gmail.com / <PASSWORD>
-These two accounts see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) "Demo surprise bag (free, App Review)". Reserving it takes no payment. The demo business and box are visible only to these accounts.
+Both see a demo business, "Demo Bakery (App Review)", with a free (0 GEL) box "Demo surprise bag (free, App Review)". It is visible only to these accounts. The demo accounts skip the one-time phone (SMS) check, which accepts only Georgian mobile numbers.
 
-STEPS (tab bar at the bottom: Nearby, Orders, Profile)
-1. Profile > Sign in with the customer account.
-2. Nearby > tap "Demo surprise bag (free, App Review)" > Reserve. Checkout shows the box, the price and one button, "Pay · ₾0.00". Tap it; no payment page opens for the demo box.
-3. Orders shows the reservation with its large pickup code. It can be cancelled there (until 2 hours before pickup).
-4. Profile > Settings > Sign out, then sign in with the business account. Profile > "Business panel" > under Pickups, tap "Enter code" next to the order > type the customer's code. The order is completed, and the customer can then rate the business from Orders.
+STEPS (tab bar: Nearby, Orders, Profile)
+1. Profile > Sign in with the customer account. After the first sign-in the app asks once for consent to data transfer to providers outside Georgia (Georgian law): tap "I agree". It then asks about order notifications: "Continue" opens the iOS dialog (optional).
+2. Nearby > "Demo surprise bag (free, App Review)" > Reserve. Checkout shows the box, the price, until when it can be cancelled, and one button, "Reserve" (no payment page for a 0 GEL box).
+3. Orders shows the reservation with its large pickup code. It can be cancelled there until 2 hours before pickup starts.
+4. Profile > Settings > Sign out, then sign in with the business account. Profile > "Business panel" > under Pickups, "Enter code" > type the customer's code. The order is completed, and the customer can rate the business from Orders. (Customers can also "slide to collect" in Orders from 1 hour before the pickup window until it ends; the demo box's window is tomorrow evening, so use the code path.)
+
+NEW ACCOUNTS (optional): Create account needs email, password and the data-transfer checkbox; a 6-digit code arrives by email and is typed in the app. Ordering then needs a Georgian mobile number, so please use the demo accounts to reserve.
 
 ACCOUNT DELETION
-Profile > Settings > Delete account > type DELETE > confirm. Please test this with an account you register yourself: deletion is permanent and would remove the demo account for any further review.
+Profile > Settings > Delete account > type DELETE and your password > confirm. Please test with an account you register yourself: deletion is permanent and would remove a demo account.
 
-PERMISSIONS (both optional)
-- Location (when in use): used only on the device to sort boxes by distance and show you on the map. Everything works without it.
-- Notifications: asked after sign-in, for order and pickup reminders and new boxes from favourite places. Can be turned off in Profile > Settings.
+PERMISSIONS (all optional)
+- Location (when in use): only on the device, to sort boxes by distance and show you on the map. The Nearby banner has one button that opens the iOS dialog.
+- Notifications: order updates (confirmed, pickup reminder, cancelled); "new boxes from places you saved" is a separate switch, off until turned on. Both in Profile > Settings.
+- Photos/camera: only to choose a profile photo. Saving the impact picture to Photos asks for add-only access.
 
 OTHER NOTES
-- Live offers depend on partner businesses in Tbilisi, so a newly registered account may currently see no offers; the demo customer account always sees the demo box.
-- Sign-in is email and password only, with no third-party login.
-- Reviews can be reported in the app; admins can hide them. No ads or tracking.
+- Real offers depend on partner businesses in Tbilisi; a new account may see none. The demo customer always sees the demo box.
+- Sign-in is email and password only, no third-party login. No ads, no tracking.
+- Reviews can be reported in the app; admins can hide them.
 - Support: argadaagdo.support@gmail.com
 ```
 
