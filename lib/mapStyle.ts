@@ -1,10 +1,38 @@
 // The map: MapLibre GL with OpenFreeMap's free vector tiles (OpenStreetMap
 // data, no API key, attribution shown on the map). Loaded only when a map is
 // on screen.
+import type * as MapLibreModule from "maplibre-gl";
+
 export const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 
 /** Tbilisi, for maps without a pin yet. [longitude, latitude] */
 export const TBILISI_CENTER: [number, number] = [44.7925, 41.7151];
+
+/**
+ * The OpenStreetMap credit as a small "i" in the bottom-right corner; a tap
+ * shows the full line. MapLibre opens the compact credit when it first fills
+ * in and only folds it on the first drag, so on a small map it covered the
+ * top. Create the map with `attributionControl: false`, then call this.
+ */
+export function addMapCredit(
+  maplibre: typeof MapLibreModule,
+  map: MapLibreModule.Map
+) {
+  map.addControl(new maplibre.AttributionControl({ compact: true }), "bottom-right");
+
+  // Runs after the control's own handlers (added first), once it went compact.
+  const fold = () => {
+    const credit = map
+      .getContainer()
+      .querySelector(".maplibregl-ctrl-attrib.maplibregl-compact");
+    if (!credit) return;
+    credit.classList.remove("maplibregl-compact-show");
+    map.off("styledata", fold);
+    map.off("sourcedata", fold);
+  };
+  map.on("styledata", fold);
+  map.on("sourcedata", fold);
+}
 
 /** A green leaf pin (MapLibre HTML marker element). */
 export function createLeafPin({ selected = false }: { selected?: boolean } = {}) {

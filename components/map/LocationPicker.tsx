@@ -3,7 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { SearchIcon } from "@/components/icons";
 import type { LatLng } from "@/lib/location";
-import { createLeafPin, MAP_STYLE_URL, TBILISI_CENTER } from "@/lib/mapStyle";
+import { addMapCredit, createLeafPin, MAP_STYLE_URL, TBILISI_CENTER } from "@/lib/mapStyle";
 import { supabase } from "@/lib/supabase";
 import type { Map as MapLibreMap, Marker } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
@@ -51,9 +51,10 @@ export default function LocationPicker({
           style: MAP_STYLE_URL,
           center: start as [number, number],
           zoom: value ? 16 : 11.5,
-          attributionControl: { compact: true },
+          attributionControl: false,
           cooperativeGestures: false,
         });
+        addMapCredit(maplibre, map);
         map.addControl(new maplibre.NavigationControl({ showCompass: false }), "top-right");
         const marker = new maplibre.Marker({ element: createLeafPin(), draggable: true, anchor: "bottom" });
         marker.on("dragend", () => {

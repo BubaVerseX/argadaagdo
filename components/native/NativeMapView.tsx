@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { ClockIcon, XIcon } from "@/components/icons";
 import OfferImage from "@/components/OfferImage";
 import { businessLocation, distanceKm, formatDistance, type LatLng } from "@/lib/location";
-import { createLeafPin, MAP_STYLE_URL, TBILISI_CENTER } from "@/lib/mapStyle";
+import { addMapCredit, createLeafPin, MAP_STYLE_URL, TBILISI_CENTER } from "@/lib/mapStyle";
 import type { NativeOffer } from "@/lib/nativeData";
 import { getOfferCategoryTone } from "@/lib/offerCategories";
 import { formatMoney, formatPickupTimeRange, getOfferDateLabel } from "@/lib/offerLifecycle";
@@ -63,10 +63,9 @@ export default function NativeMapView({
           style: MAP_STYLE_URL,
           center: TBILISI_CENTER,
           zoom: 11.5,
-          // OpenStreetMap credit stays visible, top-left, clear of the offer card.
           attributionControl: false,
         });
-        map.addControl(new maplibre.AttributionControl({ compact: true }), "top-left");
+        addMapCredit(maplibre, map);
         map.on("load", () => !cancelled && setReady(true));
         map.on("click", () => setSelectedId(null));
         mapRef.current = map;
