@@ -1,4 +1,4 @@
-import { LEGAL_FORMS } from "@/lib/verification";
+import { isTbcIban, LEGAL_FORMS } from "@/lib/verification";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import StatCard from "@/components/StatCard";
@@ -393,7 +393,14 @@ function BusinessVerificationCard({
           }
           value={verification.verified_phone ? `+${verification.verified_phone}` : null}
         />
-        <BusinessDetail label="TBC IBAN" value={verification.iban} />
+        <BusinessDetail
+          label={
+            verification.iban && isTbcIban(verification.iban)
+              ? "IBAN (TBC)"
+              : text("IBAN (სხვა ბანკი: ორშაბათს გადარიცხვა)", "IBAN (other bank: Monday transfer)")
+          }
+          value={verification.iban}
+        />
       </div>
 
       <div className="flex flex-wrap gap-2">

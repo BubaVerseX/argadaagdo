@@ -33,7 +33,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "joining",
         title: "Joining and verification",
         bullets: [
-          "You register with your company's legal details, a phone number confirmed by SMS, a TBC Bank IBAN in the company's name and a Public Registry extract. The details must be true and up to date.",
+          "You register with your company's legal details, a phone number confirmed by SMS, an IBAN at a Georgian bank in the company's name and a Public Registry extract. The details must be true and up to date.",
           "We review every application and may decline it (we tell you why), ask for more information, or pause a business for further review.",
           "The person who registers confirms that they may act for the business.",
         ],
@@ -79,7 +79,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         bullets: [
           "There's no monthly fee. We charge a commission on each paid order at the rate agreed with you before you start; your dashboard report shows it.",
           "We change your rate only after telling you by email at least 30 days in advance. If you don't agree, you can stop before the new rate applies.",
-          "TBC Bank splits each payment automatically: your share goes straight to your company's TBC account and our commission to ours. We never hold your money. TBC credits it on its usual settlement schedule. Refunds are taken back the same way.",
+          "With a TBC Bank account, TBC splits each payment automatically: your share goes straight to your company's account and our commission to ours, on TBC's usual settlement schedule; refunds are taken back the same way. With another Georgian bank, or while TBC has not yet switched on the split, the payment comes to us in full and every Monday we transfer your share, minus our commission, for the previous week's orders (picked up or missed). Refunded orders are not included.",
           "You are responsible for your own taxes and for any receipts the law requires you to give for your sales.",
         ],
       },
@@ -134,7 +134,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "joining",
         title: "რეგისტრაცია და შემოწმება",
         bullets: [
-          "რეგისტრაციისთვის მიუთითებ კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, კომპანიის სახელზე გახსნილ TBC ბანკის IBAN-ს და საჯარო რეესტრის ამონაწერს. მონაცემები უნდა იყოს ზუსტი და აქტუალური.",
+          "რეგისტრაციისთვის მიუთითებ კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, კომპანიის სახელზე გახსნილი ანგარიშის IBAN-ს (საქართველოს ნებისმიერი ბანკი) და საჯარო რეესტრის ამონაწერს. მონაცემები უნდა იყოს ზუსტი და აქტუალური.",
           "ყველა განაცხადს ვამოწმებთ და შეიძლება არ დავამტკიცოთ (მიზეზს მოგწერთ), დამატებითი ინფორმაცია გთხოვოთ ან ბიზნესი დამატებითი შემოწმებისთვის დროებით შევაჩეროთ.",
           "ვინც ბიზნესს არეგისტრირებს, ადასტურებს, რომ ბიზნესის სახელით მოქმედების უფლება აქვს.",
         ],
@@ -180,7 +180,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         bullets: [
           "ყოველთვიური გადასახადი არ არის. თითოეულ გადახდილ შეკვეთაზე ვიღებთ საკომისიოს იმ განაკვეთით, რომელზეც დაწყებამდე შევთანხმდით; მას პანელის ანგარიშში ნახავ.",
           "განაკვეთს ვცვლით მხოლოდ მას შემდეგ, რაც ელფოსტით მინიმუმ 30 დღით ადრე გაცნობებთ. თუ არ ეთანხმები, შეგიძლია ახალი განაკვეთის ამოქმედებამდე შეწყვიტო თანამშრომლობა.",
-          "TBC ბანკი თითოეულ გადახდას ავტომატურად ყოფს (split): შენი წილი პირდაპირ კომპანიის TBC ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე. შენს თანხას ჩვენ არ ვფლობთ. TBC მას ჩვეულებრივი ანგარიშსწორების ვადებში ჩაგირიცხავს. თანხის დაბრუნება იმავე გზით ხდება.",
+          "თუ კომპანიის ანგარიში TBC ბანკშია, TBC თითოეულ გადახდას ავტომატურად ყოფს (split): შენი წილი პირდაპირ კომპანიის ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე, TBC-ის ჩვეულებრივი ანგარიშსწორების ვადებში; თანხის დაბრუნება იმავე გზით ხდება. სხვა ქართულ ბანკში, ან სანამ TBC split-ს ჩართავს, გადახდა სრულად ჩვენთან შემოდის და ყოველ ორშაბათს გადმოგირიცხავთ შენს წილს, ჩვენი საკომისიოს გამოკლებით, წინა კვირის შეკვეთებისთვის (გატანილი ან გაუტანელი). დაბრუნებული შეკვეთები არ შედის.",
           "შენს გადასახადებზე და კანონით მოთხოვნილ ჩეკებზე (ქვითრებზე) შენ აგებ პასუხს.",
         ],
       },

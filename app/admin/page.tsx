@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminPayouts } from "@/components/admin/AdminPayouts";
 import { AdminTwoStep } from "@/components/admin/AdminTwoStep";
 import Navbar from "@/components/Navbar";
 import Notice from "@/components/Notice";
@@ -1231,6 +1232,8 @@ export default function AdminPage() {
         )}
 
         <div className="mt-6">
+          <AdminPayouts language={language} />
+
           <AdminCollapsible
             title={text("დამტკიცებული ბიზნესები", "Approved businesses")}
             count={filteredApprovedBusinesses.length}

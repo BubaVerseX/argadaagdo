@@ -785,6 +785,10 @@ const georgianMessageEntries: Array<[string, string]> = [
     "ბიზნესის ვერიფიკაცია დასრულებული არ არის.",
   ],
   [
+    "Enter a valid Georgian IBAN",
+    "შეიყვანე სწორი IBAN (საქართველოს ბანკი).",
+  ],
+  [
     "Confirm that the IBAN holder matches the legal name first",
     "ჯერ დაადასტურე, რომ IBAN-ის მფლობელი იურიდიულ სახელს ემთხვევა.",
   ],
