@@ -56,8 +56,13 @@ function getFinalizedOrderId(value: unknown) {
 export async function POST(request: NextRequest) {
   try {
     const secret = request.nextUrl.searchParams.get("secret");
+    const secretValid = isTbcCallbackSecretValid(secret);
 
-    if (!isTbcCallbackSecretValid(secret)) {
+    // One line per callback, so we can see in the logs that TBC really calls
+    // back (no secret or body is logged).
+    logger.info("TBC callback received", { secretValid });
+
+    if (!secretValid) {
       return NextResponse.json({ error: "Unauthorized callback" }, { status: 401 });
     }
 
