@@ -219,6 +219,7 @@ export async function createTbcPaymentSession(
     providerReference,
     redirectUrl,
     externalOrderId: input.externalOrderId,
+    splitApplied: Boolean(input.split && isTbcSplitEnabled()),
   };
 }
 

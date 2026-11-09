@@ -14,8 +14,9 @@ import { BUSINESS_TERMS_VERSION, recordConsent } from "@/lib/consents";
 import { useLanguage } from "@/lib/useLanguage";
 import {
   isValidIdCode,
+  isTbcIban,
+  isValidGeorgianIban,
   isValidRegistryExtract,
-  isValidTbcIban,
   LEGAL_FORMS,
   normalizeIban,
   type LegalForm,
@@ -192,10 +193,10 @@ export function BusinessOnboardingWizard({
     }
 
     if (step === 3) {
-      if (!isValidTbcIban(iban)) {
+      if (!isValidGeorgianIban(iban)) {
         return text(
-          "შეიყვანე სწორი TBC IBAN: GE, 2 ციფრი, TB, 16 ციფრი.",
-          "Enter a valid TBC IBAN: GE, 2 digits, TB, 16 digits."
+          "შეიყვანე სწორი IBAN: GE, 2 ციფრი, ბანკის კოდი (მაგ. TB), 16 ციფრი.",
+          "Enter a valid IBAN: GE, 2 digits, the bank code (e.g. TB), 16 digits."
         );
       }
 
@@ -417,7 +418,7 @@ export function BusinessOnboardingWizard({
         {step === 3 && (
           <>
             <label className={labelClass}>
-              TBC IBAN
+              {text("ანგარიშის ნომერი (IBAN)", "Bank account (IBAN)")}
               <input
                 value={iban}
                 onChange={(event) => setIban(event.target.value.toUpperCase())}
@@ -427,7 +428,21 @@ export function BusinessOnboardingWizard({
                 className={inputClass}
               />
               <span className="text-xs font-medium">
-                {text("ანგარიში იურიდიული სახელით", "Account in the legal name")}
+                {text(
+                  "საქართველოს ნებისმიერი ბანკი, კომპანიის სახელზე.",
+                  "Any Georgian bank, in the company's name."
+                )}
+              </span>
+              <span className="text-xs font-medium">
+                {iban && isTbcIban(iban)
+                  ? text(
+                      "TBC: შენი წილი ყოველი გადახდისას ავტომატურად ჩაგერიცხება.",
+                      "TBC: your share arrives automatically with each payment."
+                    )
+                  : text(
+                      "TBC: წილი ავტომატურად გერიცხება. სხვა ბანკი: წინა კვირის წილს ყოველ ორშაბათს გადმოგირიცხავთ.",
+                      "TBC: your share arrives automatically. Other banks: we send last week's share every Monday."
+                    )}
               </span>
             </label>
             <label className={labelClass}>
@@ -565,8 +580,8 @@ export function BusinessOnboardingWizard({
               {text("ბიზნესის წესებს", "Business Terms")}
             </a>
             {text(
-              ": სურსათის უვნებლობა, შეკვეთების გადაცემა, საკომისიო და TBC-ის გაყოფილი გადახდა.",
-              ": food safety, handing over orders, commission and the TBC split payment."
+              ": სურსათის უვნებლობა, შეკვეთების გადაცემა, საკომისიო და თანხის ჩარიცხვა.",
+              ": food safety, handing over orders, commission and payouts."
             )}
           </span>
         </label>

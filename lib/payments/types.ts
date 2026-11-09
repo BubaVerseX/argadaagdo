@@ -32,6 +32,12 @@ export type CreatePaymentSessionResult = {
   providerReference: string;
   redirectUrl: string;
   externalOrderId: string;
+  /**
+   * True when the bank sends the business share straight to the business
+   * (TBC split). False: the full amount comes to us and the share is paid
+   * out by hand every week (admin page, "Payouts").
+   */
+  splitApplied: boolean;
 };
 
 export type VerifiedProviderPayment = {

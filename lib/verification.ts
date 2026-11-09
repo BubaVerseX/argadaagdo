@@ -19,12 +19,8 @@ export function normalizeIban(value: string) {
   return value.replace(/\s/g, "").toUpperCase();
 }
 
-/** TBC Bank IBAN: 22 characters in total, GEkkTB + 16 digits, mod-97 checksum. */
-export function isValidTbcIban(value: string) {
-  const iban = normalizeIban(value);
-
-  if (!/^GE[0-9]{2}TB[0-9]{16}$/.test(iban)) return false;
-
+/** Mod-97 checksum of an IBAN that is already normalized. */
+function hasValidIbanChecksum(iban: string) {
   const rearranged = iban.slice(4) + iban.slice(0, 4);
   let remainder = 0;
 
@@ -39,6 +35,26 @@ export function isValidTbcIban(value: string) {
   }
 
   return remainder === 1;
+}
+
+/**
+ * Georgian IBAN at any bank: 22 characters, GEkk + 2-letter bank code
+ * (TB = TBC Bank, BG = Bank of Georgia, ...) + 16 digits, mod-97 checksum.
+ */
+export function isValidGeorgianIban(value: string) {
+  const iban = normalizeIban(value);
+  if (!/^GE[0-9]{2}[A-Z]{2}[0-9]{16}$/.test(iban)) return false;
+  return hasValidIbanChecksum(iban);
+}
+
+/** True for an account at TBC Bank (bank code TB): only these get the TBC split. */
+export function isTbcIban(value: string) {
+  return /^GE[0-9]{2}TB/.test(normalizeIban(value));
+}
+
+/** TBC Bank IBAN: a valid Georgian IBAN with bank code TB. */
+export function isValidTbcIban(value: string) {
+  return isValidGeorgianIban(value) && isTbcIban(value);
 }
 
 /** საიდენტიფიკაციო კოდი: 9 digits, or 11 for a personal number. */

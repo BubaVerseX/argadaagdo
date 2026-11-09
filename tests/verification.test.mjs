@@ -5,6 +5,8 @@ import { isValidStandardWebhook } from "../lib/sms/standardWebhook.ts";
 import {
   isValidIdCode,
   isValidRegistryExtract,
+  isTbcIban,
+  isValidGeorgianIban,
   isValidTbcIban,
   normalizeGeorgianMobile,
 } from "../lib/verification.ts";
@@ -32,6 +34,28 @@ test("rejects a wrong checksum, length or bank", () => {
   assert.equal(isValidTbcIban(iban.slice(0, -1)), false);
   assert.equal(isValidTbcIban(iban.replace("TB", "BG")), false);
   assert.equal(isValidTbcIban(""), false);
+});
+
+// Same, at another Georgian bank (bank code BG = Bank of Georgia).
+function otherBankIban(digits = "0000000123456789") {
+  const numeric = `1116${digits}161400`;
+  const check = 98n - BigInt(numeric) % 97n;
+  return `GE${String(check).padStart(2, "0")}BG${digits}`;
+}
+
+test("accepts any Georgian bank; only TB counts as TBC", () => {
+  const tbc = tbcIban();
+  const other = otherBankIban();
+  assert.equal(isValidGeorgianIban(tbc), true);
+  assert.equal(isValidGeorgianIban(other), true);
+  assert.equal(isValidGeorgianIban(other.toLowerCase()), true);
+  assert.equal(isTbcIban(tbc), true);
+  assert.equal(isTbcIban(other), false);
+  assert.equal(isValidTbcIban(other), false);
+  const lastDigit = other.at(-1) === "1" ? "2" : "1";
+  assert.equal(isValidGeorgianIban(other.slice(0, -1) + lastDigit), false);
+  assert.equal(isValidGeorgianIban("DE89370400440532013000"), false);
+  assert.equal(isValidGeorgianIban(""), false);
 });
 
 test("identification code has 9 or 11 digits", () => {

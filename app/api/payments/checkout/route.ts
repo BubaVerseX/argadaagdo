@@ -9,6 +9,7 @@ import {
   createUserScopedSupabaseClient,
 } from "@/lib/supabaseServer";
 import { isEmailConfirmed } from "@/lib/auth";
+import { isTbcIban } from "@/lib/verification";
 import { sendReservationConfirmationEmail } from "@/lib/email/events";
 import { getUserErrorMessage } from "@/lib/errors";
 
@@ -160,16 +161,20 @@ export async function POST(request: Request) {
     pendingPayment = rpcData as PendingPaymentOrder;
     const offer = offerData as CheckoutOffer;
 
-    // Native split: the business's share goes straight to its payout account.
-    // The IBAN table is server-only, so it is read with the service role. A
-    // business without an IBAN on file falls back to an unsplit payment (full
-    // amount to us, paid out manually) rather than blocking the sale. While
-    // TBC_SPLIT_ENABLED is off, lib/payments/tbc.ts ignores the split too.
-    const { data: payoutAccount } = await createServiceRoleSupabaseClient()
+    // Payouts: a business with a TBC Bank account gets its share straight
+    // from TBC (split). Any other bank, or no IBAN on file, means an unsplit
+    // payment: the full amount comes to us and the share is transferred by
+    // hand every Monday (admin page, "Payouts"). While TBC_SPLIT_ENABLED is
+    // off, lib/payments/tbc.ts sends no split either. The IBAN table is
+    // server-only, so it is read with the service role.
+    const serviceClient = createServiceRoleSupabaseClient();
+    const { data: payoutAccount } = await serviceClient
       .from("business_payout_accounts")
       .select("iban")
       .eq("business_id", offer.business_id)
       .maybeSingle();
+    const tbcPayoutIban =
+      payoutAccount?.iban && isTbcIban(payoutAccount.iban) ? payoutAccount.iban : null;
 
     if (!payoutAccount?.iban) {
       logger.warn("Business has no payout IBAN; creating unsplit payment", {
@@ -188,13 +193,27 @@ export async function POST(request: Request) {
       currency: "GEL",
       externalOrderId: pendingPayment.external_order_id,
       language: body.language === "en" ? "en" : "ka",
-      split: payoutAccount?.iban
+      split: tbcPayoutIban
         ? {
-            iban: payoutAccount.iban,
+            iban: tbcPayoutIban,
             amount: Number(pendingPayment.business_amount),
           }
         : undefined,
     });
+
+    // Which way the business share goes decides whether it shows up in the
+    // weekly payout list.
+    const { error: payoutModeError } = await serviceClient
+      .from("payments")
+      .update({ payout_mode: session.splitApplied ? "split" : "manual" })
+      .eq("id", pendingPayment.payment_id);
+
+    if (payoutModeError) {
+      logger.warn("Payout mode could not be recorded", {
+        paymentId: pendingPayment.payment_id,
+        error: payoutModeError.message,
+      });
+    }
 
     const { error: attachError } = await userClient.rpc(
       "attach_provider_payment_reference",

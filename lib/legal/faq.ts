@@ -122,13 +122,13 @@ export const faqContent: Localized<FaqContent> = {
             id: "documents",
             question: "What do I need to apply?",
             answer:
-              "Your company's legal name, identification code (9 or 11 digits) and legal form; the owner's full name; a mobile number for the SMS code; a TBC Bank IBAN in the company's name; and a Public Registry extract (PDF or JPG, up to 10 MB).",
+              "Your company's legal name, identification code (9 or 11 digits) and legal form; the owner's full name; a mobile number for the SMS code; an IBAN at any Georgian bank, in the company's name; and a Public Registry extract (PDF or JPG, up to 10 MB).",
           },
           {
             id: "cost",
             question: "What does it cost?",
             answer:
-              "There's no monthly fee. We charge a commission only on paid orders, at a rate agreed with you before you start. TBC Bank splits each payment automatically: your share goes straight to your company's TBC account and our commission to ours, so we never hold your money. It's credited on TBC Bank's usual settlement schedule.",
+              "There's no monthly fee. We charge a commission only on paid orders, at a rate agreed with you before you start. With a TBC Bank account, TBC splits each payment automatically: your share goes straight to your account and our commission to ours. With another Georgian bank, the payment comes to us and we transfer your share, minus our commission, every Monday for the previous week.",
           },
           {
             id: "publish",
@@ -275,13 +275,13 @@ export const faqContent: Localized<FaqContent> = {
             id: "documents",
             question: "რა მჭირდება განაცხადისთვის?",
             answer:
-              "კომპანიის იურიდიული დასახელება, საიდენტიფიკაციო კოდი (9 ან 11 ციფრი) და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; მობილურის ნომერი SMS კოდისთვის; კომპანიის სახელზე გახსნილი TBC ბანკის IBAN; საჯარო რეესტრის ამონაწერი (PDF ან JPG, მაქსიმუმ 10 მბ).",
+              "კომპანიის იურიდიული დასახელება, საიდენტიფიკაციო კოდი (9 ან 11 ციფრი) და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; მობილურის ნომერი SMS კოდისთვის; კომპანიის სახელზე გახსნილი ანგარიშის IBAN (საქართველოს ნებისმიერი ბანკი); საჯარო რეესტრის ამონაწერი (PDF ან JPG, მაქსიმუმ 10 მბ).",
           },
           {
             id: "cost",
             question: "რა ღირს?",
             answer:
-              "ყოველთვიური გადასახადი არ არის. საკომისიოს ვიღებთ მხოლოდ გადახდილ შეკვეთებზე, განაკვეთით, რომელზეც დაწყებამდე შევთანხმდებით. TBC ბანკი თითოეულ გადახდას ავტომატურად ყოფს (split): შენი წილი პირდაპირ კომპანიის TBC ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე, ასე რომ შენს თანხას ჩვენ არ ვფლობთ. თანხა TBC ბანკის ჩვეულებრივი ანგარიშსწორების ვადებში ირიცხება.",
+              "ყოველთვიური გადასახადი არ არის. საკომისიოს ვიღებთ მხოლოდ გადახდილ შეკვეთებზე, განაკვეთით, რომელზეც დაწყებამდე შევთანხმდებით. TBC ბანკის ანგარიშით TBC თითოეულ გადახდას ავტომატურად ყოფს (split): შენი წილი პირდაპირ შენს ანგარიშზე ირიცხება, ჩვენი საკომისიო კი — ჩვენსაზე. სხვა ქართული ბანკის შემთხვევაში გადახდა ჩვენთან შემოდის და შენს წილს, ჩვენი საკომისიოს გამოკლებით, ყოველ ორშაბათს გადმოგირიცხავთ წინა კვირისთვის.",
           },
           {
             id: "publish",
