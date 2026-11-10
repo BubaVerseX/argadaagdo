@@ -88,7 +88,7 @@ Businesses (signed in with a business account):
 - Join: the "For businesses" page → register. The form asks for the business details, legal name, identification code, a Public Registry extract, a phone confirmed by SMS, a Georgian IBAN (any bank) and agreement to the Business Terms. ArGadaagdo checks it and approves the business.
 - "Panel" (app) / Business dashboard (website): "Sold today", "To hand over", "Today's boxes", "Pickups", "Enter code", "All reservations", "Manage boxes", "Full panel".
 - Boxes are set up once as box templates ("Manage boxes"): title, size S/M/L, price and regular price, how many per day (or until sales are stopped), weekdays, the time it goes on sale (same day or the day before) and the pickup window. Every day the boxes publish automatically. "Publish a box" puts one on sale now.
-- "Today: no boxes" stops sales for today (per department) and starts again the next day.
+- Website business dashboard, top buttons: "Publish bag" (ლანჩ ბოქსის გამოქვეყნება), "Collect order" (შეკვეთის გაცემა), "Stop sales for today" (დღეს გაყიდვის შეჩერება; then "Resume sales" / გაყიდვების განახლება). Stopping sales lasts for today only and can be done per department; sales start again the next day. The app's "Full panel" opens this dashboard.
 - Departments and staff PIN: a business can have several departments (counters, branches). Each can get a staff PIN so staff open the staff page on a shared phone or tablet and hand over boxes without the owner's account.
 - Handover: the customer shows the pickup code, staff press "Enter code" and type it. After the window ends, a box that wasn't picked up can be marked as missed (no-show).
 - Commission: by default ArGadaagdo keeps 30% of each box price and the business gets 70%. A business can have its own agreed rate; the account summary shows the business's rate when known. Changing the rate or the deal: write to us.
@@ -138,7 +138,8 @@ const INSTRUCTIONS = `You are the support assistant inside ArGadaagdo (Georgian 
 const FINAL_CHECK = `# Before you answer (most important)
 - Same language as the person's latest message. In Georgian always the informal "შენ": შენ, შენი, გაქვს, მიიღებ, დააჭირე. Never address the person with თქვენ/თქვენი/გაქვთ/მიიღებთ ("we" forms like გიპასუხებთ are fine).
 - Write only the reply the person will read: no notes to yourself, no plan, no translation of their question, no comments about which language or tone you're using.
-- Georgian has no capital letters: write every Georgian letter in normal form (ა, ბ, გ…), also at the start of a sentence.
+- Georgian has no capital letters: write every Georgian letter in normal form (ა, ბ, გ…), also at the start of a sentence. In Georgian the brand is „არ გადააგდო“ (of it: „არ გადააგდოს“), never "ArGadaagdo".
+- Button and screen names: as the app shows them in the app language from the summary (Georgian app → „შეკვეთები“, „გაუქმება“), even when you reply in another language.
 - 2–3 short sentences, never more than 4. Plain text, no markdown.
 - Facts only from the documents and the visitor summary. For payouts, use the summary's "Payouts right now" line, not the general description.
 - If unsure, or a person must check something, say: დააჭირე „მოგვწერე“-ს ჩატის ქვემოთ / press "Write to us" under the chat.`;
