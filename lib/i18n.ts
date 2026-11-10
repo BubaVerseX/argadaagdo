@@ -719,6 +719,39 @@ const translations = {
     "offline.retry": "Try again",
     "offline.home": "Go to homepage",
 
+    "supportChat.open": "Help chat",
+    "supportChat.title": "Help",
+    "supportChat.subtitle": "AI assistant",
+    "supportChat.greeting": "Hi! I'm ArGadaagdo's assistant. Ask me about reservations, pickup, payments or your business account.",
+    "supportChat.placeholder": "Type your question…",
+    "supportChat.send": "Send",
+    "supportChat.close": "Close",
+    "supportChat.newChat": "New chat",
+    "supportChat.thinking": "Typing…",
+    "supportChat.disclaimer": "AI (Claude by Anthropic, USA) answers here and can make mistakes. Never send card details, passwords or codes.",
+    "supportChat.writeToUs": "Write to us",
+    "supportChat.writeTitle": "Send this chat to our team",
+    "supportChat.writeText": "A person from our team will read it and answer by email.",
+    "supportChat.writeEmail": "Your email",
+    "supportChat.writeNote": "Anything to add? (optional)",
+    "supportChat.writeSend": "Send to the team",
+    "supportChat.writeSending": "Sending…",
+    "supportChat.writeBack": "Back to chat",
+    "supportChat.writeSent": "Sent. We'll answer by email to {email}.",
+    "supportChat.writeReplyTo": "We'll answer to {email}",
+    "supportChat.errorBusy": "I couldn't answer just now. Try again in a moment, or write to us.",
+    "supportChat.errorLimit": "Too many messages at once. Try again in a few minutes, or write to us.",
+    "supportChat.errorEmail": "Enter a valid email address.",
+    "supportChat.errorSend": "It didn't send. Try again, or email argadaagdo.support@gmail.com.",
+    "supportChat.errorTooLong": "That message is too long (1000 characters at most).",
+    "supportChat.off": "Instant answers are off right now. Write to us and a person will answer by email.",
+    "supportChat.askCancel": "How do I cancel a reservation?",
+    "supportChat.askCode": "Where is my pickup code?",
+    "supportChat.askRefund": "When will I get my refund?",
+    "supportChat.askAddBox": "How do I add a box?",
+    "supportChat.askPayout": "When do I get paid?",
+    "supportChat.askPause": "How do I stop sales for today?",
+
   },
   ka: {
     ...nativeTranslations.ka,
@@ -1420,6 +1453,39 @@ const translations = {
     "offline.retry": "სცადე ხელახლა",
     "offline.home": "მთავარ გვერდზე გადასვლა",
 
+    "supportChat.open": "დახმარების ჩატი",
+    "supportChat.title": "დახმარება",
+    "supportChat.subtitle": "AI ასისტენტი",
+    "supportChat.greeting": "გამარჯობა! „არ გადააგდოს“ ასისტენტი ვარ. მკითხე ჯავშანზე, წაღებაზე, გადახდაზე ან ბიზნეს ანგარიშზე.",
+    "supportChat.placeholder": "დაწერე შენი კითხვა…",
+    "supportChat.send": "გაგზავნა",
+    "supportChat.close": "დახურვა",
+    "supportChat.newChat": "ახალი ჩატი",
+    "supportChat.thinking": "წერს…",
+    "supportChat.disclaimer": "აქ პასუხობს AI (Anthropic-ის Claude, აშშ) და შეიძლება შეცდეს. ბარათის მონაცემებს, პაროლს და კოდებს ნუ გამოგზავნი.",
+    "supportChat.writeToUs": "მოგვწერე",
+    "supportChat.writeTitle": "გაუგზავნე ეს ჩატი ჩვენს გუნდს",
+    "supportChat.writeText": "ჩვენი გუნდის წევრი წაიკითხავს და ელფოსტით გიპასუხებს.",
+    "supportChat.writeEmail": "შენი ელფოსტა",
+    "supportChat.writeNote": "რამის დამატება ხომ არ გინდა? (არასავალდებულო)",
+    "supportChat.writeSend": "გუნდისთვის გაგზავნა",
+    "supportChat.writeSending": "იგზავნება…",
+    "supportChat.writeBack": "ჩატში დაბრუნება",
+    "supportChat.writeSent": "გაიგზავნა. ელფოსტით გიპასუხებთ: {email}.",
+    "supportChat.writeReplyTo": "გიპასუხებთ მისამართზე: {email}",
+    "supportChat.errorBusy": "ახლა ვერ გიპასუხე. ცოტა ხანში სცადე ხელახლა ან მოგვწერე.",
+    "supportChat.errorLimit": "ძალიან ბევრი შეტყობინებაა ერთად. რამდენიმე წუთში სცადე ან მოგვწერე.",
+    "supportChat.errorEmail": "შეიყვანე სწორი ელფოსტა.",
+    "supportChat.errorSend": "ვერ გაიგზავნა. სცადე ხელახლა ან მოგვწერე: argadaagdo.support@gmail.com.",
+    "supportChat.errorTooLong": "შეტყობინება ძალიან გრძელია (მაქსიმუმ 1000 სიმბოლო).",
+    "supportChat.off": "მყისიერი პასუხები ახლა გამორთულია. მოგვწერე და ელფოსტით გიპასუხებთ.",
+    "supportChat.askCancel": "როგორ გავაუქმო ჯავშანი?",
+    "supportChat.askCode": "სად არის წაღების კოდი?",
+    "supportChat.askRefund": "როდის დამიბრუნდება თანხა?",
+    "supportChat.askAddBox": "როგორ დავამატო ბოქსი?",
+    "supportChat.askPayout": "როდის მივიღებ თანხას?",
+    "supportChat.askPause": "როგორ შევაჩერო გაყიდვა დღეს?",
+
   },
 } satisfies Record<Language, Record<string, string>>;
 
@@ -1427,6 +1493,11 @@ export type TranslationKey = keyof (typeof translations)[typeof defaultLanguage]
 
 export function isSupportedLanguage(value: string | null): value is Language {
   return supportedLanguages.includes(value as Language);
+}
+
+/** Every [key, text] pair of one language (the support chat's label list). */
+export function listTranslationEntries(language: Language): [string, string][] {
+  return Object.entries(translations[language]);
 }
 
 export function translate(language: Language, key: TranslationKey) {

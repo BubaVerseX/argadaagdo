@@ -23,6 +23,8 @@ import {
 //   backup copy until 27 Nov 2026 (owner deletes it then)
 // - location stays on the device (lib/location.ts); map tiles from OpenFreeMap
 //   (lib/mapStyle.ts); address search via Nominatim (app/api/geocode/route.ts)
+// - help chat: components/SupportChat.tsx + app/api/support (Anthropic API,
+//   nothing stored; "Write to us" emails the chat via Resend), 10 Nov 2026
 // - complaints: State Audit Office (took over from the Personal Data
 //   Protection Service on 2 March 2026)
 // The "delete-account" anchor is the account-deletion URL in the store listings.
@@ -63,7 +65,7 @@ export const privacyContent: Localized<PrivacyContent> = {
           "Orders: reservations, pickup codes, order and payment status, cancellations, completed and missed pickups, favourites, ratings and review comments, and your reliability score.",
           "Payments: the amount, the status and TBC Bank's payment reference. Never your card details.",
           "Businesses: the public business profile (name, category, address, logo, cover photo, description and opening hours); legal name, identification code and legal form; the owner's full name; a phone number confirmed by SMS; a bank account (IBAN); a Public Registry extract; offers and offer photos.",
-          "Support: the messages you send us.",
+          "Support: the messages you send us. In the help chat, your questions and, if you're signed in, a short summary of your own orders or business settings (never pickup codes, phone numbers, IBANs or card details) are used only to answer you, and we don't store the chat. If you press \"Write to us\", the chat is emailed to our support inbox.",
           "Technical data: our hosting providers keep standard server logs (such as IP address and browser or device type) to run and protect the service.",
           "Push notifications: if you turn them on, your device's push token from Apple or Google, stored with your account. It's deleted when you turn push off, sign out in the app or delete your account.",
         ],
@@ -122,6 +124,7 @@ export const privacyContent: Localized<PrivacyContent> = {
           "Apple Inc. (USA): delivery of iPhone push notifications.",
           "TBC Bank (Georgia): payments and refunds.",
           "ubill.ge (Georgia): delivery of SMS codes.",
+          "Anthropic PBC (USA): the AI (Claude) that answers in the help chat. It receives the chat and the summary needed to answer, and doesn't use them to train its models.",
           "OpenFreeMap: map images, from servers outside Georgia.",
           "OpenStreetMap Foundation (United Kingdom): address search (Nominatim) when a business sets its location. Our server sends only the typed address.",
         ],
@@ -236,7 +239,7 @@ export const privacyContent: Localized<PrivacyContent> = {
           "შეკვეთები: ჯავშნები, წაღების კოდები, შეკვეთისა და გადახდის სტატუსი, გაუქმებები, წაღებული და გამოტოვებული შეკვეთები, რჩეულები, შეფასებები და კომენტარები, ასევე სანდოობის ქულა.",
           "გადახდები: თანხა, სტატუსი და TBC ბანკის გადახდის იდენტიფიკატორი. ბარათის მონაცემები — არასდროს.",
           "ბიზნესები: ბიზნესის საჯარო პროფილი (დასახელება, კატეგორია, მისამართი, ლოგო, ყდის ფოტო, აღწერა და სამუშაო საათები); იურიდიული დასახელება, საიდენტიფიკაციო კოდი და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; SMS-ით დადასტურებული ტელეფონის ნომერი; საბანკო ანგარიშის IBAN; საჯარო რეესტრის ამონაწერი; შეთავაზებები და მათი ფოტოები.",
-          "მხარდაჭერა: შეტყობინებები, რომლებსაც გვიგზავნი.",
+          "მხარდაჭერა: შეტყობინებები, რომლებსაც გვიგზავნი. დახმარების ჩატში შენი კითხვები და, თუ შესული ხარ, მოკლე ინფორმაცია შენს შეკვეთებზე ან ბიზნესის პარამეტრებზე (არასდროს — წაღების კოდები, ტელეფონის ნომრები, IBAN-ები ან ბარათის მონაცემები) მხოლოდ პასუხის გასაცემად გამოიყენება და ჩატს არ ვინახავთ. თუ „მოგვწერე“-ს დააჭერ, ჩატი ჩვენი მხარდაჭერის ელფოსტაზე იგზავნება.",
           "ტექნიკური მონაცემები: ჰოსტინგის პროვაიდერები სერვისის მუშაობისა და დაცვისთვის ინახავენ სტანდარტულ სერვერულ ჩანაწერებს (მაგალითად, IP მისამართს, ბრაუზერის ან მოწყობილობის ტიპს).",
           "Push-შეტყობინებები: თუ მათ ჩართავ, შენი მოწყობილობის Push-ტოკენი Apple-ისგან ან Google-ისგან, რომელიც შენს ანგარიშთან ერთად ინახება. ის იშლება, როცა Push-ს გამორთავ, აპლიკაციიდან გამოხვალ ან ანგარიშს წაშლი.",
         ],
@@ -295,6 +298,7 @@ export const privacyContent: Localized<PrivacyContent> = {
           "Apple Inc. (აშშ): iPhone-ის Push-შეტყობინებების მიწოდება.",
           "TBC ბანკი (საქართველო): გადახდები და თანხის დაბრუნება.",
           "ubill.ge (საქართველო): SMS კოდების მიწოდება.",
+          "Anthropic PBC (აშშ): AI (Claude), რომელიც დახმარების ჩატში პასუხობს. ის იღებს ჩატს და პასუხისთვის საჭირო ინფორმაციას და მათ თავისი მოდელების გასაწვრთნელად არ იყენებს.",
           "OpenFreeMap: რუკის გამოსახულებები, საქართველოს გარეთ მდებარე სერვერებიდან.",
           "OpenStreetMap Foundation (გაერთიანებული სამეფო): მისამართის ძიება (Nominatim), როცა ბიზნესი თავის მდებარეობას უთითებს. ჩვენი სერვერი მხოლოდ შეყვანილ მისამართს აგზავნის.",
         ],

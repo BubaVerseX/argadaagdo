@@ -215,6 +215,17 @@ export const MailIcon = base(
   </>
 );
 
+/** Speech bubble: the support chat button. */
+export const ChatIcon = base(
+  <>
+    <path d="M20.5 11.5c0 4.14-3.8 7.5-8.5 7.5-1.13 0-2.2-.19-3.19-.54L4 20l1.3-3.6C4.15 15.07 3.5 13.35 3.5 11.5 3.5 7.36 7.3 4 12 4s8.5 3.36 8.5 7.5Z" />
+    <path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" strokeWidth={2.6} />
+  </>
+);
+
+/** Arrow pointing up: send a chat message. */
+export const ArrowUpIcon = base(<path d="M12 19V5M12 5l-6 6M12 5l6 6" />);
+
 export const PhoneIcon = base(
   <path d="M6 3.5h3l1.5 4-2 1.5a11 11 0 0 0 5 5l1.5-2 4 1.5v3a1.5 1.5 0 0 1-1.6 1.5A16 16 0 0 1 4.5 5.1 1.5 1.5 0 0 1 6 3.5Z" />
 );

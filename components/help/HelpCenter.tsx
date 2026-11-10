@@ -2,7 +2,8 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import { ChevronDownIcon, MailIcon, SearchIcon } from "@/components/icons";
+import { ChatIcon, ChevronDownIcon, MailIcon, SearchIcon } from "@/components/icons";
+import { OPEN_SUPPORT_CHAT_EVENT } from "@/components/SupportChat";
 import {
   faqContent,
   HELP_CATEGORIES,
@@ -235,13 +236,23 @@ export default function HelpCenter({ variant }: { variant: "help" | "faq" }) {
             <p className="text-sm text-body">
               {ka ? "ვერ იპოვე პასუხი?" : "Didn't find an answer?"}
             </p>
-            <a
-              href={`mailto:${SUPPORT_EMAIL}`}
-              className="mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-forest px-6 text-[15px] font-semibold text-brand-ground sm:w-auto"
-            >
-              <MailIcon className="h-4 w-4" strokeWidth={2} />
-              {ka ? "დაუკავშირდი მხარდაჭერას" : "Contact support"}
-            </a>
+            <div className="mt-3 flex flex-col items-stretch justify-center gap-2 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event(OPEN_SUPPORT_CHAT_EVENT))}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brand-forest px-6 text-[15px] font-semibold text-brand-ground sm:w-auto"
+              >
+                <ChatIcon className="h-4 w-4" strokeWidth={2} />
+                {ka ? "ჰკითხე ჩატში" : "Ask in the chat"}
+              </button>
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-brand-forest/25 px-6 text-[15px] font-semibold text-brand-forest sm:w-auto"
+              >
+                <MailIcon className="h-4 w-4" strokeWidth={2} />
+                {ka ? "დაუკავშირდი მხარდაჭერას" : "Contact support"}
+              </a>
+            </div>
             <p className="mt-2 text-xs text-body">{SUPPORT_EMAIL}</p>
           </div>
         </div>

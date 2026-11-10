@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import NativeRoot from "@/components/native/NativeRoot";
 import NotificationCenter from "@/components/NotificationCenter";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import SupportChat from "@/components/SupportChat";
 import { nativeBootScript } from "@/lib/nativeBoot";
 import { siteUrl } from "@/lib/site";
 // Self-hosted brand fonts (app/fonts.css, files in public/fonts/v5). Noto Sans
@@ -107,6 +108,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: "window.__argLaunch&&window.__argLaunch()" }} />
         {children}
         <NotificationCenter />
+        <SupportChat />
         <ConsentGate />
         <ServiceWorkerRegistration />
         <NativeRoot />
