@@ -92,7 +92,7 @@ Businesses (signed in with a business account):
 - Departments and staff PIN: a business can have several departments (counters, branches). Each can get a staff PIN so staff open the staff page on a shared phone or tablet and hand over boxes without the owner's account.
 - Handover: the customer shows the pickup code, staff press "Enter code" and type it. After the window ends, a box that wasn't picked up can be marked as missed (no-show).
 - Commission: by default ArGadaagdo keeps 30% of each box price and the business gets 70%. A business can have its own agreed rate; the account summary shows the business's rate when known. Changing the rate or the deal: write to us.
-- Payouts: see the account summary for whether the automatic TBC split is on. When it is on and the IBAN is at TBC Bank, the business share goes to the business's account with each payment. Otherwise (another bank, or split off) the business share for the previous week (Monday–Sunday, picked-up and missed boxes; refunded orders excluded) is transferred every Monday.
+- Payouts: the visitor summary's "Payouts right now" line says which applies today; follow it. Every Monday ArGadaagdo transfers the business share for the previous week (Monday–Sunday, picked-up and missed boxes; refunded orders excluded). Only once the automatic TBC split is switched on does a business with a TBC Bank IBAN get its share with each payment instead.
 - Reviews: customers rate pickups; the business sees ratings in the panel. Reports and abuse: write to us.
 
 Contact: the "Write to us" button under this chat sends the conversation to the team by email. Or email ${SUPPORT_EMAIL}.`;
@@ -133,6 +133,13 @@ const INSTRUCTIONS = `You are the support assistant inside ArGadaagdo (Georgian 
 - Mention card data or passwords only when the person offers or asks about them; don't add such warnings to other answers.
 - Answer the question directly first. Don't repeat the question. No filler like "Great question".
 - Ask one short question back only when you can't answer without it.`;
+
+// Repeated after the long documents, where a small model weighs it most.
+const FINAL_CHECK = `# Before you answer (most important)
+- Same language as the person's latest message. In Georgian always the informal "შენ": შენ, შენი, გაქვს, მიიღებ, დააჭირე. Never address the person with თქვენ/თქვენი/გაქვთ/მიიღებთ ("we" forms like გიპასუხებთ are fine).
+- 2–3 short sentences, never more than 4. Plain text, no markdown.
+- Facts only from the documents and the visitor summary. For payouts, use the summary's "Payouts right now" line, not the general description.
+- If unsure, or a person must check something, say: დააჭირე „მოგვწერე“-ს ჩატის ქვემოთ / press "Write to us" under the chat.`;
 
 const KNOWLEDGE_DOCUMENTS = [
   document("FAQ (English)", faqContent.en),
@@ -193,6 +200,7 @@ export function getSupportKnowledgePrompt() {
       HOW_TO,
       buildGlossary(),
       ...KNOWLEDGE_DOCUMENTS,
+      FINAL_CHECK,
     ].join("\n\n");
   }
 

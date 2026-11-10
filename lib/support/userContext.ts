@@ -391,7 +391,11 @@ export async function buildVisitorSummary({
     `Now (Tbilisi): ${tbilisiDateTime(now)}`,
     `App language: ${language === "ka" ? "Georgian" : "English"}`,
     `Using: ${isApp ? "the ArGadaagdo app" : "the website argadaagdo.ge"}; current page ${field(path, 80)}`,
-    `Automatic TBC split payouts: ${process.env.TBC_SPLIT_ENABLED === "true" ? "on" : "off (all business shares are transferred every Monday)"}`,
+    `Payouts right now: ${
+      process.env.TBC_SPLIT_ENABLED === "true"
+        ? "businesses with a TBC Bank IBAN get their share with each payment (automatic TBC split); businesses with another bank are paid every Monday for the previous week"
+        : "every business, whatever its bank, is paid every Monday for the previous week (the automatic TBC split is not switched on yet)"
+    }`,
   ];
 
   if (!visitor.userId || !client) {
