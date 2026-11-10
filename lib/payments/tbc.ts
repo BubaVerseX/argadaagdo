@@ -155,14 +155,15 @@ function authHeaders(config: TbcConfig, accessToken: string) {
   };
 }
 
-function getCallbackUrl(config: TbcConfig) {
-  const callbackPath = config.callbackSecret
-    ? `/api/payments/tbc/callback?secret=${encodeURIComponent(
-        config.callbackSecret
-      )}`
-    : "/api/payments/tbc/callback";
+// TBC only calls back to the address saved in the merchant dashboard
+// (ecom.tbcpayments.ge → Website Management → Callback), and each payment must
+// send the same address. So it has no secret in it: the route accepts TBC's
+// callback servers instead, and re-reads every payment from TBC anyway.
+// https://developers.tbcbank.ge/docs/checkout-callback-url
+const TBC_CALLBACK_PATH = "/api/payments/tbc/callback";
 
-  return absoluteSiteUrl(callbackPath);
+function getCallbackUrl() {
+  return absoluteSiteUrl(TBC_CALLBACK_PATH);
 }
 
 export async function createTbcPaymentSession(
@@ -183,7 +184,7 @@ export async function createTbcPaymentSession(
         returnurl: absoluteSiteUrl(
           `/api/payments/tbc/return?payment_id=${input.paymentId}`
         ),
-        callbackUrl: getCallbackUrl(config),
+        callbackUrl: getCallbackUrl(),
         merchantPaymentId: input.externalOrderId,
         description: input.offerTitle.slice(0, 30),
         expirationMinutes: 12,
@@ -284,6 +285,24 @@ export async function refundTbcPayment(input: {
   }
 
   return verified;
+}
+
+// TBC's callback servers, from the same docs page. TBC_CALLBACK_IPS
+// (comma-separated) replaces the list if TBC ever announces new ones.
+const DEFAULT_TBC_CALLBACK_IPS = [
+  "193.104.20.44",
+  "193.104.20.45",
+  "185.52.80.44",
+  "185.52.80.45",
+];
+
+export function isTbcCallbackIp(ip: string | null) {
+  if (!ip) return false;
+  const allowed = (process.env.TBC_CALLBACK_IPS || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return (allowed.length > 0 ? allowed : DEFAULT_TBC_CALLBACK_IPS).includes(ip.trim());
 }
 
 export function isTbcCallbackSecretValid(secret: string | null) {
