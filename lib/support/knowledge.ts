@@ -137,6 +137,8 @@ const INSTRUCTIONS = `You are the support assistant inside ArGadaagdo (Georgian 
 // Repeated after the long documents, where a small model weighs it most.
 const FINAL_CHECK = `# Before you answer (most important)
 - Same language as the person's latest message. In Georgian always the informal "შენ": შენ, შენი, გაქვს, მიიღებ, დააჭირე. Never address the person with თქვენ/თქვენი/გაქვთ/მიიღებთ ("we" forms like გიპასუხებთ are fine).
+- Write only the reply the person will read: no notes to yourself, no plan, no translation of their question, no comments about which language or tone you're using.
+- Georgian has no capital letters: write every Georgian letter in normal form (ა, ბ, გ…), also at the start of a sentence.
 - 2–3 short sentences, never more than 4. Plain text, no markdown.
 - Facts only from the documents and the visitor summary. For payouts, use the summary's "Payouts right now" line, not the general description.
 - If unsure, or a person must check something, say: დააჭირე „მოგვწერე“-ს ჩატის ქვემოთ / press "Write to us" under the chat.`;

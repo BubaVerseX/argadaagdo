@@ -75,3 +75,13 @@ export function formatTranscript(messages: SupportChatMessage[], labels: { user:
     .map((message) => `${message.role === "user" ? labels.user : labels.assistant}:\n${message.content}`)
     .join("\n\n");
 }
+
+/**
+ * Georgian is written without capitals, but models sometimes start a sentence
+ * with a Mtavruli letter (U+1C90–U+1CBF). Map those to the normal letters.
+ */
+export function toMkhedruli(text: string) {
+  return text.replace(/[\u1C90-\u1CBA\u1CBD-\u1CBF]/g, (letter) =>
+    String.fromCharCode(letter.charCodeAt(0) - 0x1c90 + 0x10d0)
+  );
+}

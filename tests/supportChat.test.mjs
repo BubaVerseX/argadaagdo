@@ -4,6 +4,7 @@ import {
   formatTranscript,
   normalizeSupportMessages,
   normalizeTranscript,
+  toMkhedruli,
 } from "../lib/support/messages.ts";
 import { createRateLimiter } from "../lib/support/rateLimit.ts";
 
@@ -73,4 +74,10 @@ test("rate limiter allows up to the limit, then resets after the window", () => 
   assert.equal(blocked.retryAfterSeconds, 1);
   assert.equal(take("b", 20).allowed, true);
   assert.equal(take("a", 1001).allowed, true);
+});
+
+test("Georgian capitals (Mtavruli) become normal letters", () => {
+  assert.equal(toMkhedruli("\u1C95\u10d4\u10e0 \u10d3\u10d0\u10d2\u10d4\u10ee\u10db\u10d0\u10e0\u10d4\u10d1\u10d8"), "\u10d5\u10d4\u10e0 \u10d3\u10d0\u10d2\u10d4\u10ee\u10db\u10d0\u10e0\u10d4\u10d1\u10d8");
+  assert.equal(toMkhedruli("\u1CA9\u10d4\u10db\u10d8"), "\u10e9\u10d4\u10db\u10d8");
+  assert.equal(toMkhedruli("Orders \u2014 \u201e\u10e8\u10d4\u10d9\u10d5\u10d4\u10d7\u10d4\u10d1\u10d8\u201c"), "Orders \u2014 \u201e\u10e8\u10d4\u10d9\u10d5\u10d4\u10d7\u10d4\u10d1\u10d8\u201c");
 });

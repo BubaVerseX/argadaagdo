@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import type { SupportChatMessage } from "@/lib/support/messages";
+import { toMkhedruli, type SupportChatMessage } from "@/lib/support/messages";
 
 // One call to the Claude Messages API, without an SDK (one fetch). The fixed
 // knowledge is the first system block and is cached; the visitor summary is
@@ -108,11 +108,13 @@ export async function askSupportModel({
       return { ok: false, reason: "failed" };
     }
 
-    const text = (data.content || [])
-      .filter((block) => block.type === "text" && block.text)
-      .map((block) => block.text)
-      .join("\n")
-      .trim();
+    const text = toMkhedruli(
+      (data.content || [])
+        .filter((block) => block.type === "text" && block.text)
+        .map((block) => block.text)
+        .join("\n")
+        .trim()
+    );
 
     // Token counts only, never the conversation.
     logger.info("Support chat answered", {
