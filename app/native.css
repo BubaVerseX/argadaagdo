@@ -522,8 +522,16 @@ html.native-app .photo-hero {
   color: #f7f1e3;
 }
 
-html.native-welcome .native-tabbar {
+html.native-welcome .native-tabbar,
+html.native-welcome .support-chat-launcher {
   display: none;
+}
+
+/* The app's tab bar shows at every width (also on tablets): keep the help
+   chat button above it, not in the website's desktop corner. */
+html.native-app .support-chat-launcher {
+  right: 1.25rem;
+  bottom: calc(5.75rem + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
 
 .native-welcome-ui {
