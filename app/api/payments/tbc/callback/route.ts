@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import {
+  isTbcCallbackIp,
   isTbcCallbackSecretValid,
   verifyTbcPayment,
 } from "@/lib/payments/tbc";
@@ -55,26 +56,41 @@ function getFinalizedOrderId(value: unknown) {
 
 export async function POST(request: NextRequest) {
   try {
-    const secret = request.nextUrl.searchParams.get("secret");
-    const secretValid = isTbcCallbackSecretValid(secret);
+    // Vercel sets x-forwarded-for to the caller's real address.
+    const callerIp =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      null;
+    const fromTbc = isTbcCallbackIp(callerIp);
+    // Payments created before the registered address still carry ?secret=.
+    const secretValid =
+      !fromTbc && isTbcCallbackSecretValid(request.nextUrl.searchParams.get("secret"));
 
     // One line per callback, so we can see in the logs that TBC really calls
-    // back (no secret or body is logged).
-    logger.info("TBC callback received", { secretValid });
+    // back (no secret or body is logged; the address only when refused).
+    logger.info("TBC callback received", { fromTbc, secretValid });
 
-    if (!secretValid) {
+    if (!fromTbc && !secretValid) {
+      logger.warn("TBC callback refused", { callerIp });
       return NextResponse.json({ error: "Unauthorized callback" }, { status: 401 });
     }
 
-    // TBC callbacks are unsigned: the shared secret above gates the route, and
-    // the payment state is always re-read from TBC rather than trusted from the body.
+    // TBC callbacks are unsigned: only TBC's callback servers (or the old
+    // shared secret) get in, and the payment state is always re-read from TBC
+    // rather than trusted from the body.
     const rawBody = await request.text();
     let payload: unknown = {};
 
     try {
       payload = rawBody ? JSON.parse(rawBody) : {};
     } catch {
-      return NextResponse.json({ error: "Invalid callback body" }, { status: 400 });
+      // The docs only say the body holds PaymentId: accept a form body too.
+      const form = Object.fromEntries(new URLSearchParams(rawBody));
+      if (!form.PaymentId && !form.paymentId && !form.payId) {
+        logger.warn("TBC callback body not understood", { length: rawBody.length });
+        return NextResponse.json({ error: "Invalid callback body" }, { status: 400 });
+      }
+      payload = form;
     }
 
     const providerReference = extractProviderReference(payload);

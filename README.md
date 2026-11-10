@@ -249,8 +249,12 @@ back successful reservations, cancellations, approvals, or pickups.
 - Set all required environment variables in Vercel.
 - Use `NEXT_PUBLIC_SITE_URL=https://argadaagdo.ge` for canonical
   metadata, sitemap, and robots URLs.
-- Configure the TBC Bank merchant callback URL as:
-  `https://argadaagdo.ge/api/payments/tbc/callback?secret=<TBC_CALLBACK_SECRET>`
+- The TBC Bank callback URL is saved in the merchant dashboard
+  (ecom.tbcpayments.ge → Website Management → Callback) as
+  `https://argadaagdo.ge/api/payments/tbc/callback`, and every payment sends
+  the same address. The route accepts TBC's callback servers (the IPs on
+  https://developers.tbcbank.ge/docs/checkout-callback-url, or
+  `TBC_CALLBACK_IPS`) and re-reads each payment from TBC.
 - Configure successful and failed payment redirects to use the generated
   checkout session URLs returned by ArGadaagdo.
 - Set `RESEND_API_KEY`, `TRANSACTIONAL_EMAIL_FROM`,
