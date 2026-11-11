@@ -187,8 +187,9 @@ export default function BusinessRegisterPage() {
       .upload(extractPath, extractFile, { contentType: extractFile.type });
 
     if (uploadError) {
+      console.error("Registry extract upload failed", uploadError);
       setSubmitting(false);
-      setMessage("The extract could not be uploaded. Please try again.");
+      setMessage(`The extract could not be uploaded (${uploadError.message}). Please try again.`);
       return;
     }
 
