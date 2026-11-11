@@ -335,7 +335,6 @@ function isVerificationReady(verification: BusinessVerificationReview | undefine
       verification.owner_full_name &&
       verification.verified_phone &&
       verification.iban &&
-      verification.registry_extract_path &&
       verification.iban_holder_confirmed_at
   );
 }

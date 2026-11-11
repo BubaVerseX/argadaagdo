@@ -179,18 +179,24 @@ export default function BusinessRegisterPage() {
     setMessageTone("error");
 
     const { company, iban, extractFile, firstBag } = application;
-    const extension = extractFile.type === "application/pdf" ? "pdf" : "jpg";
-    const extractPath = `${setup.userId}/${crypto.randomUUID()}.${extension}`;
+    // The extract is optional: without it the admin checks the ID code on
+    // enreg.reestri.gov.ge before approving.
+    let extractPath: string | null = null;
 
-    const { error: uploadError } = await supabase.storage
-      .from("business-documents")
-      .upload(extractPath, extractFile, { contentType: extractFile.type });
+    if (extractFile) {
+      const extension = extractFile.type === "application/pdf" ? "pdf" : "jpg";
+      extractPath = `${setup.userId}/${crypto.randomUUID()}.${extension}`;
 
-    if (uploadError) {
-      console.error("Registry extract upload failed", uploadError);
-      setSubmitting(false);
-      setMessage(`The extract could not be uploaded (${uploadError.message}). Please try again.`);
-      return;
+      const { error: uploadError } = await supabase.storage
+        .from("business-documents")
+        .upload(extractPath, extractFile, { contentType: extractFile.type });
+
+      if (uploadError) {
+        console.error("Registry extract upload failed", uploadError);
+        setSubmitting(false);
+        setMessage(`The extract could not be uploaded (${uploadError.message}). Please try again.`);
+        return;
+      }
     }
 
     const { data: businessId, error } = await supabase.rpc("submit_business_application", {
