@@ -26,7 +26,10 @@ export const SUPPORT_EMAIL = "argadaagdo.support@gmail.com";
 
 // Who runs ArGadaagdo (from the owner, 6 Nov 2026). Public pages show only the
 // name and "Tbilisi, Georgia"; the ID code and tax status appear only in the
-// Terms' operator section. Never publish the street address.
+// Terms' operator section. The street address is never in the code: it comes
+// from the OPERATOR_ADDRESS setting on Vercel and shows only in the Terms'
+// operator section (app/terms/page.tsx), not in the footer, contact page,
+// support chat or apps.
 export const OPERATOR_NAME: Localized<string> = {
   en: "Individual Entrepreneur Bidzina Abesadze (ი/მ ბიძინა აბესაძე)",
   ka: "ი/მ ბიძინა აბესაძე",
