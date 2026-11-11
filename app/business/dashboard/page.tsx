@@ -8,7 +8,7 @@ import { LoadingState } from "@/components/LoadingState";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { isSalesPausedToday } from "@/lib/greenBag";
-import { BusinessQuickActions, type QuickPanel } from "@/components/business/BusinessQuickActions";
+import { BusinessQuickActions, QuickPanelClose, type QuickPanel } from "@/components/business/BusinessQuickActions";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
@@ -2217,6 +2217,7 @@ function BusinessDashboardPage() {
 
         {/* Kept mounted but hidden, so half-filled forms survive switching. */}
         <div hidden={quickPanel !== "publish"}>
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
           {selectedBusiness && canCreateOffers && (
             <BagTemplatesPanel
               language={language}
@@ -2273,9 +2274,11 @@ function BusinessDashboardPage() {
               onCreateOffer={(actionTime) => void createOffer(actionTime)}
             />
           </details>
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
         <div hidden={quickPanel !== "collect"}>
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
           <div id="business-reservations" className="scroll-mt-24">
             <ReservationList
               t={t}
@@ -2303,6 +2306,7 @@ function BusinessDashboardPage() {
               onMarkNoShow={(order) => void markNoShow(order)}
             />
           </div>
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
         {pickupVerificationOrder && (

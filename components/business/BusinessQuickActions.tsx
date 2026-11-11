@@ -26,7 +26,7 @@ export function BusinessQuickActions({
     "min-h-28 rounded-3xl p-5 text-left text-xl font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-36";
 
   return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-3">
+    <div id="business-quick-actions" className="mt-6 grid scroll-mt-24 gap-3 sm:grid-cols-3">
       <button
         type="button"
         aria-expanded={activePanel === "publish"}
@@ -64,6 +64,30 @@ export function BusinessQuickActions({
           : isGeorgian
             ? "დღეს გაყიდვის შეჩერება"
             : "Stop sales for today"}
+      </button>
+    </div>
+  );
+}
+
+/** A clear way out of an open panel, since a second tap on the tile isn't obvious. */
+export function QuickPanelClose({ onClose }: { onClose: () => void }) {
+  const { language } = useLanguage();
+  const isGeorgian = language === "ka";
+
+  return (
+    <div className="mt-3 flex justify-end">
+      <button
+        type="button"
+        onClick={() => {
+          onClose();
+          document
+            .getElementById("business-quick-actions")
+            ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }}
+        className="ui-card inline-flex min-h-11 items-center gap-2 rounded-full px-4 font-semibold text-cream transition hover:text-mint focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+      >
+        <span aria-hidden="true">✕</span>
+        {isGeorgian ? "დახურვა" : "Close"}
       </button>
     </div>
   );
