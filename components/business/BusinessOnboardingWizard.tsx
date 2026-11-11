@@ -65,7 +65,8 @@ export type FirstBag = {
 export type BusinessApplication = {
   company: CompanyDetails;
   iban: string;
-  extractFile: File;
+  /** Optional: the admin can check the ID code on enreg.reestri.gov.ge instead. */
+  extractFile: File | null;
   /** Null when the business already has a bag (a resubmitted application). */
   firstBag: FirstBag | null;
 };
@@ -200,10 +201,10 @@ export function BusinessOnboardingWizard({
         );
       }
 
-      if (!extractFile || !isValidRegistryExtract(extractFile)) {
+      if (extractFile && !isValidRegistryExtract(extractFile)) {
         return text(
-          "ატვირთე ამონაწერი: PDF ან JPG, მაქსიმუმ 10 მბ.",
-          "Upload the extract: PDF or JPG, up to 10 MB."
+          "ამონაწერი: PDF ან JPG, მაქსიმუმ 10 მბ.",
+          "Extract: PDF or JPG, up to 10 MB."
         );
       }
     }
@@ -267,21 +268,19 @@ export function BusinessOnboardingWizard({
       return;
     }
 
-    if (extractFile) {
-      setRecordingTerms(true);
-      const recorded = await recordConsent("business_terms", BUSINESS_TERMS_VERSION, true, "web");
-      setRecordingTerms(false);
-      if (!recorded) {
-        setError(text("ვერ შევინახეთ. სცადე ხელახლა.", "Couldn't save. Please try again."));
-        return;
-      }
-      onSubmit({
-        company,
-        iban: normalizeIban(iban),
-        extractFile,
-        firstBag: hasExistingBag ? null : bag,
-      });
+    setRecordingTerms(true);
+    const recorded = await recordConsent("business_terms", BUSINESS_TERMS_VERSION, true, "web");
+    setRecordingTerms(false);
+    if (!recorded) {
+      setError(text("ვერ შევინახეთ. სცადე ხელახლა.", "Couldn't save. Please try again."));
+      return;
     }
+    onSubmit({
+      company,
+      iban: normalizeIban(iban),
+      extractFile,
+      firstBag: hasExistingBag ? null : bag,
+    });
   }
 
   // min-w-0/w-full: a long option (legal form) must not widen the page.
@@ -446,7 +445,7 @@ export function BusinessOnboardingWizard({
               </span>
             </label>
             <label className={labelClass}>
-              {text("ამონაწერი საჯარო რეესტრიდან", "Public Registry extract")}
+              {text("ამონაწერი საჯარო რეესტრიდან (არასავალდებულო)", "Public Registry extract (optional)")}
               <input
                 type="file"
                 accept="application/pdf,image/jpeg"
@@ -454,7 +453,10 @@ export function BusinessOnboardingWizard({
                 className={inputClass}
               />
               <span className="text-xs font-medium">
-                {text("PDF ან JPG, 10 მბ-მდე", "PDF or JPG, up to 10 MB")}
+                {text(
+                  "PDF ან JPG, 10 მბ-მდე. თუ არ გაქვს, კომპანიას საიდენტიფიკაციო კოდით შევამოწმებთ.",
+                  "PDF or JPG, up to 10 MB. If you don't have it, we check the company by its ID code."
+                )}
               </span>
             </label>
           </>
