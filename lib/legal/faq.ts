@@ -38,7 +38,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "pay",
             question: "How do I pay?",
             answer:
-              "Online, on TBC Bank's secure payment page. The price you see is the price you pay, with no extra fees. We never see or store your card details.",
+              "Online, on TBC Bank's secure payment page. The price you see is the price you pay, with no extra fees. For now, only cards from Georgian banks work, also in Apple Pay and Google Pay; foreign cards will come later. We never see or store your card details.",
           },
           {
             id: "limits",
@@ -191,7 +191,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "pay",
             question: "როგორ გადავიხადო?",
             answer:
-              "ონლაინ, TBC ბანკის დაცულ გადახდის გვერდზე. რა ფასსაც ხედავ, იმას იხდი, დამატებითი საკომისიოს გარეშე. ბარათის მონაცემებს ვერც ვხედავთ და არც ვინახავთ.",
+              "ონლაინ, TBC ბანკის დაცულ გადახდის გვერდზე. რა ფასსაც ხედავ, იმას იხდი, დამატებითი საკომისიოს გარეშე. ამ ეტაპზე გადახდა შესაძლებელია მხოლოდ ქართული ბანკის ბარათით, მათ შორის Apple Pay-ითა და Google Pay-ით. უცხოურ ბარათებს მოგვიანებით დავამატებთ. ბარათის მონაცემებს ვერც ვხედავთ და არც ვინახავთ.",
           },
           {
             id: "limits",

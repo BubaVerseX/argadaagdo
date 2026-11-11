@@ -29,7 +29,7 @@ export const nativeTranslations = {
 
     "native.checkout.title": "Reserve",
     "native.checkout.total": "Total",
-    "native.checkout.payNote": "Payment on TBC's secure page",
+    "native.checkout.payNote": "Payment on TBC's secure page · Georgian bank cards only for now",
     "native.checkout.freeNote": "Free",
     "native.checkout.cancelNote": "cancel up to 2 h before pickup",
     "native.checkout.cancelUntil": "free cancellation until {time}",
@@ -113,7 +113,7 @@ export const nativeTranslations = {
 
     "native.checkout.title": "დაჯავშნა",
     "native.checkout.total": "სულ",
-    "native.checkout.payNote": "გადახდა TBC-ის დაცულ გვერდზე",
+    "native.checkout.payNote": "გადახდა TBC-ის დაცულ გვერდზე · ამ ეტაპზე მხოლოდ ქართული ბანკის ბარათით",
     "native.checkout.freeNote": "უფასოა",
     "native.checkout.cancelNote": "გაუქმება 2 სთ-ით ადრე",
     "native.checkout.cancelUntil": "უფასო გაუქმება {time}-მდე",
