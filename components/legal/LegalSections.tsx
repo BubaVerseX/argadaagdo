@@ -2,7 +2,7 @@
 
 import { ChevronDownIcon } from "@/components/icons";
 import type { ContentSection } from "@/lib/legal/shared";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 // Legal sections as tap-to-open rows on phones, so a long policy fits on about
 // one screen; all open on wider screens. A section named in the URL hash
@@ -10,10 +10,13 @@ import { useEffect, useState } from "react";
 export default function LegalSections({
   sections,
   alwaysOpen = false,
+  sectionExtras,
 }: {
   sections: ContentSection[];
   /** Short pages (refund, pickup) show every section open on phones too. */
   alwaysOpen?: boolean;
+  /** Extra content shown at the end of the section with that id. */
+  sectionExtras?: Record<string, ReactNode>;
 }) {
   const [openAll, setOpenAll] = useState(false);
   const [hash, setHash] = useState("");
@@ -72,6 +75,7 @@ export default function LegalSections({
               </ul>
             )}
             {section.note && <p className="mt-2 leading-7 text-body">{section.note}</p>}
+            {section.id ? sectionExtras?.[section.id] : null}
           </div>
         </details>
       ))}
