@@ -24,7 +24,6 @@ import {
   BagTemplatesPanel,
   type BagTemplateInput,
 } from "@/components/business/BagTemplatesPanel";
-import { DashboardSection } from "@/components/business/DashboardSection";
 import { DepartmentsPanel } from "@/components/business/DepartmentsPanel";
 import { ImpactReportSection } from "@/components/business/ImpactReportSection";
 import { OfferForm } from "@/components/business/OfferForm";
@@ -226,6 +225,38 @@ function BusinessDashboardPage() {
     if (!message || messageTone === "success") return;
     messageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [message, messageTone]);
+
+  // Links like /business/dashboard#business-offers (the bottom tab bar) open
+  // the matching panel; the old closed rows are gone.
+  useEffect(() => {
+    const panelForHash: Record<string, QuickPanel> = {
+      "#business-offers": "offers",
+      "#business-reservations": "collect",
+      "#business-stats": "numbers",
+      "#business-reviews": "numbers",
+      "#business-impact-section": "numbers",
+      "#business-profile": "shop",
+      "#business-departments-section": "shop",
+    };
+    const openFromHash = () => {
+      const panel = panelForHash[window.location.hash];
+      if (panel) setQuickPanel(panel);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
+
+  // An opened panel sits under the buttons: bring it into view.
+  useEffect(() => {
+    if (!quickPanel || loading) return;
+    const frame = requestAnimationFrame(() =>
+      document
+        .getElementById(`panel-${quickPanel}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [quickPanel, loading]);
 
   const loadDashboard = useCallback(async () => {
     const profileResult = await getConfirmedProfile(4);
@@ -1502,14 +1533,6 @@ function BusinessDashboardPage() {
     );
   }
 
-  /** Opens a closed dashboard section and scrolls to it. */
-  function openDashboardSection(id: string) {
-    const element = document.getElementById(id);
-    if (!element) return;
-    if (element instanceof HTMLDetailsElement) element.open = true;
-    element.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
   async function toggleOfferActive(offer: Offer) {
     setMessage("");
     setMessageTone("error");
@@ -2305,13 +2328,12 @@ function BusinessDashboardPage() {
                 )
               }
               onSelectPanel={setQuickPanel}
-              onOpenSection={openDashboardSection}
             />
           </div>
         )}
 
         {/* Kept mounted but hidden, so half-filled forms survive switching. */}
-        <div hidden={quickPanel !== "publish"}>
+        <div id="panel-publish" hidden={quickPanel !== "publish"} className="scroll-mt-24">
           <QuickPanelClose onClose={() => setQuickPanel(null)} />
           {selectedBusiness && canCreateOffers && (
             <BagTemplatesPanel
@@ -2372,7 +2394,7 @@ function BusinessDashboardPage() {
           <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
-        <div hidden={quickPanel !== "collect"}>
+        <div id="panel-collect" hidden={quickPanel !== "collect"} className="scroll-mt-24">
           <QuickPanelClose onClose={() => setQuickPanel(null)} />
           <div id="business-reservations" className="scroll-mt-24">
             <ReservationList
@@ -2421,13 +2443,18 @@ function BusinessDashboardPage() {
           />
         )}
 
-        {/* Everything else: closed rows, one tap to open. */}
-        <div className="mt-6">
-          <DashboardSection
-            id="business-offers"
-            title={isGeorgian ? "შეთავაზებები" : "Offers"}
-            meta={activeOffers.length > 0 ? activeOffers.length : undefined}
-          >
+        {/* The four shortcut buttons open these, one at a time. */}
+        <div id="panel-offers" hidden={quickPanel !== "offers"} className="scroll-mt-24">
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
+          <div id="business-offers" className="scroll-mt-24">
+            <h2 className="mt-2 text-xl font-bold text-cream">
+              {isGeorgian ? "შეთავაზებები" : "Offers"}
+              {activeOffers.length > 0 && (
+                <span className="ml-2 text-base font-semibold text-body">
+                  {isGeorgian ? `${activeOffers.length} აქტიური` : `${activeOffers.length} active`}
+                </span>
+              )}
+            </h2>
             {offers.length > DASHBOARD_OFFER_PAGE_SIZE && (
               <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
                 <SearchBar
@@ -2521,12 +2548,14 @@ function BusinessDashboardPage() {
               label={t("nav.offers")}
               onPageChange={setOfferManagementPage}
             />
-          </DashboardSection>
+          </div>
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
+        </div>
 
-          <DashboardSection
-            id="business-stats"
-            title={isGeorgian ? "სტატისტიკა" : "Stats"}
-          >
+        <div id="panel-numbers" hidden={quickPanel !== "numbers"} className="scroll-mt-24">
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
+          <section id="business-stats" className="scroll-mt-24">
+            <h2 className="mt-2 text-xl font-bold text-cream">{isGeorgian ? "სტატისტიკა" : "Stats"}</h2>
             <div className="mt-3">
               <BusinessRevenueInsights
                 analytics={businessAnalytics}
@@ -2535,23 +2564,27 @@ function BusinessDashboardPage() {
                 onExportOfferStatistics={exportOfferStatisticsCsv}
               />
             </div>
-          </DashboardSection>
+          </section>
 
-          <DashboardSection
-            id="business-reviews"
-            title={isGeorgian ? "შეფასებები" : "Reviews"}
-            meta={totalReviews > 0 ? `★ ${averageRating.toFixed(1)} · ${totalReviews}` : undefined}
-          >
+          <section id="business-reviews" className="mt-8 scroll-mt-24">
+            <h2 className="text-xl font-bold text-cream">
+              {isGeorgian ? "შეფასებები" : "Reviews"}
+              {totalReviews > 0 && (
+                <span className="ml-2 text-base font-semibold text-body">
+                  ★ {averageRating.toFixed(1)} · {totalReviews}
+                </span>
+              )}
+            </h2>
             <div className="mt-3">
               <BusinessReviews t={t} language={language} reviews={reviews} />
             </div>
-          </DashboardSection>
+          </section>
 
           {selectedBusiness && (
-            <DashboardSection
-              id="business-impact-section"
-              title={isGeorgian ? "გადარჩენილი საკვები" : "Food saved"}
-            >
+            <section id="business-impact-section" className="mt-8 scroll-mt-24">
+              <h2 className="text-xl font-bold text-cream">
+                {isGeorgian ? "გადარჩენილი საკვები" : "Food saved"}
+              </h2>
               <div className="mt-3">
                 <ImpactReportSection
                   language={language}
@@ -2560,15 +2593,21 @@ function BusinessDashboardPage() {
                   orders={orders}
                 />
               </div>
-            </DashboardSection>
+            </section>
           )}
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
+        </div>
 
+        <div id="panel-shop" hidden={quickPanel !== "shop"} className="scroll-mt-24">
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
           {selectedBusiness && !selectedBusiness.rejected_at && (
-            <DashboardSection
-              id="business-profile"
-              title={isGeorgian ? "პროფილი" : "Profile"}
-              meta={`${completedHealthChecks}/${businessHealthChecks.length}`}
-            >
+            <section id="business-profile" className="scroll-mt-24">
+              <h2 className="mt-2 text-xl font-bold text-cream">
+                {isGeorgian ? "პროფილი" : "Profile"}
+                <span className="ml-2 text-base font-semibold text-body">
+                  {completedHealthChecks}/{businessHealthChecks.length}
+                </span>
+              </h2>
               <div className="mt-3">
                 <BusinessHealthScore checks={businessHealthChecks} />
               </div>
@@ -2594,15 +2633,12 @@ function BusinessDashboardPage() {
                 onUploadImage={uploadTemplateImage}
                 onSave={(actionTime) => void saveBusinessProfile(actionTime)}
               />
-            </DashboardSection>
+            </section>
           )}
 
           {selectedBusiness && canCreateOffers && (
-            <DashboardSection
-              id="business-departments-section"
-              title={isGeorgian ? "თანამშრომლები" : "Staff"}
-              meta={selectedDepartments.length > 1 ? selectedDepartments.length : undefined}
-            >
+            <section id="business-departments-section" className="mt-8 scroll-mt-24">
+              <h2 className="text-xl font-bold text-cream">{isGeorgian ? "თანამშრომლები" : "Staff"}</h2>
               <div className="mt-3">
                 <DepartmentsPanel
                   language={language}
@@ -2619,8 +2655,9 @@ function BusinessDashboardPage() {
                   onResetStaffLockouts={(department) => void resetStaffLockouts(department)}
                 />
               </div>
-            </DashboardSection>
+            </section>
           )}
+          <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
       </section>
     </main>

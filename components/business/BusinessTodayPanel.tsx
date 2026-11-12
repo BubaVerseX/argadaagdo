@@ -59,7 +59,6 @@ export function BusinessTodayPanel({
   onAdjustQuantity,
   onToggleSales,
   onSelectPanel,
-  onOpenSection,
 }: {
   businessName: string;
   todayOffers: TodayOffer[];
@@ -75,7 +74,6 @@ export function BusinessTodayPanel({
   onAdjustQuantity: (offer: Offer, delta: number) => void;
   onToggleSales: () => void;
   onSelectPanel: (panel: QuickPanel) => void;
-  onOpenSection: (id: string) => void;
 }) {
   const { language } = useLanguage();
   const isGeorgian = language === "ka";
@@ -99,28 +97,13 @@ export function BusinessTodayPanel({
     </button>
   );
 
-  const shortcuts: { label: string; Icon: typeof PackageIcon; onClick: () => void; active?: boolean }[] = [
-    {
-      label: isGeorgian ? "ბოქსები" : "Boxes",
-      Icon: PlusIcon,
-      active: activePanel === "publish",
-      onClick: () => onSelectPanel(activePanel === "publish" ? null : "publish"),
-    },
-    {
-      label: isGeorgian ? "შეთავაზებები" : "Offers",
-      Icon: TagIcon,
-      onClick: () => onOpenSection("business-offers"),
-    },
-    {
-      label: isGeorgian ? "ციფრები" : "Numbers",
-      Icon: BarChartIcon,
-      onClick: () => onOpenSection("business-stats"),
-    },
-    {
-      label: isGeorgian ? "მაღაზია" : "Shop",
-      Icon: StoreIcon,
-      onClick: () => onOpenSection("business-profile"),
-    },
+  const toggle = (panel: Exclude<QuickPanel, null>) =>
+    onSelectPanel(activePanel === panel ? null : panel);
+  const shortcuts: { panel: Exclude<QuickPanel, null>; label: string; Icon: typeof PackageIcon }[] = [
+    { panel: "publish", label: isGeorgian ? "ბოქსები" : "Boxes", Icon: PlusIcon },
+    { panel: "offers", label: isGeorgian ? "შეთავაზებები" : "Offers", Icon: TagIcon },
+    { panel: "numbers", label: isGeorgian ? "ციფრები" : "Numbers", Icon: BarChartIcon },
+    { panel: "shop", label: isGeorgian ? "მაღაზია" : "Shop", Icon: StoreIcon },
   ];
 
   return (
@@ -258,7 +241,7 @@ export function BusinessTodayPanel({
       <button
         type="button"
         aria-expanded={activePanel === "collect"}
-        onClick={() => onSelectPanel(activePanel === "collect" ? null : "collect")}
+        onClick={() => toggle("collect")}
         className="flex w-full items-center gap-4 rounded-[24px] bg-brand-mint p-4 text-left text-brand-ink transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-forest sm:p-5"
       >
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-forest">
@@ -302,14 +285,14 @@ export function BusinessTodayPanel({
       </div>
 
       <nav aria-label={isGeorgian ? "პანელის სექციები" : "Panel sections"} className="grid grid-cols-4 gap-2">
-        {shortcuts.map(({ label, Icon, onClick, active }) => (
+        {shortcuts.map(({ panel, label, Icon }) => (
           <button
-            key={label}
+            key={panel}
             type="button"
-            onClick={onClick}
-            aria-expanded={active === undefined ? undefined : active}
+            onClick={() => toggle(panel)}
+            aria-expanded={activePanel === panel}
             className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint sm:text-sm ${
-              active ? "theme-forest bg-page text-cream" : "ui-card text-cream"
+              activePanel === panel ? "theme-forest bg-page text-cream" : "ui-card text-cream"
             }`}
           >
             <Icon className="h-5 w-5" strokeWidth={1.9} />
