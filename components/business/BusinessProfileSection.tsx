@@ -6,6 +6,8 @@ import { RequiredMark } from "@/components/RequiredMark";
 import { getWeekdayLabel, ISO_WEEKDAYS } from "@/lib/greenBag";
 import { useLanguage } from "@/lib/useLanguage";
 import type { OpeningHours, OpeningHoursDay } from "@/types/business";
+import { IMAGE_INPUT_ACCEPT, type ImageUploadResult } from "@/lib/business/prepareImage";
+import { translateUserMessage } from "@/lib/messageTranslations";
 
 // The business's public profile (owner decision 6): name, category, address,
 // logo, cover photo, description and opening hours, shown on /businesses/<id>.
@@ -48,7 +50,7 @@ type BusinessProfileSectionProps = {
   onProfileCoverUrlChange: (value: string) => void;
   onProfileHoursChange: (value: OpeningHours) => void;
   /** Uploads to offer-images/business-<id>/ and returns the public URL. */
-  onUploadImage: (file: File) => Promise<string | null>;
+  onUploadImage: (file: File) => Promise<ImageUploadResult>;
   onSave: (actionTime: number) => void;
 };
 
@@ -78,6 +80,7 @@ export function BusinessProfileSection({
   const isGeorgian = language === "ka";
   const L = (ka: string, en: string) => (isGeorgian ? ka : en);
   const [uploading, setUploading] = useState<"logo" | "cover" | null>(null);
+  const [imageError, setImageError] = useState("");
   // Stored values are English; older free-text types stay selectable.
   const typeOptions =
     profileType && !BUSINESS_TYPES.includes(profileType)
@@ -90,12 +93,16 @@ export function BusinessProfileSection({
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+    setImageError("");
     setUploading(kind);
-    const url = await onUploadImage(file);
+    const result = await onUploadImage(file);
     setUploading(null);
-    if (!url) return;
-    if (kind === "logo") onProfileLogoUrlChange(url);
-    else onProfileCoverUrlChange(url);
+    if (!result.url) {
+      setImageError(translateUserMessage(result.error ?? "", language));
+      return;
+    }
+    if (kind === "logo") onProfileLogoUrlChange(result.url);
+    else onProfileCoverUrlChange(result.url);
   }
 
   function setDay(day: DayKey, value: OpeningHoursDay | undefined) {
@@ -151,7 +158,7 @@ export function BusinessProfileSection({
                 : L("ყდის ფოტოს ატვირთვა", "Upload cover photo")}
               <input
                 type="file"
-                accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
+                accept={IMAGE_INPUT_ACCEPT}
                 className="sr-only"
                 disabled={uploading !== null}
                 onChange={(event) => void handleImage(kind, event)}
@@ -171,10 +178,15 @@ export function BusinessProfileSection({
             </button>
           )}
         </div>
+        {imageError && (
+          <p role="alert" className="mt-3 rounded-xl bg-danger-soft px-3 py-2 text-sm font-semibold text-danger">
+            {imageError}
+          </p>
+        )}
         <p className="text-xs text-body">
           {L(
-            "ლოგო: კვადრატული. ყდის ფოტო: ჰორიზონტალური, მაგ. შენი ვიტრინა. JPG, PNG ან WebP, 5 მბ-მდე.",
-            "Logo: square. Cover: landscape, e.g. your shop window. JPG, PNG or WebP, up to 5 MB."
+            "ლოგო: კვადრატული. ყდის ფოტო: ჰორიზონტალური, მაგ. შენი ვიტრინა. ნებისმიერი ფოტო ტელეფონიდან — ზომას თავად ვამცირებთ.",
+            "Logo: square. Cover: landscape, e.g. your shop window. Any phone photo works — we make it smaller for you."
           )}
         </p>
       </div>

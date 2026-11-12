@@ -21,6 +21,8 @@ import {
 } from "@/lib/offerCategories";
 import { formatMoney } from "@/lib/offerLifecycle";
 import type { BagTemplate, Business, Department } from "@/lib/types";
+import { IMAGE_INPUT_ACCEPT, type ImageUploadResult } from "@/lib/business/prepareImage";
+import { translateUserMessage } from "@/lib/messageTranslations";
 import { useState, type ChangeEvent } from "react";
 
 export type BagTemplateInput = {
@@ -51,7 +53,7 @@ type BagTemplatesPanelProps = {
   onToggleActive: (template: BagTemplate) => void;
   onDelete: (template: BagTemplate) => void;
   onPublishNow: (template: BagTemplate, day: "today" | "tomorrow") => void;
-  onUploadImage: (file: File) => Promise<string | null>;
+  onUploadImage: (file: File) => Promise<ImageUploadResult>;
 };
 
 type FormState = {
@@ -154,6 +156,7 @@ export function BagTemplatesPanel({
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [imageError, setImageError] = useState("");
   const [imageInputKey, setImageInputKey] = useState(0);
   const departmentById = new Map(departments.map((d) => [d.id, d]));
   const showDepartmentSelect = departments.length > 1;
@@ -185,10 +188,12 @@ export function BagTemplatesPanel({
   async function handleImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
+    setImageError("");
     setUploading(true);
-    const url = await onUploadImage(file);
+    const result = await onUploadImage(file);
     setUploading(false);
-    if (url) update("imageUrl", url);
+    if (result.url) update("imageUrl", result.url);
+    else setImageError(translateUserMessage(result.error ?? "", language));
     setImageInputKey((key) => key + 1);
   }
 
@@ -551,11 +556,16 @@ export function BagTemplatesPanel({
               <input
                 key={imageInputKey}
                 type="file"
-                accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
+                accept={IMAGE_INPUT_ACCEPT}
                 onChange={(event) => void handleImage(event)}
                 disabled={uploading}
                 className="premium-input w-full min-w-0 p-3 font-semibold file:mr-4 file:rounded-full file:border-0 file:bg-page file:px-4 file:py-2 file:font-semibold file:text-cream"
               />
+              {imageError && !uploading && (
+                <span role="alert" className="rounded-xl bg-danger-soft px-3 py-2 text-sm font-semibold text-danger">
+                  {imageError}
+                </span>
+              )}
               {uploading && (
                 <span className="text-xs text-body">
                   {isGeorgian ? "იტვირთება..." : "Uploading..."}

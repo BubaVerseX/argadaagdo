@@ -51,6 +51,7 @@ import {
   isApprovedBusiness,
   type ReservationFilter,
 } from "@/lib/business/dashboard";
+import { prepareImageForUpload, type ImageUploadResult } from "@/lib/business/prepareImage";
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
@@ -180,6 +181,7 @@ function BusinessDashboardPage() {
   const [pickupStart, setPickupStart] = useState("");
   const [pickupEnd, setPickupEnd] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preparingImage, setPreparingImage] = useState(false);
   const [imageInputKey, setImageInputKey] = useState(0);
   const messageRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
@@ -517,8 +519,9 @@ function BusinessDashboardPage() {
     refreshTimer.current = setTimeout(() => void loadDashboard(), 150);
   }, [loadDashboard]);
 
-  function handleImageFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const selectedFile = event.target.files?.[0] || null;
+  async function handleImageFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.target;
+    const selectedFile = input.files?.[0] || null;
     setMessage("");
 
     if (!selectedFile) {
@@ -526,17 +529,20 @@ function BusinessDashboardPage() {
       return;
     }
 
-    const validationError = getImageValidationError(selectedFile);
+    // Big phone photos and iPhone HEIC photos are shrunk to a small JPG here.
+    setPreparingImage(true);
+    const prepared = await prepareImageForUpload(selectedFile);
+    setPreparingImage(false);
 
-    if (validationError) {
+    if (prepared.error !== undefined) {
       setImageFile(null);
-      event.target.value = "";
+      input.value = "";
       setMessageTone("error");
-      setMessage(validationError);
+      setMessage(prepared.error);
       return;
     }
 
-    setImageFile(selectedFile);
+    setImageFile(prepared.file);
   }
 
   function validateBusinessDetails(details: BusinessDetailsDraft) {
@@ -737,32 +743,32 @@ function BusinessDashboardPage() {
 
   // ---- Departments, "Stop sales for today", staff PINs -----------------------------
 
-  async function uploadTemplateImage(file: File): Promise<string | null> {
+  // Used by the box templates and the shop profile (logo, cover). Errors are
+  // returned, so each form can show them right under its own photo field.
+  async function uploadTemplateImage(original: File): Promise<ImageUploadResult> {
     const selectedBusinessId = Number(businessId);
-    const validationError = getImageValidationError(file);
+    if (!selectedBusinessId) return { error: "Choose a business first." };
 
-    if (validationError || !selectedBusinessId) {
-      setMessageTone("error");
-      setMessage(validationError || "Choose a business first.");
-      return null;
-    }
+    const prepared = await prepareImageForUpload(original);
+    if (prepared.error !== undefined) return { error: prepared.error };
+    const file = prepared.file;
 
     const fileName = `business-${selectedBusinessId}/${createImageFileName(file)}`;
     const { error } = await supabase.storage
       .from("offer-images")
-      .upload(fileName, file, { cacheControl: "3600", upsert: false });
+      .upload(fileName, file, { cacheControl: "3600", upsert: false, contentType: file.type });
 
     if (error) {
       logAppError("Template image upload failed", error, {
         operation: "upload_template_image",
         fileName,
+        size: file.size,
+        type: file.type,
       });
-      setMessageTone("error");
-      setMessage("Photo upload failed. Check your connection and try again.");
-      return null;
+      return { error: "Photo upload failed. Check your connection and try again." };
     }
 
-    return supabase.storage.from("offer-images").getPublicUrl(fileName).data.publicUrl;
+    return { url: supabase.storage.from("offer-images").getPublicUrl(fileName).data.publicUrl };
   }
 
   async function setSalesPaused(departmentTarget: Department | null, paused: boolean) {
@@ -2378,7 +2384,7 @@ function BusinessDashboardPage() {
               pickupStart={pickupStart}
               pickupEnd={pickupEnd}
               imageFile={imageFile}
-              publishing={publishing}
+              publishing={publishing || preparingImage}
               onBusinessIdChange={setBusinessId}
               onTitleChange={setTitle}
               onDescriptionChange={setDescription}
@@ -2390,7 +2396,7 @@ function BusinessDashboardPage() {
               onPickupDateChange={setPickupDate}
               onPickupStartChange={setPickupStart}
               onPickupEndChange={setPickupEnd}
-              onImageFileChange={handleImageFileChange}
+              onImageFileChange={(event) => void handleImageFileChange(event)}
               imageInputKey={imageInputKey}
               onCreateOffer={(actionTime) => void createOffer(actionTime)}
             />

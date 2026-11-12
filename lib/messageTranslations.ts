@@ -438,6 +438,10 @@ const georgianMessageEntries: Array<[string, string]> = [
     "ფოტო ვერ აიტვირთა. შეამოწმე ინტერნეტი და სცადე ხელახლა.",
   ],
   [
+    "This photo could not be opened. Please choose another photo or save it as JPG.",
+    "ეს ფოტო ვერ გაიხსნა. აირჩიე სხვა ფოტო ან შეინახე JPG ფორმატში.",
+  ],
+  [
     "Image is too large. Please upload a file under 5MB.",
     "სურათი ძალიან დიდია. გთხოვ, ატვირთე 5MB-ზე მცირე ფაილი.",
   ],

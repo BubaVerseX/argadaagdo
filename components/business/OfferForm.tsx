@@ -17,6 +17,7 @@ import { getDepartmentDisplayName } from "@/lib/greenBag";
 import type { Business, Department } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import type { ChangeEvent } from "react";
+import { IMAGE_INPUT_ACCEPT } from "@/lib/business/prepareImage";
 
 
 type OfferFormProps = {
@@ -302,7 +303,7 @@ export function OfferForm({
               <input
                 key={imageInputKey}
                 type="file"
-                accept="image/png,image/jpeg,image/webp,.jpg,.jpeg,.png,.webp"
+                accept={IMAGE_INPUT_ACCEPT}
                 onChange={onImageFileChange}
               className="premium-input w-full min-w-0 p-4 font-semibold file:mr-4 file:rounded-full file:border-0 file:bg-page file:px-4 file:py-2 file:font-semibold file:text-cream focus-visible:ring-2 focus-visible:ring-mint"
             />
