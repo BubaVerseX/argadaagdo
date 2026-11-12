@@ -2075,11 +2075,15 @@ function BusinessDashboardPage() {
   });
   // The "today" home: today's boxes with how many sold, and today's earnings.
   const todayKey = getTbilisiDateKey();
+  // A box the owner hid stays in Offers → Hidden; one stopped with
+  // "Stop for today" (paused_at set) still shows here.
   const todayOffers: TodayOffer[] = offers
-    .filter(
-      (offer) =>
-        offer.pickup_date === todayKey && getEffectiveOfferStatus(offer) !== "expired"
-    )
+    .filter((offer) => {
+      if (offer.pickup_date !== todayKey) return false;
+      const status = getEffectiveOfferStatus(offer);
+      if (status === "expired") return false;
+      return status !== "inactive" || Boolean(offer.paused_at);
+    })
     .sort((a, b) => a.id - b.id)
     .map((offer) => ({
       offer,
