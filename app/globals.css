@@ -867,3 +867,80 @@ html.has-session .public-home {
   border: 3px solid #fff;
   box-shadow: 0 0 0 6px rgba(59, 138, 85, 0.25);
 }
+
+/* Business front page: soft motion. The reduced-motion rule above stops the
+   loops; Reveal (components/business/landing/Motion.tsx) isn't armed then. */
+.ag-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.ag-reveal.ag-reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes ag-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.ag-float {
+  animation: ag-float 6s ease-in-out infinite;
+}
+
+@keyframes ag-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ag-pop-in {
+  animation: ag-pop-in 450ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes ag-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.ag-glow {
+  animation: ag-glow 7s ease-in-out infinite;
+}
+
+@keyframes ag-pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 rgba(15, 58, 50, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(15, 58, 50, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(15, 58, 50, 0);
+  }
+}
+
+.ag-pulse-dot {
+  animation: ag-pulse-dot 2s ease-out infinite;
+}
