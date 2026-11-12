@@ -7,11 +7,22 @@ import Navbar from "@/components/Navbar";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeProfileScreen } from "@/components/native/screens";
 import Notice from "@/components/Notice";
-import { ChevronRightIcon } from "@/components/icons";
+import {
+  CheckIcon,
+  ChevronRightIcon,
+  HelpCircleIcon,
+  LayoutGridIcon,
+  LogOutIcon,
+  PhoneIcon,
+  SettingsIcon,
+  StoreIcon,
+  UsersIcon,
+} from "@/components/icons";
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
 import ProfileNameEditor from "@/components/profile/ProfileNameEditor";
 import {
   getConfirmedProfile,
+  logoutUser,
   VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE,
 } from "@/lib/auth";
 import {
@@ -63,6 +74,8 @@ function ProfilePage() {
   const [completedPickups, setCompletedPickups] = useState(0);
   // Business and admin accounts don't collect boxes: no customer impact block.
   const [isCustomer, setIsCustomer] = useState(true);
+  const [isBusiness, setIsBusiness] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
@@ -105,6 +118,7 @@ function ProfilePage() {
 
     setUser(profileResult.user);
     setIsCustomer(!profileResult.profile || profileResult.profile.role === "customer");
+    setIsBusiness(profileResult.profile?.role === "business");
     setPhoneVerified(
       Boolean(profileResult.user.phone_confirmed_at && profileResult.user.phone)
     );
@@ -176,6 +190,14 @@ function ProfilePage() {
     notifyAccountUpdated();
   }
 
+  async function signOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    await logoutUser();
+    router.replace("/");
+    router.refresh();
+  }
+
   if (loading) {
     return (
       <main className="app-shell">
@@ -197,62 +219,118 @@ function ProfilePage() {
       <Navbar />
 
       <section className="px-4 py-6 sm:px-6 sm:py-10">
-        <div className="mx-auto grid max-w-xl gap-4">
-          <h1 className="font-serif text-[1.625rem] font-bold text-cream sm:text-3xl">
-            {L("პროფილი", "Profile")}
-          </h1>
-
+        <div className="mx-auto grid max-w-2xl gap-4">
           {message && (
             <Notice tone={messageTone}>
               {translateUserMessage(message, language)}
             </Notice>
           )}
 
-          <div className="grid gap-4 rounded-[22px] bg-card p-5">
-            <div className="flex items-center gap-4">
+          {/* Who you are */}
+          <div className="theme-forest relative overflow-hidden rounded-[28px] bg-page p-5 sm:p-7">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(420px_220px_at_100%_0%,rgba(184,230,196,0.2),transparent_65%)]"
+            />
+            <div className="relative flex items-center gap-4">
               {user && (
                 <ProfileAvatar
                   userId={user.id}
                   name={shownName}
                   avatarPath={identity?.avatarPath}
                   isGeorgian={isGeorgian}
-                  size={64}
+                  size={76}
                   onChange={(avatarPath) =>
                     setIdentity((current) => (current ? { ...current, avatarPath } : current))
                   }
                 />
               )}
               <div className="min-w-0">
-                {shownName && (
-                  <p className="truncate text-lg font-semibold text-cream">{shownName}</p>
-                )}
-                <p className="truncate text-[15px] text-body">{user?.email}</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-mint">
+                  {isBusiness ? L("ბიზნესის ანგარიში", "Business account") : L("პროფილი", "Profile")}
+                </p>
+                <h1 className="mt-0.5 break-words text-2xl font-bold leading-tight text-cream sm:text-3xl">
+                  {shownName || L("პროფილი", "Profile")}
+                </h1>
+                <p className="mt-1 truncate text-sm text-body">{user?.email}</p>
               </div>
             </div>
-
             {phoneVerified && user?.phone && (
-              <p className="flex items-center gap-2 text-sm">
-                <span className="font-semibold text-body">{L("ტელეფონი", "Phone")}</span>
-                <span className="font-semibold text-cream">{formatGeorgianPhone(user.phone)}</span>
-                <span className="text-mint" aria-label={L("დადასტურებულია", "Confirmed")}>
-                  ✓
-                </span>
+              <p className="relative mt-4 inline-flex items-center gap-2 rounded-full bg-card px-3.5 py-1.5 text-sm font-semibold text-cream">
+                <PhoneIcon className="h-4 w-4 text-mint" strokeWidth={2} />
+                {formatGeorgianPhone(user.phone)}
+                <CheckIcon
+                  className="h-4 w-4 text-mint"
+                  strokeWidth={2.6}
+                  aria-label={L("დადასტურებულია", "Confirmed")}
+                />
               </p>
             )}
+          </div>
 
-            {phoneRequired && !phoneVerified && (
-              <div className="rounded-2xl bg-well p-4">
-                <p className="mb-3 font-semibold text-cream">
-                  {L("დაადასტურე ტელეფონი შეკვეთამდე", "Confirm your phone before ordering")}
-                </p>
-                <PhoneVerification
-                  onVerified={() => {
-                    setPhoneVerified(true);
-                    setPhoneRequired(false);
-                  }}
-                />
-              </div>
-            )}
+          {phoneRequired && !phoneVerified && (
+            <div className="ui-card rounded-[24px] p-5">
+              <p className="mb-3 font-semibold text-cream">
+                {L("დაადასტურე ტელეფონი შეკვეთამდე", "Confirm your phone before ordering")}
+              </p>
+              <PhoneVerification
+                onVerified={() => {
+                  setPhoneVerified(true);
+                  setPhoneRequired(false);
+                }}
+              />
+            </div>
+          )}
+
+          {/* Business shortcuts */}
+          {isBusiness && (
+            <nav aria-label={L("ბიზნესი", "Business")} className="grid grid-cols-2 gap-3">
+              {[
+                {
+                  href: "/business/dashboard",
+                  label: L("ბიზნესის პანელი", "Business panel"),
+                  hint: L("დღევანდელი ბოქსი, გაცემა", "Today's box, handover"),
+                  Icon: LayoutGridIcon,
+                },
+                {
+                  href: "/business/dashboard#business-profile",
+                  label: L("მაღაზიის პროფილი", "Shop profile"),
+                  hint: L("ლოგო, მისამართი, საათები", "Logo, address, hours"),
+                  Icon: StoreIcon,
+                },
+                {
+                  href: "/business/dashboard#business-departments-section",
+                  label: L("თანამშრომლები", "Staff"),
+                  hint: L("PIN კოდები გაცემისთვის", "PINs for handover"),
+                  Icon: UsersIcon,
+                },
+                {
+                  href: "/support",
+                  label: L("დახმარება", "Help"),
+                  hint: L("ჩატი და კითხვები", "Chat and questions"),
+                  Icon: HelpCircleIcon,
+                },
+              ].map(({ href, label, hint, Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="ui-card flex min-h-28 flex-col justify-between gap-3 rounded-2xl p-4 transition hover:brightness-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-forest text-brand-mint">
+                    <Icon className="h-5 w-5" strokeWidth={1.9} />
+                  </span>
+                  <span>
+                    <span className="block font-bold leading-tight text-cream">{label}</span>
+                    <span className="mt-0.5 block text-xs leading-tight text-body">{hint}</span>
+                  </span>
+                </Link>
+              ))}
+            </nav>
+          )}
+
+          {/* Name and language */}
+          <div className="ui-card grid gap-5 rounded-[24px] p-5 sm:p-6">
+            <h2 className="text-lg font-bold text-cream">{L("ანგარიში", "Account")}</h2>
 
             {identity && (
               <ProfileNameEditor
@@ -271,37 +349,56 @@ function ProfilePage() {
               />
             )}
 
-            <label className={labelClass}>
+            <div className={labelClass} role="group" aria-label={L("ენა", "Language")}>
               {L("ენა", "Language")}
-              <select
-                value={preferredLanguage}
-                disabled={saving}
-                onChange={(event) => {
-                  const nextLanguage = event.target.value;
-                  if (isSupportedLanguage(nextLanguage)) {
-                    void saveLanguage(nextLanguage);
-                  }
-                }}
-                className="premium-input p-4 font-semibold"
-              >
-                {supportedLanguages.map((nextLanguage) => (
-                  <option key={nextLanguage} value={nextLanguage}>
-                    {languageNames[nextLanguage]}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <div className="grid grid-cols-2 gap-1 rounded-2xl bg-well p-1">
+                {supportedLanguages.map((nextLanguage) => {
+                  const selected = preferredLanguage === nextLanguage;
+                  return (
+                    <button
+                      key={nextLanguage}
+                      type="button"
+                      aria-pressed={selected}
+                      disabled={saving}
+                      onClick={() => {
+                        if (!selected) void saveLanguage(nextLanguage);
+                      }}
+                      className={`min-h-12 rounded-xl px-3 text-[15px] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-mint disabled:opacity-60 ${
+                        selected
+                          ? "bg-card font-bold text-cream shadow-[0_2px_8px_rgba(11,43,38,0.12)]"
+                          : "font-semibold text-body hover:text-cream"
+                      }`}
+                    >
+                      {languageNames[nextLanguage]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {isCustomer && <ImpactCard language={language} bags={completedPickups} subject="you" />}
 
-          <Link
-            href="/settings"
-            className="flex min-h-[3.25rem] items-center gap-3 rounded-[22px] bg-card px-4 text-[15px] text-cream transition hover:bg-well"
-          >
-            <span className="flex-1">{L("პარამეტრები", "Settings")}</span>
-            <ChevronRightIcon className="h-4 w-4 text-muted" strokeWidth={2} />
-          </Link>
+          {/* Settings and sign out */}
+          <div className="ui-card overflow-hidden rounded-[24px]">
+            <Link
+              href="/settings"
+              className="flex min-h-14 items-center gap-3 px-5 text-[15px] font-semibold text-cream transition hover:bg-well"
+            >
+              <SettingsIcon className="h-5 w-5 text-mint" strokeWidth={1.9} />
+              <span className="flex-1">{L("პარამეტრები", "Settings")}</span>
+              <ChevronRightIcon className="h-4 w-4 text-muted" strokeWidth={2} />
+            </Link>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              disabled={signingOut}
+              className="flex min-h-14 w-full items-center gap-3 border-t border-line px-5 text-left text-[15px] font-semibold text-danger transition hover:bg-well disabled:opacity-60"
+            >
+              <LogOutIcon className="h-5 w-5" strokeWidth={1.9} />
+              {signingOut ? L("გასვლა...", "Signing out...") : L("გასვლა", "Sign out")}
+            </button>
+          </div>
         </div>
       </section>
 
