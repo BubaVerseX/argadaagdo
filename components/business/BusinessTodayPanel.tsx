@@ -9,7 +9,7 @@ import {
   StoreIcon,
   TagIcon,
 } from "@/components/icons";
-import { getEffectiveOfferStatus } from "@/lib/offerLifecycle";
+import { getEffectiveOfferStatus, getTbilisiDateKey } from "@/lib/offerLifecycle";
 import type { Offer } from "@/lib/types";
 import { useLanguage } from "@/lib/useLanguage";
 import type { QuickPanel } from "@/components/business/BusinessQuickActions";
@@ -18,6 +18,20 @@ export type TodayOffer = { offer: Offer; sold: number };
 
 function timeLabel(value: string | null | undefined) {
   return value ? value.slice(0, 5) : "";
+}
+
+const KA_WEEKDAYS = ["კვი", "ორშ", "სამ", "ოთხ", "ხუთ", "პარ", "შაბ"];
+const KA_MONTHS = ["იან", "თებ", "მარ", "აპრ", "მაი", "ივნ", "ივლ", "აგვ", "სექ", "ოქტ", "ნოე", "დეკ"];
+const EN_WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const EN_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Today's Tbilisi date as "ხუთ, 12 ნოე". Built by hand: not every browser ships Georgian date names. */
+function todayLabel(isGeorgian: boolean) {
+  const [year, month, day] = getTbilisiDateKey().split("-").map(Number);
+  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+  const weekdays = isGeorgian ? KA_WEEKDAYS : EN_WEEKDAYS;
+  const months = isGeorgian ? KA_MONTHS : EN_MONTHS;
+  return `${weekdays[weekday]}, ${day} ${months[month - 1]}`;
 }
 
 function formatAmount(value: number) {
@@ -65,12 +79,7 @@ export function BusinessTodayPanel({
 }) {
   const { language } = useLanguage();
   const isGeorgian = language === "ka";
-  const today = new Intl.DateTimeFormat(isGeorgian ? "ka-GE" : "en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    timeZone: "Asia/Tbilisi",
-  }).format(new Date());
+  const today = todayLabel(isGeorgian);
 
   const pauseButton = (
     <button
@@ -168,9 +177,10 @@ export function BusinessTodayPanel({
           const percent = total > 0 ? Math.min(100, Math.round((sold / total) * 100)) : 0;
           const status = getEffectiveOfferStatus(offer);
           const busy = updatingOfferId === offer.id;
-          const pill =
-            salesPaused || status === "inactive"
-              ? { text: isGeorgian ? "შეჩერებულია" : "Paused", className: "bg-brand-honey text-brand-ink" }
+          const pill = salesPaused
+            ? { text: isGeorgian ? "შეჩერებულია" : "Paused", className: "bg-brand-honey text-brand-ink" }
+            : status === "inactive"
+              ? { text: isGeorgian ? "დამალულია" : "Hidden", className: "bg-brand-honey text-brand-ink" }
               : status === "sold_out"
                 ? { text: isGeorgian ? "გაიყიდა" : "Sold out", className: "bg-brand-honey text-brand-ink" }
                 : { text: isGeorgian ? "● ლაივშია" : "● Live", className: "bg-brand-mint text-brand-forest" };
