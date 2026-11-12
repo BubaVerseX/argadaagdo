@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/lib/useLanguage";
 
-export type QuickPanel = "publish" | "collect" | "offers" | "numbers" | "shop" | null;
+export type QuickPanel = "publish" | "collect" | "numbers" | "shop" | null;
 
 /** The dashboard's home: the three things a shop does every day. */
 export function BusinessQuickActions({

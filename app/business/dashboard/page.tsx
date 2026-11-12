@@ -26,7 +26,6 @@ import {
 } from "@/components/business/BagTemplatesPanel";
 import { DepartmentsPanel } from "@/components/business/DepartmentsPanel";
 import { ImpactReportSection } from "@/components/business/ImpactReportSection";
-import { OfferForm } from "@/components/business/OfferForm";
 import { OfferList } from "@/components/business/OfferList";
 import { PickupVerificationModal } from "@/components/business/PickupVerificationModal";
 import { ReservationList } from "@/components/business/ReservationList";
@@ -47,7 +46,6 @@ import { triggerTransactionalEmail } from "@/lib/email/client";
 import {
   actionCooldownMs,
   createImageFileName,
-  getImageValidationError,
   isApprovedBusiness,
   type ReservationFilter,
 } from "@/lib/business/dashboard";
@@ -95,7 +93,6 @@ import { useLanguage } from "@/lib/useLanguage";
 import { isWithinCooldown, validateTextField } from "@/lib/validation";
 import { ORDER_COLUMNS } from "@/lib/orderColumns";
 import { useRouter } from "next/navigation";
-import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type DashboardOfferFilter =
@@ -126,9 +123,9 @@ function BusinessDashboardPage() {
   const [ownedOfferIds, setOwnedOfferIds] = useState<number[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [bagTemplates, setBagTemplates] = useState<BagTemplate[]>([]);
-  const [departmentId, setDepartmentId] = useState("");
   const [departmentActionBusy, setDepartmentActionBusy] = useState(false);
   const [quickPanel, setQuickPanel] = useState<QuickPanel>(null);
+  const [newBoxSignal, setNewBoxSignal] = useState(0);
 
   // The navbar links to sections by hash; open whatever holds them.
   useEffect(() => {
@@ -170,25 +167,11 @@ function BusinessDashboardPage() {
   const [profileCoverUrl, setProfileCoverUrl] = useState("");
   const [profileHours, setProfileHours] = useState<OpeningHours>({});
   const [savingProfile, setSavingProfile] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState(DEFAULT_OFFER_CATEGORY);
-  const [size, setSize] = useState<BagSize>(DEFAULT_BAG_SIZE);
-  const [price, setPrice] = useState("");
-  const [oldPrice, setOldPrice] = useState("");
-  const [quantity, setQuantity] = useState("1");
-  const [pickupDate, setPickupDate] = useState(getTbilisiDateKey());
-  const [pickupStart, setPickupStart] = useState("");
-  const [pickupEnd, setPickupEnd] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [preparingImage, setPreparingImage] = useState(false);
-  const [imageInputKey, setImageInputKey] = useState(0);
   const messageRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const [messageTone, setMessageTone] = useState<
     "success" | "error" | "warning"
   >("success");
-  const [publishing, setPublishing] = useState(false);
   const [updatingOfferId, setUpdatingOfferId] = useState<number | null>(null);
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
   const [pickupVerificationOrder, setPickupVerificationOrder] =
@@ -219,7 +202,6 @@ function BusinessDashboardPage() {
   >({});
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastProfileSaveAt = useRef(0);
-  const lastOfferPublishAt = useRef(0);
 
   // The message box sits near the top of a long page; bring errors and
   // warnings into view so a failed action doesn't look like nothing happened.
@@ -232,7 +214,7 @@ function BusinessDashboardPage() {
   // the matching panel; the old closed rows are gone.
   useEffect(() => {
     const panelForHash: Record<string, QuickPanel> = {
-      "#business-offers": "offers",
+      "#business-offers": "numbers",
       "#business-reservations": "collect",
       "#business-stats": "numbers",
       "#business-reviews": "numbers",
@@ -519,32 +501,6 @@ function BusinessDashboardPage() {
     refreshTimer.current = setTimeout(() => void loadDashboard(), 150);
   }, [loadDashboard]);
 
-  async function handleImageFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const input = event.target;
-    const selectedFile = input.files?.[0] || null;
-    setMessage("");
-
-    if (!selectedFile) {
-      setImageFile(null);
-      return;
-    }
-
-    // Big phone photos and iPhone HEIC photos are shrunk to a small JPG here.
-    setPreparingImage(true);
-    const prepared = await prepareImageForUpload(selectedFile);
-    setPreparingImage(false);
-
-    if (prepared.error !== undefined) {
-      setImageFile(null);
-      input.value = "";
-      setMessageTone("error");
-      setMessage(prepared.error);
-      return;
-    }
-
-    setImageFile(prepared.file);
-  }
-
   function validateBusinessDetails(details: BusinessDetailsDraft) {
     const nameResult = validateTextField({
       label: isGeorgian ? "ბიზნესის სახელი" : "Business name",
@@ -698,47 +654,6 @@ function BusinessDashboardPage() {
     setMessageTone("success");
     setMessage("Business profile updated.");
     notifyProfileUpdated({ businessName: updatedBusiness.name || "Business" });
-  }
-
-  async function uploadImage(businessId: number): Promise<string | null> {
-    if (!imageFile) return "";
-
-    const validationError = getImageValidationError(imageFile);
-
-    if (validationError) {
-      setMessageTone("error");
-      setMessage(validationError);
-      return null;
-    }
-
-    // One folder per business keeps each business's images together (easier
-    // cleanup and per-business storage rules later).
-    const fileName = `business-${businessId}/${createImageFileName(imageFile)}`;
-
-    const { error } = await supabase.storage
-      .from("offer-images")
-      .upload(fileName, imageFile, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-
-    if (error) {
-      logAppError("Offer image upload failed", error, {
-        operation: "upload_offer_image",
-        fileName,
-        size: imageFile.size,
-        type: imageFile.type,
-      });
-      setMessageTone("error");
-      setMessage("Photo upload failed. Check your connection and try again.");
-      return null;
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("offer-images").getPublicUrl(fileName);
-
-    return publicUrl;
   }
 
   // ---- Departments, "Stop sales for today", staff PINs -----------------------------
@@ -954,16 +869,29 @@ function BusinessDashboardPage() {
         businessId: input.business_id,
       });
       setMessageTone("error");
-      setMessage("The template could not be saved. Please check the details and try again.");
+      setMessage("The box could not be saved. Please check the details and try again.");
       return false;
     }
 
+    // A new photo also goes on this box's boxes that are already out today
+    // or later, so buyers see it now and not only from tomorrow.
+    if (templateId && input.image_url) {
+      const { error: photoError } = await supabase
+        .from("offers")
+        .update({ image_url: input.image_url })
+        .eq("template_id", templateId)
+        .gte("pickup_date", getTbilisiDateKey())
+        .in("business_id", ownedBusinessIds);
+      if (photoError) {
+        logAppError("Box photo could not be copied to published boxes", photoError, {
+          operation: "copy_template_photo",
+          templateId,
+        });
+      }
+    }
+
     setMessageTone("success");
-    setMessage(
-      templateId
-        ? "Template updated. The next box that goes live will use the new details."
-        : "Template saved. It goes live automatically at its publish time; use \"Today\" to start now."
-    );
+    setMessage(templateId ? "Box saved." : "Box saved. It appears in the app by itself at its time.");
     await loadDashboard();
     return true;
   }
@@ -983,12 +911,12 @@ function BusinessDashboardPage() {
         templateId: template.id,
       });
       setMessageTone("error");
-      setMessage("The template could not be updated. Please try again.");
+      setMessage("The box could not be updated. Please try again.");
       return;
     }
 
     setMessageTone("success");
-    setMessage(template.active ? "Template paused. No new boxes will be created from it." : "Template resumed.");
+    setMessage(template.active ? "Box turned off. It won't appear in the app until you turn it on again." : "Box turned on.");
     await loadDashboard();
   }
 
@@ -996,8 +924,8 @@ function BusinessDashboardPage() {
     if (
       !window.confirm(
         isGeorgian
-          ? `წაიშალოს შაბლონი „${template.title}“? უკვე გამოქვეყნებული შეთავაზებები რჩება.`
-          : `Delete template "${template.title}"? Already published offers stay.`
+          ? `წაიშალოს ბოქსი „${template.title}“? დღეს უკვე გამოქვეყნებული ბოქსი და მისი ჯავშნები რჩება.`
+          : `Delete the box "${template.title}"? A box already out today and its orders stay.`
       )
     ) {
       return;
@@ -1017,12 +945,12 @@ function BusinessDashboardPage() {
         templateId: template.id,
       });
       setMessageTone("error");
-      setMessage("The template could not be deleted. Please try again.");
+      setMessage("The box could not be deleted. Please try again.");
       return;
     }
 
     setMessageTone("success");
-    setMessage("Template deleted.");
+    setMessage("Box deleted.");
     await loadDashboard();
   }
 
@@ -1064,203 +992,83 @@ function BusinessDashboardPage() {
     await loadDashboard();
   }
 
-  async function createOffer(actionTime: number) {
-    setMessage("");
-    setMessageTone("error");
-
-    if (
-      isWithinCooldown(
-        lastOfferPublishAt.current,
-        actionCooldownMs,
-        actionTime
-      )
-    ) {
-      setMessage("Please wait a moment before publishing another offer.");
-      return;
-    }
-
-    if (!businessId) {
-      setMessage("Choose an approved business before publishing an offer.");
-      return;
-    }
-
-    const titleResult = validateTextField({
-      label: isGeorgian ? "შეთავაზების სათაური" : "Offer title",
-      value: title,
-      minLength: 3,
-      maxLength: 120,
-      language,
-    });
-    const descriptionResult = validateTextField({
-      label: isGeorgian ? "აღწერა" : "Description",
-      value: description,
-      maxLength: 500,
-      required: false,
-      multiline: true,
-      language,
-    });
-
-    if (titleResult.error) {
-      setMessage(titleResult.error || "Add an offer title. Example: Bakery Lunch Box.");
-      return;
-    }
-
-    if (descriptionResult.error) {
-      setMessage(descriptionResult.error);
-      return;
-    }
-
-    setTitle(titleResult.value);
-    setDescription(descriptionResult.value);
-
-    const selectedBusinessId = Number(businessId);
-    const selectedCategory = normalizeOfferCategory(category);
-    const priceValue = Number(price);
-    const oldPriceValue = oldPrice ? Number(oldPrice) : null;
-    const quantityValue = Number(quantity);
-
-    if (
-      !approvedBusinesses.some((business) => business.id === selectedBusinessId)
-    ) {
+  // "Only today" in the box form: one box for today, without a schedule.
+  async function publishBoxForToday(input: BagTemplateInput) {
+    if (!approvedBusinesses.some((business) => business.id === input.business_id)) {
+      setMessageTone("error");
       setMessage("Your business is not approved yet.");
-      return;
+      return false;
     }
 
-    if (!Number.isFinite(priceValue) || priceValue <= 0) {
-      setMessage("Add a valid discounted price greater than 0.");
-      return;
-    }
-
-    if (
-      oldPriceValue !== null &&
-      (!Number.isFinite(oldPriceValue) || oldPriceValue <= 0)
-    ) {
-      setMessage("Original price must be greater than 0, or leave it empty.");
-      return;
-    }
-
-    if (oldPriceValue !== null && oldPriceValue <= priceValue) {
-      setMessage(
-        "Original price must be higher than the discounted price, or leave it empty."
-      );
-      return;
-    }
-
-    if (!Number.isInteger(quantityValue) || quantityValue <= 0) {
-      setMessage("Quantity must be a whole number greater than 0.");
-      return;
-    }
-
-    if (!selectedCategory) {
-      setMessage("Choose a category for this offer.");
-      return;
-    }
-
-    if (!pickupDate || !pickupStart || !pickupEnd) {
-      setMessage("Add a pickup date, start time and end time.");
-      return;
-    }
-
-    if (pickupStart >= pickupEnd) {
-      setMessage("Pickup end time must be after pickup start time.");
-      return;
-    }
-
-    // The default date is computed when the page loads, so a tab left open
-    // overnight would otherwise publish an already-expired offer.
-    if (pickupDate < getTbilisiDateKey()) {
-      setMessage("Pickup date cannot be in the past.");
-      return;
-    }
-
-    if (
-      isOrderPastPickupEnd({
-        pickup_date: pickupDate,
-        pickup_start: pickupStart,
-        pickup_end: pickupEnd,
-      })
-    ) {
-      setMessage("This pickup window has already ended. Choose a later time.");
-      return;
-    }
-
-    setPublishing(true);
-    lastOfferPublishAt.current = actionTime;
-    setMessageTone("success");
-    setMessage("Publishing offer...");
-
-    const imageUrl = await uploadImage(selectedBusinessId);
-
-    if (imageUrl === null) {
-      setPublishing(false);
-      return;
-    }
+    const businessDepartments = departments.filter(
+      (department) => department.business_id === input.business_id
+    );
+    const department =
+      businessDepartments.find((item) => item.id === input.department_id) ||
+      businessDepartments.find((item) => item.is_default) ||
+      businessDepartments[0];
 
     const { error } = await supabase.from("offers").insert({
-      business_id: selectedBusinessId,
-      title: titleResult.value,
-      price: priceValue,
-      old_price: oldPriceValue,
-      quantity: quantityValue,
-      pickup_date: pickupDate,
-      pickup_start: pickupStart,
-      pickup_end: pickupEnd,
-      category: selectedCategory,
-      size,
-      department_id: (() => {
-        const businessDepartments = departments.filter(
-          (department) => department.business_id === selectedBusinessId
-        );
-        const chosen =
-          businessDepartments.find((department) => String(department.id) === departmentId) ||
-          businessDepartments.find((department) => department.is_default) ||
-          businessDepartments[0];
-        return chosen ? chosen.id : null;
-      })(),
-      description: descriptionResult.value || null,
+      business_id: input.business_id,
+      department_id: department ? department.id : null,
+      title: input.title,
+      description: input.description,
+      category: input.category,
+      size: input.size,
+      price: input.price,
+      old_price: input.old_price,
+      quantity: input.daily_quantity ?? 1,
+      pickup_date: getTbilisiDateKey(),
+      pickup_start: input.pickup_start,
+      pickup_end: input.pickup_end,
+      image_url: input.image_url,
       active: true,
       status: "active",
-      image_url: imageUrl,
     });
 
     if (error) {
       logAppError("Offer creation failed", error, {
-        operation: "create_offer",
-        businessId: selectedBusinessId,
+        operation: "create_offer_today",
+        businessId: input.business_id,
       });
-      setPublishing(false);
       setMessageTone("error");
-      setMessage(
-        error.message.includes("row-level security")
-          ? "Offer creation was blocked. Please make sure this business is approved and you are signed in as its owner."
-          : "Offer could not be published. Please check the details and try again."
-      );
-      return;
+      setMessage("Offer could not be published. Please check the details and try again.");
+      return false;
     }
 
-    setTitle("");
-    setDescription("");
-    setCategory(DEFAULT_OFFER_CATEGORY);
-    setSize(DEFAULT_BAG_SIZE);
-    setPrice("");
-    setOldPrice("");
-    setQuantity("1");
-    setPickupDate(getTbilisiDateKey());
-    setPickupStart("");
-    setPickupEnd("");
-    setImageFile(null);
-    // The browser kept showing the previous file name while imageFile was
-    // already empty, so the next offer silently had no image.
-    setImageInputKey((currentKey) => currentKey + 1);
-
-    setPublishing(false);
     setMessageTone("success");
-    setMessage("Offer published. It is now visible to customers.");
+    setMessage("Today's box is on sale.");
     notifyOfferPublished({
-      offerTitle: titleResult.value,
+      offerTitle: input.title,
       businessName: selectedBusiness?.name,
     });
     await loadDashboard();
+    return true;
+  }
+
+  // A photo straight on one box (the home card). Returns an error text, or "".
+  async function setOfferPhoto(offer: Offer, file: File) {
+    const result = await uploadTemplateImage(file);
+    if (result.error !== undefined) return translateUserMessage(result.error, language);
+
+    const { error } = await supabase
+      .from("offers")
+      .update({ image_url: result.url })
+      .eq("id", offer.id)
+      .in("business_id", ownedBusinessIds);
+
+    if (error) {
+      logAppError("Offer photo update failed", error, {
+        operation: "set_offer_photo",
+        offerId: offer.id,
+      });
+      return translateUserMessage("The photo could not be saved. Please try again.", language);
+    }
+
+    setOffers((current) =>
+      current.map((item) => (item.id === offer.id ? { ...item, image_url: result.url } : item))
+    );
+    return "";
   }
 
   function startEditingOffer(offer: Offer) {
@@ -2001,18 +1809,6 @@ function BusinessDashboardPage() {
   const selectedTemplates = bagTemplates.filter(
     (template) => template.business_id === selectedBusinessIdNumber
   );
-  // The one-off offer form points at a department of the selected business:
-  // the owner's pick if it still belongs to this business, else the default.
-  const effectiveDepartmentId = selectedDepartments.some(
-    (department) => String(department.id) === departmentId
-  )
-    ? departmentId
-    : String(
-        (
-          selectedDepartments.find((department) => department.is_default) ||
-          selectedDepartments[0]
-        )?.id ?? ""
-      );
   const templateCountByDepartment = selectedTemplates.reduce<Record<number, number>>(
     (counts, template) => {
       if (template.department_id) {
@@ -2096,6 +1892,9 @@ function BusinessDashboardPage() {
       sold: orders.filter((order) => order.offer_id === offer.id && isRevenueOrder(order))
         .length,
     }));
+  const todayTemplateIds = offers
+    .filter((offer) => offer.pickup_date === todayKey && offer.template_id)
+    .map((offer) => Number(offer.template_id));
   const earningsToday = orders
     .filter((order) => isRevenueOrder(order) && order.offers?.pickup_date === todayKey)
     .reduce((total, order) => total + getBusinessAmount(order), 0);
@@ -2326,8 +2125,6 @@ function BusinessDashboardPage() {
               updatingOfferId={updatingOfferId}
               waitingCount={reservedOrders.length}
               earningsToday={earningsToday}
-              kgSaved={businessAnalytics.estimatedFoodSavedKg}
-              averageRating={totalReviews > 0 ? averageRating : null}
               activeTemplateCount={activeTemplateCount}
               activePanel={quickPanel}
               onAdjustQuantity={(offer, delta) => void adjustOfferQuantity(offer, delta)}
@@ -2338,6 +2135,11 @@ function BusinessDashboardPage() {
                 )
               }
               onSelectPanel={setQuickPanel}
+              onNewBox={() => {
+                setQuickPanel("publish");
+                setNewBoxSignal((value) => value + 1);
+              }}
+              onSetOfferPhoto={setOfferPhoto}
             />
           </div>
         )}
@@ -2352,7 +2154,10 @@ function BusinessDashboardPage() {
               departments={selectedDepartments}
               templates={selectedTemplates}
               busyTemplateId={busyTemplateId}
+              todayTemplateIds={todayTemplateIds}
+              newBoxSignal={newBoxSignal}
               onSave={saveBagTemplate}
+              onPublishToday={publishBoxForToday}
               onToggleActive={(template) => void toggleTemplateActive(template)}
               onDelete={(template) => void deleteBagTemplate(template)}
               onPublishNow={(template, day) => void publishTemplateNow(template, day)}
@@ -2360,47 +2165,6 @@ function BusinessDashboardPage() {
             />
           )}
 
-          <details className="group mt-3">
-            <summary className="flex min-h-11 cursor-pointer list-none items-center px-1 font-semibold text-mint [&::-webkit-details-marker]:hidden">
-              {isGeorgian ? "+ ერთჯერადი ლანჩ ბოქსი" : "+ One-off bag"}
-            </summary>
-            <OfferForm
-              t={t}
-              canCreateOffers={canCreateOffers}
-              businessStatusMessage={businessStatusMessage}
-              approvedBusinesses={approvedBusinesses}
-              businessId={businessId}
-              departments={selectedDepartments}
-              departmentId={effectiveDepartmentId}
-              onDepartmentIdChange={setDepartmentId}
-              title={title}
-              description={description}
-              category={category}
-              size={size}
-              price={price}
-              oldPrice={oldPrice}
-              quantity={quantity}
-              pickupDate={pickupDate}
-              pickupStart={pickupStart}
-              pickupEnd={pickupEnd}
-              imageFile={imageFile}
-              publishing={publishing || preparingImage}
-              onBusinessIdChange={setBusinessId}
-              onTitleChange={setTitle}
-              onDescriptionChange={setDescription}
-              onCategoryChange={setCategory}
-              onSizeChange={setSize}
-              onPriceChange={setPrice}
-              onOldPriceChange={setOldPrice}
-              onQuantityChange={setQuantity}
-              onPickupDateChange={setPickupDate}
-              onPickupStartChange={setPickupStart}
-              onPickupEndChange={setPickupEnd}
-              onImageFileChange={(event) => void handleImageFileChange(event)}
-              imageInputKey={imageInputKey}
-              onCreateOffer={(actionTime) => void createOffer(actionTime)}
-            />
-          </details>
           <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
@@ -2453,12 +2217,53 @@ function BusinessDashboardPage() {
           />
         )}
 
-        {/* The four shortcut buttons open these, one at a time. */}
-        <div id="panel-offers" hidden={quickPanel !== "offers"} className="scroll-mt-24">
+        <div id="panel-numbers" hidden={quickPanel !== "numbers"} className="scroll-mt-24">
           <QuickPanelClose onClose={() => setQuickPanel(null)} />
-          <div id="business-offers" className="scroll-mt-24">
-            <h2 className="mt-2 text-xl font-bold text-cream">
-              {isGeorgian ? "შეთავაზებები" : "Offers"}
+          <section id="business-stats" className="scroll-mt-24">
+            <h2 className="mt-2 text-xl font-bold text-cream">{isGeorgian ? "სტატისტიკა" : "Stats"}</h2>
+            <div className="mt-3">
+              <BusinessRevenueInsights
+                analytics={businessAnalytics}
+                onExportReservations={exportReservationsCsv}
+                onExportCompletedPickups={exportCompletedPickupsCsv}
+                onExportOfferStatistics={exportOfferStatisticsCsv}
+              />
+            </div>
+          </section>
+
+          <section id="business-reviews" className="mt-8 scroll-mt-24">
+            <h2 className="text-xl font-bold text-cream">
+              {isGeorgian ? "შეფასებები" : "Reviews"}
+              {totalReviews > 0 && (
+                <span className="ml-2 text-base font-semibold text-body">
+                  ★ {averageRating.toFixed(1)} · {totalReviews}
+                </span>
+              )}
+            </h2>
+            <div className="mt-3">
+              <BusinessReviews t={t} language={language} reviews={reviews} />
+            </div>
+          </section>
+
+          {selectedBusiness && (
+            <section id="business-impact-section" className="mt-8 scroll-mt-24">
+              <h2 className="text-xl font-bold text-cream">
+                {isGeorgian ? "გადარჩენილი საკვები" : "Food saved"}
+              </h2>
+              <div className="mt-3">
+                <ImpactReportSection
+                  language={language}
+                  businessId={selectedBusiness.id}
+                  businessName={selectedBusiness.name}
+                  orders={orders}
+                />
+              </div>
+            </section>
+          )}
+
+          <section id="business-offers" className="mt-8 scroll-mt-24">
+            <h2 className="text-xl font-bold text-cream">
+              {isGeorgian ? "ბოქსების ისტორია" : "Box history"}
               {activeOffers.length > 0 && (
                 <span className="ml-2 text-base font-semibold text-body">
                   {isGeorgian ? `${activeOffers.length} აქტიური` : `${activeOffers.length} active`}
@@ -2482,10 +2287,7 @@ function BusinessDashboardPage() {
             <div className="mt-3 flex flex-wrap gap-2">
               {(
                 [
-                  { value: "active", label: isGeorgian ? "აქტიური" : "Active" },
-                  { value: "sold_out", label: isGeorgian ? "გაყიდული" : "Sold out" },
-                  { value: "inactive", label: isGeorgian ? "დამალული" : "Hidden" },
-                  { value: "archive", label: isGeorgian ? "არქივი" : "Archive" },
+                  { value: "active", label: isGeorgian ? "ახლა აპში" : "In the app now" },
                   { value: "all", label: isGeorgian ? "ყველა" : "All" },
                 ] as Array<{ value: DashboardOfferFilter; label: string }>
               ).map((filter) => (
@@ -2558,53 +2360,7 @@ function BusinessDashboardPage() {
               label={t("nav.offers")}
               onPageChange={setOfferManagementPage}
             />
-          </div>
-          <QuickPanelClose onClose={() => setQuickPanel(null)} />
-        </div>
-
-        <div id="panel-numbers" hidden={quickPanel !== "numbers"} className="scroll-mt-24">
-          <QuickPanelClose onClose={() => setQuickPanel(null)} />
-          <section id="business-stats" className="scroll-mt-24">
-            <h2 className="mt-2 text-xl font-bold text-cream">{isGeorgian ? "სტატისტიკა" : "Stats"}</h2>
-            <div className="mt-3">
-              <BusinessRevenueInsights
-                analytics={businessAnalytics}
-                onExportReservations={exportReservationsCsv}
-                onExportCompletedPickups={exportCompletedPickupsCsv}
-                onExportOfferStatistics={exportOfferStatisticsCsv}
-              />
-            </div>
           </section>
-
-          <section id="business-reviews" className="mt-8 scroll-mt-24">
-            <h2 className="text-xl font-bold text-cream">
-              {isGeorgian ? "შეფასებები" : "Reviews"}
-              {totalReviews > 0 && (
-                <span className="ml-2 text-base font-semibold text-body">
-                  ★ {averageRating.toFixed(1)} · {totalReviews}
-                </span>
-              )}
-            </h2>
-            <div className="mt-3">
-              <BusinessReviews t={t} language={language} reviews={reviews} />
-            </div>
-          </section>
-
-          {selectedBusiness && (
-            <section id="business-impact-section" className="mt-8 scroll-mt-24">
-              <h2 className="text-xl font-bold text-cream">
-                {isGeorgian ? "გადარჩენილი საკვები" : "Food saved"}
-              </h2>
-              <div className="mt-3">
-                <ImpactReportSection
-                  language={language}
-                  businessId={selectedBusiness.id}
-                  businessName={selectedBusiness.name}
-                  orders={orders}
-                />
-              </div>
-            </section>
-          )}
           <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
