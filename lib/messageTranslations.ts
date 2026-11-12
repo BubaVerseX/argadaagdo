@@ -727,6 +727,33 @@ const georgianMessageEntries: Array<[string, string]> = [
     "არაფერი გამოქვეყნდა: ხვალინდელი ლანჩ ბოქსი უკვე არსებობს, ან ეს დღე გამორთულია.",
   ],
   [
+    "The box could not be saved. Please check the details and try again.",
+    "ბოქსი ვერ შეინახა. გადაამოწმე დეტალები და სცადე ხელახლა.",
+  ],
+  ["Box saved.", "ბოქსი შენახულია."],
+  [
+    "Box saved. It appears in the app by itself at its time.",
+    "ბოქსი შენახულია. აპში თავისი დროით თავად გამოჩნდება.",
+  ],
+  [
+    "Box turned off. It won't appear in the app until you turn it on again.",
+    "ბოქსი გამოირთო. აპში აღარ გამოჩნდება, სანამ ისევ არ ჩართავ.",
+  ],
+  ["Box turned on.", "ბოქსი ჩაირთო."],
+  [
+    "The box could not be updated. Please try again.",
+    "ბოქსის შეცვლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
+    "The box could not be deleted. Please try again.",
+    "ბოქსის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+  ],
+  ["Box deleted.", "ბოქსი წაიშალა."],
+  [
+    "The photo could not be saved. Please try again.",
+    "ფოტო ვერ შეინახა. გთხოვ, სცადე ხელახლა.",
+  ],
+  [
     "Today's box is on sale.",
     "დღევანდელი ლანჩ ბოქსი გაყიდვაშია.",
   ],
