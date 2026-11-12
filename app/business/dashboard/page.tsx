@@ -8,7 +8,8 @@ import { LoadingState } from "@/components/LoadingState";
 import { Pagination } from "@/components/Pagination";
 import { SearchBar } from "@/components/SearchBar";
 import { isSalesPausedToday } from "@/lib/greenBag";
-import { BusinessQuickActions, QuickPanelClose, type QuickPanel } from "@/components/business/BusinessQuickActions";
+import { QuickPanelClose, type QuickPanel } from "@/components/business/BusinessQuickActions";
+import { BusinessTodayPanel, type TodayOffer } from "@/components/business/BusinessTodayPanel";
 import { BusinessDashboardHero } from "@/components/business/BusinessDashboardHero";
 import { BusinessHealthScore } from "@/components/business/BusinessHealthScore";
 import { BusinessProfileSection } from "@/components/business/BusinessProfileSection";
@@ -35,6 +36,8 @@ import {
   calculateBusinessAnalytics,
   downloadCsv,
   formatAnalyticsMoney,
+  getBusinessAmount,
+  isRevenueOrder,
   type OfferAnalytics,
 } from "@/lib/analytics";
 import {
@@ -1445,6 +1448,68 @@ function BusinessDashboardPage() {
     await loadDashboard();
   }
 
+  /** −/+ on the today card: changes how many boxes are still for sale. */
+  async function adjustOfferQuantity(offer: Offer, delta: number) {
+    if (!ownedBusinessIds.includes(offer.business_id) || updatingOfferId !== null) return;
+
+    const currentQuantity = Math.max(0, Number(offer.quantity || 0));
+    const nextQuantity = currentQuantity + delta;
+    if (nextQuantity < 0) return;
+
+    const business = businesses.find((item) => item.id === offer.business_id);
+    const paused = isSalesPausedToday(business?.sales_paused_on);
+    const wasSoldOut = offer.status === "sold_out" || currentQuantity <= 0;
+    // 0 left = sold out. Adding a box back to a sold-out offer puts it on sale
+    // again, unless sales are stopped for today or the owner had hidden it.
+    const stockFields =
+      nextQuantity <= 0
+        ? { quantity: 0, active: false, status: "sold_out" }
+        : wasSoldOut && !paused && offer.status !== "inactive"
+          ? { quantity: nextQuantity, active: true, status: "active" }
+          : { quantity: nextQuantity };
+
+    setUpdatingOfferId(offer.id);
+    const { data, error } = await supabase
+      .from("offers")
+      .update(stockFields)
+      .eq("id", offer.id)
+      .in("business_id", ownedBusinessIds)
+      .eq("quantity", currentQuantity)
+      .select("*")
+      .maybeSingle();
+    setUpdatingOfferId(null);
+
+    if (error) {
+      logAppError("Offer quantity change failed", error, {
+        operation: "adjust_offer_quantity",
+        offerId: offer.id,
+      });
+      setMessageTone("error");
+      setMessage("Offer changes could not be saved. Please try again.");
+      return;
+    }
+
+    if (!data) {
+      // Someone reserved in the meantime: show the fresh numbers instead.
+      await loadDashboard();
+      return;
+    }
+
+    setOffers((currentOffers) =>
+      currentOffers.map((currentOffer) =>
+        currentOffer.id === offer.id ? (data as Offer) : currentOffer
+      )
+    );
+  }
+
+  /** Opens a closed dashboard section and scrolls to it. */
+  function openDashboardSection(id: string) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    if (element instanceof HTMLDetailsElement) element.open = true;
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function toggleOfferActive(offer: Offer) {
     setMessage("");
     setMessageTone("error");
@@ -1985,6 +2050,23 @@ function BusinessDashboardPage() {
     orders,
     reviews,
   });
+  // The "today" home: today's boxes with how many sold, and today's earnings.
+  const todayKey = getTbilisiDateKey();
+  const todayOffers: TodayOffer[] = offers
+    .filter(
+      (offer) =>
+        offer.pickup_date === todayKey && getEffectiveOfferStatus(offer) !== "expired"
+    )
+    .sort((a, b) => a.id - b.id)
+    .map((offer) => ({
+      offer,
+      sold: orders.filter((order) => order.offer_id === offer.id && isRevenueOrder(order))
+        .length,
+    }));
+  const earningsToday = orders
+    .filter((order) => isRevenueOrder(order) && order.offers?.pickup_date === todayKey)
+    .reduce((total, order) => total + getBusinessAmount(order), 0);
+  const activeTemplateCount = selectedTemplates.filter((template) => template.active).length;
   const hasCompleteProfile = Boolean(
     profileName.trim() &&
       profileType.trim() &&
@@ -2173,10 +2255,12 @@ function BusinessDashboardPage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-8 md:px-12">
-        <BusinessDashboardHero
-          t={t}
-          businessName={dashboardBusinessName}
-        />
+        {!(selectedBusiness && canCreateOffers) && (
+          <BusinessDashboardHero
+            t={t}
+            businessName={dashboardBusinessName}
+          />
+        )}
 
         {message && (
           <div ref={messageRef} className="mt-4 scroll-mt-24">
@@ -2200,19 +2284,30 @@ function BusinessDashboardPage() {
         )}
 
         {selectedBusiness && canCreateOffers && (
-          <BusinessQuickActions
-            activePanel={quickPanel}
-            reservedCount={reservedOrders.length}
-            salesPaused={isSalesPausedToday(selectedBusiness.sales_paused_on)}
-            busy={departmentActionBusy}
-            onSelectPanel={setQuickPanel}
-            onToggleSales={() =>
-              void setSalesPaused(
-                null,
-                !isSalesPausedToday(selectedBusiness.sales_paused_on)
-              )
-            }
-          />
+          <div className="mt-4">
+            <BusinessTodayPanel
+              businessName={dashboardBusinessName}
+              todayOffers={todayOffers}
+              salesPaused={isSalesPausedToday(selectedBusiness.sales_paused_on)}
+              pauseBusy={departmentActionBusy}
+              updatingOfferId={updatingOfferId}
+              waitingCount={reservedOrders.length}
+              earningsToday={earningsToday}
+              kgSaved={businessAnalytics.estimatedFoodSavedKg}
+              averageRating={totalReviews > 0 ? averageRating : null}
+              activeTemplateCount={activeTemplateCount}
+              activePanel={quickPanel}
+              onAdjustQuantity={(offer, delta) => void adjustOfferQuantity(offer, delta)}
+              onToggleSales={() =>
+                void setSalesPaused(
+                  null,
+                  !isSalesPausedToday(selectedBusiness.sales_paused_on)
+                )
+              }
+              onSelectPanel={setQuickPanel}
+              onOpenSection={openDashboardSection}
+            />
+          </div>
         )}
 
         {/* Kept mounted but hidden, so half-filled forms survive switching. */}

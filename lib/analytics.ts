@@ -95,7 +95,7 @@ function getOrderGrossAmount(order: Order) {
   return toNumber(order.amount) || toNumber(order.offers?.price);
 }
 
-function getBusinessAmount(order: Order) {
+export function getBusinessAmount(order: Order) {
   const grossAmount = getOrderGrossAmount(order);
   return toNumber(order.business_amount) || grossAmount * (1 - defaultPlatformFeeRate);
 }
@@ -105,7 +105,7 @@ function getPlatformAmount(order: Order) {
   return toNumber(order.platform_fee) || grossAmount * defaultPlatformFeeRate;
 }
 
-function isRevenueOrder(order: Order) {
+export function isRevenueOrder(order: Order) {
   return (
     isConfirmedOrderStatus(order.status) ||
     isCollectedOrderStatus(order.status) ||
