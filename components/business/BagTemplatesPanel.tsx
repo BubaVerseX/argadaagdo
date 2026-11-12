@@ -562,8 +562,16 @@ export function BagTemplatesPanel({
                 </span>
               )}
               {form.imageUrl && !uploading && (
-                <span className="text-xs text-mint">
-                  {isGeorgian ? "სურათი დამატებულია" : "Image attached"}
+                <span className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={form.imageUrl}
+                    alt=""
+                    className="h-20 w-20 shrink-0 rounded-xl object-cover"
+                  />
+                  <span className="text-xs text-mint">
+                    {isGeorgian ? "სურათი დამატებულია" : "Image attached"}
+                  </span>
                 </span>
               )}
             </label>
@@ -623,7 +631,16 @@ export function BagTemplatesPanel({
               key={template.id}
               className="ui-card grid gap-4 rounded-2xl p-4 md:grid-cols-[1fr_auto] md:items-start"
             >
-              <div className="min-w-0">
+              <div className="flex min-w-0 gap-3">
+                {template.image_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={template.image_url}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded-xl object-cover"
+                  />
+                )}
+                <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-lg font-semibold text-cream">{template.title}</p>
                   <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold text-mint">
@@ -666,6 +683,7 @@ export function BagTemplatesPanel({
                 <p className="mt-0.5 text-sm text-body">
                   {formatPublishSchedule(template, language)}
                 </p>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-start gap-2 md:justify-end">
