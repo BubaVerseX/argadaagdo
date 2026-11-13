@@ -2392,7 +2392,14 @@ function BusinessDashboardPage() {
 
           {selectedBusiness && canCreateOffers && (
             <section id="business-departments-section" className="mt-8 scroll-mt-24">
-              <h2 className="text-xl font-bold text-cream">{isGeorgian ? "თანამშრომლები" : "Staff"}</h2>
+              <h2 className="text-xl font-bold text-cream">
+                {isGeorgian ? "განყოფილებები და თანამშრომლები" : "Departments and staff"}
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-body">
+                {isGeorgian
+                  ? "თანამშრომელს არაფერი სჭირდება: მყიდველი თავის ტელეფონზე გადაასრიალებს, თანამშრომელი მხოლოდ ეკრანს უყურებს და ბოქსს აძლევს."
+                  : "Staff need nothing: the buyer swipes on their own phone, staff just look at the screen and hand over the box."}
+              </p>
               <div className="mt-3">
                 <DepartmentsPanel
                   language={language}

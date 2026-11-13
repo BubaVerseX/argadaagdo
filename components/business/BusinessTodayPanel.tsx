@@ -126,7 +126,7 @@ export function BusinessTodayPanel({
     {
       panel: "shop",
       label: L("მაღაზია", "Shop"),
-      hint: L("პროფილი, PIN", "Profile, PINs"),
+      hint: L("პროფილი, განყოფილებები", "Profile, departments"),
       Icon: StoreIcon,
     },
   ];

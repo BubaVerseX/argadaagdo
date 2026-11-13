@@ -119,42 +119,8 @@ export function DepartmentsPanel({
                       : "box templates"}
                   </p>
 
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => void copyStaffLink(department)}
-                      className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
-                    >
-                      {copiedId === department.id ? (
-                        <span className="flex items-center gap-1.5">
-                          <CheckIcon className="h-4 w-4" strokeWidth={2} />
-                          {isGeorgian ? "დაკოპირდა" : "Copied"}
-                        </span>
-                      ) : isGeorgian ? (
-                        "თანამშრომლის ბმულის კოპირება"
-                      ) : (
-                        "Copy staff link"
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => {
-                        setPinEditingId(editingPin ? null : department.id);
-                        setPinDrafts((drafts) => ({ ...drafts, [department.id]: "" }));
-                      }}
-                      className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
-                    >
-                      {department.has_staff_pin
-                        ? isGeorgian
-                          ? "PIN-ის შეცვლა"
-                          : "Change staff PIN"
-                        : isGeorgian
-                        ? "თანამშრომლის PIN-ის დაყენება"
-                        : "Set staff PIN"}
-                    </button>
-                    {!department.is_default && (
+                  {!department.is_default && (
+                    <div className="mt-3">
                       <button
                         type="button"
                         disabled={busy}
@@ -168,67 +134,114 @@ export function DepartmentsPanel({
                       >
                         <TrashIcon className="h-4 w-4" strokeWidth={1.8} />
                       </button>
-                    )}
-                  </div>
-
-                  {editingPin && (
-                    <div className="mt-3 grid gap-2 rounded-2xl bg-well p-3 sm:grid-cols-[1fr_auto_auto]">
-                      <input
-                        value={pinDrafts[department.id] || ""}
-                        onChange={(event) =>
-                          setPinDrafts((drafts) => ({
-                            ...drafts,
-                            [department.id]: event.target.value.replace(/\D/g, "").slice(0, 6),
-                          }))
-                        }
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        autoComplete="off"
-                        placeholder={isGeorgian ? "6 ციფრი" : "6 digits"}
-                        aria-label={isGeorgian ? "თანამშრომლის PIN" : "Staff PIN"}
-                        className="premium-input p-3 font-semibold"
-                      />
-                      <button
-                        type="button"
-                        disabled={busy || (pinDrafts[department.id] || "").length !== 6}
-                        onClick={async () => {
-                          const ok = await onSetStaffPin(department, pinDrafts[department.id] || "");
-                          if (ok) setPinEditingId(null);
-                        }}
-                        className="premium-button min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {isGeorgian ? "შენახვა" : "Save PIN"}
-                      </button>
-                      {department.has_staff_pin && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={async () => {
-                            const ok = await onSetStaffPin(department, null);
-                            if (ok) setPinEditingId(null);
-                          }}
-                          className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
-                        >
-                          {isGeorgian ? "PIN-ის მოხსნა" : "Remove PIN"}
-                        </button>
-                      )}
-                      {department.has_staff_pin && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => onResetStaffLockouts(department)}
-                          className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60 sm:col-span-3 sm:justify-self-start"
-                        >
-                          {isGeorgian ? "დაბლოკილი მოწყობილობების განბლოკვა" : "Unlock locked devices"}
-                        </button>
-                      )}
-                      <p className="text-xs leading-5 text-body sm:col-span-3">
-                        {isGeorgian
-                          ? "5 არასწორი ცდა = მოწყობილობა 15 წუთით იბლოკება."
-                          : "5 wrong tries lock the device for 15 min."}
-                      </p>
                     </div>
                   )}
+
+                  <details className="mt-3 rounded-2xl border border-line px-3 py-2">
+                    <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold text-cream">
+                      {isGeorgian ? "თანამშრომლის გვერდი (არჩევითი)" : "Staff page (optional)"}
+                    </summary>
+                    <p className="text-xs leading-5 text-body">
+                      {isGeorgian
+                        ? "საჭიროა მხოლოდ თუ გინდა, რომ თანამშრომელმა თავის ტელეფონზე შეკვეთების სია ნახოს და სარეზერვო კოდი შეიყვანოს. გვერდს PIN იცავს."
+                        : "Only if you want staff to see the order list on their own phone and enter backup codes. A PIN protects the page."}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void copyStaffLink(department)}
+                        className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
+                      >
+                        {copiedId === department.id ? (
+                          <span className="flex items-center gap-1.5">
+                            <CheckIcon className="h-4 w-4" strokeWidth={2} />
+                            {isGeorgian ? "დაკოპირდა" : "Copied"}
+                          </span>
+                        ) : isGeorgian ? (
+                          "თანამშრომლის ბმულის კოპირება"
+                        ) : (
+                          "Copy staff link"
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          setPinEditingId(editingPin ? null : department.id);
+                          setPinDrafts((drafts) => ({ ...drafts, [department.id]: "" }));
+                        }}
+                        className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
+                      >
+                        {department.has_staff_pin
+                          ? isGeorgian
+                            ? "PIN-ის შეცვლა"
+                            : "Change staff PIN"
+                          : isGeorgian
+                          ? "თანამშრომლის PIN-ის დაყენება"
+                          : "Set staff PIN"}
+                      </button>
+                    </div>
+
+                    {editingPin && (
+                      <div className="mt-3 grid gap-2 rounded-2xl bg-well p-3 sm:grid-cols-[1fr_auto_auto]">
+                        <input
+                          value={pinDrafts[department.id] || ""}
+                          onChange={(event) =>
+                            setPinDrafts((drafts) => ({
+                              ...drafts,
+                              [department.id]: event.target.value.replace(/\D/g, "").slice(0, 6),
+                            }))
+                          }
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          autoComplete="off"
+                          placeholder={isGeorgian ? "6 ციფრი" : "6 digits"}
+                          aria-label={isGeorgian ? "თანამშრომლის PIN" : "Staff PIN"}
+                          className="premium-input p-3 font-semibold"
+                        />
+                        <button
+                          type="button"
+                          disabled={busy || (pinDrafts[department.id] || "").length !== 6}
+                          onClick={async () => {
+                            const ok = await onSetStaffPin(department, pinDrafts[department.id] || "");
+                            if (ok) setPinEditingId(null);
+                          }}
+                          className="premium-button min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {isGeorgian ? "შენახვა" : "Save PIN"}
+                        </button>
+                        {department.has_staff_pin && (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={async () => {
+                              const ok = await onSetStaffPin(department, null);
+                              if (ok) setPinEditingId(null);
+                            }}
+                            className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60"
+                          >
+                            {isGeorgian ? "PIN-ის მოხსნა" : "Remove PIN"}
+                          </button>
+                        )}
+                        {department.has_staff_pin && (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => onResetStaffLockouts(department)}
+                            className="premium-button-secondary min-h-11 px-4 py-2 text-sm disabled:opacity-60 sm:col-span-3 sm:justify-self-start"
+                          >
+                            {isGeorgian ? "დაბლოკილი მოწყობილობების განბლოკვა" : "Unlock locked devices"}
+                          </button>
+                        )}
+                        <p className="text-xs leading-5 text-body sm:col-span-3">
+                          {isGeorgian
+                            ? "5 არასწორი ცდა = მოწყობილობა 15 წუთით იბლოკება."
+                            : "5 wrong tries lock the device for 15 min."}
+                        </p>
+                      </div>
+                    )}
+                  </details>
                 </div>
 
                 <button

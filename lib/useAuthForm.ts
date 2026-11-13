@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { TURNSTILE_SITE_KEY } from "@/components/Captcha";
 import { DATA_TRANSFER_CONSENT_VERSION } from "@/lib/consents";
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -189,8 +190,8 @@ function getPhoneAuthErrorMessage(error: { code?: string; message?: string }, is
 
   if (text.includes("signups not allowed") || text.includes("user not found")) {
     return L(
-      "ამ ნომრით ანგარიში ჯერ არ არის. გადადი „რეგისტრაციაზე“.",
-      "There is no account with this number yet. Choose “Create account”."
+      "ტელეფონით რეგისტრაცია დროებით მიუწვდომელია. გამოიყენე ელფოსტა.",
+      "Sign-up by phone is not available right now. Please use email."
     );
   }
   if (text.includes("rate") || text.includes("too many")) {
@@ -251,7 +252,14 @@ export function useAuthForm() {
   const [phoneSentTo, setPhoneSentTo] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   // Turnstile token (components/Captcha.tsx); only used once the site key is set.
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaToken, setCaptchaTokenState] = useState<string | null>(null);
+  // Mirror of the token, so the phone flow can wait a few seconds for a slow
+  // security check (mobile networks) instead of making the button look dead.
+  const captchaTokenRef = useRef<string | null>(null);
+  const setCaptchaToken = useCallback((token: string | null) => {
+    captchaTokenRef.current = token;
+    setCaptchaTokenState(token);
+  }, []);
   const [captchaKey, setCaptchaKey] = useState(0);
 
   function captchaReady() {
@@ -527,11 +535,12 @@ export function useAuthForm() {
     void (authMode === "login" ? signIn() : createAccount());
   }
 
-  // Sign in and sign up are the same two steps (number, then SMS code). Only
-  // "Create account" may create an account, and only with the consent ticked.
+  // One flow for everyone: number, then SMS code. A new number gets a new
+  // customer account (consent box required), a known number just signs in.
   // The session then stays on the device, so the code is needed again only
   // after signing out.
   async function sendPhoneCode() {
+    if (submitting) return;
     setMessage("");
     setMessageTone("error");
 
@@ -545,33 +554,54 @@ export function useAuthForm() {
       return;
     }
 
-    const creating = authMode === "signup";
-
-    if (creating && !transferConsent) {
+    if (!transferConsent) {
       setMessage("Please tick the box to agree to the data transfer.");
       return;
     }
 
-    if (!captchaReady()) return;
-
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      phone: normalizedPhone,
-      options: {
-        ...captchaOptions(),
-        shouldCreateUser: creating,
-        ...(creating
-          ? { data: { role: "customer", data_transfer_consent: DATA_TRANSFER_CONSENT_VERSION } }
-          : {}),
-      },
-    });
-    spendCaptcha();
-    setSubmitting(false);
+    try {
+      // Wait up to 8 s for the security check instead of failing at once.
+      if (TURNSTILE_SITE_KEY) {
+        for (let waited = 0; !captchaTokenRef.current && waited < 8000; waited += 250) {
+          await new Promise((resolve) => window.setTimeout(resolve, 250));
+        }
+        if (!captchaTokenRef.current) {
+          setMessageTone("warning");
+          setMessage(
+            isGeorgian
+              ? "უსაფრთხოების შემოწმება ჯერ არ დასრულდა. შეამოწმე ინტერნეტი და სცადე ხელახლა."
+              : "The security check hasn't finished. Check your internet and try again."
+          );
+          spendCaptcha();
+          return;
+        }
+      }
 
-    if (error) {
+      const token = captchaTokenRef.current;
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: normalizedPhone,
+        options: {
+          ...(TURNSTILE_SITE_KEY && token ? { captchaToken: token } : {}),
+          shouldCreateUser: true,
+          data: { role: "customer", data_transfer_consent: DATA_TRANSFER_CONSENT_VERSION },
+        },
+      });
+      spendCaptcha();
+
+      if (error) {
+        setMessageTone("error");
+        setMessage(getPhoneAuthErrorMessage(error, isGeorgian));
+        return;
+      }
+    } catch {
       setMessageTone("error");
-      setMessage(getPhoneAuthErrorMessage(error, isGeorgian));
+      setMessage(
+        isGeorgian ? "კავშირი ვერ დამყარდა. სცადე ხელახლა." : "Could not connect. Please try again."
+      );
       return;
+    } finally {
+      setSubmitting(false);
     }
 
     setPhoneSentTo(normalizedPhone);
