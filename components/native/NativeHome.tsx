@@ -346,7 +346,7 @@ export default function NativeHome({
               />
             </svg>
             <p className="min-w-0 flex-1 truncate text-[15px] font-semibold text-cream">
-              ArGadaagdo
+              {language === "ka" ? "არ გადააგდო" : "ArGadaagdo"}
             </p>
             {/* The app's only language switch. */}
             <button
