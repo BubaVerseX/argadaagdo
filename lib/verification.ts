@@ -68,7 +68,12 @@ export function isValidIdCode(value: string) {
  */
 export function normalizeGeorgianMobile(value: string) {
   const digits = value.replace(/[\s()-]/g, "").replace(/^\+/, "");
-  const national = digits.startsWith("995") ? digits.slice(3) : digits;
+  // Also accept the habit of a leading 0 ("0599 12 34 56").
+  const national = digits.startsWith("995")
+    ? digits.slice(3)
+    : /^05\d{8}$/.test(digits)
+      ? digits.slice(1)
+      : digits;
 
   return /^5[0-9]{8}$/.test(national) ? `+995${national}` : null;
 }

@@ -136,6 +136,7 @@ function LoginPage() {
             <div
               role="tablist"
               aria-label={t("login.title")}
+              hidden={form.signInMethod === "phone"}
               className="grid grid-cols-2 gap-1 rounded-2xl bg-well p-1"
             >
               {authModeOptions.map((option) => {
@@ -164,8 +165,16 @@ function LoginPage() {
               })}
             </div>
 
-            <h1 className="mt-5 text-2xl font-semibold text-cream sm:text-3xl">
-              {isLogin ? t("login.signInTitle") : t("login.signUpTitle")}
+            <h1
+              className={`${form.signInMethod === "phone" ? "" : "mt-5"} text-2xl font-semibold text-cream sm:text-3xl`}
+            >
+              {form.signInMethod === "phone"
+                ? isGeorgian
+                  ? "შესვლა ან რეგისტრაცია"
+                  : "Sign in or sign up"
+                : isLogin
+                ? t("login.signInTitle")
+                : t("login.signUpTitle")}
             </h1>
             {isBusinessArea ? (
               <p className="mt-1 text-sm font-semibold leading-6 text-mint">

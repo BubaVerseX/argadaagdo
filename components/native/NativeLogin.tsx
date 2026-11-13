@@ -37,7 +37,11 @@ export default function NativeLogin() {
           </span>
           <div>
             <p className="font-serif text-xl font-bold text-cream">
-              {isLogin ? L("კეთილი დაბრუნება", "Welcome back") : L("შემოგვიერთდი", "Join ArGadaagdo")}
+              {form.signInMethod === "phone"
+                ? L("შესვლა ან რეგისტრაცია", "Sign in or sign up")
+                : isLogin
+                ? L("კეთილი დაბრუნება", "Welcome back")
+                : L("შემოგვიერთდი", "Join ArGadaagdo")}
             </p>
             <p className="text-sm text-body">
               {L("ლანჩ ბოქსები ფასდაკლებით, თბილისში", "Lunch Boxes at a discount in Tbilisi")}
@@ -104,6 +108,7 @@ export default function NativeLogin() {
           <div
             role="tablist"
             aria-label={L("შესვლა ან რეგისტრაცია", "Sign in or create account")}
+            hidden={form.signInMethod === "phone"}
             className="mt-6 grid grid-cols-2 gap-1 rounded-2xl bg-well p-1"
           >
             {(["login", "signup"] as const).map((mode) => (

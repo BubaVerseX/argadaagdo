@@ -72,16 +72,23 @@ export function SignInMethodSwitch({ form, tone = "web" }: { form: AuthForm; ton
 export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Tone }) {
   const L = (ka: string, en: string) => (form.isGeorgian ? ka : en);
   const styles = STYLES[tone];
-  const isLogin = form.authMode === "login";
   const codeRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
   const waitingForCode = Boolean(form.phoneSentTo);
 
   useEffect(() => {
     if (waitingForCode) codeRef.current?.focus();
   }, [waitingForCode]);
 
+  // Bring a new message into view: on phones the keyboard can hide it.
+  useEffect(() => {
+    if (form.message) messageRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [form.message]);
+
   const message = form.message ? (
-    <Notice tone={form.messageTone}>{translateUserMessage(form.message, form.language)}</Notice>
+    <div ref={messageRef}>
+      <Notice tone={form.messageTone}>{translateUserMessage(form.message, form.language)}</Notice>
+    </div>
   ) : null;
 
   if (waitingForCode) {
@@ -109,6 +116,7 @@ export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Ton
           placeholder={L("6-ციფრიანი კოდი", "6-digit code")}
           className={`${styles.field} text-center text-2xl font-semibold tracking-[0.4em]`}
         />
+        {message}
         <button
           type="button"
           onClick={() => void form.verifyPhoneCode()}
@@ -117,7 +125,6 @@ export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Ton
         >
           {form.submitting ? L("მოწმდება…", "Checking…") : L("დადასტურება", "Confirm")}
         </button>
-        {message}
         <button
           type="button"
           onClick={form.leavePhoneCodeStep}
@@ -153,21 +160,19 @@ export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Ton
         />
       </div>
       <p className="-mt-1 text-xs leading-5 text-body">
-        {isLogin
-          ? L("SMS-ით მოგივა 6-ციფრიანი კოდი. პაროლი არ გჭირდება.", "You'll get a 6-digit code by SMS. No password needed.")
-          : L(
-              "SMS-ით მოგივა 6-ციფრიანი კოდი. პაროლი არ გჭირდება, შემდეგ აპი დაგიმახსოვრებს.",
-              "You'll get a 6-digit code by SMS. No password; the app keeps you signed in."
-            )}
+        {L(
+          "SMS-ით მოგივა 6-ციფრიანი კოდი. პაროლი არ გჭირდება, შემდეგ აპი დაგიმახსოვრებს. ახალ ნომერზე ანგარიში თავად შეიქმნება.",
+          "You'll get a 6-digit code by SMS. No password; the app keeps you signed in. A new number gets a new account."
+        )}
       </p>
 
-      {!isLogin && (
-        <SignupConsent
-          isGeorgian={form.isGeorgian}
-          checked={form.transferConsent}
-          onChange={form.setTransferConsent}
-        />
-      )}
+      {message}
+
+      <SignupConsent
+        isGeorgian={form.isGeorgian}
+        checked={form.transferConsent}
+        onChange={form.setTransferConsent}
+      />
 
       <Captcha onToken={form.setCaptchaToken} resetKey={form.captchaKey} language={form.language} />
 
@@ -179,7 +184,6 @@ export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Ton
       >
         {form.submitting ? L("იგზავნება…", "Sending…") : L("კოდის გაგზავნა", "Send code")}
       </button>
-      {message}
     </div>
   );
 }
