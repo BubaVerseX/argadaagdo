@@ -34,7 +34,10 @@ function SettingsPage() {
   const [deleteError, setDeleteError] = useState("");
   const deleteConfirmWord = getDeleteConfirmWord(language);
   const [deletePassword, setDeletePassword] = useState("");
-  const deleteConfirmed = isDeleteConfirmed(deleteConfirmText) && deletePassword.length > 0;
+  // Signed up with a phone number: no email, no password.
+  const [phoneOnly, setPhoneOnly] = useState(false);
+  const deleteConfirmed =
+    isDeleteConfirmed(deleteConfirmText) && (phoneOnly || deletePassword.length > 0);
 
   async function deleteAccount() {
     if (!deleteConfirmed || deletingAccount) return;
@@ -71,6 +74,8 @@ function SettingsPage() {
       return;
     }
 
+    setPhoneOnly(Boolean(profileResult.user && !profileResult.user.email));
+
     if (profileResult.status === "unverified") {
       setMessage(VERIFY_EMAIL_BEFORE_ACCESS_MESSAGE);
     } else if (profileResult.status !== "confirmed") {
@@ -94,7 +99,9 @@ function SettingsPage() {
     "flex min-h-[3.25rem] items-center gap-3 border-t border-line px-4 text-[15px] text-cream transition first:border-t-0 hover:bg-well";
   const links = [
     { href: "/profile", label: L("პროფილი", "Profile") },
-    { href: "/login?mode=forgot-password", label: L("პაროლის აღდგენა", "Reset password") },
+    ...(phoneOnly
+      ? []
+      : [{ href: "/login?mode=forgot-password", label: L("პაროლის აღდგენა", "Reset password") }]),
     { href: "/privacy", label: L("კონფიდენციალურობა", "Privacy") },
     { href: "/faq", label: L("დახმარება", "Help") },
   ];
@@ -162,6 +169,14 @@ function SettingsPage() {
                       disabled={deletingAccount}
                       className="min-h-12 rounded-2xl border border-danger-line bg-well px-4 font-semibold text-danger outline-none focus:border-danger"
                     />
+                    {phoneOnly ? (
+                      <p className="text-xs leading-5 text-body">
+                        {L(
+                          "უსაფრთხოებისთვის წაშლა მუშაობს SMS კოდით შესვლიდან 15 წუთში.",
+                          "For safety, deleting works within 15 minutes of signing in with an SMS code."
+                        )}
+                      </p>
+                    ) : (
                     <PasswordInput
                       value={deletePassword}
                       onChange={(event) => setDeletePassword(event.target.value)}
@@ -174,6 +189,7 @@ function SettingsPage() {
                       disabled={deletingAccount}
                       className="min-h-12 rounded-2xl border border-danger-line bg-well px-4 font-semibold text-cream outline-none focus:border-danger"
                     />
+                    )}
                     {deleteError && (
                       <p role="alert" className="text-sm font-semibold text-danger">
                         {translateUserMessage(deleteError, language)}

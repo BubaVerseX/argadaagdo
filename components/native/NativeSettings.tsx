@@ -2,7 +2,8 @@
 
 import PasswordInput from "@/components/PasswordInput";
 import Notice from "@/components/Notice";
-import { ChevronRightIcon, LockIcon, LogOutIcon, MailIcon, TrashIcon } from "@/components/icons";
+import { ChevronRightIcon, LockIcon, LogOutIcon, MailIcon, PhoneIcon, TrashIcon } from "@/components/icons";
+import { formatGeorgianPhone } from "@/lib/profileFields";
 import {
   deleteMyAccount,
   getDeleteConfirmWord,
@@ -125,8 +126,12 @@ export default function NativeSettings() {
     setNote({ tone: "success", text: L("პაროლი შეიცვალა.", "Password changed.") });
   }
 
+  // Signed up with a phone number: no email and no password. Deleting then
+  // needs a fresh SMS sign-in instead (checked on the server).
+  const phoneOnly = Boolean(session && !session.user.email);
+
   async function deleteAccount() {
-    if (!isDeleteConfirmed(deleteWord) || !deletePassword || busy) return;
+    if (!isDeleteConfirmed(deleteWord) || (!phoneOnly && !deletePassword) || busy) return;
 
     setBusy(true);
     setNote(null);
@@ -175,9 +180,17 @@ export default function NativeSettings() {
         <h2 className={label}>{L("ანგარიში", "Account")}</h2>
         <section className="overflow-hidden rounded-[22px] bg-card">
           <p className="flex min-h-[3.25rem] items-center gap-3 px-4 text-[15px] text-cream">
-            <MailIcon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
+            {phoneOnly ? (
+              <PhoneIcon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
+            ) : (
+              <MailIcon className="h-[18px] w-[18px] shrink-0 text-sage" strokeWidth={1.8} />
+            )}
             <span className="min-w-0 flex-1 truncate">
-              {session?.user.email || <span className="native-skeleton inline-block h-4 w-40 rounded" />}
+              {session ? (
+                session.user.email || formatGeorgianPhone(session.user.phone)
+              ) : (
+                <span className="native-skeleton inline-block h-4 w-40 rounded" />
+              )}
             </span>
           </p>
           {session && (
@@ -189,6 +202,7 @@ export default function NativeSettings() {
               fieldClass={field}
             />
           )}
+          {!phoneOnly && (
           <button
             type="button"
             onClick={() => toggle("password")}
@@ -202,7 +216,8 @@ export default function NativeSettings() {
               strokeWidth={2}
             />
           </button>
-          {panel === "password" && (
+          )}
+          {!phoneOnly && panel === "password" && (
             <div className="grid gap-3 border-t border-line p-4">
               <PasswordInput
                 autoComplete="current-password"
@@ -274,18 +289,27 @@ export default function NativeSettings() {
                 autoCapitalize="characters"
                 className={field}
               />
-              <PasswordInput
-                value={deletePassword}
-                onChange={(event) => setDeletePassword(event.target.value)}
-                autoComplete="current-password"
-                aria-label={L("პაროლი", "Password")}
-                placeholder={L("პაროლი", "Password")}
-                className={field}
-              />
+              {phoneOnly ? (
+                <p className="text-xs leading-5 text-body">
+                  {L(
+                    "უსაფრთხოებისთვის წაშლა მუშაობს SMS კოდით შესვლიდან 15 წუთში.",
+                    "For safety, deleting works within 15 minutes of signing in with an SMS code."
+                  )}
+                </p>
+              ) : (
+                <PasswordInput
+                  value={deletePassword}
+                  onChange={(event) => setDeletePassword(event.target.value)}
+                  autoComplete="current-password"
+                  aria-label={L("პაროლი", "Password")}
+                  placeholder={L("პაროლი", "Password")}
+                  className={field}
+                />
+              )}
               <button
                 type="button"
                 onClick={() => void deleteAccount()}
-                disabled={busy || !isDeleteConfirmed(deleteWord) || !deletePassword}
+                disabled={busy || !isDeleteConfirmed(deleteWord) || (!phoneOnly && !deletePassword)}
                 className="native-press min-h-11 rounded-2xl bg-danger-solid text-sm font-semibold text-white disabled:opacity-50"
               >
                 {busy ? L("იშლება...", "Deleting...") : L("სამუდამოდ წაშლა", "Delete for good")}

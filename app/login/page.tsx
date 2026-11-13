@@ -10,6 +10,7 @@ import { VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE } from "@/lib/auth";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { useAuthForm } from "@/lib/useAuthForm";
 import EmailCodeStep from "@/components/EmailCodeStep";
+import { PhoneSignIn, SignInMethodSwitch } from "@/components/auth/PhoneSignIn";
 import { withNativeScreen } from "@/components/native/NativeSwitch";
 import { NativeLoginScreen } from "@/components/native/screens";
 
@@ -172,7 +173,13 @@ function LoginPage() {
               </p>
             ) : (
               <p className="mt-1 text-sm leading-6 text-body">
-                {isLogin ? t("login.signInHint") : t("login.signUpHint")}
+                {form.signInMethod === "phone"
+                  ? isGeorgian
+                    ? "შეიყვანე მობილურის ნომერი."
+                    : "Enter your mobile number."
+                  : isLogin
+                  ? t("login.signInHint")
+                  : t("login.signUpHint")}
               </p>
             )}
 
@@ -183,6 +190,12 @@ function LoginPage() {
                 </Notice>
               )}
 
+              <SignInMethodSwitch form={form} />
+
+              {form.signInMethod === "phone" ? (
+                <PhoneSignIn form={form} />
+              ) : (
+              <>
               <input
                 value={form.email}
                 onChange={(event) => form.setEmail(event.target.value)}
@@ -274,8 +287,6 @@ function LoginPage() {
                   : "Create account"}
               </button>
 
-              
-
               {message && (
                 <Notice tone={messageTone}>
                   {translateUserMessage(message, language)}
@@ -297,6 +308,8 @@ function LoginPage() {
                     ? "დადასტურების წერილის ხელახლა გაგზავნა"
                     : "Resend confirmation email"}
                 </button>
+              )}
+              </>
               )}
 
               {!isBusinessArea && (

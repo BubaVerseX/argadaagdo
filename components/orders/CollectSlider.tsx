@@ -260,10 +260,15 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
               <p className="mt-6 font-mono text-5xl font-semibold tabular-nums text-cream">
                 {formatClock(now, false)}
               </p>
-              <p className="mt-4 text-sm leading-6 text-body">
+              <p className="mt-5 rounded-2xl bg-brand-honey px-4 py-3 text-base font-bold text-brand-ink">
                 {isGeorgian
-                  ? "გადაასრიალე თანამშრომლის თვალწინ, როცა ლანჩ ბოქსი ხელში გაქვს. 2 წუთის განმავლობაში გაუქმება შეგიძლია."
-                  : "Swipe in front of the staff once the box is in your hands. You can undo for 2 minutes."}
+                  ? "გადაასრიალე მხოლოდ თანამშრომლის თვალწინ"
+                  : "Swipe only in front of the staff"}
+              </p>
+              <p className="mt-3 text-sm leading-6 text-body">
+                {isGeorgian
+                  ? "სხვაგან გადასრიალება წაღებულად ითვლება. შეცდომისას 2 წუთში გაუქმება შეგიძლია."
+                  : "A swipe anywhere else counts as collected. If it was a mistake, you can undo for 2 minutes."}
               </p>
             </div>
 
@@ -323,7 +328,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
             )}
 
             <p className="text-center text-xs text-muted">
-              {isGeorgian ? "წაღების კოდი" : "Pickup code"}:{" "}
+              {isGeorgian ? "სარეზერვო კოდი" : "Backup code"}:{" "}
               <span className="font-mono tracking-[0.2em] text-body">{order.pickup_code || "—"}</span>
             </p>
           </>

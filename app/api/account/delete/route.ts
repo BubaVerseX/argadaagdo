@@ -18,6 +18,9 @@ const BUSINESS_ACTIVE_RESERVATIONS_MESSAGE =
 const PASSWORD_REQUIRED_MESSAGE = "Enter your password to delete your account.";
 const PASSWORD_WRONG_MESSAGE = "That password is wrong.";
 const PASSWORD_LOCKED_MESSAGE = "Too many wrong passwords. Please wait 15 minutes and try again.";
+const RECENT_SIGN_IN_MESSAGE =
+  "For your safety, sign out, sign in again with an SMS code, then delete your account within 15 minutes.";
+const RECENT_SIGN_IN_WINDOW_MS = 15 * 60 * 1000;
 const DELETE_FAILED_MESSAGE =
   "Your account could not be deleted. Please try again or contact support.";
 
@@ -25,6 +28,24 @@ function extractBearerToken(request: Request) {
   const authHeader = request.headers.get("authorization") || "";
   const match = authHeader.match(/^Bearer\s+(.+)$/i);
   return match?.[1] || "";
+}
+
+// Phone-only customer accounts have no password. For them a fresh sign-in
+// stands in for the password: the access token's "amr" claim records when the
+// person last proved who they are (the SMS code), and token refreshes keep that
+// time. Called only after auth.getUser has accepted the token.
+function signedInRecently(accessToken: string) {
+  try {
+    const payload = JSON.parse(
+      Buffer.from(accessToken.split(".")[1] || "", "base64url").toString("utf8")
+    ) as { amr?: Array<{ method?: string; timestamp?: number }> };
+    const since = Date.now() - RECENT_SIGN_IN_WINDOW_MS;
+    return (payload.amr || []).some(
+      (entry) => typeof entry.timestamp === "number" && entry.timestamp * 1000 >= since
+    );
+  } catch {
+    return false;
+  }
 }
 
 // Business pictures (logo, cover, offer and template photos) live in the
@@ -126,10 +147,6 @@ export async function POST(request: Request) {
 
     const password = typeof body?.password === "string" ? body.password : "";
 
-    if (!password) {
-      return NextResponse.json({ error: PASSWORD_REQUIRED_MESSAGE }, { status: 400 });
-    }
-
     const userClient = createUserScopedSupabaseClient(accessToken);
     const {
       data: { user },
@@ -145,23 +162,32 @@ export async function POST(request: Request) {
 
     const serviceClient = createServiceRoleSupabaseClient();
 
-    // A session alone isn't enough: the password must match (check-2 #33).
-    const { data: passwordCheck, error: passwordError } = await serviceClient.rpc("check_user_password", {
-      p_user_id: user.id,
-      p_password: password,
-    });
+    if (user.email) {
+      if (!password) {
+        return NextResponse.json({ error: PASSWORD_REQUIRED_MESSAGE }, { status: 400 });
+      }
 
-    if (passwordError) {
-      logger.error("Password check failed before deletion", { userId: user.id, error: passwordError.message });
-      return NextResponse.json({ error: DELETE_FAILED_MESSAGE }, { status: 500 });
-    }
+      // A session alone isn't enough: the password must match (check-2 #33).
+      const { data: passwordCheck, error: passwordError } = await serviceClient.rpc("check_user_password", {
+        p_user_id: user.id,
+        p_password: password,
+      });
 
-    if (passwordCheck === "locked") {
-      return NextResponse.json({ error: PASSWORD_LOCKED_MESSAGE }, { status: 429 });
-    }
+      if (passwordError) {
+        logger.error("Password check failed before deletion", { userId: user.id, error: passwordError.message });
+        return NextResponse.json({ error: DELETE_FAILED_MESSAGE }, { status: 500 });
+      }
 
-    if (passwordCheck !== "ok") {
-      return NextResponse.json({ error: PASSWORD_WRONG_MESSAGE }, { status: 403 });
+      if (passwordCheck === "locked") {
+        return NextResponse.json({ error: PASSWORD_LOCKED_MESSAGE }, { status: 429 });
+      }
+
+      if (passwordCheck !== "ok") {
+        return NextResponse.json({ error: PASSWORD_WRONG_MESSAGE }, { status: 403 });
+      }
+    } else if (!user.phone || !signedInRecently(accessToken)) {
+      // Phone-only account (no email, no password): needs a fresh SMS sign-in.
+      return NextResponse.json({ error: RECENT_SIGN_IN_MESSAGE }, { status: 403 });
     }
 
     const { data: profile } = await serviceClient

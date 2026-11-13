@@ -252,7 +252,7 @@ function ProfilePage() {
                 <h1 className="mt-0.5 break-words text-2xl font-bold leading-tight text-cream sm:text-3xl">
                   {shownName || L("პროფილი", "Profile")}
                 </h1>
-                <p className="mt-1 truncate text-sm text-body">{user?.email}</p>
+                {user?.email && <p className="mt-1 truncate text-sm text-body">{user.email}</p>}
               </div>
             </div>
             {phoneVerified && user?.phone && (

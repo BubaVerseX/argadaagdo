@@ -36,6 +36,19 @@ type Tone = "success" | "error" | "warning";
 
 const REFRESH_MS = 20000;
 
+/** "19:42" in Tbilisi time. */
+function formatTbilisiTime(value: string | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Tbilisi",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+}
+
 function pinStorageKey(departmentId: string) {
   return `argadaagdo-staff-pin-${departmentId}`;
 }
@@ -267,7 +280,10 @@ export default function StaffDepartmentPage() {
   }
 
   const openReservations = reservations.filter((r) => ["reserved", "confirmed"].includes(r.status));
-  const doneReservations = reservations.filter((r) => !["reserved", "confirmed"].includes(r.status));
+  // Newest handover first, so a fresh swipe is at the top.
+  const doneReservations = reservations
+    .filter((r) => !["reserved", "confirmed"].includes(r.status))
+    .sort((a, b) => (b.completed_at || b.created_at).localeCompare(a.completed_at || a.created_at));
 
   return (
     <main className="app-shell min-h-screen px-4 pb-16 pt-6 sm:px-6">
@@ -343,8 +359,23 @@ export default function StaffDepartmentPage() {
               </button>
             </div>
 
+            <div className="mt-5 rounded-2xl bg-well p-4">
+              <p className="font-semibold text-cream">
+                {isGeorgian
+                  ? "მყიდველი წაღებას თავის ტელეფონზე გადაასრიალებს."
+                  : "The buyer swipes on their own phone."}
+              </p>
+              <p className="mt-1 text-sm text-body">
+                {isGeorgian
+                  ? "შეამოწმე 2 რამ: შენი მაღაზიის სახელი და მოძრავი წამები. შემდეგ მიეცი ბოქსი. შეკვეთა ქვემოთ თავად გადავა „გაცემულში“."
+                  : "Check 2 things: your shop's name and the moving seconds. Then hand over the box. The order moves to “Handed over” below by itself."}
+              </p>
+            </div>
+
             <label className="mt-5 grid gap-2 text-sm font-semibold text-body">
-              {isGeorgian ? "წაღების კოდი" : "Pickup code"}
+              {isGeorgian
+                ? "სარეზერვო: კოდით გაცემა (თუ მყიდველის ტელეფონი არ მუშაობს)"
+                : "Backup: hand over by code (if the buyer's phone doesn't work)"}
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   ref={codeInputRef}
@@ -444,9 +475,9 @@ export default function StaffDepartmentPage() {
             </div>
 
             {doneReservations.length > 0 && (
-              <details className="mt-6">
+              <details className="mt-6" open>
                 <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold uppercase tracking-widest text-body">
-                  {isGeorgian ? "დასრულებული" : "Done"} ({doneReservations.length})
+                  {isGeorgian ? "გაცემული" : "Handed over"} ({doneReservations.length})
                 </summary>
                 <div className="mt-3 grid gap-2">
                   {doneReservations.slice(0, 20).map((reservation) => (
@@ -459,9 +490,9 @@ export default function StaffDepartmentPage() {
                       </span>
                       <span className="text-body">
                         {["collected", "completed"].includes(reservation.status)
-                          ? isGeorgian
-                            ? "წაღებულია"
-                            : "Collected"
+                          ? `${isGeorgian ? "გაცემულია" : "Handed over"}${
+                              reservation.completed_at ? ` ${formatTbilisiTime(reservation.completed_at)}` : ""
+                            }`
                           : isGeorgian
                           ? "არ გამოცხადდა"
                           : "No-show"}

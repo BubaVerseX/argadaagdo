@@ -168,7 +168,7 @@ type ActiveOrderCardProps = {
   onOpenCollect?: (order: Order) => void;
 };
 
-/** An active reservation: the pickup code first, then the essentials. */
+/** An active reservation: pickup by swipe first (code only as a backup), then the essentials. */
 export function ActiveOrderCard({
   order,
   language,
@@ -184,17 +184,41 @@ export function ActiveOrderCard({
     confirmed && Boolean(order.pickup_code) && Boolean(onOpenCollect) && isCollectWindowOpen(order);
   const business = order.offers?.businesses;
   const place = [business?.name, business?.address].filter(Boolean).join(" · ");
+  const isGeorgian = language === "ka";
 
   return (
     <div className="overflow-hidden rounded-[24px] bg-card text-cream shadow-[var(--shadow-card)]">
       <div className="bg-well px-4 py-6 text-center">
         {confirmed ? (
           <>
-            <p className="sr-only">{t("native.orders.code")}</p>
-            <p className="whitespace-nowrap font-mono text-[3rem] font-bold leading-none tracking-[0.08em] text-brand-forest">
-              {order.pickup_code ? formatCode(order.pickup_code) : t("common.pending")}
+            {canCollect ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onOpenCollect?.(order)}
+                  className="native-press action-pill min-h-14 w-full rounded-2xl px-4 text-base font-bold"
+                >
+                  {isGeorgian ? "წაღება →" : "Collect →"}
+                </button>
+                <p className="mt-2 text-[13px] text-body">
+                  {isGeorgian
+                    ? "გადაასრიალე თანამშრომლის თვალწინ."
+                    : "Swipe in front of the staff."}
+                </p>
+              </>
+            ) : (
+              <p className="text-[15px] font-semibold text-cream">
+                {isGeorgian
+                  ? "წაღების ღილაკი გამოჩნდება წაღებამდე 1 საათით ადრე."
+                  : "The pickup button appears 1 hour before pickup."}
+              </p>
+            )}
+            <p className="mt-3 text-[12px] text-muted">
+              {isGeorgian ? "სარეზერვო კოდი" : "Backup code"}:{" "}
+              <span className="whitespace-nowrap font-mono text-sm font-semibold tracking-[0.12em] text-body">
+                {order.pickup_code ? formatCode(order.pickup_code) : t("common.pending")}
+              </span>
             </p>
-            <p className="mt-2 text-[13px] text-body">{t("native.orders.show")}</p>
           </>
         ) : (
           <p className="font-semibold">{t("native.orders.pending")}</p>
@@ -222,15 +246,6 @@ export function ActiveOrderCard({
           </p>
         )}
 
-        {canCollect && (
-          <button
-            type="button"
-            onClick={() => onOpenCollect?.(order)}
-            className="native-press action-pill mt-3 min-h-12 rounded-2xl text-[15px] font-semibold"
-          >
-            {t("native.orders.collect")}
-          </button>
-        )}
         {canCancel && (
           <button
             type="button"
