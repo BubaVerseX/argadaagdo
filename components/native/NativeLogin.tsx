@@ -9,6 +9,7 @@ import SignupConsent from "@/components/legal/SignupConsent";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import { useAuthForm } from "@/lib/useAuthForm";
 import EmailCodeStep from "@/components/EmailCodeStep";
+import { PhoneSignIn, SignInMethodSwitch } from "@/components/auth/PhoneSignIn";
 import Link from "./AppLink";
 import NativeTopBar from "./NativeTopBar";
 
@@ -129,6 +130,12 @@ export default function NativeLogin() {
               <Notice tone="warning">{translateUserMessage(form.redirectMessage, language)}</Notice>
             )}
 
+            <SignInMethodSwitch form={form} tone="app" />
+
+            {form.signInMethod === "phone" ? (
+              <PhoneSignIn form={form} tone="app" />
+            ) : (
+            <>
             <input
               value={form.email}
               onChange={(event) => form.setEmail(event.target.value)}
@@ -215,8 +222,6 @@ export default function NativeLogin() {
                 : L("ანგარიშის შექმნა", "Create account")}
             </button>
 
-            
-
             {message && <Notice tone={messageTone}>{translateUserMessage(message, language)}</Notice>}
 
             {message === VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE && (
@@ -228,6 +233,8 @@ export default function NativeLogin() {
               >
                 {L("დადასტურების წერილის ხელახლა გაგზავნა", "Resend confirmation email")}
               </button>
+            )}
+            </>
             )}
 
             {!isLogin && (

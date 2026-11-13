@@ -1,7 +1,7 @@
 import { absoluteBusinessUrl } from "@/lib/businessArea";
 import { getTbilisiDateKey } from "@/lib/offerLifecycle";
 import { absoluteSiteUrl } from "@/lib/site";
-import { sendTransactionalEmail } from "@/lib/email/send";
+import { sendTransactionalEmail, type TransactionalEmailSendResult } from "@/lib/email/send";
 import { sendOrderPush } from "@/lib/push/notify";
 
 type SupabaseLikeClient = {
@@ -209,6 +209,13 @@ function shouldSendPickupReminder(order: EmailOrderContext) {
   return endMinutes > nowMinutes;
 }
 
+// Order emails are off (decided 13 Nov 2026): buyers get the app notification
+// and see every order under "Orders", so Resend stays within its free plan.
+// Email is kept for sign-up, password reset and business approval/rejection.
+// Set to true to send order emails again.
+const ORDER_EMAILS_ENABLED = false;
+const ORDER_EMAIL_SKIPPED: TransactionalEmailSendResult = { ok: true, skipped: true };
+
 export async function sendReservationConfirmationEmail(
   supabase: SupabaseLikeClient,
   orderId: number
@@ -218,6 +225,7 @@ export async function sendReservationConfirmationEmail(
 
   // The app notification goes out with the email (lib/push/notify.ts).
   await sendOrderPush(supabase, order, "confirmed");
+  if (!ORDER_EMAILS_ENABLED) return ORDER_EMAIL_SKIPPED;
 
   const profile = await getProfileById(supabase, order.user_id);
   if (!profile?.email) {
@@ -241,6 +249,7 @@ export async function sendReservationCancellationEmail(
 
   // The app notification goes out with the email (lib/push/notify.ts).
   await sendOrderPush(supabase, order, "cancelled");
+  if (!ORDER_EMAILS_ENABLED) return ORDER_EMAIL_SKIPPED;
 
   const profile = await getProfileById(supabase, order.user_id);
   if (!profile?.email) {
@@ -327,6 +336,7 @@ export async function sendPickupCompletedEmails(
   supabase: SupabaseLikeClient,
   orderId: number
 ) {
+  if (!ORDER_EMAILS_ENABLED) return ORDER_EMAIL_SKIPPED;
   const order = await getOrderEmailContext(supabase, orderId);
   if (!order) return { ok: false, skipped: true, error: "order_not_found" };
 
@@ -361,6 +371,7 @@ export async function sendRatingReminderEmail(
   supabase: SupabaseLikeClient,
   orderId: number
 ) {
+  if (!ORDER_EMAILS_ENABLED) return ORDER_EMAIL_SKIPPED;
   const order = await getOrderEmailContext(supabase, orderId);
   if (!order) return { ok: false, skipped: true, error: "order_not_found" };
 
@@ -386,6 +397,7 @@ export async function sendPickupReminderEmail(
 
   // The app notification goes out with the email (lib/push/notify.ts).
   await sendOrderPush(supabase, order, "reminder");
+  if (!ORDER_EMAILS_ENABLED) return ORDER_EMAIL_SKIPPED;
 
   const profile = await getProfileById(supabase, order.user_id);
   if (!profile?.email) {

@@ -404,6 +404,10 @@ const georgianMessageEntries: Array<[string, string]> = [
     "დაელოდე უსაფრთხოების შემოწმებას და სცადე ხელახლა.",
   ],
   ["Enter your password to delete your account.", "ანგარიშის წასაშლელად ჩაწერე პაროლი."],
+  [
+    "For your safety, sign out, sign in again with an SMS code, then delete your account within 15 minutes.",
+    "უსაფრთხოებისთვის: გამოდი, ისევ შედი SMS კოდით და 15 წუთში წაშალე ანგარიში.",
+  ],
   ["That password is wrong.", "პაროლი არასწორია."],
   [
     "Too many wrong passwords. Please wait 15 minutes and try again.",

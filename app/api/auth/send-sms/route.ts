@@ -6,11 +6,13 @@ import { sendOtpSms, SmsSendError } from "@/lib/sms/ubill";
 import { createServiceRoleSupabaseClient } from "@/lib/supabaseServer";
 
 // Supabase's Send SMS hook. Auth calls this instead of a built-in SMS provider.
-// It accepts Georgian numbers and accounts that already have an email, so nobody
-// can run up the SMS bill with foreign numbers or phone-only signups.
+// It accepts Georgian numbers only, so nobody can run up the SMS bill with
+// foreign numbers. Phone-only customer accounts (no email) are accepted only
+// while NEXT_PUBLIC_PHONE_SIGNUP is "true"; every send is capped below.
 
 type SendSmsPayload = {
   user?: {
+    id?: string | null;
     email?: string | null;
     phone?: string | null;
     // Set while a phone change is waiting for its code.
@@ -61,9 +63,16 @@ export async function POST(request: Request) {
     return hookError("Only Georgian mobile numbers are supported", 400);
   }
 
-  if (!payload.user?.email) {
+  const phoneSignupEnabled = process.env.NEXT_PUBLIC_PHONE_SIGNUP === "true";
+  const email = payload.user?.email?.toLowerCase() || "";
+
+  if (!email && !phoneSignupEnabled) {
     return hookError("Phone-only accounts are not supported", 400);
   }
+
+  // The account an SMS is counted against: the email when there is one (as
+  // before), otherwise the account id, otherwise the number itself.
+  const accountKey = email || (payload.user?.id ? `user:${payload.user.id}` : `phone:${phone}`);
 
   // Every SMS costs money: cap per number, per account and per day
   // (public.note_sms_send). Only hashes are stored. Fails closed.
@@ -75,7 +84,7 @@ export async function POST(request: Request) {
     "note_sms_send",
     {
       p_phone_hash: sha256(phone),
-      p_account_hash: sha256(payload.user.email.toLowerCase()),
+      p_account_hash: sha256(accountKey),
     }
   );
 

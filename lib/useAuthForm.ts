@@ -9,6 +9,7 @@ import {
   VERIFY_EMAIL_BEFORE_SIGNIN_MESSAGE,
 } from "@/lib/auth";
 import { isValidEmail, normalizeEmail } from "@/lib/validation";
+import { normalizeGeorgianMobile } from "@/lib/verification";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 import type { TranslationKey } from "@/lib/i18n";
@@ -177,6 +178,45 @@ export function getRedirectMessage(
 // "Sign in", first-timers on "Create account".
 export const HAS_SIGNED_IN_KEY = "argadaagdo-has-signed-in";
 
+// Customers can sign up and sign in with a Georgian mobile number and an SMS
+// code (no email, no password). Off until the database accepts accounts
+// without an email (supabase/migrations/20261113120000_phone_only_customers.sql).
+export const PHONE_SIGN_IN_ENABLED = process.env.NEXT_PUBLIC_PHONE_SIGNUP === "true";
+
+function getPhoneAuthErrorMessage(error: { code?: string; message?: string }, isGeorgian: boolean) {
+  const text = `${error.code || ""} ${error.message || ""}`.toLowerCase();
+  const L = (ka: string, en: string) => (isGeorgian ? ka : en);
+
+  if (text.includes("signups not allowed") || text.includes("user not found")) {
+    return L(
+      "ამ ნომრით ანგარიში ჯერ არ არის. გადადი „რეგისტრაციაზე“.",
+      "There is no account with this number yet. Choose “Create account”."
+    );
+  }
+  if (text.includes("rate") || text.includes("too many")) {
+    return L("ძალიან ბევრი მცდელობა. მოიცადე ერთი წუთი.", "Too many attempts. Wait a minute and try again.");
+  }
+  if (text.includes("expired") || text.includes("invalid") || text.includes("otp")) {
+    if (text.includes("disabled") || text.includes("not allowed")) {
+      return L(
+        "ტელეფონით შესვლა დროებით მიუწვდომელია. გამოიყენე ელფოსტა.",
+        "Phone sign-in is not available right now. Please use email."
+      );
+    }
+    return L("კოდი არასწორია ან ვადა გაუვიდა.", "That code is wrong or has expired.");
+  }
+  if (text.includes("disabled") || text.includes("not allowed") || text.includes("provider")) {
+    return L(
+      "ტელეფონით შესვლა დროებით მიუწვდომელია. გამოიყენე ელფოსტა.",
+      "Phone sign-in is not available right now. Please use email."
+    );
+  }
+  if (text.includes("captcha")) {
+    return L("უსაფრთხოების შემოწმება ვერ გაიარა. სცადე თავიდან.", "The security check failed. Please try again.");
+  }
+  return L("SMS ვერ გაიგზავნა. სცადე ხელახლა.", "The SMS could not be sent. Please try again.");
+}
+
 function readHasSignedInBefore() {
   try {
     return window.localStorage.getItem(HAS_SIGNED_IN_KEY) === "1";
@@ -203,6 +243,13 @@ export function useAuthForm() {
   const [password, setPassword] = useState("");
   // Written consent to transfers abroad (PDP Law Art. 37), required to sign up.
   const [transferConsent, setTransferConsent] = useState(false);
+  // Sign in with a phone number: the number, then the SMS code.
+  const [signInMethod, setSignInMethod] = useState<"phone" | "email">(
+    PHONE_SIGN_IN_ENABLED ? "phone" : "email"
+  );
+  const [phone, setPhone] = useState("");
+  const [phoneSentTo, setPhoneSentTo] = useState("");
+  const [phoneCode, setPhoneCode] = useState("");
   // Turnstile token (components/Captcha.tsx); only used once the site key is set.
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -478,6 +525,84 @@ export function useAuthForm() {
 
     event.preventDefault();
     void (authMode === "login" ? signIn() : createAccount());
+  }
+
+  // Sign in and sign up are the same two steps (number, then SMS code). Only
+  // "Create account" may create an account, and only with the consent ticked.
+  // The session then stays on the device, so the code is needed again only
+  // after signing out.
+  async function sendPhoneCode() {
+    setMessage("");
+    setMessageTone("error");
+
+    const normalizedPhone = normalizeGeorgianMobile(phone);
+    if (!normalizedPhone) {
+      setMessage(
+        isGeorgian
+          ? "შეიყვანე საქართველოს მობილურის ნომერი: 5XX XXX XXX."
+          : "Enter a Georgian mobile number: 5XX XXX XXX."
+      );
+      return;
+    }
+
+    const creating = authMode === "signup";
+
+    if (creating && !transferConsent) {
+      setMessage("Please tick the box to agree to the data transfer.");
+      return;
+    }
+
+    if (!captchaReady()) return;
+
+    setSubmitting(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: normalizedPhone,
+      options: {
+        ...captchaOptions(),
+        shouldCreateUser: creating,
+        ...(creating
+          ? { data: { role: "customer", data_transfer_consent: DATA_TRANSFER_CONSENT_VERSION } }
+          : {}),
+      },
+    });
+    spendCaptcha();
+    setSubmitting(false);
+
+    if (error) {
+      setMessageTone("error");
+      setMessage(getPhoneAuthErrorMessage(error, isGeorgian));
+      return;
+    }
+
+    setPhoneSentTo(normalizedPhone);
+    setPhoneCode("");
+  }
+
+  async function verifyPhoneCode() {
+    if (!phoneSentTo || phoneCode.trim().length !== 6) return;
+    setMessage("");
+    setSubmitting(true);
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: phoneSentTo,
+      token: phoneCode.trim(),
+      type: "sms",
+    });
+
+    if (error || !data.user) {
+      setSubmitting(false);
+      setMessageTone("error");
+      setMessage(getPhoneAuthErrorMessage(error || { message: "invalid" }, isGeorgian));
+      return;
+    }
+
+    await finishSignIn(data.user);
+  }
+
+  function leavePhoneCodeStep() {
+    setPhoneSentTo("");
+    setPhoneCode("");
+    setMessage("");
   }
 
   async function signIn() {
@@ -769,6 +894,17 @@ export function useAuthForm() {
     setPassword,
     transferConsent,
     setTransferConsent,
+    phoneSignInAvailable: PHONE_SIGN_IN_ENABLED && !isBusinessArea,
+    signInMethod: PHONE_SIGN_IN_ENABLED && !isBusinessArea ? signInMethod : ("email" as const),
+    setSignInMethod,
+    phone,
+    setPhone,
+    phoneSentTo,
+    phoneCode,
+    setPhoneCode,
+    sendPhoneCode,
+    verifyPhoneCode,
+    leavePhoneCodeStep,
     setCaptchaToken,
     captchaKey,
     isBusinessArea,

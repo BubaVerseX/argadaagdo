@@ -11,6 +11,7 @@ import {
   isEmailConfirmed,
   logoutUser,
 } from "@/lib/auth";
+import { formatGeorgianPhone } from "@/lib/profileFields";
 import { useHostKind } from "@/lib/useHostKind";
 import { useLanguage } from "@/lib/useLanguage";
 import { supabase } from "@/lib/supabase";
@@ -361,7 +362,7 @@ function Navbar({
                   {user && (
                     <div className="px-3 py-2">
                       <p className="truncate text-sm font-semibold text-cream">
-                        {user.email}
+                        {user.email || formatGeorgianPhone(user.phone)}
                       </p>
                       <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted">
                         {role || t("nav.customerSection")}
