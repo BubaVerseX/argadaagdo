@@ -53,7 +53,6 @@ import { prepareImageForUpload, type ImageUploadResult } from "@/lib/business/pr
 import { processExpiredMarketplace } from "@/lib/marketplaceAutomation";
 import { translateUserMessage } from "@/lib/messageTranslations";
 import {
-  notifyOfferPublished,
   notifyPickupCompleted,
   notifyProfileUpdated,
 } from "@/lib/notifications";
@@ -725,7 +724,7 @@ function BusinessDashboardPage() {
     if (!selectedBusinessId) return false;
 
     const nameResult = validateTextField({
-      label: isGeorgian ? "დეპარტამენტის სახელი" : "Department name",
+      label: isGeorgian ? "განყოფილების სახელი" : "Department name",
       value: name,
       minLength: 1,
       maxLength: 60,
@@ -770,7 +769,7 @@ function BusinessDashboardPage() {
     if (
       !window.confirm(
         isGeorgian
-          ? `წაიშალოს დეპარტამენტი „${department.name}“? მისი ${templateCount} შაბლონიც წაიშლება; უკვე გამოქვეყნებული შეთავაზებები რჩება.`
+          ? `წაიშალოს განყოფილება „${department.name}“? მისი ${templateCount} ბოქსიც წაიშლება; უკვე გამოქვეყნებული ბოქსები რჩება.`
           : `Delete department "${department.name}"? Its ${templateCount} template(s) are deleted too; already published offers stay.`
       )
     ) {
@@ -985,10 +984,6 @@ function BusinessDashboardPage() {
 
     setMessageTone("success");
     setMessage(day === "today" ? "Today's box is on sale." : "Tomorrow's box is published.");
-    notifyOfferPublished({
-      offerTitle: template.title,
-      businessName: selectedBusiness?.name,
-    });
     await loadDashboard();
   }
 
@@ -1038,10 +1033,6 @@ function BusinessDashboardPage() {
 
     setMessageTone("success");
     setMessage("Today's box is on sale.");
-    notifyOfferPublished({
-      offerTitle: input.title,
-      businessName: selectedBusiness?.name,
-    });
     await loadDashboard();
     return true;
   }
@@ -2164,8 +2155,6 @@ function BusinessDashboardPage() {
               onUploadImage={uploadTemplateImage}
             />
           )}
-
-          <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
         <div id="panel-collect" hidden={quickPanel !== "collect"} className="scroll-mt-24">
@@ -2197,7 +2186,6 @@ function BusinessDashboardPage() {
               onMarkNoShow={(order) => void markNoShow(order)}
             />
           </div>
-          <QuickPanelClose onClose={() => setQuickPanel(null)} />
         </div>
 
         {pickupVerificationOrder && (
@@ -2361,7 +2349,7 @@ function BusinessDashboardPage() {
               onPageChange={setOfferManagementPage}
             />
           </section>
-          <QuickPanelClose onClose={() => setQuickPanel(null)} />
+          <QuickPanelClose bottom onClose={() => setQuickPanel(null)} />
         </div>
 
         <div id="panel-shop" hidden={quickPanel !== "shop"} className="scroll-mt-24">
@@ -2423,7 +2411,7 @@ function BusinessDashboardPage() {
               </div>
             </section>
           )}
-          <QuickPanelClose onClose={() => setQuickPanel(null)} />
+          <QuickPanelClose bottom onClose={() => setQuickPanel(null)} />
         </div>
       </section>
     </main>

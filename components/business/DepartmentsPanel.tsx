@@ -113,9 +113,7 @@ export function DepartmentsPanel({
                   <p className="mt-1 text-sm text-body">
                     {templateCount}{" "}
                     {isGeorgian
-                      ? templateCount === 1
-                        ? "შაბლონი"
-                        : "შაბლონი"
+                      ? "ბოქსი"
                       : templateCount === 1
                       ? "box template"
                       : "box templates"}
@@ -163,7 +161,7 @@ export function DepartmentsPanel({
                         onClick={() => onDeleteDepartment(department)}
                         aria-label={
                           isGeorgian
-                            ? `${department.name} დეპარტამენტის წაშლა`
+                            ? `${department.name} განყოფილების წაშლა`
                             : `Delete department ${department.name}`
                         }
                         className="premium-button-danger min-h-11 px-3 py-2 text-sm disabled:opacity-60"
@@ -265,7 +263,7 @@ export function DepartmentsPanel({
             placeholder={
               isGeorgian ? "მაგ. საცხობი, ბოსტნეული, კულინარია" : "e.g. Bakery, Produce, Deli"
             }
-            aria-label={isGeorgian ? "ახალი დეპარტამენტის სახელი" : "New department name"}
+            aria-label={isGeorgian ? "ახალი განყოფილების სახელი" : "New department name"}
             className="premium-input flex-1 p-3 font-semibold"
           />
           <button
@@ -275,7 +273,7 @@ export function DepartmentsPanel({
             className="premium-button-secondary flex min-h-11 items-center justify-center gap-2 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
           >
             <PlusIcon className="h-4 w-4" strokeWidth={2} />
-            {isGeorgian ? "დეპარტამენტის დამატება" : "Add department"}
+            {isGeorgian ? "განყოფილების დამატება" : "Add department"}
           </button>
         </div>
       </div>

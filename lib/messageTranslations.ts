@@ -648,23 +648,23 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Sales are back on. Paused offers are available again.",
-    "გაყიდვები ისევ ჩართულია. გაჩერებული შეთავაზებები ისევ ხელმისაწვდომია.",
+    "გაყიდვები ისევ ჩართულია. გაჩერებული ბოქსები ისევ აპშია.",
   ],
   [
     "Department added.",
-    "დეპარტამენტი დაემატა.",
+    "განყოფილება დაემატა.",
   ],
   [
     "Department could not be added. Please try again.",
-    "დეპარტამენტის დამატება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+    "განყოფილების დამატება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
     "Department deleted.",
-    "დეპარტამენტი წაიშალა.",
+    "განყოფილება წაიშალა.",
   ],
   [
     "Department could not be deleted. Please try again.",
-    "დეპარტამენტის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+    "განყოფილების წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
     "The staff PIN must be 6 digits.",
@@ -676,7 +676,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Staff PIN saved. Share the staff link with the department.",
-    "თანამშრომლის PIN შენახულია. გაუზიარე თანამშრომლის ბმული დეპარტამენტს.",
+    "თანამშრომლის PIN შენახულია. გაუზიარე თანამშრომლის ბმული განყოფილებას.",
   ],
   [
     "Staff PIN removed.",
@@ -684,39 +684,39 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "You can only manage templates for your own business.",
-    "შაბლონების მართვა მხოლოდ საკუთარი ბიზნესისთვის შეგიძლია.",
+    "ბოქსების მართვა მხოლოდ საკუთარი ბიზნესისთვის შეგიძლია.",
   ],
   [
     "The template could not be saved. Please check the details and try again.",
-    "შაბლონი ვერ შეინახა. გადაამოწმე დეტალები და სცადე ხელახლა.",
+    "ბოქსი ვერ შეინახა. გადაამოწმე დეტალები და სცადე ხელახლა.",
   ],
   [
     "Template updated. The next box that goes live will use the new details.",
-    "შაბლონი განახლდა. შემდეგი გამოქვეყნებული ლანჩ ბოქსი ახალ დეტალებს გამოიყენებს.",
+    "ბოქსი განახლდა. ახალი დეტალები შემდეგი გამოქვეყნებიდან გამოჩნდება.",
   ],
   [
     "Template saved. It goes live automatically at its publish time; use \"Today\" to start now.",
-    "შაბლონი შენახულია. ის თავის დროზე ავტომატურად გამოქვეყნდება; ახლავე დასაწყებად დააჭირე „დღეს“.",
+    "ბოქსი შენახულია. თავის დროზე აპში თავად გამოჩნდება.",
   ],
   [
     "The template could not be updated. Please try again.",
-    "შაბლონის განახლება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+    "ბოქსის განახლება ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
     "Template paused. No new boxes will be created from it.",
-    "შაბლონი გაჩერებულია. მისგან ახალი ლანჩ ბოქსები აღარ შეიქმნება.",
+    "ბოქსი გამორთულია. აპში აღარ გამოჩნდება, სანამ ისევ არ ჩართავ.",
   ],
   [
     "Template resumed.",
-    "შაბლონი ისევ ჩართულია.",
+    "ბოქსი ისევ ჩართულია.",
   ],
   [
     "The template could not be deleted. Please try again.",
-    "შაბლონის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
+    "ბოქსის წაშლა ვერ მოხერხდა. გთხოვ, სცადე ხელახლა.",
   ],
   [
     "Template deleted.",
-    "შაბლონი წაიშალა.",
+    "ბოქსი წაიშალა.",
   ],
   [
     "The box could not be published. Please try again.",
@@ -759,7 +759,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Today's box is on sale.",
-    "დღევანდელი ლანჩ ბოქსი გაყიდვაშია.",
+    "დღევანდელი ბოქსი გაყიდვაშია.",
   ],
   [
     "Tomorrow's box is published.",

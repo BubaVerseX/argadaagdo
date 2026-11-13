@@ -121,6 +121,12 @@ export function isCollectWindowOpen(order: Order) {
   return now >= pickupStart.getTime() - 60 * 60 * 1000 && now <= pickupEnd.getTime();
 }
 
+/** True once the pickup window has ended. */
+export function isPickupWindowOver(order: Order) {
+  const pickupEnd = getPickupDateTime(order, "pickup_end");
+  return Boolean(pickupEnd && Date.now() > pickupEnd.getTime());
+}
+
 /** Free cancellation ends 2 h before pickup starts (begin_customer_refund). */
 export function getCancellationDeadline(offer: {
   pickup_date?: string | null;

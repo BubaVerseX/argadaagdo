@@ -70,12 +70,14 @@ export function BusinessQuickActions({
 }
 
 /** A clear way out of an open panel, since a second tap on the tile isn't obvious. */
-export function QuickPanelClose({ onClose }: { onClose: () => void }) {
+export function QuickPanelClose({ onClose, bottom = false }: { onClose: () => void; bottom?: boolean }) {
   const { language } = useLanguage();
   const isGeorgian = language === "ka";
 
+  // At the end of a long panel: extra room below, so the chat button
+  // (bottom right) never covers it.
   return (
-    <div className="mt-3 flex justify-end">
+    <div className={`mt-3 flex justify-end ${bottom ? "mb-20" : ""}`}>
       <button
         type="button"
         onClick={() => {
