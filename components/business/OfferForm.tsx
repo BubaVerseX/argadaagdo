@@ -130,7 +130,7 @@ export function OfferForm({
 
             {departments.length > 1 && (
               <label className="grid min-w-0 gap-2 text-sm font-semibold text-body">
-                <span>{isGeorgian ? "დეპარტამენტი" : "Department"}</span>
+                <span>{isGeorgian ? "განყოფილება" : "Department"}</span>
                 <select
                   value={departmentId}
                   onChange={(event) => onDepartmentIdChange(event.target.value)}

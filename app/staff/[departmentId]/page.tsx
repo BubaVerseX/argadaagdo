@@ -316,7 +316,7 @@ export default function StaffDepartmentPage() {
             autoComplete="off"
             aria-label="PIN"
             className="premium-input mt-5 w-full p-4 text-center font-mono text-2xl font-semibold tracking-[0.3em]"
-            placeholder="••••"
+            placeholder="••••••"
           />
           {message && (
             <div className="mt-4">
@@ -477,7 +477,7 @@ export default function StaffDepartmentPage() {
             {doneReservations.length > 0 && (
               <details className="mt-6" open>
                 <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold uppercase tracking-widest text-body">
-                  {isGeorgian ? "გაცემული" : "Handed over"} ({doneReservations.length})
+                  {isGeorgian ? "დასრულებული" : "Done"} ({doneReservations.length})
                 </summary>
                 <div className="mt-3 grid gap-2">
                   {doneReservations.slice(0, 20).map((reservation) => (

@@ -81,7 +81,10 @@ function normalizeTime(value: string | null | undefined, fallback: string) {
 export function formatMoney(value: number | string | null | undefined) {
   const numberValue = Number(value || 0);
   const safeValue = Number.isFinite(numberValue) ? numberValue : 0;
-  return `₾ ${safeValue.toFixed(2)}`;
+  // Georgian style: number first, then the sign. Whole amounts without
+  // decimals ("9 ₾"), others with two ("9.50 ₾").
+  const amount = Number.isInteger(safeValue) ? String(safeValue) : safeValue.toFixed(2);
+  return `${amount} ₾`;
 }
 
 type OfferPricing = {

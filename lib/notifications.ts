@@ -140,10 +140,10 @@ export function getLocalizedNotificationContent(
       };
     case "offer_published":
       return {
-        title: "შეთავაზება გამოქვეყნდა",
+        title: "ბოქსი გამოქვეყნდა",
         message: offerTitle
-          ? `„${offerTitle}“ ახლა მომხმარებლებისთვის ხილულია.`
-          : "შეთავაზება ახლა მომხმარებლებისთვის ხილულია.",
+          ? `„${offerTitle}“ ახლა აპშია.`
+          : "ბოქსი ახლა აპშია.",
       };
     case "profile_updated":
       return {

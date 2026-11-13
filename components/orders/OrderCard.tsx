@@ -19,10 +19,11 @@ import {
   canShowCancellationAvailable,
   getCustomerTimelineSteps,
   isCollectWindowOpen,
+  isPickupWindowOver,
 } from "@/lib/orders";
 import type { Language, TranslationKey } from "@/lib/i18n";
 import type { Order } from "@/lib/types";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type T = (key: TranslationKey) => string;
 
@@ -177,11 +178,19 @@ export function ActiveOrderCard({
   onAskCancel,
   onOpenCollect,
 }: ActiveOrderCardProps) {
+  // Re-check the clock every 30 seconds, so the pickup button appears by
+  // itself when the window opens, even if the page stays open.
+  const [, setClockTick] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => setClockTick((tick) => tick + 1), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
   const status = getEffectiveOrderStatus(order);
   const confirmed = isConfirmedOrderStatus(status);
   const canCancel = confirmed && canShowCancellationAvailable(order);
-  const canCollect =
-    confirmed && Boolean(order.pickup_code) && Boolean(onOpenCollect) && isCollectWindowOpen(order);
+  const canCollect = confirmed && Boolean(onOpenCollect) && isCollectWindowOpen(order);
+  const pickupOver = confirmed && !canCollect && isPickupWindowOver(order);
   const business = order.offers?.businesses;
   const place = [business?.name, business?.address].filter(Boolean).join(" · ");
   const isGeorgian = language === "ka";
@@ -206,6 +215,10 @@ export function ActiveOrderCard({
                     : "Swipe in front of the staff."}
                 </p>
               </>
+            ) : pickupOver ? (
+              <p className="text-[15px] font-semibold text-cream">
+                {isGeorgian ? "წაღების დრო დასრულდა." : "The pickup time has ended."}
+              </p>
             ) : (
               <p className="text-[15px] font-semibold text-cream">
                 {isGeorgian
