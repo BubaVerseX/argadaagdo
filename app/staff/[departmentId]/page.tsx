@@ -460,13 +460,16 @@ export default function StaffDepartmentPage() {
               {openReservations.map((reservation) => (
                 <div key={reservation.order_id} className="ui-card rounded-2xl p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-semibold text-cream">{reservation.title}</p>
+                    <p className="font-semibold text-cream">
+                      <span className="mr-2 text-xl font-bold tabular-nums">#{reservation.order_id}</span>
+                      {reservation.title}
+                    </p>
                     <span className="rounded-full bg-well px-3 py-1 text-xs font-semibold text-mint">
                       {getGreenBagLabel(reservation, language)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-body">
-                    #{reservation.order_id} · {reservation.pickup_date} ·{" "}
+                    {reservation.pickup_date} ·{" "}
                     {reservation.pickup_start?.slice(0, 5)}–{reservation.pickup_end?.slice(0, 5)}
                     {reservation.customer_hint ? ` · ${reservation.customer_hint}` : ""}
                   </p>
@@ -486,7 +489,7 @@ export default function StaffDepartmentPage() {
                       className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-well px-4 py-3 text-sm"
                     >
                       <span className="font-semibold text-cream">
-                        #{reservation.order_id} · {reservation.title}
+                        <span className="text-base font-bold tabular-nums">#{reservation.order_id}</span> · {reservation.title}
                       </span>
                       <span className="text-body">
                         {["collected", "completed"].includes(reservation.status)
