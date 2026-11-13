@@ -122,6 +122,13 @@ export function ReservationList({
         />
       )}
 
+      <p className="mt-3 rounded-2xl bg-well px-4 py-3 text-sm leading-6 text-body">
+        {text(
+          "მყიდველი თანამშრომლის თვალწინ, თავის ტელეფონზე გადაასრიალებს და შეკვეთა აქ გაცემულად თავად მოინიშნება. ბოქსის მიცემამდე შეადარე შეკვეთის ნომერი (#).",
+          "The buyer swipes on their own phone in front of your staff and the order is marked handed over here by itself. Match the order number (#) before handing over the box."
+        )}
+      </p>
+
       <div className="mt-4 grid gap-3">
         {filteredOrders.length === 0 && (
           <p className="ui-card flex items-center gap-3 rounded-2xl p-4 font-semibold text-body">
@@ -174,15 +181,13 @@ export function ReservationList({
                     type="button"
                     onClick={() => onOpenPickupVerification(order)}
                     disabled={updatingOrderId !== null}
-                    className={`${
-                      lateHandover ? "premium-button-secondary" : "premium-button"
-                    } min-h-11 w-full px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto`}
+                    className="premium-button-secondary min-h-11 w-full px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {updatingOrderId === order.id
                       ? text("სრულდება...", "Completing...")
                       : lateHandover
                       ? text("მაინც გაცემა კოდით", "Hand over late with code")
-                      : text("კოდით გაცემა", "Hand over with code")}
+                      : text("სარეზერვო: კოდით გაცემა", "Backup: hand over with code")}
                   </button>
                   {active && pastPickup && (
                     <button
