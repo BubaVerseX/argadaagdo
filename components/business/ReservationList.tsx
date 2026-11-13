@@ -156,7 +156,8 @@ export function ReservationList({
                       {order.offers
                         ? formatPickupWindow(order.offers, language)
                         : t("orders.pickupUnavailable")}{" "}
-                      · {formatMoney(order.amount || order.offers?.price || 0)} · #{order.id}
+                      · {formatMoney(order.amount || order.offers?.price || 0)} ·{" "}
+                      <b className="font-bold text-cream">#{order.id}</b>
                     </span>
                   </p>
                 </div>

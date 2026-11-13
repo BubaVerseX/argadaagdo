@@ -220,12 +220,16 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
             <h2 className="mt-3 text-3xl font-bold leading-tight">{businessName}</h2>
             <p className="mt-2 text-lg text-body">{bagLabel}</p>
             <p className="mt-1 text-base text-body">{order.offers?.title}</p>
-            <p className="mt-5 font-mono text-5xl font-bold tabular-nums text-cream">
+            <p className="mx-auto mt-4 inline-flex items-baseline gap-2 rounded-2xl bg-well px-5 py-2 text-cream">
+              <span className="text-sm text-body">{isGeorgian ? "შეკვეთა" : "Order"}</span>
+              <span className="text-3xl font-bold tabular-nums">#{order.id}</span>
+            </p>
+            <p className="mt-4 font-mono text-5xl font-bold tabular-nums text-cream">
               {formatClock(now, true)}
             </p>
             <p className="mt-2 text-sm text-body">
               {isGeorgian ? "დადასტურდა" : "Confirmed at"}{" "}
-              {collectedAt ? formatClock(collectedAt, false) : ""} · #{order.id}
+              {collectedAt ? formatClock(collectedAt, false) : ""}
             </p>
             <p className="mt-4 text-sm leading-6 text-body">
               {isGeorgian
@@ -276,7 +280,12 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
               <h2 className="mt-3 text-3xl font-bold leading-tight">{businessName}</h2>
               <p className="mt-2 text-lg text-body">{bagLabel}</p>
               <p className="mt-1 text-base text-body">{order.offers?.title}</p>
-              <p className="mt-5 font-mono text-5xl font-bold tabular-nums text-cream">
+              {/* The same number the shop sees in its list, to match before handing over. */}
+              <p className="mx-auto mt-4 inline-flex items-baseline gap-2 rounded-2xl bg-well px-5 py-2 text-cream">
+                <span className="text-sm text-body">{isGeorgian ? "შეკვეთა" : "Order"}</span>
+                <span className="text-3xl font-bold tabular-nums">#{order.id}</span>
+              </p>
+              <p className="mt-4 font-mono text-5xl font-bold tabular-nums text-cream">
                 {formatClock(now, true)}
               </p>
               <p className="mt-5 rounded-2xl bg-brand-honey px-4 py-3 text-base font-bold text-brand-ink">
