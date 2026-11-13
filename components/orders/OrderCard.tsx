@@ -222,7 +222,7 @@ export function ActiveOrderCard({
             ) : (
               <p className="text-[15px] font-semibold text-cream">
                 {isGeorgian
-                  ? "წაღების ღილაკი გამოჩნდება წაღებამდე 1 საათით ადრე."
+                  ? "წაღების ღილაკი გამოჩნდება წაღების დაწყებამდე 1 საათით ადრე."
                   : "The pickup button appears 1 hour before pickup."}
               </p>
             )}

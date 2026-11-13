@@ -294,7 +294,7 @@ function getOfferRecommendations(
     recommendations.push({
       title: isGeorgian ? "წაღების დრო ახლოვდება" : "Pickup window is close",
       text: isGeorgian
-        ? "შემდეგ ჯერზე განიხილე წაღების ფანჯრის გახანგრძლივება, თუ სურსათის უსაფრთხოება ამის საშუალებას იძლევა."
+        ? "შემდეგ ჯერზე სცადე წაღების დროის გახანგრძლივება, თუ სურსათის უსაფრთხოება ამის საშუალებას იძლევა."
         : "Consider extending the pickup window next time if food safety allows it.",
       tone: "yellow",
     });
@@ -419,7 +419,7 @@ export function buildBusinessRecommendations(
     recommendations.push({
       title: isGeorgian ? "შექმენი აქტიური შეთავაზება" : "Create an active offer",
       text: isGeorgian
-        ? "მომხმარებლებს მხოლოდ მომავალი წაღების ფანჯრის მქონე აქტიური შეთავაზებების დაჯავშნა შეუძლიათ."
+        ? "მომხმარებლებს მხოლოდ იმ აქტიური შეთავაზებების დაჯავშნა შეუძლიათ, რომელთა წაღების დრო ჯერ არ გასულა."
         : "Customers can only reserve active offers with future pickup windows.",
       tone: "yellow",
     });
@@ -531,7 +531,7 @@ export function buildBusinessDailySummary(
       tone: revenueOrders.length > 0 ? "green" : "white",
     },
     {
-      title: isGeorgian ? "დღეს დასრულებადი შეთავაზებები" : "Offers expiring",
+      title: isGeorgian ? "დღეს რომ მთავრდება" : "Offers expiring",
       value: todayOffers.filter((offer) => getEffectiveOfferStatus(offer) === "active")
         .length,
       helper: isGeorgian

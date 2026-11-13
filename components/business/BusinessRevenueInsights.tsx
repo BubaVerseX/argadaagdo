@@ -11,7 +11,7 @@ import { useLanguage } from "@/lib/useLanguage";
 // analytics data itself stays in English (other code compares against it).
 const georgianAnalyticsValues = new Map<string, string>([
   ["Not enough data", "საკმარისი მონაცემები არ არის"],
-  ["Under 1 hour before pickup", "წაღებამდე 1 საათზე ნაკლებით ადრე"],
+  ["Under 1 hour before pickup", "წაღებამდე 1 საათზე ნაკლები ხნით ადრე"],
   ["No ratings yet", "შეფასებები ჯერ არ არის"],
   ["Stable", "სტაბილური"],
   ["Improving", "უმჯობესდება"],

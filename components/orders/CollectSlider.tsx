@@ -123,7 +123,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
       setOffset(0);
       setError(
         isGeorgian
-          ? "ვერ დადასტურდა. სცადე თავიდან ან აჩვენე წაღების კოდი."
+          ? "წაღება ვერ დადასტურდა. სცადე ხელახლა ან თანამშრომელს სარეზერვო კოდი უთხარი."
           : "Could not confirm. Try again or show your pickup code instead."
       );
     }
@@ -286,7 +286,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
               </p>
               <p className="mt-3 text-sm leading-6 text-body">
                 {isGeorgian
-                  ? "სხვაგან გადასრიალება წაღებულად ითვლება. შეცდომისას 2 წუთში გაუქმება შეგიძლია."
+                  ? "გადასრიალებისთანავე შეკვეთა წაღებულად ჩაითვლება. შეცდომით გადასრიალების შემთხვევაში, მისი გაუქმება 2 წუთის განმავლობაში შეგიძლია."
                   : "A swipe anywhere else counts as collected. If it was a mistake, you can undo for 2 minutes."}
               </p>
             </div>

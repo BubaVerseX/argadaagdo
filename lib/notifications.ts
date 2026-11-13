@@ -121,8 +121,8 @@ export function getLocalizedNotificationContent(
       return {
         title: "ჯავშანი დადასტურდა",
         message: offerTitle
-          ? `„${offerTitle}“ დაჯავშნილია. წაღების კოდი შეკვეთებში გელოდება.`
-          : "ჯავშანი დადასტურდა. წაღების კოდი შეკვეთებში გელოდება.",
+          ? `„${offerTitle}“ დაჯავშნილია. ჯავშანი „შეკვეთებშია“.`
+          : "ჯავშანი დადასტურდა. ის „შეკვეთებშია“.",
       };
     case "business_registration_submitted":
       return {

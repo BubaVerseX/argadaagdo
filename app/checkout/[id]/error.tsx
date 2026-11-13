@@ -20,7 +20,7 @@ export default function CheckoutError({
       }}
       description={{
         en: "Your reservation step could not be prepared. Try again before reserving the offer.",
-        ka: "ჯავშნის ეტაპი ვერ მომზადდა. შეთავაზების დაჯავშნამდე სცადე ხელახლა.",
+        ka: "გადახდის გვერდი ვერ მომზადდა. სცადე ხელახლა.",
       }}
     />
   );

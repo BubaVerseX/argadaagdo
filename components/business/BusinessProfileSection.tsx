@@ -261,7 +261,7 @@ export function BusinessProfileSection({
               onClick={copyMondayToAll}
               className="min-h-11 text-sm font-semibold text-mint underline underline-offset-4"
             >
-              {L("ორშაბათის ყველა დღეზე გადატანა", "Copy Monday to all days")}
+              {L("ორშაბათის საათების ყველა დღეზე გადატანა", "Copy Monday to all days")}
             </button>
           )}
         </div>

@@ -40,7 +40,7 @@ export default function NativeLogin() {
               {form.signInMethod === "phone"
                 ? L("შესვლა ან რეგისტრაცია", "Sign in or sign up")
                 : isLogin
-                ? L("კეთილი დაბრუნება", "Welcome back")
+                ? L("კეთილი იყოს შენი დაბრუნება", "Welcome back")
                 : L("შემოგვიერთდი", "Join ArGadaagdo")}
             </p>
             <p className="text-sm text-body">

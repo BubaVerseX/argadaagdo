@@ -88,7 +88,7 @@ export type OrderPushKind = "confirmed" | "cancelled" | "reminder";
 const ORDER_COPY: Record<OrderPushKind, (parts: { place: string; window: string }, language: Language) => Copy> = {
   confirmed: ({ place, window }, language) =>
     language === "ka"
-      ? { title: "შეკვეთა დადასტურდა ✓", body: `${place} · წაღება: ${window}. კოდი შეკვეთებშია.` }
+      ? { title: "შეკვეთა დადასტურდა ✓", body: `${place} · წაღება: ${window}.` }
       : { title: "Order confirmed ✓", body: `${place} · pickup ${window}. Your code is in Orders.` },
   cancelled: ({ place }, language) =>
     language === "ka"
@@ -159,7 +159,7 @@ export async function sendFavouriteBoxesPush(
         devices.filter((device) => device.user_id === userId),
         (language) =>
           language === "ka"
-            ? { title: "ახალი ლანჩ ბოქსი 💚", body: `${name} — შენს რჩეულებში. დაჯავშნე, სანამ არის.` }
+            ? { title: "ახალი ლანჩ ბოქსი 💚", body: `${name} — შენს რჩეულებში. დაჯავშნე, სანამ გაიყიდება.` }
             : { title: "New Lunch Box 💚", body: `${name}, one of your favourites. Reserve before it's gone.` },
         `/offers/${business.offerId}`,
         `favourites-${businessId}-${today}`

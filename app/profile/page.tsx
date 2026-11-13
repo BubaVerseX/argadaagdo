@@ -301,7 +301,7 @@ function ProfilePage() {
                 {
                   href: "/business/dashboard#business-departments-section",
                   label: L("თანამშრომლები", "Staff"),
-                  hint: L("PIN კოდები გაცემისთვის", "PINs for handover"),
+                  hint: L("თანამშრომლის გვერდი (არჩევითი)", "PINs for handover"),
                   Icon: UsersIcon,
                 },
                 {

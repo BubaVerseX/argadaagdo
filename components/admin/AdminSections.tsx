@@ -860,7 +860,7 @@ export function ApprovedBusinesses({
                   }
                   className="premium-button min-h-11 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {text("პინის შენახვა", "Save pin")}
+                  {text("PIN-ის შენახვა", "Save pin")}
                 </button>
               </div>
             )}

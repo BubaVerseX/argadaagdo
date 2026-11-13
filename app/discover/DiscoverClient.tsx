@@ -565,13 +565,13 @@ function DiscoverClient() {
                   {isGeorgian ? "ყველა ფასი" : "All prices"}
                 </option>
                 <option value="under-5">
-                  {isGeorgian ? "₾ 5 ან ნაკლები" : "₾ 5 or less"}
+                  {isGeorgian ? "5 ₾ ან ნაკლები" : "₾ 5 or less"}
                 </option>
                 <option value="under-10">
-                  {isGeorgian ? "₾ 10 ან ნაკლები" : "₾ 10 or less"}
+                  {isGeorgian ? "10 ₾ ან ნაკლები" : "₾ 10 or less"}
                 </option>
                 <option value="under-15">
-                  {isGeorgian ? "₾ 15 ან ნაკლები" : "₾ 15 or less"}
+                  {isGeorgian ? "15 ₾ ან ნაკლები" : "₾ 15 or less"}
                 </option>
               </select>
 

@@ -292,7 +292,7 @@ export default function NativeSettings() {
               {phoneOnly ? (
                 <p className="text-xs leading-5 text-body">
                   {L(
-                    "უსაფრთხოებისთვის წაშლა მუშაობს SMS კოდით შესვლიდან 15 წუთში.",
+                    "უსაფრთხოების მიზნით, ანგარიშის წაშლა შესაძლებელია SMS კოდით შესვლიდან 15 წუთის განმავლობაში.",
                     "For safety, deleting works within 15 minutes of signing in with an SMS code."
                   )}
                 </p>
