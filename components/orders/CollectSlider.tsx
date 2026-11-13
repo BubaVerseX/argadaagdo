@@ -4,7 +4,14 @@ import { CheckIcon, ChevronRightIcon, XIcon } from "@/components/icons";
 import type { Language } from "@/lib/i18n";
 import { getGreenBagLabel } from "@/lib/offerCategories";
 import type { Order } from "@/lib/types";
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
+import { createPortal } from "react-dom";
 
 type CollectSliderProps = {
   order: Order;
@@ -44,6 +51,12 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
   const [collectedAt, setCollectedAt] = useState<Date | null>(null);
   const [error, setError] = useState("");
   const onCloseRef = useRef(onClose);
+  // The portal needs document.body; false on the server and first paint.
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const pointerId = useRef<number | null>(null);
   const startX = useRef(0);
 
@@ -162,12 +175,18 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
   const bagLabel = order.offers ? getGreenBagLabel(order.offers, language) : "";
   const businessName = order.offers?.businesses?.name || "";
 
-  return (
+  if (!isClient) return null;
+
+  // Rendered into <body> with its own solid deep-green theme: in the app the
+  // page colour is transparent (leaf background) and the order list sits in
+  // its own layer under the tab bar, so an in-place screen showed the list
+  // through it and the tab bar on top of it.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={isGeorgian ? "წაღების დადასტურება" : "Confirm pickup"}
-      className="fixed inset-0 z-[60] flex flex-col bg-page text-cream"
+      className="theme-forest fixed inset-0 z-[100] flex flex-col overflow-y-auto bg-page text-cream"
       style={{
         paddingTop: "max(16px, env(safe-area-inset-top, 0px))",
         paddingBottom: "max(16px, env(safe-area-inset-bottom, 0px))",
@@ -192,26 +211,26 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6">
         {phase === "done" || phase === "undoing" ? (
           <div className="collect-pop text-center">
-            <div className="mx-auto flex h-36 w-36 items-center justify-center rounded-full bg-mint text-page shadow-[0_0_0_18px_rgba(218,241,222,0.12)]">
-              <CheckIcon className="collect-check h-20 w-20" strokeWidth={2.4} />
+            <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-mint text-ink shadow-[0_0_0_14px_rgba(184,230,196,0.16)]">
+              <CheckIcon className="collect-check h-16 w-16" strokeWidth={2.6} />
             </div>
-            <p className="mt-8 text-xs font-semibold uppercase tracking-[0.3em] text-mint">
+            <p className="mt-7 inline-flex rounded-full bg-well px-4 py-1.5 text-sm font-bold text-mint">
               {isGeorgian ? "წაღებულია" : "Collected"}
             </p>
-            <h2 className="mt-3 text-4xl font-semibold leading-tight">{businessName}</h2>
+            <h2 className="mt-3 text-3xl font-bold leading-tight">{businessName}</h2>
             <p className="mt-2 text-lg text-body">{bagLabel}</p>
             <p className="mt-1 text-base text-body">{order.offers?.title}</p>
-            <p className="mt-6 font-mono text-5xl font-semibold tabular-nums text-cream">
+            <p className="mt-5 font-mono text-5xl font-bold tabular-nums text-cream">
               {formatClock(now, true)}
             </p>
             <p className="mt-2 text-sm text-body">
               {isGeorgian ? "დადასტურდა" : "Confirmed at"}{" "}
               {collectedAt ? formatClock(collectedAt, false) : ""} · #{order.id}
             </p>
-            <p className="mt-4 text-sm text-body">
+            <p className="mt-4 text-sm leading-6 text-body">
               {isGeorgian
-                ? "აჩვენე ეს ეკრანი თანამშრომელს. ბიზნესის პანელში ჯავშანი უკვე წაღებულად ჩანს."
-                : "Show this screen to the staff. The business dashboard already shows this order as collected."}
+                ? "აჩვენე ეს ეკრანი თანამშრომელს. მაღაზიის პანელში უკვე გაცემულად ჩანს."
+                : "Show this screen to the staff. The shop's panel already shows it as handed over."}
             </p>
             {error && (
               <p className="mt-4 rounded-2xl bg-danger-soft px-4 py-3 text-sm font-semibold text-danger">
@@ -224,7 +243,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
                   type="button"
                   onClick={() => void undo()}
                   disabled={phase === "undoing"}
-                  className="premium-button-secondary min-h-12 w-full py-3 disabled:opacity-60"
+                  className="min-h-12 w-full rounded-2xl border border-line-strong py-3 font-semibold text-cream disabled:opacity-60"
                 >
                   {phase === "undoing"
                     ? isGeorgian
@@ -242,23 +261,23 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
               <button
                 type="button"
                 onClick={onClose}
-                className="premium-button cta-glow min-h-12 w-full py-3"
+                className="min-h-14 w-full rounded-2xl bg-mint py-3 text-base font-bold text-ink"
               >
-                {isGeorgian ? "მზადაა" : "Done"}
+                {isGeorgian ? "დახურვა" : "Close"}
               </button>
             </div>
           </div>
         ) : (
           <>
             <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-mint">
+              <p className="inline-flex rounded-full bg-well px-4 py-1.5 text-sm font-bold text-mint">
                 {isGeorgian ? "წაღება" : "Pickup"}
               </p>
-              <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">{businessName}</h2>
+              <h2 className="mt-3 text-3xl font-bold leading-tight">{businessName}</h2>
               <p className="mt-2 text-lg text-body">{bagLabel}</p>
               <p className="mt-1 text-base text-body">{order.offers?.title}</p>
-              <p className="mt-6 font-mono text-5xl font-semibold tabular-nums text-cream">
-                {formatClock(now, false)}
+              <p className="mt-5 font-mono text-5xl font-bold tabular-nums text-cream">
+                {formatClock(now, true)}
               </p>
               <p className="mt-5 rounded-2xl bg-brand-honey px-4 py-3 text-base font-bold text-brand-ink">
                 {isGeorgian
@@ -283,7 +302,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
                 aria-hidden="true"
               />
               <p
-                className="pointer-events-none absolute inset-0 flex items-center justify-center text-base font-semibold text-cream transition-opacity"
+                className="pointer-events-none absolute inset-y-0 left-[76px] right-4 flex items-center justify-center text-base font-semibold text-cream transition-opacity"
                 style={{ opacity: 1 - progress * 1.4 }}
                 aria-hidden="true"
               >
@@ -292,7 +311,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
                     ? "დასტურდება..."
                     : "Confirming..."
                   : isGeorgian
-                  ? "გადაასრიალე წაღებისთვის →"
+                  ? "გადაასრიალე →"
                   : "Slide to collect →"}
               </p>
               <button
@@ -334,6 +353,7 @@ export function CollectSlider({ order, language, onCollect, onUndo, onClose }: C
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
