@@ -37,7 +37,7 @@ export const contactContent: Localized<ContactContent> = {
     emailText: "Email is the fastest way to reach us.",
     includeTitle: "To help us answer faster, include:",
     includeItems: [
-      "the email address of your account",
+      "the email address or phone number of your account",
       "the order details (business, date and pickup time)",
       "a short description of what happened, with a screenshot if you have one",
     ],
@@ -75,7 +75,7 @@ export const contactContent: Localized<ContactContent> = {
     emailText: "ელფოსტა ჩვენთან დაკავშირების ყველაზე სწრაფი გზაა.",
     includeTitle: "რომ უფრო სწრაფად გიპასუხოთ, მიუთითე:",
     includeItems: [
-      "შენი ანგარიშის ელფოსტა",
+      "შენი ანგარიშის ელფოსტა ან ტელეფონის ნომერი",
       "შეკვეთის დეტალები (ბიზნესი, თარიღი და წაღების დრო)",
       "მოკლე აღწერა, რა მოხდა, და, თუ გაქვს, ეკრანის სურათი",
     ],

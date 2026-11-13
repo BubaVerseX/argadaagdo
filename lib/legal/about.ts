@@ -52,11 +52,11 @@ export const aboutContent: Localized<AboutContent> = {
       },
       {
         title: "Reserve and pay",
-        text: "Pay securely through TBC Bank. Your pickup code appears in Orders.",
+        text: "Pay securely through TBC Bank. Your order appears in Orders.",
       },
       {
         title: "Pick it up",
-        text: "Show your code or slide to collect at the business during the pickup window.",
+        text: "At the business, during the pickup window, slide to collect in front of staff.",
       },
     ],
     valuesTitle: "What we stand for",
@@ -100,11 +100,11 @@ export const aboutContent: Localized<AboutContent> = {
       },
       {
         title: "დაჯავშნე და გადაიხადე",
-        text: "გადაიხადე უსაფრთხოდ TBC ბანკის მეშვეობით. წაღების კოდი „შეკვეთებში“ გამოჩნდება.",
+        text: "გადაიხადე უსაფრთხოდ TBC ბანკის მეშვეობით. შეკვეთა „შეკვეთებში“ გამოჩნდება.",
       },
       {
         title: "წაიღე",
-        text: "წაღების დროს ბიზნესში აჩვენე კოდი ან გადაასრიალე წაღების ღილაკი.",
+        text: "წაღების დროს, ბიზნესში, თანამშრომლის თვალწინ გადაასრიალე წაღების ღილაკი.",
       },
     ],
     valuesTitle: "რისთვის ვართ",

@@ -137,7 +137,7 @@ export const pickupPolicyContent: Localized<PolicyContent> = {
         id: "how",
         title: "How to collect",
         bullets: [
-          "Show staff your 6-digit pickup code, or slide to collect in the app in front of them.",
+          "Open the order in the app and slide to collect in front of staff. The 6-digit pickup code is a backup if the slider can't be used.",
           "The slider works from 1 hour before the pickup window until the window ends. Slide only once the box is in your hands. If you slide by mistake, you can undo it within 2 minutes.",
           "After 5 wrong code entries, the order is locked for security. Write to us to unlock it.",
         ],
@@ -185,7 +185,7 @@ export const pickupPolicyContent: Localized<PolicyContent> = {
         id: "how",
         title: "როგორ წაიღო",
         bullets: [
-          "თანამშრომელს აჩვენე 6-ნიშნა წაღების კოდი ან მის თვალწინ აპლიკაციაში გადაასრიალე წაღების ღილაკი.",
+          "აპში გახსენი შეკვეთა და თანამშრომლის თვალწინ გადაასრიალე წაღების ღილაკი. 6-ნიშნა წაღების კოდი სარეზერვოა, თუ გადასრიალება ვერ ხერხდება.",
           "ღილაკი მუშაობს წაღების დაწყებამდე 1 საათით ადრე და წაღების დროის დასრულებამდე. გადაასრიალე მხოლოდ მაშინ, როცა ბოქსი უკვე ხელში გაქვს. შემთხვევით გადასრიალებას 2 წუთის განმავლობაში გააუქმებ.",
           "კოდის 5-ჯერ არასწორად შეყვანის შემდეგ შეკვეთა უსაფრთხოების მიზნით იბლოკება. განსაბლოკად მოგვწერე.",
         ],

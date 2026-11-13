@@ -27,6 +27,12 @@ import {
 //   nothing stored; "Write to us" emails the chat via Resend), 10 Nov 2026
 // - complaints: State Audit Office (took over from the Personal Data
 //   Protection Service on 2 March 2026)
+// - phone-only customer accounts (no email or password; NEXT_PUBLIC_PHONE_SIGNUP,
+//   lib/useAuthForm.ts); deleting one needs a sign-in within 15 minutes
+//   (app/api/account/delete/route.ts), 13 Nov 2026
+// - order emails are off (ORDER_EMAILS_ENABLED in lib/email/events.ts); email
+//   is kept for sign-up, password reset and business decisions, 13 Nov 2026
+// - registry extract optional (app/business/register/page.tsx)
 // The "delete-account" anchor is the account-deletion URL in the store listings.
 
 type PrivacyContent = {
@@ -58,13 +64,13 @@ export const privacyContent: Localized<PrivacyContent> = {
         id: "collect",
         title: "What we collect",
         bullets: [
-          "Account: your email address and password. The password is stored only as a secure hash by our sign-in provider.",
+          "Account: your email address and password or, if you sign up with your phone, only your phone number. The password is stored only as a secure hash by our sign-in provider.",
           "Your consents, with the date and time you gave them: to the transfer of data abroad (see below), to notifications and, for businesses, to the Business Terms.",
           "Profile, if you add it: your display name and profile photo.",
-          "Phone number: required before your first order and confirmed with an SMS code. One number can belong to one account. Only Georgian mobile numbers can be confirmed.",
-          "Orders: reservations, pickup codes, order and payment status, cancellations, completed and missed pickups, favourites, ratings and review comments, and your reliability score.",
+          "Phone number: required before your first order and confirmed with an SMS code. If you sign up with your phone, you also sign in with it, using a one-time SMS code. One number can belong to one account. Only Georgian mobile numbers can be confirmed.",
+          "Orders: reservations, the time you confirmed pickup, backup pickup codes, order and payment status, cancellations, completed and missed pickups, favourites, ratings and review comments, and your reliability score.",
           "Payments: the amount, the status and TBC Bank's payment reference. Never your card details.",
-          "Businesses: the public business profile (name, category, address, logo, cover photo, description and opening hours); legal name, identification code and legal form; the owner's full name; a phone number confirmed by SMS; a bank account (IBAN); a Public Registry extract; offers and offer photos.",
+          "Businesses: the public business profile (name, category, address, logo, cover photo, description and opening hours); legal name, identification code and legal form; the owner's full name; a phone number confirmed by SMS; a bank account (IBAN); a Public Registry extract, if you upload one; offers and offer photos.",
           "Support: the messages you send us. In the help chat, your questions and, if you're signed in, a short summary of your own orders or business settings (never pickup codes, phone numbers, IBANs or card details) are used only to answer you, and we don't store the chat. If you press \"Write to us\", the chat is emailed to our support inbox.",
           "Technical data: our hosting providers keep standard server logs (such as IP address and browser or device type) to run and protect the service.",
           "Push notifications: if you turn them on, your device's push token from Apple or Google, stored with your account. It's deleted when you turn push off, sign out in the app or delete your account.",
@@ -77,7 +83,7 @@ export const privacyContent: Localized<PrivacyContent> = {
         bullets: [
           "To provide the service you signed up for (your account, reservations, payments, pickups, cancellations and refunds).",
           "To keep the marketplace safe and fair, which is our legitimate interest: confirming phone numbers, checking businesses before approval, limiting pickup-code attempts and the reliability score.",
-          "To send service emails: email confirmation and password reset, order confirmed, pickup reminder, pickup completed, a request to rate, and cancellation and refund updates. Businesses also receive the decision on their application.",
+          "To send service emails, such as email confirmation and password reset; businesses also receive the decision on their application. Order updates are shown in the app, under Orders.",
           "To keep the accounting records the law requires.",
           "With your consent: transferring data to our providers abroad, and push notifications.",
           "To answer your support requests.",
@@ -96,14 +102,14 @@ export const privacyContent: Localized<PrivacyContent> = {
         id: "notifications",
         title: "Notifications",
         paragraphs: [
-          "Emails about your account and orders are part of the service. Push notifications are optional and have two separate switches in Settings: order updates (confirmations, pickup reminders, cancellations and refunds) and new boxes from places you saved. Each is off until you turn it on, and each account on a phone is asked separately. They're delivered through Apple Push Notification service (iPhone) and Firebase Cloud Messaging (Android). You can turn them off at any time in Settings or in your device settings.",
+          "Service emails about your account (such as confirming your email address) are part of the service, and the status of your orders is always shown under Orders. Push notifications are optional and have two separate switches in Settings: order updates (confirmations, pickup reminders, cancellations and refunds) and new boxes from places you saved. Each is off until you turn it on, and each account on a phone is asked separately. They're delivered through Apple Push Notification service (iPhone) and Firebase Cloud Messaging (Android). You can turn them off at any time in Settings or in your device settings.",
         ],
       },
       {
         id: "visibility",
         title: "Who can see your data",
         bullets: [
-          "The business you reserve from sees your reservation, your account email (for 30 days) and your reliability score, so it can hand over your order.",
+          "The business you reserve from sees your reservation, your account email if you have one (for 30 days) and your reliability score, so it can hand over your order.",
           "Ratings and review comments are shown publicly on the business's page, without your name or email.",
           "For approved businesses, the business profile is public: name, category, address, logo, cover photo, description and opening hours. The owner's personal phone number, the legal details and the IBAN are never public.",
           "Public authorities, when the law requires it.",
@@ -187,6 +193,7 @@ export const privacyContent: Localized<PrivacyContent> = {
         paragraphs: [
           "In the app: Profile → Settings → Delete account. On the website: Settings → Delete account. First collect or cancel any active reservation. A business must first complete or resolve all of its reservations.",
           `No app? Email ${SUPPORT_EMAIL} from your account's email address with the subject "Delete my account". We delete the account within 10 working days and confirm by email.`,
+          "Signed up with your phone and have no email? Delete the account in Settings, in the app or on the website. For your safety, you may first be asked to sign in again with an SMS code.",
         ],
         bullets: [
           "Deleted: your sign-in, email address, profile (including name, photo and phone number), consents, favourites, push tokens and review comments.",
@@ -232,13 +239,13 @@ export const privacyContent: Localized<PrivacyContent> = {
         id: "collect",
         title: "რა მონაცემებს ვაგროვებთ",
         bullets: [
-          "ანგარიში: ელფოსტა და პაროლი. პაროლს ავტორიზაციის პროვაიდერი მხოლოდ დაშიფრული (ჰეშირებული) სახით ინახავს.",
+          "ანგარიში: ელფოსტა და პაროლი ან, თუ ტელეფონით დარეგისტრირდი, მხოლოდ ტელეფონის ნომერი. პაროლს ავტორიზაციის პროვაიდერი მხოლოდ დაშიფრული (ჰეშირებული) სახით ინახავს.",
           "შენი თანხმობები, მათი მოცემის თარიღითა და დროით: მონაცემების საზღვარგარეთ გადაცემაზე (იხ. ქვემოთ), შეტყობინებებზე და, ბიზნესებისთვის, ბიზნესის წესებზე.",
           "პროფილი, თუ დაამატებ: სახელი და პროფილის ფოტო.",
-          "ტელეფონის ნომერი: სავალდებულოა პირველ შეკვეთამდე და დასტურდება SMS კოდით. ერთი ნომერი მხოლოდ ერთ ანგარიშს შეიძლება ეკუთვნოდეს. დადასტურება მხოლოდ საქართველოს მობილურის ნომრებით შეიძლება.",
-          "შეკვეთები: ჯავშნები, წაღების კოდები, შეკვეთისა და გადახდის სტატუსი, გაუქმებები, წაღებული და გამოტოვებული შეკვეთები, რჩეულები, შეფასებები და კომენტარები, ასევე სანდოობის ქულა.",
+          "ტელეფონის ნომერი: სავალდებულოა პირველ შეკვეთამდე და დასტურდება SMS კოდით. თუ ტელეფონით დარეგისტრირდი, ანგარიშშიც მისით შედიხარ, ერთჯერადი SMS კოდით. ერთი ნომერი მხოლოდ ერთ ანგარიშს შეიძლება ეკუთვნოდეს. დადასტურება მხოლოდ საქართველოს მობილურის ნომრებით შეიძლება.",
+          "შეკვეთები: ჯავშნები, წაღების დადასტურების დრო, სარეზერვო წაღების კოდები, შეკვეთისა და გადახდის სტატუსი, გაუქმებები, წაღებული და გამოტოვებული შეკვეთები, რჩეულები, შეფასებები და კომენტარები, ასევე სანდოობის ქულა.",
           "გადახდები: თანხა, სტატუსი და TBC ბანკის გადახდის იდენტიფიკატორი. ბარათის მონაცემები — არასდროს.",
-          "ბიზნესები: ბიზნესის საჯარო პროფილი (დასახელება, კატეგორია, მისამართი, ლოგო, ყდის ფოტო, აღწერა და სამუშაო საათები); იურიდიული დასახელება, საიდენტიფიკაციო კოდი და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; SMS-ით დადასტურებული ტელეფონის ნომერი; საბანკო ანგარიშის IBAN; საჯარო რეესტრის ამონაწერი; შეთავაზებები და მათი ფოტოები.",
+          "ბიზნესები: ბიზნესის საჯარო პროფილი (დასახელება, კატეგორია, მისამართი, ლოგო, ყდის ფოტო, აღწერა და სამუშაო საათები); იურიდიული დასახელება, საიდენტიფიკაციო კოდი და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; SMS-ით დადასტურებული ტელეფონის ნომერი; საბანკო ანგარიშის IBAN; საჯარო რეესტრის ამონაწერი, თუ ატვირთავ; შეთავაზებები და მათი ფოტოები.",
           "მხარდაჭერა: შეტყობინებები, რომლებსაც გვიგზავნი. დახმარების ჩატში შენი კითხვები და, თუ შესული ხარ, მოკლე ინფორმაცია შენს შეკვეთებზე ან ბიზნესის პარამეტრებზე (არასდროს — წაღების კოდები, ტელეფონის ნომრები, IBAN-ები ან ბარათის მონაცემები) მხოლოდ პასუხის გასაცემად გამოიყენება და ჩატს არ ვინახავთ. თუ „მოგვწერე“-ს დააჭერ, ჩატი ჩვენი მხარდაჭერის ელფოსტაზე იგზავნება.",
           "ტექნიკური მონაცემები: ჰოსტინგის პროვაიდერები სერვისის მუშაობისა და დაცვისთვის ინახავენ სტანდარტულ სერვერულ ჩანაწერებს (მაგალითად, IP მისამართს, ბრაუზერის ან მოწყობილობის ტიპს).",
           "Push-შეტყობინებები: თუ მათ ჩართავ, შენი მოწყობილობის Push-ტოკენი Apple-ისგან ან Google-ისგან, რომელიც შენს ანგარიშთან ერთად ინახება. ის იშლება, როცა Push-ს გამორთავ, აპლიკაციიდან გამოხვალ ან ანგარიშს წაშლი.",
@@ -251,7 +258,7 @@ export const privacyContent: Localized<PrivacyContent> = {
         bullets: [
           "იმ სერვისის მისაწოდებლად, რომელზეც დარეგისტრირდი (ანგარიში, ჯავშნები, გადახდები, წაღება, გაუქმება და თანხის დაბრუნება).",
           "პლატფორმის უსაფრთხოებისა და სამართლიანობისთვის, რაც ჩვენი ლეგიტიმური ინტერესია: ტელეფონის ნომრის დადასტურება, ბიზნესების შემოწმება დამტკიცებამდე, წაღების კოდის მცდელობების შეზღუდვა და სანდოობის ქულა.",
-          "სერვისული წერილებისთვის: ელფოსტის დადასტურება და პაროლის აღდგენა, შეკვეთის დადასტურება, წაღების შეხსენება, წაღების დასრულება, შეფასების თხოვნა, გაუქმება და თანხის დაბრუნება. ბიზნესები ასევე იღებენ წერილს განაცხადის შედეგის შესახებ.",
+          "სერვისული წერილებისთვის, მაგალითად ელფოსტის დადასტურებისა და პაროლის აღდგენისთვის; ბიზნესები ასევე იღებენ წერილს განაცხადის შედეგის შესახებ. შეკვეთების განახლებები აპში, „შეკვეთებში“ ჩანს.",
           "კანონით მოთხოვნილი საბუღალტრო ჩანაწერების შესანახად.",
           "შენი თანხმობით: მონაცემების საზღვარგარეთ მყოფი პროვაიდერებისთვის გადასაცემად და Push-შეტყობინებებისთვის.",
           "მხარდაჭერის მოთხოვნებზე საპასუხოდ.",
@@ -270,14 +277,14 @@ export const privacyContent: Localized<PrivacyContent> = {
         id: "notifications",
         title: "შეტყობინებები",
         paragraphs: [
-          "ელფოსტით შეტყობინებები ანგარიშისა და შეკვეთების შესახებ სერვისის ნაწილია. Push-შეტყობინებები ნებაყოფლობითია და პარამეტრებში ორი ცალკე ღილაკი აქვს: შეკვეთების განახლებები (დადასტურება, წაღების შეხსენება, გაუქმება და თანხის დაბრუნება) და ახალი ბოქსები შენახული ადგილებიდან. ორივე გამორთულია, სანამ თავად არ ჩართავ, და ტელეფონზე ყოველ ანგარიშს ცალკე ვეკითხებით. ისინი იგზავნება Apple Push Notification service-ისა (iPhone) და Firebase Cloud Messaging-ის (Android) მეშვეობით. მათი გამორთვა ნებისმიერ დროს შეგიძლია პარამეტრებში ან მოწყობილობის პარამეტრებში.",
+          "სერვისული წერილები ანგარიშის შესახებ (მაგალითად, ელფოსტის დადასტურება) სერვისის ნაწილია, შეკვეთების სტატუსი კი ყოველთვის „შეკვეთებში“ ჩანს. Push-შეტყობინებები ნებაყოფლობითია და პარამეტრებში ორი ცალკე ღილაკი აქვს: შეკვეთების განახლებები (დადასტურება, წაღების შეხსენება, გაუქმება და თანხის დაბრუნება) და ახალი ბოქსები შენახული ადგილებიდან. ორივე გამორთულია, სანამ თავად არ ჩართავ, და ტელეფონზე ყოველ ანგარიშს ცალკე ვეკითხებით. ისინი იგზავნება Apple Push Notification service-ისა (iPhone) და Firebase Cloud Messaging-ის (Android) მეშვეობით. მათი გამორთვა ნებისმიერ დროს შეგიძლია პარამეტრებში ან მოწყობილობის პარამეტრებში.",
         ],
       },
       {
         id: "visibility",
         title: "ვინ ხედავს შენს მონაცემებს",
         bullets: [
-          "ბიზნესი, სადაც ლანჩ ბოქსი დაჯავშნე, ხედავს შენს ჯავშანს, ანგარიშის ელფოსტას (30 დღის განმავლობაში) და სანდოობის ქულას, რომ შეკვეთა გადმოგცეს.",
+          "ბიზნესი, სადაც ლანჩ ბოქსი დაჯავშნე, ხედავს შენს ჯავშანს, ანგარიშის ელფოსტას, თუ გაქვს (30 დღის განმავლობაში), და სანდოობის ქულას, რომ შეკვეთა გადმოგცეს.",
           "შეფასებები და კომენტარები ბიზნესის გვერდზე საჯაროდ ჩანს, შენი სახელისა და ელფოსტის გარეშე.",
           "დამტკიცებული ბიზნესის პროფილი საჯაროა: დასახელება, კატეგორია, მისამართი, ლოგო, ყდის ფოტო, აღწერა და სამუშაო საათები. მფლობელის პირადი ტელეფონის ნომერი, იურიდიული მონაცემები და IBAN არასდროს ჩანს საჯაროდ.",
           "სახელმწიფო ორგანოები, როცა ამას კანონი მოითხოვს.",
@@ -361,6 +368,7 @@ export const privacyContent: Localized<PrivacyContent> = {
         paragraphs: [
           "აპლიკაციაში: პროფილი → პარამეტრები → ანგარიშის წაშლა. ვებსაიტზე: პარამეტრები → ანგარიშის წაშლა. მანამდე აქტიური ჯავშანი წაიღე ან გააუქმე. ბიზნესმა ჯერ ყველა მიმდინარე ჯავშანი უნდა დაასრულოს ან მოაგვაროს.",
           `აპლიკაცია არ გაქვს? მოგვწერე ${SUPPORT_EMAIL} მისამართზე იმ ელფოსტიდან, რომელზეც ანგარიში გაქვს, თემით „ანგარიშის წაშლა“. ანგარიშს 10 სამუშაო დღეში წავშლით და ელფოსტით დაგიდასტურებთ.`,
+          "ტელეფონით დარეგისტრირდი და ელფოსტა არ გაქვს? ანგარიში პარამეტრებიდან წაშალე, აპში ან ვებსაიტზე. უსაფრთხოებისთვის შეიძლება ჯერ SMS კოდით ხელახლა შესვლა მოგთხოვოთ.",
         ],
         bullets: [
           "იშლება: ავტორიზაციის მონაცემები, ელფოსტა, პროფილი (მათ შორის სახელი, ფოტო და ტელეფონის ნომერი), თანხმობები, რჩეულები, Push-ტოკენები და შენი კომენტარები.",
