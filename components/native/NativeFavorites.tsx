@@ -90,7 +90,7 @@ export default function NativeFavorites() {
               <HeartIcon className="h-5 w-5" strokeWidth={1.8} />
             </span>
             <p className="mt-3 text-[15px] font-semibold text-cream">{L("ჯერ არაფერი შეგინახავს", "Nothing saved yet")}</p>
-            <p className="mt-0.5 text-sm text-body">{L("შეთავაზებაზე ♡ შეინახავს მას.", "Tap ♡ on an offer to save it.")}</p>
+            <p className="mt-0.5 text-sm text-body">{L("შეთავაზებაზე ♡-ს დაჭერით შეინახავ.", "Tap ♡ on an offer to save it.")}</p>
             <Link
               href="/"
               className="native-press mt-4 flex min-h-11 items-center justify-center rounded-2xl bg-brand-forest text-sm font-semibold text-brand-ground"

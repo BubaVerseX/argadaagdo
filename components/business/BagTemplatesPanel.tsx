@@ -302,7 +302,7 @@ export function BagTemplatesPanel({
       if (form.publishDaysBefore === 0 && form.publishTime >= form.pickupEnd) {
         setFormError(
           L(
-            "ბოქსი აპში წაღების დასრულებამდე უნდა გამოჩნდეს. შეცვალე დრო „მეტი პარამეტრში“.",
+            "ბოქსი აპში წაღების დასრულებამდე უნდა გამოჩნდეს. შეცვალე გამოჩენის დრო: „მეტი პარამეტრი“ → „გამოჩენის დრო“.",
             "The box must appear in the app before pickup ends. Change the time under “More options”."
           )
         );
@@ -729,7 +729,7 @@ export function BagTemplatesPanel({
                       maxLength={500}
                       className={`${inputClass} min-h-24`}
                       placeholder={L(
-                        "მაგ. პური, ფუნთუშები და ნამცხვრები დღის ბოლოდან.",
+                        "მაგ. დღის ბოლოს დარჩენილი პური, ფუნთუშები და ნამცხვრები.",
                         "e.g. bread, buns and pastries from the end of the day."
                       )}
                     />

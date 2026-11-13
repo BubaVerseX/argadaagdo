@@ -143,7 +143,7 @@ export function DepartmentsPanel({
                     </summary>
                     <p className="text-xs leading-5 text-body">
                       {isGeorgian
-                        ? "საჭიროა მხოლოდ თუ გინდა, რომ თანამშრომელმა თავის ტელეფონზე შეკვეთების სია ნახოს და სარეზერვო კოდი შეიყვანოს. გვერდს PIN იცავს."
+                        ? "საჭიროა მხოლოდ მაშინ, თუ გინდა, რომ თანამშრომელმა თავის ტელეფონზე შეკვეთების სია ნახოს და სარეზერვო კოდი შეიყვანოს. გვერდს PIN იცავს."
                         : "Only if you want staff to see the order list on their own phone and enter backup codes. A PIN protects the page."}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">

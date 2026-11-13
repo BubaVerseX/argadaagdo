@@ -34,7 +34,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Only customer accounts in good standing can reserve offers.",
-    "შეთავაზებების დაჯავშნა მხოლოდ შეზღუდვის არმქონე მომხმარებლის ანგარიშებს შეუძლიათ.",
+    "დაჯავშნა შეუძლიათ მხოლოდ მომხმარებლის ანგარიშებს, რომლებსაც შეზღუდვა არ აქვთ.",
   ],
   [
     "Online payment is temporarily unavailable. Please try again later.",
@@ -121,7 +121,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   // payment API routes).
   [
     "Please verify your email before using ArGadaagdo.",
-    "არ გადააგდოს გამოსაყენებლად, გთხოვ, ჯერ დაადასტურე ელფოსტა.",
+    "„არ გადააგდოს“ გამოსაყენებლად, გთხოვ, ჯერ დაადასტურე ელფოსტა.",
   ],
   [
     "Account created. Please verify your email before continuing. Check your inbox for the verification email, then sign in again.",
@@ -349,7 +349,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Password updated. You can continue using ArGadaagdo.",
-    "პაროლი განახლდა. შეგიძლია გააგრძელო არ გადააგდოს გამოყენება.",
+    "პაროლი განახლდა. შეგიძლია გააგრძელო „არ გადააგდოს“ გამოყენება.",
   ],
 
   // Business registration page.
@@ -447,7 +447,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Image is too large. Please upload a file under 5MB.",
-    "სურათი ძალიან დიდია. გთხოვ, ატვირთე 5MB-ზე მცირე ფაილი.",
+    "სურათი ძალიან დიდია. გთხოვ, ატვირთე 5 მბ-ზე ნაკლები ზომის ფაილი.",
   ],
   [
     "Invalid image type. Please use JPG, PNG, or WebP.",
@@ -500,7 +500,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "This pickup window has already ended. Choose a later time.",
-    "წაღების ეს ფანჯარა უკვე დასრულდა. აირჩიე უფრო გვიანი დრო.",
+    "წაღების ეს დრო უკვე გავიდა. აირჩიე უფრო გვიანი დრო.",
   ],
   ["Publishing offer...", "შეთავაზება ქვეყნდება..."],
   [
@@ -513,7 +513,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Offer published. It is now visible to customers.",
-    "შეთავაზება გამოქვეყნდა. ის ახლა მომხმარებლებისთვის ხილულია.",
+    "შეთავაზება გამოქვეყნდა და ახლა აპშია.",
   ],
   [
     "You can only edit offers from your own business.",
@@ -530,7 +530,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Pickup date is required.", "წაღების თარიღი სავალდებულოა."],
   [
     "This pickup window has already ended. Choose a later date or time.",
-    "წაღების ეს ფანჯარა უკვე დასრულდა. აირჩიე უფრო გვიანი თარიღი ან დრო.",
+    "წაღების ეს დრო უკვე გავიდა. აირჩიე უფრო გვიანი თარიღი ან დრო.",
   ],
   [
     "Offer changes could not be saved. Please try again.",
@@ -622,7 +622,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Pickup code does not match.", "წაღების კოდი არ ემთხვევა."],
   [
     "This order is locked after 5 wrong pickup codes. Contact ArGadaagdo support to unlock it.",
-    "შეკვეთა დაიბლოკა 5 არასწორი წაღების კოდის შემდეგ. განსაბლოკად დაუკავშირდი არ გადააგდოს მხარდაჭერას.",
+    "შეკვეთა დაიბლოკა 5 არასწორი წაღების კოდის შემდეგ. განსაბლოკად დაუკავშირდი „არ გადააგდოს“ მხარდაჭერას.",
   ],
   [
     "Pickup could not be completed. Check the code, or close this window to see the details.",
@@ -644,7 +644,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "No more boxes today. Unsold offers are off sale; reserved boxes stay and must be handed over or cancelled.",
-    "დღეს ლანჩ ბოქსები აღარ იყიდება. გაუყიდავი შეთავაზებები მოხსნილია; დაჯავშნილი ლანჩ ბოქსები რჩება და უნდა გაიცეს ან გაუქმდეს.",
+    "დღეს ბოქსები აღარ იყიდება. გაუყიდავი ბოქსები აპიდან მოიხსნა; უკვე დაჯავშნილი ბოქსები უნდა გაიცეს ან გაუქმდეს.",
   ],
   [
     "Sales are back on. Paused offers are available again.",
@@ -737,7 +737,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ["Box saved.", "ბოქსი შენახულია."],
   [
     "Box saved. It appears in the app by itself at its time.",
-    "ბოქსი შენახულია. აპში თავისი დროით თავად გამოჩნდება.",
+    "ბოქსი შენახულია. აპში დანიშნულ დროს თავად გამოჩნდება.",
   ],
   [
     "Box turned off. It won't appear in the app until you turn it on again.",
@@ -839,7 +839,7 @@ const georgianMessageEntries: Array<[string, string]> = [
   ],
   [
     "Business could not be rejected. Please refresh and try again.",
-    "ბიზნესი ვერ უარიყო. განაახლე გვერდი და სცადე ხელახლა.",
+    "ბიზნესის უარყოფა ვერ მოხერხდა. განაახლე გვერდი და სცადე ხელახლა.",
   ],
   ["Rejected. Owner emailed.", "უარყოფილია. მფლობელს ელფოსტა გაეგზავნა."],
   [

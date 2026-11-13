@@ -136,5 +136,5 @@ export function getInactiveOrderMessage(status: OrderStatus, language: Language 
   if (isExpiredOrderStatus(status)) {
     return language === "ka" ? "ჯავშანი ვადაგასულია" : "Reservation expired";
   }
-  return language === "ka" ? "წაღების კოდი ხელმისაწვდომია" : "Pickup code available";
+  return language === "ka" ? "წასაღებად მზადაა" : "Ready for pickup";
 }

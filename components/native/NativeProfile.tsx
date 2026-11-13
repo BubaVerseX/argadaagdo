@@ -188,7 +188,7 @@ export default function NativeProfile() {
     const result = await shareLink({
       title: "ArGadaagdo",
       text: L(
-        "ფასდაკლებული ლანჩ ბოქსები თბილისის კაფეებიდან და საცხობებიდან. სცადე არ გადააგდო:",
+        "ფასდაკლებული ლანჩ ბოქსები თბილისის კაფეებიდან და საცხობებიდან. სცადე „არ გადააგდო“:",
         "Discounted Lunch Boxes from Tbilisi cafés and bakeries. Try ArGadaagdo:"
       ),
       url: INVITE_URL,
@@ -266,7 +266,7 @@ export default function NativeProfile() {
               },
               {
                 value: summary ? `${summary.moneySaved} ₾` : "",
-                label: L("დაზოგე", "saved"),
+                label: L("დაზოგილი", "saved"),
               },
               {
                 value: summary ? formatKg(impact.co2Kg, language) : "",
@@ -466,7 +466,7 @@ export default function NativeProfile() {
             />
             <p className="mt-3 text-center text-xs text-body">
               {L(
-                "ხანგრძლივად დააჭირე სურათს, რომ შეინახო და სთორიში გააზიარო.",
+                "ხანგრძლივად დააჭირე სურათს, რომ შეინახო და გააზიარო.",
                 "Press and hold the image to save it, then add it to your story."
               )}
             </p>

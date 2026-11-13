@@ -167,7 +167,7 @@ export function OfferForm({
                 className="premium-input min-h-28 w-full min-w-0 p-4 font-semibold"
                 placeholder={
                   isGeorgian
-                    ? "დღევანდელი დახურვისას დარჩენილი ახალი საცხობი პროდუქცია."
+                    ? "მაგ. დღის ბოლოს დარჩენილი ახალი ცომეული."
                     : "Fresh bakery items saved from today's closing stock."
                 }
               />

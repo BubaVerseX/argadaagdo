@@ -75,7 +75,7 @@ function describePinError(message: string, isGeorgian: boolean) {
       : "Too many wrong tries. Wait 15 minutes or ask the owner to unlock.";
   }
   if (message.includes("rate_limited")) {
-    return isGeorgian ? "ძალიან სწრაფად. სცადე წამში." : "Too fast. Try again in a second.";
+    return isGeorgian ? "ძალიან ხშირი მცდელობა. სცადე რამდენიმე წამში." : "Too fast. Try again in a second.";
   }
   if (message.includes("pin_invalid")) {
     return isGeorgian ? "არასწორი PIN." : "Wrong PIN.";
@@ -362,12 +362,12 @@ export default function StaffDepartmentPage() {
             <div className="mt-5 rounded-2xl bg-well p-4">
               <p className="font-semibold text-cream">
                 {isGeorgian
-                  ? "მყიდველი წაღებას თავის ტელეფონზე გადაასრიალებს."
+                  ? "მყიდველი წაღებას თავის ტელეფონზე, გადასრიალებით დაადასტურებს."
                   : "The buyer swipes on their own phone."}
               </p>
               <p className="mt-1 text-sm text-body">
                 {isGeorgian
-                  ? "შეამოწმე 2 რამ: შენი მაღაზიის სახელი და მოძრავი წამები. შემდეგ მიეცი ბოქსი. შეკვეთა ქვემოთ თავად გადავა „გაცემულში“."
+                  ? "შეამოწმე 2 რამ: შენი მაღაზიის სახელი და მოძრავი წამები. შემდეგ მიეცი ბოქსი. შეკვეთა ქვემოთ, „დასრულებულში“ თავად გადავა."
                   : "Check 2 things: your shop's name and the moving seconds. Then hand over the box. The order moves to “Handed over” below by itself."}
               </p>
             </div>
@@ -454,7 +454,7 @@ export default function StaffDepartmentPage() {
             <div className="mt-4 grid gap-3">
               {openReservations.length === 0 && (
                 <p className="rounded-2xl bg-well p-4 text-sm text-body">
-                  {isGeorgian ? "არაფერი ელოდება." : "Nothing waiting."}
+                  {isGeorgian ? "გასაცემი არაფერია." : "Nothing waiting."}
                 </p>
               )}
               {openReservations.map((reservation) => (

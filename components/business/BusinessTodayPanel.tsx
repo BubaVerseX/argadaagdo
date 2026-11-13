@@ -166,7 +166,7 @@ export function BusinessTodayPanel({
           <p className="mt-2 text-xl font-bold text-cream">{L("დღეს ბოქსი ჯერ არ არის", "No box today yet")}</p>
           <p className="mt-1 text-sm text-body">
             {activeTemplateCount > 0
-              ? L("შენი ბოქსი აპში თავისი დროით გამოჩნდება.", "Your box appears in the app at its set time.")
+              ? L("შენი ბოქსი აპში დანიშნულ დროს გამოჩნდება.", "Your box appears in the app at its set time.")
               : L(
                   "დაამატე ბოქსი ერთხელ — მერე აპში ყოველდღე თავად გამოჩნდება.",
                   "Add a box once — then it appears in the app by itself."

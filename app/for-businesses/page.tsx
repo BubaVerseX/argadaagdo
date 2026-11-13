@@ -62,10 +62,10 @@ export default function ForBusinessesPage() {
     },
     {
       Icon: CheckIcon,
-      title: L("გაეცი კოდით", "Hand over with a code"),
+      title: L("გაეცი წამებში", "Hand over in seconds"),
       text: L(
-        "მყიდველი უკვე გადახდილია: აჩვენებს 6-ნიშნა კოდს და ბოქსი მისია. თანამშრომლები PIN-ით შედიან.",
-        "The buyer has already paid: they show a 6-digit code and the box is theirs. Staff sign in with a PIN."
+        "მყიდველს უკვე გადახდილი აქვს. ის შენი თანამშრომლის თვალწინ, თავის ტელეფონზე გადაასრიალებს და ბოქსს წაიღებს. თანამშრომელს არაფერი სჭირდება.",
+        "The buyer has already paid. They swipe on their own phone in front of your staff and take the box. Staff need nothing."
       ),
     },
   ];
