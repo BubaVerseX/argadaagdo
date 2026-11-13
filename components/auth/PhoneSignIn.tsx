@@ -139,8 +139,10 @@ export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Ton
   return (
     <div className="grid gap-3">
       <div className="flex items-stretch gap-2">
+        {/* Own classes on purpose: the app field style has w-full, which made
+            this box take the whole row and squeeze the number field to 0. */}
         <span
-          className={`${styles.field} flex w-auto shrink-0 items-center font-semibold text-body`}
+          className="flex shrink-0 items-center rounded-2xl border border-line bg-well px-4 font-semibold text-body"
           aria-hidden="true"
         >
           +995
@@ -156,7 +158,7 @@ export function PhoneSignIn({ form, tone = "web" }: { form: AuthForm; tone?: Ton
           autoComplete="tel-national"
           aria-label={L("მობილურის ნომერი", "Mobile number")}
           placeholder="5XX XXX XXX"
-          className={`${styles.field} min-w-0 flex-1`}
+          className={`${styles.field} w-auto min-w-0 flex-1`}
         />
       </div>
       <p className="-mt-1 text-xs leading-5 text-body">
