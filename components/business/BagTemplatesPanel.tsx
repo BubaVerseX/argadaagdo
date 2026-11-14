@@ -13,6 +13,7 @@ import {
 import {
   BAG_SIZES,
   OFFER_CATEGORIES,
+  categoryForBusinessType,
   getBagSizeLabel,
   getOfferCategoryLabel,
   normalizeBagSize,
@@ -100,15 +101,7 @@ function autoCategory(business: Business, department: Department | null | undefi
   for (const [pattern, category] of departmentCategoryHints) {
     if (name && pattern.test(name)) return category;
   }
-  switch (business.business_type) {
-    case "Bakery":
-      return "Bakery";
-    case "Restaurant":
-    case "Hotel":
-      return "Deli";
-    default:
-      return "Mixed";
-  }
+  return categoryForBusinessType(business.business_type);
 }
 
 function emptyForm(business: Business, departments: Department[]): FormState {
