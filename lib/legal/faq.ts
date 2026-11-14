@@ -134,7 +134,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "publish",
             question: "How do I publish Lunch Boxes?",
             answer:
-              "Set up a Lunch Box template once in your dashboard: name, price, how many per day, pickup window, the time it shows up in the app and the days (every day or chosen days). Size starts on M and the category is picked for you; you can change both. It goes live automatically at that time (we check every 10 minutes), or you can publish it yourself. On a day with nothing left, tap Stop sales for today.",
+              "Set up a Lunch Box template once in your dashboard: name, price, how many per day, pickup window, the time it shows up in the app, the days (every day or chosen days) and, if you want, a time when reservations close (otherwise until pickup ends). Size starts on M and the category is picked for you; you can change both. It goes live automatically at that time (we check every 10 minutes), or you can publish it yourself. On a day with nothing left, tap Stop sales for today.",
           },
           {
             id: "handover",
@@ -287,7 +287,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "publish",
             question: "როგორ გამოვაქვეყნო ლანჩ ბოქსები?",
             answer:
-              "პანელში ლანჩ ბოქსის შაბლონს ერთხელ აწყობ: სახელი, ფასი, დღეში რამდენი, წაღების დრო, აპში გამოჩენის დრო და დღეები (ყოველდღე ან არჩეულ დღეებში). ზომა თავიდან M-ია, კატეგორიას კი აპი თავად ირჩევს — ორივეს შეცვლა შეგიძლია. ბოქსი ამ დროს ავტომატურად ქვეყნდება (ვამოწმებთ ყოველ 10 წუთში), ან შეგიძლია თავად გამოაქვეყნო. თუ დღეს გასაყიდი აღარაფერი გაქვს, დააჭირე „დღეს გაყიდვის შეჩერება“.",
+              "პანელში ლანჩ ბოქსის შაბლონს ერთხელ აწყობ: სახელი, ფასი, დღეში რამდენი, წაღების დრო, აპში გამოჩენის დრო, დღეები (ყოველდღე ან არჩეულ დღეებში) და, სურვილისამებრ, ჯავშნის ბოლო დრო (თუ არ მიუთითებ — წაღების დასრულებამდე). ზომა თავიდან M-ია, კატეგორიას კი აპი თავად ირჩევს — ორივეს შეცვლა შეგიძლია. ბოქსი ამ დროს ავტომატურად ქვეყნდება (ვამოწმებთ ყოველ 10 წუთში), ან შეგიძლია თავად გამოაქვეყნო. თუ დღეს გასაყიდი აღარაფერი გაქვს, დააჭირე „დღეს გაყიდვის შეჩერება“.",
           },
           {
             id: "handover",

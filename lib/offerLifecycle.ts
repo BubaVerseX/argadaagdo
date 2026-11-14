@@ -4,6 +4,8 @@ import type { Language } from "@/lib/i18n";
 export type OfferLifecycleStatus =
   | "active"
   | "sold_out"
+  /** Boxes are left, but the shop's "reservations close at" time has passed. */
+  | "closed"
   | "expired"
   | "inactive";
 
@@ -220,8 +222,28 @@ export function getEffectiveOfferStatus(offer: Offer): OfferLifecycleStatus {
   if (offer.status === "sold_out" || Number(offer.quantity || 0) <= 0) {
     return "sold_out";
   }
+  if (isPastReserveUntil(offer)) return "closed";
   if (offer.active && (!offer.status || offer.status === "active")) return "active";
   return "inactive";
+}
+
+/** The shop's "reservations close at" time (Tbilisi, pickup day) has passed. */
+export function isPastReserveUntil(
+  offer: Pick<Offer, "pickup_date" | "reserve_until">
+) {
+  const until = offer.reserve_until ? normalizeTime(offer.reserve_until, "") : "";
+  if (!until || !offer.pickup_date) return false;
+  return `${offer.pickup_date}T${until}` <= getTbilisiDateTimeKey();
+}
+
+/** "ჯავშანი 18:00-მდე" / "Reserve until 18:00", or null when not set. */
+export function formatReserveUntil(
+  offer: Pick<Offer, "reserve_until">,
+  language: Language = "en"
+) {
+  const until = offer.reserve_until ? normalizeTime(offer.reserve_until, "") : "";
+  if (!until) return null;
+  return language === "ka" ? `ჯავშანი ${until}-მდე` : `Reserve until ${until}`;
 }
 
 export function isOfferReservable(offer: Offer) {
@@ -232,6 +254,7 @@ export function getOfferStatusLabel(offer: Offer, language: Language = "en") {
   const status = getEffectiveOfferStatus(offer);
   if (status === "active") return language === "ka" ? "აქტიური" : "Active";
   if (status === "sold_out") return language === "ka" ? "გაყიდულია" : "Sold out";
+  if (status === "closed") return language === "ka" ? "ჯავშანი დასრულდა" : "Reservations closed";
   if (status === "expired") return language === "ka" ? "ვადაგასული" : "Expired";
   return language === "ka" ? "არააქტიური" : "Inactive";
 }
@@ -239,7 +262,7 @@ export function getOfferStatusLabel(offer: Offer, language: Language = "en") {
 export function getOfferStatusClassName(offer: Offer) {
   const status = getEffectiveOfferStatus(offer);
   if (status === "active") return "bg-well text-mint";
-  if (status === "sold_out") return "bg-warning-soft text-warning";
+  if (status === "sold_out" || status === "closed") return "bg-warning-soft text-warning";
   if (status === "expired") return "bg-danger-soft text-danger";
   return "bg-well text-body";
 }

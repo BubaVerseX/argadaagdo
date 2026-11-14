@@ -24,6 +24,7 @@ import { getGreenBagLabel, getOfferCategoryTone } from "@/lib/offerCategories";
 import {
   formatMoney,
   formatPickupTimeRange,
+  formatReserveUntil,
   formatReviewDate,
   getDiscountPercent,
   getOfferDateLabel,
@@ -376,6 +377,11 @@ function OfferDetailPage() {
                   <ClockIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={1.8} />
                   {getOfferDateLabel(offer, language)} {formatPickupTimeRange(offer, language)}
                 </p>
+                {formatReserveUntil(offer, language) && (
+                  <p className="rounded-full bg-well px-3 py-1.5 text-sm font-semibold text-body">
+                    {formatReserveUntil(offer, language)}
+                  </p>
+                )}
               </div>
 
               {favoriteMessage && (

@@ -74,7 +74,7 @@ export default function BusinessesPage() {
         supabase
           .from("offers")
           .select(
-            "id, business_id, title, category, price, old_price, quantity, pickup_date, pickup_start, pickup_end, active, status, image_url"
+            "id, business_id, title, category, price, old_price, quantity, pickup_date, pickup_start, pickup_end, reserve_until, active, status, image_url"
           )
           .eq("active", true)
           .gt("quantity", 0)

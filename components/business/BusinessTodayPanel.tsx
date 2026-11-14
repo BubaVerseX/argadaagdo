@@ -196,6 +196,8 @@ export function BusinessTodayPanel({
               ? { text: L("დამალულია", "Hidden"), className: "bg-brand-honey text-brand-ink" }
               : status === "sold_out"
                 ? { text: L("ყველა გაიყიდა", "Sold out"), className: "bg-brand-honey text-brand-ink" }
+                : status === "closed"
+                  ? { text: L("ჯავშანი დასრულდა", "Reservations closed"), className: "bg-brand-honey text-brand-ink" }
                 : { text: L("● აპშია", "● Live"), className: "bg-brand-mint text-brand-forest" };
 
           return (
