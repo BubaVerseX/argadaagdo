@@ -5,8 +5,7 @@ import type { LatLng } from "@/lib/location";
 import { PhoneVerification } from "@/components/PhoneVerification";
 import {
   BAG_SIZES,
-  getOfferCategoryLabel,
-  OFFER_CATEGORIES,
+  categoryForBusinessType,
   type BagSize,
   type OfferCategory,
 } from "@/lib/offerCategories";
@@ -279,7 +278,8 @@ export function BusinessOnboardingWizard({
       company,
       iban: normalizeIban(iban),
       extractFile,
-      firstBag: hasExistingBag ? null : bag,
+      // The category follows the shop type; it can be changed later on the box.
+      firstBag: hasExistingBag ? null : { ...bag, category: categoryForBusinessType(company.businessType) },
     });
   }
 
@@ -479,20 +479,6 @@ export function BusinessOnboardingWizard({
                 />
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className={labelClass}>
-                  {text("კატეგორია", "Category")}
-                  <select
-                    value={bag.category}
-                    onChange={(event) => updateBag("category", event.target.value)}
-                    className={inputClass}
-                  >
-                    {OFFER_CATEGORIES.map((category) => (
-                      <option key={category} value={category}>
-                        {getOfferCategoryLabel(category, language)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
                 <label className={labelClass}>
                   {text("ზომა", "Size")}
                   <select

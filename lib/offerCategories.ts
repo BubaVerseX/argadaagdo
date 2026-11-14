@@ -41,6 +41,19 @@ export function normalizeOfferCategory(
   return legacyCategoryMap[trimmedValue] ?? FALLBACK_OFFER_CATEGORY;
 }
 
+/** The category a new box gets from the shop type; the shop can change it. */
+export function categoryForBusinessType(type: string | null | undefined): OfferCategory {
+  switch ((type || "").trim().toLowerCase()) {
+    case "bakery":
+      return "Bakery";
+    case "restaurant":
+    case "hotel":
+      return "Deli";
+    default:
+      return "Mixed";
+  }
+}
+
 const georgianCategoryLabels: Record<OfferCategory, string> = {
   Bakery: "ცომეული",
   "Fruit & veg": "ხილ-ბოსტნეული",
