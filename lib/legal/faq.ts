@@ -32,7 +32,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "reserve",
             question: "How do I reserve?",
             answer:
-              "Open an offer, check the pickup time and tap Pay and reserve. You pay on TBC Bank's secure page, and as soon as the payment is confirmed, your reservation and pickup code appear in Orders. You need an account with a confirmed email address.",
+              "Open an offer, check the pickup time and tap Pay and reserve. You pay on TBC Bank's secure page, and as soon as the payment is confirmed, your reservation appears in Orders. You need an account and a confirmed mobile number (and, if you signed up with email, a confirmed email address).",
           },
           {
             id: "pay",
@@ -62,7 +62,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "pickup",
             question: "How does pickup work?",
             answer:
-              "Go to the business during the pickup window shown on your order. Show staff your 6-digit pickup code, or slide to collect in the app in front of them once the box is in your hands. If you slide by mistake, you can undo it within 2 minutes.",
+              "Go to the business during the pickup window shown on your order. Once the box is in your hands, open the order and slide to collect in front of staff. If you slide by mistake, you can undo it within 2 minutes. The 6-digit pickup code is a backup if the slider can't be used.",
           },
           {
             id: "cancel",
@@ -80,7 +80,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "problem",
             question: "Something went wrong with my order. What should I do?",
             answer:
-              "Write to us with your account email, the order details and a short description of what happened. We'll resolve it with you and the business.",
+              "Write to us with your account email or phone number, the order details and a short description of what happened. We'll resolve it with you and the business.",
           },
           {
             id: "ratings",
@@ -98,7 +98,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "notifications",
             question: "Which notifications will I get?",
             answer:
-              "Emails about your account and orders: reservation confirmed, pickup reminder, pickup completed, cancellations and refunds. Push notifications are optional, and you can turn them off at any time in Settings or in your device settings.",
+              "Your orders and their status are always under Orders in the app. Push notifications (reservation confirmed, pickup reminder, cancellations and refunds) are optional, and you can turn them off at any time in Settings or in your device settings. By email we send only account messages, such as confirming your email address.",
           },
           {
             id: "delete",
@@ -122,7 +122,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "documents",
             question: "What do I need to apply?",
             answer:
-              "Your company's legal name, identification code (9 or 11 digits) and legal form; the owner's full name; a mobile number for the SMS code; an IBAN at any Georgian bank, in the company's name; and a Public Registry extract (PDF or JPG, up to 10 MB).",
+              "Your company's legal name, identification code (9 or 11 digits) and legal form; the owner's full name; a mobile number for the SMS code; an IBAN at any Georgian bank, in the company's name; and, optionally, a Public Registry extract (PDF or JPG, up to 10 MB).",
           },
           {
             id: "cost",
@@ -140,7 +140,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "handover",
             question: "How do I hand over an order?",
             answer:
-              "The customer shows a 6-digit pickup code, which you enter in the dashboard, or slides to collect in the app in front of you. Your staff can use a separate staff page protected by a PIN, without your account login.",
+              "The customer slides to collect on their own phone in front of your staff, and the order is marked handed over in your dashboard by itself. Your staff need nothing: no app, account or PIN. If the slider can't be used, the customer gives a 6-digit backup code, which you enter in the dashboard. An optional staff page, protected by a PIN, shows the order list without your account login.",
           },
           {
             id: "noshow",
@@ -185,7 +185,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "reserve",
             question: "როგორ დავჯავშნო?",
             answer:
-              "გახსენი შეთავაზება, გადაამოწმე წაღების დრო და დააჭირე ღილაკს „გადახდა და დაჯავშნა“. გადაიხდი TBC ბანკის დაცულ გვერდზე და, როგორც კი გადახდა დადასტურდება, ჯავშანი და წაღების კოდი „შეკვეთებში“ გამოჩნდება. დასაჯავშნად გჭირდება ანგარიში დადასტურებული ელფოსტით.",
+              "გახსენი შეთავაზება, გადაამოწმე წაღების დრო და დააჭირე ღილაკს „გადახდა და დაჯავშნა“. გადაიხდი TBC ბანკის დაცულ გვერდზე და, როგორც კი გადახდა დადასტურდება, ჯავშანი „შეკვეთებში“ გამოჩნდება. დასაჯავშნად გჭირდება ანგარიში და დადასტურებული მობილურის ნომერი (თუ ელფოსტით დარეგისტრირდი, დადასტურებული ელფოსტაც).",
           },
           {
             id: "pay",
@@ -215,7 +215,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "pickup",
             question: "როგორ ხდება წაღება?",
             answer:
-              "მიდი ბიზნესთან შეკვეთაში მითითებულ წაღების დროს. თანამშრომელს აჩვენე 6-ნიშნა წაღების კოდი ან, როცა ბოქსი უკვე ხელში გაქვს, მის თვალწინ აპლიკაციაში გადაასრიალე წაღების ღილაკი. შემთხვევით გადასრიალებას 2 წუთის განმავლობაში გააუქმებ.",
+              "მიდი ბიზნესთან შეკვეთაში მითითებულ წაღების დროს. როცა ბოქსი უკვე ხელში გაქვს, გახსენი შეკვეთა და თანამშრომლის თვალწინ გადაასრიალე წაღების ღილაკი. შემთხვევით გადასრიალებას 2 წუთის განმავლობაში გააუქმებ. 6-ნიშნა წაღების კოდი სარეზერვოა, თუ გადასრიალება ვერ ხერხდება.",
           },
           {
             id: "cancel",
@@ -233,7 +233,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "problem",
             question: "შეკვეთასთან პრობლემა მაქვს. რა ვქნა?",
             answer:
-              "მოგვწერე ანგარიშის ელფოსტით, შეკვეთის დეტალებითა და მოკლე აღწერით, რა მოხდა. საკითხს შენთან და ბიზნესთან ერთად მოვაგვარებთ.",
+              "მოგვწერე და მიუთითე ანგარიშის ელფოსტა ან ტელეფონის ნომერი, შეკვეთის დეტალები და მოკლე აღწერა, რა მოხდა. საკითხს შენთან და ბიზნესთან ერთად მოვაგვარებთ.",
           },
           {
             id: "ratings",
@@ -251,7 +251,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "notifications",
             question: "რა შეტყობინებებს მივიღებ?",
             answer:
-              "ელფოსტით წერილებს ანგარიშისა და შეკვეთების შესახებ: ჯავშნის დადასტურება, წაღების შეხსენება, წაღების დასრულება, გაუქმება და თანხის დაბრუნება. Push-შეტყობინებები ნებაყოფლობითია და მათ გამორთვას ნებისმიერ დროს შეძლებ პარამეტრებში ან მოწყობილობის პარამეტრებში.",
+              "შეკვეთები და მათი სტატუსი ყოველთვის ჩანს აპში, „შეკვეთებში“. Push-შეტყობინებები (ჯავშნის დადასტურება, წაღების შეხსენება, გაუქმება და თანხის დაბრუნება) ნებაყოფლობითია და მათ გამორთვას ნებისმიერ დროს შეძლებ პარამეტრებში ან მოწყობილობის პარამეტრებში. ელფოსტით მხოლოდ ანგარიშის წერილებს ვაგზავნით, მაგალითად ელფოსტის დადასტურებას.",
           },
           {
             id: "delete",
@@ -275,7 +275,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "documents",
             question: "რა მჭირდება განაცხადისთვის?",
             answer:
-              "კომპანიის იურიდიული დასახელება, საიდენტიფიკაციო კოდი (9 ან 11 ციფრი) და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; მობილურის ნომერი SMS კოდისთვის; კომპანიის სახელზე გახსნილი ანგარიშის IBAN (საქართველოს ნებისმიერი ბანკი); საჯარო რეესტრის ამონაწერი (PDF ან JPG, მაქსიმუმ 10 მბ).",
+              "კომპანიის იურიდიული დასახელება, საიდენტიფიკაციო კოდი (9 ან 11 ციფრი) და სამართლებრივი ფორმა; მფლობელის სახელი და გვარი; მობილურის ნომერი SMS კოდისთვის; კომპანიის სახელზე გახსნილი ანგარიშის IBAN (საქართველოს ნებისმიერი ბანკი); საჯარო რეესტრის ამონაწერი (არასავალდებულო; PDF ან JPG, მაქსიმუმ 10 მბ).",
           },
           {
             id: "cost",
@@ -293,7 +293,7 @@ export const faqContent: Localized<FaqContent> = {
             id: "handover",
             question: "როგორ გადავცე შეკვეთა?",
             answer:
-              "მომხმარებელი გაჩვენებს 6-ნიშნა წაღების კოდს, რომელსაც პანელში შეიყვან, ან შენს თვალწინ აპლიკაციაში გადაასრიალებს წაღების ღილაკს. თანამშრომლებს შეუძლიათ გამოიყენონ ცალკე გვერდი, რომელიც PIN კოდით არის დაცული და შენს ანგარიშზე შესვლას არ საჭიროებს.",
+              "მომხმარებელი შენი თანამშრომლის თვალწინ, თავის ტელეფონზე გადაასრიალებს წაღების ღილაკს და შეკვეთა პანელში გაცემულად თავად მოინიშნება. თანამშრომელს არაფერი სჭირდება: არც აპი, არც ანგარიში, არც PIN. თუ გადასრიალება ვერ ხერხდება, მომხმარებელი 6-ნიშნა სარეზერვო კოდს გეტყვის, რომელსაც პანელში შეიყვან. სურვილისამებრ, შეგიძლია თანამშრომლის გვერდიც გამოიყენო: ის PIN კოდით არის დაცული და შეკვეთების სიას შენს ანგარიშზე შესვლის გარეშე აჩვენებს.",
           },
           {
             id: "noshow",

@@ -33,7 +33,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "joining",
         title: "Joining and verification",
         bullets: [
-          "You register with your company's legal details, a phone number confirmed by SMS, an IBAN at a Georgian bank in the company's name and a Public Registry extract. The details must be true and up to date.",
+          "You register with your company's legal details, a phone number confirmed by SMS, an IBAN at a Georgian bank in the company's name and, optionally, a Public Registry extract. The details must be true and up to date.",
           "We review every application and may decline it (we tell you why), ask for more information, or pause a business for further review.",
           "The person who registers confirms that they may act for the business.",
         ],
@@ -60,7 +60,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "handover",
         title: "Handing over orders",
         bullets: [
-          "You hand over every paid order during the pickup window shown: the customer shows a 6-digit code (enter it in the dashboard or on the staff page) or slides to collect in front of your staff.",
+          "You hand over every paid order during the pickup window shown: the customer slides to collect on their own phone in front of your staff, and the order is marked handed over by itself. Your staff can check the business name and the order number on the customer's screen. If the slider can't be used, the customer gives the 6-digit backup code, which you enter in the dashboard or on the staff page.",
           "If a customer comes after the window, you may still hand the order over with the code for 12 hours, but you don't have to.",
         ],
       },
@@ -87,7 +87,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "customers",
         title: "Customer data",
         bullets: [
-          "You see a customer's order, email (for 30 days) and reliability score only so you can hand over orders. Don't use them for anything else, including marketing, and don't share them.",
+          "You see a customer's order, email if they have one (for 30 days) and reliability score only so you can hand over orders. Don't use them for anything else, including marketing, and don't share them.",
           "Ratings and reviews are the customers' own. Don't try to influence them with rewards or pressure. You can report a review that is offensive or false.",
         ],
       },
@@ -134,7 +134,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "joining",
         title: "რეგისტრაცია და შემოწმება",
         bullets: [
-          "რეგისტრაციისთვის მიუთითებ კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, კომპანიის სახელზე გახსნილი ანგარიშის IBAN-ს (საქართველოს ნებისმიერი ბანკი) და საჯარო რეესტრის ამონაწერს. მონაცემები უნდა იყოს ზუსტი და აქტუალური.",
+          "რეგისტრაციისთვის მიუთითებ კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, კომპანიის სახელზე გახსნილი ანგარიშის IBAN-ს (საქართველოს ნებისმიერი ბანკი) და, სურვილისამებრ, საჯარო რეესტრის ამონაწერს. მონაცემები უნდა იყოს ზუსტი და აქტუალური.",
           "ყველა განაცხადს ვამოწმებთ და შეიძლება არ დავამტკიცოთ (მიზეზს მოგწერთ), დამატებითი ინფორმაცია გთხოვოთ ან ბიზნესი დამატებითი შემოწმებისთვის დროებით შევაჩეროთ.",
           "ვინც ბიზნესს არეგისტრირებს, ადასტურებს, რომ ბიზნესის სახელით მოქმედების უფლება აქვს.",
         ],
@@ -161,7 +161,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "handover",
         title: "შეკვეთის გადაცემა",
         bullets: [
-          "ყველა გადახდილ შეკვეთას მითითებულ დროს გადასცემ: მომხმარებელი აჩვენებს 6-ნიშნა კოდს (შეიყვანე პანელში ან თანამშრომლის გვერდზე) ან შენი თანამშრომლის თვალწინ გადაასრიალებს წაღების ღილაკს.",
+          "ყველა გადახდილ შეკვეთას მითითებულ დროს გადასცემ: მომხმარებელი შენი თანამშრომლის თვალწინ, თავის ტელეფონზე გადაასრიალებს წაღების ღილაკს და შეკვეთა გაცემულად თავად მოინიშნება. თანამშრომელს შეუძლია მომხმარებლის ეკრანზე გადაამოწმოს ბიზნესის სახელი და შეკვეთის ნომერი. თუ გადასრიალება ვერ ხერხდება, მომხმარებელი 6-ნიშნა სარეზერვო კოდს გეტყვის, რომელსაც პანელში ან თანამშრომლის გვერდზე შეიყვან.",
           "თუ მომხმარებელი წაღების დროის შემდეგ მოვიდა, 12 საათის განმავლობაში შეგიძლია შეკვეთა კოდით მაინც გადასცე, თუმცა ვალდებული არ ხარ.",
         ],
       },
@@ -188,7 +188,7 @@ export const businessTermsContent: Localized<BusinessTermsContent> = {
         id: "customers",
         title: "მომხმარებლის მონაცემები",
         bullets: [
-          "მომხმარებლის შეკვეთას, ელფოსტას (30 დღის განმავლობაში) და სანდოობის ქულას ხედავ მხოლოდ იმისთვის, რომ შეკვეთა გადასცე. სხვა მიზნით, მათ შორის რეკლამისთვის, არ გამოიყენო და არავის გაუზიარო.",
+          "მომხმარებლის შეკვეთას, ელფოსტას, თუ აქვს (30 დღის განმავლობაში), და სანდოობის ქულას ხედავ მხოლოდ იმისთვის, რომ შეკვეთა გადასცე. სხვა მიზნით, მათ შორის რეკლამისთვის, არ გამოიყენო და არავის გაუზიარო.",
           "შეფასებები მომხმარებლებს ეკუთვნის. ნუ შეეცდები მათზე გავლენის მოხდენას საჩუქრებით ან ზეწოლით. შეურაცხმყოფელ ან ყალბ შეფასებაზე საჩივრის გამოგზავნა შეგიძლია.",
         ],
       },

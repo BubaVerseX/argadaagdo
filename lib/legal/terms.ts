@@ -17,6 +17,8 @@ import {
 // - reliability: -2 cancel, -15 no-show, +1 pickup, < 50 = restricted (can't reserve)
 // - max 3 active reservations, one per offer: create_provider_payment_order
 // - slider 1 h before the window until it ends, 2-minute undo
+// - sign-up by phone (SMS code) or email + password (lib/useAuthForm.ts); the
+//   slider is the main pickup, the 6-digit code the backup (13 Nov 2026)
 // - 5 wrong pickup codes lock the order: 20261016141833_pickup_code_attempt_limit.sql
 // - commission per business: 20261104081140_platform_fee_rate.sql; TBC split: lib/payments/tbc.ts
 
@@ -50,9 +52,9 @@ export const termsContent: Localized<TermsContent> = {
         title: "Your account",
         bullets: [
           `You must be at least ${MINIMUM_AGE} years old to create an account and reserve.`,
-          "You sign up with an email address and a password, and confirm your email before you reserve.",
-          "You may be asked to confirm a mobile number with an SMS code. One phone number can be linked to one account only.",
-          "Keep your password private. You are responsible for activity in your account.",
+          "You sign up with your mobile number and a one-time SMS code, or with an email address and a password. If you use email, confirm it before you reserve.",
+          "Before your first reservation, you confirm a Georgian mobile number with an SMS code. One phone number can be linked to one account only.",
+          "Keep your password and SMS codes private. You are responsible for activity in your account.",
           "Keep your details accurate and up to date.",
         ],
       },
@@ -69,7 +71,7 @@ export const termsContent: Localized<TermsContent> = {
         title: "Reservations and payment",
         bullets: [
           "Each reservation is for one Lunch Box. You can hold up to 3 active reservations at a time, one per offer.",
-          "You pay online on TBC Bank's secure payment page. Your reservation is confirmed once the bank confirms the payment, and your pickup code then appears in Orders.",
+          "You pay online on TBC Bank's secure payment page. Your reservation is confirmed once the bank confirms the payment, and the order then appears in Orders.",
           "If a payment fails or isn't completed, the box goes back on sale and you aren't charged. If the bank charges you after your hold has been released, the amount is refunded automatically.",
           "We never see or store your card details. Only TBC Bank processes them.",
         ],
@@ -79,7 +81,7 @@ export const termsContent: Localized<TermsContent> = {
         title: "Pickup",
         bullets: [
           "Collect your order in person from the business during the pickup window shown.",
-          "At pickup, show staff your 6-digit pickup code, or slide to collect in the app in front of them.",
+          "At pickup, open the order in the app and slide to collect in front of staff. Staff can check the business name, the order number and the running clock on your screen. The 6-digit pickup code is a backup if the slider can't be used.",
           "The slider is available from 1 hour before the pickup window until the window ends. Slide only once the box is in your hands, because sliding completes the order. If you slide by mistake, you can undo it within 2 minutes.",
           "If you miss the pickup window, the order counts as a missed pickup and the payment isn't refunded. The business may still hand the box over if you come later, but it doesn't have to.",
           "After 5 incorrect code entries, the order is locked for security. Contact us to unlock it.",
@@ -109,7 +111,7 @@ export const termsContent: Localized<TermsContent> = {
         id: "businesses",
         title: "For businesses",
         bullets: [
-          "A business can sell only after we approve it. The application includes the company's legal details, a phone number confirmed by SMS, a bank account (IBAN) and an extract from the Public Registry. We review every application. We may decline an application (and tell you why) or pause a business for further review.",
+          "A business can sell only after we approve it. The application includes the company's legal details, a phone number confirmed by SMS, a bank account (IBAN) and, optionally, an extract from the Public Registry. We review every application. We may decline an application (and tell you why) or pause a business for further review.",
           "The business is responsible for the food it sells: its safety and quality, compliance with food safety rules, accurate descriptions and allergen information, and handing over every paid order during the stated pickup window.",
           "Businesses also accept the Business Terms (argadaagdo.ge/business-terms) when they register.",
           "ArGadaagdo charges a commission on each paid order, at a rate agreed with each business in advance. There is no monthly fee. Where the business banks with TBC Bank, TBC splits every payment automatically: the business's share goes straight to the business and our commission to us. Otherwise the payment comes to us and we pass the business's share on every week.",
@@ -169,9 +171,9 @@ export const termsContent: Localized<TermsContent> = {
         title: "ანგარიში",
         bullets: [
           `ანგარიშის შექმნა და დაჯავშნა მხოლოდ ${MINIMUM_AGE} წლიდან შეიძლება.`,
-          "რეგისტრაციისთვის გჭირდება ელფოსტა და პაროლი. დაჯავშნამდე ელფოსტა უნდა დაადასტურო.",
-          "შეიძლება დაგჭირდეს მობილურის ნომრის დადასტურება SMS კოდით. ერთი ნომერი მხოლოდ ერთ ანგარიშზე შეიძლება იყოს მიბმული.",
-          "პაროლს ნურავის გაუზიარებ. შენს ანგარიშში შესრულებულ მოქმედებებზე პასუხისმგებელი შენ ხარ.",
+          "დარეგისტრირება შეგიძლია მობილურის ნომრითა და ერთჯერადი SMS კოდით, ან ელფოსტითა და პაროლით. თუ ელფოსტას იყენებ, დაჯავშნამდე ის უნდა დაადასტურო.",
+          "პირველ ჯავშნამდე საქართველოს მობილურის ნომერს SMS კოდით ადასტურებ. ერთი ნომერი მხოლოდ ერთ ანგარიშზე შეიძლება იყოს მიბმული.",
+          "პაროლსა და SMS კოდებს ნურავის გაუზიარებ. შენს ანგარიშში შესრულებულ მოქმედებებზე პასუხისმგებელი შენ ხარ.",
           "მიუთითე სწორი და აქტუალური მონაცემები.",
         ],
       },
@@ -188,7 +190,7 @@ export const termsContent: Localized<TermsContent> = {
         title: "ჯავშანი და გადახდა",
         bullets: [
           "ერთი ჯავშანი ერთ ლანჩ ბოქსს მოიცავს. ერთდროულად შეიძლება გქონდეს მაქსიმუმ 3 აქტიური ჯავშანი, თითო შეთავაზებაზე ერთი.",
-          "გადახდა ონლაინ ხდება, TBC ბანკის დაცულ გადახდის გვერდზე. ჯავშანი დასტურდება, როგორც კი ბანკი გადახდას დაადასტურებს, და წაღების კოდი „შეკვეთებში“ გამოჩნდება.",
+          "გადახდა ონლაინ ხდება, TBC ბანკის დაცულ გადახდის გვერდზე. ჯავშანი დასტურდება, როგორც კი ბანკი გადახდას დაადასტურებს, და შეკვეთა „შეკვეთებში“ გამოჩნდება.",
           "თუ გადახდა ვერ შესრულდა ან ბოლომდე არ მიიყვანე, ბოქსი ისევ გასაყიდად ბრუნდება და თანხა არ ჩამოგეჭრება. თუ ბანკმა თანხა ჯავშნის ვადის გასვლის შემდეგ ჩამოგაჭრა, ის ავტომატურად დაგიბრუნდება.",
           "ბარათის მონაცემებს ვერც ვხედავთ და არც ვინახავთ. მათ მხოლოდ TBC ბანკი ამუშავებს.",
         ],
@@ -198,7 +200,7 @@ export const termsContent: Localized<TermsContent> = {
         title: "წაღება",
         bullets: [
           "შეკვეთა ბიზნესიდან თავად წაიღე, მითითებულ წაღების დროს.",
-          "წაღებისას თანამშრომელს აჩვენე 6-ნიშნა წაღების კოდი ან მის თვალწინ აპლიკაციაში გადაასრიალე წაღების ღილაკი.",
+          "წაღებისას აპში გახსენი შეკვეთა და თანამშრომლის თვალწინ გადაასრიალე წაღების ღილაკი. თანამშრომელს შეუძლია შენს ეკრანზე შეამოწმოს ბიზნესის სახელი, შეკვეთის ნომერი და მოძრავი საათი. 6-ნიშნა წაღების კოდი სარეზერვოა, თუ გადასრიალება ვერ ხერხდება.",
           "წაღების ღილაკი აქტიურდება წაღების დაწყებამდე 1 საათით ადრე და აქტიური რჩება წაღების დროის დასრულებამდე. გადაასრიალე მხოლოდ მაშინ, როცა ბოქსი უკვე ხელში გაქვს, რადგან ეს შეკვეთას ასრულებს. შემთხვევით გადასრიალებას 2 წუთის განმავლობაში გააუქმებ.",
           "თუ წაღების დროს გამოტოვებ, შეკვეთა გამოტოვებულ წაღებად ჩაითვლება და თანხა არ დაგიბრუნდება. ბიზნესს შეუძლია ბოქსი მოგვიანებით მოსულსაც გადმოგცეს, მაგრამ ეს მისი ნებაა.",
           "კოდის 5-ჯერ არასწორად შეყვანის შემდეგ შეკვეთა უსაფრთხოების მიზნით იბლოკება. განსაბლოკად მოგვწერე.",
@@ -228,7 +230,7 @@ export const termsContent: Localized<TermsContent> = {
         id: "businesses",
         title: "ბიზნესებისთვის",
         bullets: [
-          "ბიზნესი გაყიდვას მხოლოდ დამტკიცების შემდეგ იწყებს. განაცხადი მოიცავს კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, საბანკო ანგარიშის IBAN-ს და საჯარო რეესტრის ამონაწერს. ყველა განაცხადს ვამოწმებთ. შეიძლება განაცხადი არ დავამტკიცოთ (მიზეზს მოგწერთ) ან ბიზნესი დამატებითი შემოწმებისთვის დროებით შევაჩეროთ.",
+          "ბიზნესი გაყიდვას მხოლოდ დამტკიცების შემდეგ იწყებს. განაცხადი მოიცავს კომპანიის იურიდიულ მონაცემებს, SMS-ით დადასტურებულ ტელეფონის ნომერს, საბანკო ანგარიშის IBAN-ს და, სურვილისამებრ, საჯარო რეესტრის ამონაწერს. ყველა განაცხადს ვამოწმებთ. შეიძლება განაცხადი არ დავამტკიცოთ (მიზეზს მოგწერთ) ან ბიზნესი დამატებითი შემოწმებისთვის დროებით შევაჩეროთ.",
           "ბიზნესი პასუხს აგებს მის მიერ გაყიდულ საკვებზე: მის უვნებლობასა და ხარისხზე, სურსათის უვნებლობის მოთხოვნების დაცვაზე, ზუსტ აღწერასა და ალერგენების შესახებ ინფორმაციაზე, ასევე ყველა გადახდილი შეკვეთის მითითებულ დროს გადაცემაზე.",
           "ბიზნესები რეგისტრაციისას ასევე ეთანხმებიან ბიზნესის წესებს (argadaagdo.ge/business-terms).",
           "თითოეულ გადახდილ შეკვეთაზე არ გადააგდო იღებს საკომისიოს, რომლის განაკვეთიც თითოეულ ბიზნესთან წინასწარ თანხმდება. ყოველთვიური გადასახადი არ არის. თუ ბიზნესის ანგარიში TBC ბანკშია, TBC თითოეულ გადახდას ავტომატურად ყოფს (split): ბიზნესის წილი პირდაპირ ბიზნესს ერიცხება, ჩვენი საკომისიო კი — ჩვენ. სხვა შემთხვევაში გადახდა ჩვენთან შემოდის და ბიზნესის წილს ყოველ კვირა გადავურიცხავთ.",
