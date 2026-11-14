@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { CameraIcon, ChevronDownIcon, ClockIcon, EditIcon, PackageIcon, PlusIcon } from "@/components/icons";
+import { CameraIcon, EditIcon, PackageIcon, PlusIcon } from "@/components/icons";
 import { RequiredMark } from "@/components/RequiredMark";
 import type { Language } from "@/lib/i18n";
 import {
@@ -54,36 +54,52 @@ type BagTemplatesPanelProps = {
   /** Goes up by one when the home screen asks to add a box. */
   newBoxSignal: number;
   onSave: (input: BagTemplateInput, templateId: number | null) => Promise<boolean>;
-  /** "Only today": one box for today, no schedule. */
-  onPublishToday: (input: BagTemplateInput) => Promise<boolean>;
   onToggleActive: (template: BagTemplate) => void;
   onDelete: (template: BagTemplate) => void;
   onPublishNow: (template: BagTemplate, day: "today" | "tomorrow") => void;
   onUploadImage: (file: File) => Promise<ImageUploadResult>;
 };
 
-type When = "everyday" | "today" | "days";
+// Every day, or the days the shop picks. (No "only today" and no "day
+// before": a new box shows up by itself at its time, also on the day it is
+// made, and "Publish today too" on the box card covers the rest.)
+type When = "everyday" | "days";
+
+const DEFAULT_PUBLISH_TIME = "12:00";
 
 type FormState = {
   departmentId: string;
   title: string;
   description: string;
   category: OfferCategory;
+  /** True while the app still picks the category (until the shop taps one). */
+  categoryAuto: boolean;
   size: BagSize;
   price: string;
   oldPrice: string;
-  unlimited: boolean;
   dailyQuantity: string;
   pickupStart: string;
   pickupEnd: string;
   when: When;
   days: number[];
   publishTime: string;
-  publishDaysBefore: 0 | 1;
   imageUrl: string;
 };
 
-function defaultCategory(business: Business): OfferCategory {
+// Department names that point to one category (Georgian or English).
+const departmentCategoryHints: [RegExp, OfferCategory][] = [
+  [/საცხობ|ცომეულ|პურ|bakery|bread/i, "Bakery"],
+  [/ხილ|ბოსტნ|fruit|veg|produce/i, "Fruit & veg"],
+  [/რძ|ყველ|dairy|milk|cheese/i, "Dairy"],
+  [/კულინარ|მზა კერძ|სამზარეულ|deli|kitchen|ready/i, "Deli"],
+];
+
+/** The category the app picks: from the department's name, else the shop type. */
+function autoCategory(business: Business, department: Department | null | undefined): OfferCategory {
+  const name = department && !(department.is_default && department.name === "Main") ? department.name : "";
+  for (const [pattern, category] of departmentCategoryHints) {
+    if (name && pattern.test(name)) return category;
+  }
   switch (business.business_type) {
     case "Bakery":
       return "Bakery";
@@ -101,18 +117,17 @@ function emptyForm(business: Business, departments: Department[]): FormState {
     departmentId: defaultDepartment ? String(defaultDepartment.id) : "",
     title: "",
     description: "",
-    category: defaultCategory(business),
+    category: autoCategory(business, defaultDepartment),
+    categoryAuto: true,
     size: "M",
     price: "",
     oldPrice: "",
-    unlimited: false,
     dailyQuantity: "5",
     pickupStart: "19:00",
     pickupEnd: "21:00",
     when: "everyday",
     days: [...ISO_WEEKDAYS],
-    publishTime: "12:00",
-    publishDaysBefore: 0,
+    publishTime: DEFAULT_PUBLISH_TIME,
     imageUrl: "",
   };
 }
@@ -124,17 +139,21 @@ function formFromTemplate(template: BagTemplate): FormState {
     title: template.title,
     description: template.description || "",
     category: normalizeOfferCategory(template.category),
+    categoryAuto: false,
     size: normalizeBagSize(template.size) ?? "M",
     price: String(template.price ?? ""),
     oldPrice: template.old_price ? String(template.old_price) : "",
-    unlimited: template.daily_quantity === null,
-    dailyQuantity: template.daily_quantity ? String(template.daily_quantity) : "5",
+    // Older "unlimited" boxes: the shop types a number when it changes the box.
+    dailyQuantity: template.daily_quantity ? String(template.daily_quantity) : "",
     pickupStart: template.pickup_start.slice(0, 5),
     pickupEnd: template.pickup_end.slice(0, 5),
     when: days.length >= 7 ? "everyday" : "days",
     days,
-    publishTime: (template.publish_time || "12:00").slice(0, 5),
-    publishDaysBefore: template.publish_days_before === 1 ? 1 : 0,
+    // Older "day before" boxes become same-day boxes when they are changed.
+    publishTime:
+      template.publish_days_before === 1
+        ? DEFAULT_PUBLISH_TIME
+        : (template.publish_time || DEFAULT_PUBLISH_TIME).slice(0, 5),
     imageUrl: template.image_url || "",
   };
 }
@@ -173,7 +192,6 @@ export function BagTemplatesPanel({
   todayTemplateIds,
   newBoxSignal,
   onSave,
-  onPublishToday,
   onToggleActive,
   onDelete,
   onPublishNow,
@@ -184,7 +202,7 @@ export function BagTemplatesPanel({
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<FormState>(() => emptyForm(business, departments));
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
   const [formError, setFormError] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -202,7 +220,7 @@ export function BagTemplatesPanel({
   function openForm(next: FormState, id: number | null) {
     setEditingId(id);
     setForm(next);
-    setMoreOpen(false);
+    setCategoryOpen(false);
     setFormError("");
     setImageError("");
     setFormOpen(true);
@@ -247,13 +265,28 @@ export function BagTemplatesPanel({
     update("dailyQuantity", String(Math.min(500, Math.max(1, next))));
   }
 
+  // A new box follows its department's category until the shop picks one.
+  function changeDepartment(value: string) {
+    setForm((current) => ({
+      ...current,
+      departmentId: value,
+      category: current.categoryAuto
+        ? autoCategory(business, departments.find((d) => String(d.id) === value))
+        : current.category,
+    }));
+  }
+
+  function pickCategory(category: OfferCategory) {
+    setForm((current) => ({ ...current, category, categoryAuto: false }));
+    setCategoryOpen(false);
+  }
+
   async function submit() {
     setFormError("");
     const title = form.title.trim();
     const price = Number(form.price);
     const oldPrice = form.oldPrice ? Number(form.oldPrice) : null;
-    const onlyToday = form.when === "today";
-    const dailyQuantity = form.unlimited && !onlyToday ? null : Number(form.dailyQuantity);
+    const dailyQuantity = Number(form.dailyQuantity);
     const days = form.when === "days" ? [...form.days].sort((a, b) => a - b) : [...ISO_WEEKDAYS];
 
     if (title.length < 3) {
@@ -275,7 +308,7 @@ export function BagTemplatesPanel({
       );
       return;
     }
-    if (dailyQuantity !== null && (!Number.isInteger(dailyQuantity) || dailyQuantity < 1 || dailyQuantity > 500)) {
+    if (!Number.isInteger(dailyQuantity) || dailyQuantity < 1 || dailyQuantity > 500) {
       setFormError(L("ბოქსების რაოდენობა 1-დან 500-მდე უნდა იყოს.", "The number of boxes must be between 1 and 500."));
       return;
     }
@@ -287,28 +320,18 @@ export function BagTemplatesPanel({
       setFormError(L("აირჩიე ერთი დღე მაინც.", "Choose at least one day."));
       return;
     }
-    if (
-      onlyToday &&
-      isOrderPastPickupEnd({ pickup_date: getTbilisiDateKey(), pickup_start: form.pickupStart, pickup_end: form.pickupEnd })
-    ) {
-      setFormError(L("დღეს ეს წაღების დრო უკვე გავიდა. აირჩიე უფრო გვიანი დრო.", "This pickup time has already passed today. Choose a later time."));
+    if (!/^\d{2}:\d{2}$/.test(form.publishTime)) {
+      setFormError(L("მიუთითე, რომელ საათზე გამოჩნდეს აპში.", "Add the time it appears in the app."));
       return;
     }
-    if (!onlyToday) {
-      if (!/^\d{2}:\d{2}$/.test(form.publishTime)) {
-        setFormError(L("მიუთითე, რომელ საათზე გამოჩნდეს აპში.", "Add the time it appears in the app."));
-        return;
-      }
-      if (form.publishDaysBefore === 0 && form.publishTime >= form.pickupEnd) {
-        setFormError(
-          L(
-            "ბოქსი აპში წაღების დასრულებამდე უნდა გამოჩნდეს. შეცვალე გამოჩენის დრო: „მეტი პარამეტრი“ → „გამოჩენის დრო“.",
-            "The box must appear in the app before pickup ends. Change the time under “More options”."
-          )
-        );
-        setMoreOpen(true);
-        return;
-      }
+    if (form.publishTime >= form.pickupEnd) {
+      setFormError(
+        L(
+          "ბოქსი აპში წაღების დასრულებამდე უნდა გამოჩნდეს. შეცვალე „აპში გამოჩენის დრო“.",
+          "The box must appear in the app before pickup ends. Change “Shows up in the app at”."
+        )
+      );
+      return;
     }
 
     const input: BagTemplateInput = {
@@ -325,12 +348,12 @@ export function BagTemplatesPanel({
       pickup_end: form.pickupEnd,
       days_of_week: days,
       publish_time: form.publishTime,
-      publish_days_before: form.publishDaysBefore,
+      publish_days_before: 0,
       image_url: form.imageUrl.trim() || null,
     };
 
     setSaving(true);
-    const ok = onlyToday ? await onPublishToday(input) : await onSave(input, editingId);
+    const ok = await onSave(input, editingId);
     setSaving(false);
     if (ok) closeForm();
   }
@@ -341,18 +364,6 @@ export function BagTemplatesPanel({
     form.price && form.oldPrice && priceValue > 0 && oldPriceValue > priceValue
       ? Math.round((1 - priceValue / oldPriceValue) * 100)
       : null;
-
-  const scheduleLine =
-    form.when === "today"
-      ? L("აპში ახლავე გამოჩნდება, მხოლოდ დღეს.", "Appears in the app right away, today only.")
-      : L(
-          `აპში ${form.when === "everyday" ? "ყოველდღე" : "არჩეულ დღეებში"} ${
-            form.publishDaysBefore === 1 ? `წინა დღეს ${form.publishTime}-ზე` : `${form.publishTime}-ზე`
-          } გამოჩნდება.`,
-          `Appears in the app ${form.when === "everyday" ? "every day" : "on the chosen days"} ${
-            form.publishDaysBefore === 1 ? `the day before at ${form.publishTime}` : `at ${form.publishTime}`
-          }.`
-        );
 
   const inputClass = "premium-input w-full min-w-0 p-3 font-semibold";
   const labelClass = "grid min-w-0 gap-2 text-sm font-semibold text-body";
@@ -452,6 +463,24 @@ export function BagTemplatesPanel({
               />
             </label>
 
+            {/* Department: only for shops with more than one */}
+            {showDepartmentSelect && (
+              <label className={labelClass}>
+                {L("განყოფილება", "Department")}
+                <select
+                  value={form.departmentId}
+                  onChange={(event) => changeDepartment(event.target.value)}
+                  className={inputClass}
+                >
+                  {departments.map((department) => (
+                    <option key={department.id} value={department.id}>
+                      {getDepartmentDisplayName(department, language)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+
             {/* 3. Price and value */}
             <div className="grid gap-2">
               <div className="grid grid-cols-2 items-end gap-3">
@@ -494,40 +523,33 @@ export function BagTemplatesPanel({
             {/* 4. How many */}
             <div className={labelClass}>
               <span>
-                {form.when === "today" ? L("რამდენი ბოქსი", "How many boxes") : L("რამდენი ბოქსი დღეში", "Boxes per day")}{" "}
-                <RequiredMark />
+                {L("რამდენი ბოქსი დღეში", "Boxes per day")} <RequiredMark />
               </span>
-              {form.unlimited && form.when !== "today" ? (
-                <p className="text-base font-semibold text-cream">
-                  {L("ულიმიტო — სანამ არ გააჩერებ", "Unlimited — until you stop it")}
-                </p>
-              ) : (
-                <div className="ui-well flex w-fit items-center rounded-2xl">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Number(form.dailyQuantity || 0) - 1)}
-                    aria-label={L("ერთით ნაკლები", "One fewer")}
-                    className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-bold text-cream transition hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
-                  >
-                    −
-                  </button>
-                  <input
-                    value={form.dailyQuantity}
-                    onChange={(event) => update("dailyQuantity", event.target.value.replace(/\D/g, "").slice(0, 3))}
-                    inputMode="numeric"
-                    aria-label={L("ბოქსების რაოდენობა", "Number of boxes")}
-                    className="w-14 bg-transparent text-center text-xl font-bold text-cream focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Number(form.dailyQuantity || 0) + 1)}
-                    aria-label={L("ერთით მეტი", "One more")}
-                    className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-bold text-cream transition hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
-                  >
-                    +
-                  </button>
-                </div>
-              )}
+              <div className="ui-well flex w-fit items-center rounded-2xl">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Number(form.dailyQuantity || 0) - 1)}
+                  aria-label={L("ერთით ნაკლები", "One fewer")}
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-bold text-cream transition hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                >
+                  −
+                </button>
+                <input
+                  value={form.dailyQuantity}
+                  onChange={(event) => update("dailyQuantity", event.target.value.replace(/\D/g, "").slice(0, 3))}
+                  inputMode="numeric"
+                  aria-label={L("ბოქსების რაოდენობა", "Number of boxes")}
+                  className="w-14 bg-transparent text-center text-xl font-bold text-cream focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Number(form.dailyQuantity || 0) + 1)}
+                  aria-label={L("ერთით მეტი", "One more")}
+                  className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-bold text-cream transition hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-mint"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             {/* 5. Pickup time */}
@@ -554,17 +576,39 @@ export function BagTemplatesPanel({
               </div>
             </div>
 
-            {/* 6. When */}
+            {/* 6. Time it shows up in the app (same day) */}
+            <label className={labelClass}>
+              <span>
+                {L("აპში გამოჩენის დრო", "Shows up in the app at")} <RequiredMark />
+              </span>
+              <input
+                value={form.publishTime}
+                onChange={(event) => update("publishTime", event.target.value)}
+                type="time"
+                className="premium-input w-36 p-3 font-semibold"
+              />
+              <span className="text-xs font-normal text-body">
+                {L(
+                  "მყიდველს გაუქმება შეუძლია წაღებამდე 2 საათით ადრე.",
+                  "Buyers can cancel until 2 hours before pickup starts."
+                )}
+                {form.pickupStart &&
+                  /^\d{2}:\d{2}$/.test(form.publishTime) &&
+                  minutesOf(form.pickupStart) - minutesOf(form.publishTime) < 120 &&
+                  L(" ამ დროით გაუქმება ვერ მოხერხდება.", " With this time, nobody can cancel.")}
+              </span>
+            </label>
+
+            {/* 7. Days */}
             <div className={labelClass}>
               <span>
-                {L("როდის", "When")} <RequiredMark />
+                {L("დღეები", "Days")} <RequiredMark />
               </span>
               <div className="flex flex-wrap gap-2">
                 {(
                   [
                     ["everyday", L("ყოველდღე", "Every day")],
-                    ...(editingId ? [] : [["today", L("მხოლოდ დღეს", "Only today")]]),
-                    ["days", L("არჩეულ დღეებში", "Chosen days")],
+                    ["days", L("აირჩიე დღეები", "Choose days")],
                   ] as [When, string][]
                 ).map(([value, label]) => (
                   <button
@@ -598,142 +642,69 @@ export function BagTemplatesPanel({
                   })}
                 </div>
               )}
-              <p className="flex items-center gap-2 text-sm font-normal text-body">
-                <ClockIcon className="h-4 w-4 shrink-0 text-mint" strokeWidth={2} />
-                {scheduleLine}
-              </p>
             </div>
 
-            {/* More options */}
-            <div className="border-t border-line pt-4">
-              <button
-                type="button"
-                onClick={() => setMoreOpen((open) => !open)}
-                aria-expanded={moreOpen}
-                className="flex min-h-11 items-center gap-2 text-sm font-semibold text-cream"
-              >
-                <ChevronDownIcon
-                  className={`h-4 w-4 transition ${moreOpen ? "rotate-180" : ""}`}
-                  strokeWidth={2.2}
-                />
-                {L("მეტი პარამეტრი", "More options")}
-              </button>
+            {/* 8. Size: M unless the shop picks another */}
+            <div className={labelClass}>
+              {L("ზომა", "Size")}
+              <div className="grid max-w-sm grid-cols-3 gap-2">
+                {BAG_SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    aria-pressed={form.size === size}
+                    onClick={() => update("size", size)}
+                    className={`${chip(form.size === size)} flex flex-col items-center rounded-2xl px-2 leading-tight`}
+                  >
+                    <span className="text-base font-bold">{size}</span>
+                    <span className="text-xs font-semibold">{getBagSizeLabel(size, language)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-              {moreOpen && (
-                <div className="mt-3 grid gap-5">
-                  {showDepartmentSelect && (
-                    <label className={labelClass}>
-                      {L("განყოფილება", "Department")}
-                      <select
-                        value={form.departmentId}
-                        onChange={(event) => update("departmentId", event.target.value)}
-                        className={inputClass}
-                      >
-                        {departments.map((department) => (
-                          <option key={department.id} value={department.id}>
-                            {getDepartmentDisplayName(department, language)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  )}
+            {/* 9. Description */}
+            <label className={labelClass}>
+              {L("აღწერა", "Description")}
+              <textarea
+                value={form.description}
+                onChange={(event) => update("description", event.target.value)}
+                maxLength={500}
+                className={`${inputClass} min-h-24`}
+                placeholder={L(
+                  "მაგ. დღის ბოლოს დარჩენილი პური, ფუნთუშები და ნამცხვრები.",
+                  "e.g. bread, buns and pastries from the end of the day."
+                )}
+              />
+            </label>
 
-                  <div className={labelClass}>
-                    {L("კატეგორია (აპის ფილტრისთვის)", "Category (for the app's filter)")}
-                    <div className="flex flex-wrap gap-2">
-                      {OFFER_CATEGORIES.map((category) => (
-                        <button
-                          key={category}
-                          type="button"
-                          aria-pressed={form.category === category}
-                          onClick={() => update("category", category)}
-                          className={chip(form.category === category)}
-                        >
-                          {getOfferCategoryLabel(category, language)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className={labelClass}>
-                    {L("ზომა", "Size")}
-                    <div className="flex flex-wrap gap-2">
-                      {BAG_SIZES.map((size) => (
-                        <button
-                          key={size}
-                          type="button"
-                          aria-pressed={form.size === size}
-                          onClick={() => update("size", size)}
-                          className={chip(form.size === size)}
-                        >
-                          {size} · {getBagSizeLabel(size, language)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {form.when !== "today" && (
-                    <>
-                      <div className={labelClass}>
-                        {L("როდის გამოჩნდეს აპში", "When it appears in the app")}
-                        <div className="flex flex-wrap items-center gap-2">
-                          {([0, 1] as const).map((daysBefore) => (
-                            <button
-                              key={daysBefore}
-                              type="button"
-                              aria-pressed={form.publishDaysBefore === daysBefore}
-                              onClick={() => update("publishDaysBefore", daysBefore)}
-                              className={chip(form.publishDaysBefore === daysBefore)}
-                            >
-                              {daysBefore === 0 ? L("იმავე დღეს", "Same day") : L("წინა დღეს", "Day before")}
-                            </button>
-                          ))}
-                          <input
-                            value={form.publishTime}
-                            onChange={(event) => update("publishTime", event.target.value)}
-                            type="time"
-                            aria-label={L("გამოჩენის დრო", "Time it appears")}
-                            className="premium-input w-36 p-3 font-semibold"
-                          />
-                        </div>
-                        <span className="text-xs font-normal text-body">
-                          {L(
-                            "მყიდველს გაუქმება შეუძლია წაღებამდე 2 საათით ადრე.",
-                            "Buyers can cancel until 2 hours before pickup starts."
-                          )}
-                          {form.publishDaysBefore === 0 &&
-                            form.pickupStart &&
-                            /^\d{2}:\d{2}$/.test(form.publishTime) &&
-                            minutesOf(form.pickupStart) - minutesOf(form.publishTime) < 120 &&
-                            L(" ამ დროით გაუქმება ვერ მოხერხდება.", " With this time, nobody can cancel.")}
-                        </span>
-                      </div>
-
-                      <label className="flex min-h-11 items-center gap-3 text-sm font-semibold text-cream">
-                        <input
-                          type="checkbox"
-                          checked={form.unlimited}
-                          onChange={(event) => update("unlimited", event.target.checked)}
-                          className="h-5 w-5 accent-[var(--brand-forest)]"
-                        />
-                        {L("ულიმიტო რაოდენობა — სანამ არ გავაჩერებ", "Unlimited — until I stop it")}
-                      </label>
-                    </>
-                  )}
-
-                  <label className={labelClass}>
-                    {L("აღწერა", "Description")}
-                    <textarea
-                      value={form.description}
-                      onChange={(event) => update("description", event.target.value)}
-                      maxLength={500}
-                      className={`${inputClass} min-h-24`}
-                      placeholder={L(
-                        "მაგ. დღის ბოლოს დარჩენილი პური, ფუნთუშები და ნამცხვრები.",
-                        "e.g. bread, buns and pastries from the end of the day."
-                      )}
-                    />
-                  </label>
+            {/* 10. Category: the app picks it; the shop can still change it */}
+            <div className="grid gap-2 text-sm text-body">
+              <p className="flex flex-wrap items-center gap-x-2">
+                <span>{L("კატეგორია:", "Category:")}</span>
+                <span className="font-semibold text-cream">{getOfferCategoryLabel(form.category, language)}</span>
+                <button
+                  type="button"
+                  onClick={() => setCategoryOpen((open) => !open)}
+                  aria-expanded={categoryOpen}
+                  className="min-h-11 px-1 font-semibold text-body underline underline-offset-4"
+                >
+                  {L("შეცვლა", "Change")}
+                </button>
+              </p>
+              {categoryOpen && (
+                <div className="flex flex-wrap gap-2">
+                  {OFFER_CATEGORIES.map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      aria-pressed={form.category === category}
+                      onClick={() => pickCategory(category)}
+                      className={chip(form.category === category)}
+                    >
+                      {getOfferCategoryLabel(category, language)}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
@@ -754,11 +725,9 @@ export function BagTemplatesPanel({
             >
               {saving
                 ? L("ინახება...", "Saving...")
-                : form.when === "today"
-                  ? L("დღეს გამოქვეყნება", "Publish for today")
-                  : editingId
-                    ? L("შენახვა", "Save")
-                    : L("ბოქსის შენახვა", "Save box")}
+                : editingId
+                  ? L("შენახვა", "Save")
+                  : L("ბოქსის შენახვა", "Save box")}
             </button>
             <button type="button" onClick={closeForm} className="premium-button-secondary min-h-12 px-5 py-2.5">
               {L("გაუქმება", "Cancel")}

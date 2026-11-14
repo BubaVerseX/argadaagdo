@@ -987,56 +987,6 @@ function BusinessDashboardPage() {
     await loadDashboard();
   }
 
-  // "Only today" in the box form: one box for today, without a schedule.
-  async function publishBoxForToday(input: BagTemplateInput) {
-    if (!approvedBusinesses.some((business) => business.id === input.business_id)) {
-      setMessageTone("error");
-      setMessage("Your business is not approved yet.");
-      return false;
-    }
-
-    const businessDepartments = departments.filter(
-      (department) => department.business_id === input.business_id
-    );
-    const department =
-      businessDepartments.find((item) => item.id === input.department_id) ||
-      businessDepartments.find((item) => item.is_default) ||
-      businessDepartments[0];
-
-    const { error } = await supabase.from("offers").insert({
-      business_id: input.business_id,
-      department_id: department ? department.id : null,
-      title: input.title,
-      description: input.description,
-      category: input.category,
-      size: input.size,
-      price: input.price,
-      old_price: input.old_price,
-      quantity: input.daily_quantity ?? 1,
-      pickup_date: getTbilisiDateKey(),
-      pickup_start: input.pickup_start,
-      pickup_end: input.pickup_end,
-      image_url: input.image_url,
-      active: true,
-      status: "active",
-    });
-
-    if (error) {
-      logAppError("Offer creation failed", error, {
-        operation: "create_offer_today",
-        businessId: input.business_id,
-      });
-      setMessageTone("error");
-      setMessage("Offer could not be published. Please check the details and try again.");
-      return false;
-    }
-
-    setMessageTone("success");
-    setMessage("Today's box is on sale.");
-    await loadDashboard();
-    return true;
-  }
-
   // A photo straight on one box (the home card). Returns an error text, or "".
   async function setOfferPhoto(offer: Offer, file: File) {
     const result = await uploadTemplateImage(file);
@@ -2148,7 +2098,6 @@ function BusinessDashboardPage() {
               todayTemplateIds={todayTemplateIds}
               newBoxSignal={newBoxSignal}
               onSave={saveBagTemplate}
-              onPublishToday={publishBoxForToday}
               onToggleActive={(template) => void toggleTemplateActive(template)}
               onDelete={(template) => void deleteBagTemplate(template)}
               onPublishNow={(template, day) => void publishTemplateNow(template, day)}
