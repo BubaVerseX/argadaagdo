@@ -29,6 +29,8 @@ export type BagTemplate = {
   publish_time?: string | null;
   /** 0 = on the pickup day, 1 = the day before. */
   publish_days_before?: number | null;
+  /** "HH:MM" on the pickup day after which nobody can reserve; null = until pickup ends. */
+  reserve_until?: string | null;
   image_url: string | null;
   active: boolean;
   created_at?: string | null;

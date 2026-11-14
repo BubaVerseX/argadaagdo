@@ -54,6 +54,7 @@ export default function NativeFavorites() {
     const status = favorite.offers ? getEffectiveOfferStatus(favorite.offers) : null;
     if (status === "active") return null;
     if (status === "sold_out") return L("გაიყიდა", "Sold out");
+    if (status === "closed") return L("ჯავშანი დასრულდა", "Reservations closed");
     if (status === "expired") return L("ვადა გავიდა", "Ended");
     return L("ახლა მიუწვდომელია", "Not available now");
   }

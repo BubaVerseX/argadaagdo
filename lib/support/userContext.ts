@@ -58,6 +58,7 @@ type TemplateRow = {
   days_of_week: number[] | null;
   publish_time: string | null;
   publish_days_before: number | null;
+  reserve_until?: string | null;
   active: boolean | null;
 };
 
@@ -209,7 +210,7 @@ async function describeBusinesses(
     client
       .from("bag_templates")
       .select(
-        "business_id, department_id, title, size, price, old_price, daily_quantity, pickup_start, pickup_end, days_of_week, publish_time, publish_days_before, active"
+        "business_id, department_id, title, size, price, old_price, daily_quantity, pickup_start, pickup_end, days_of_week, publish_time, publish_days_before, reserve_until, active"
       )
       .in("business_id", ids)
       .order("id", { ascending: true })
@@ -291,7 +292,9 @@ async function describeBusinesses(
             template.old_price ? ` (regular ${money(template.old_price)})` : ""
           }; ${template.daily_quantity === null ? "until sales are stopped" : `${template.daily_quantity} per day`}; days ${days || "-"}; on sale at ${hhmm(template.publish_time)} ${
             template.publish_days_before === 1 ? "the day before" : "the same day"
-          }; pickup ${hhmm(template.pickup_start)}–${hhmm(template.pickup_end)}; ${template.active ? "on" : "off"}`
+          }; pickup ${hhmm(template.pickup_start)}–${hhmm(template.pickup_end)}${
+            template.reserve_until ? `; reservations close ${hhmm(template.reserve_until)}` : ""
+          }; ${template.active ? "on" : "off"}`
         );
       }
     }

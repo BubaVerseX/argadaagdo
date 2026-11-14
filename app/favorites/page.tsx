@@ -71,6 +71,13 @@ function getFavoriteAvailability(
     };
   }
 
+  if (status === "closed") {
+    return {
+      label: t("common.reservationsClosed"),
+      className: "bg-warning-soft text-warning",
+    };
+  }
+
   if (status === "expired") {
     return {
       label: t("common.expired"),

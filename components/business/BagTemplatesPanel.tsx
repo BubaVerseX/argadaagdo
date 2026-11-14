@@ -41,6 +41,8 @@ export type BagTemplateInput = {
   days_of_week: number[];
   publish_time: string;
   publish_days_before: number;
+  /** "HH:MM" after which nobody can reserve; null = until pickup ends. */
+  reserve_until: string | null;
   image_url: string | null;
 };
 
@@ -84,6 +86,9 @@ type FormState = {
   when: When;
   days: number[];
   publishTime: string;
+  /** Reservations close when pickup ends, or at a time the shop picks. */
+  reserveMode: "pickup_end" | "time";
+  reserveUntil: string;
   imageUrl: string;
 };
 
@@ -121,6 +126,8 @@ function emptyForm(business: Business, departments: Department[]): FormState {
     when: "everyday",
     days: [...ISO_WEEKDAYS],
     publishTime: DEFAULT_PUBLISH_TIME,
+    reserveMode: "pickup_end",
+    reserveUntil: "",
     imageUrl: "",
   };
 }
@@ -147,6 +154,8 @@ function formFromTemplate(template: BagTemplate): FormState {
       template.publish_days_before === 1
         ? DEFAULT_PUBLISH_TIME
         : (template.publish_time || DEFAULT_PUBLISH_TIME).slice(0, 5),
+    reserveMode: template.reserve_until ? "time" : "pickup_end",
+    reserveUntil: template.reserve_until ? template.reserve_until.slice(0, 5) : "",
     imageUrl: template.image_url || "",
   };
 }
@@ -326,6 +335,31 @@ export function BagTemplatesPanel({
       );
       return;
     }
+    const reserveUntil = form.reserveMode === "time" ? form.reserveUntil : "";
+    if (form.reserveMode === "time") {
+      if (!/^\d{2}:\d{2}$/.test(reserveUntil)) {
+        setFormError(L("მიუთითე ჯავშნის ბოლო დრო.", "Add the time reservations close."));
+        return;
+      }
+      if (reserveUntil <= form.publishTime) {
+        setFormError(
+          L(
+            "ჯავშნის ბოლო დრო აპში გამოჩენის შემდეგ უნდა იყოს.",
+            "Reservations must close after the box shows up in the app."
+          )
+        );
+        return;
+      }
+      if (reserveUntil > form.pickupEnd) {
+        setFormError(
+          L(
+            "ჯავშნის ბოლო დრო წაღების დასრულებამდე უნდა იყოს.",
+            "Reservations must close before pickup ends."
+          )
+        );
+        return;
+      }
+    }
 
     const input: BagTemplateInput = {
       business_id: business.id,
@@ -342,6 +376,7 @@ export function BagTemplatesPanel({
       days_of_week: days,
       publish_time: form.publishTime,
       publish_days_before: 0,
+      reserve_until: reserveUntil || null,
       image_url: form.imageUrl.trim() || null,
     };
 
@@ -592,6 +627,45 @@ export function BagTemplatesPanel({
               </span>
             </label>
 
+            {/* Reservations close: when pickup ends (default), or at a chosen time */}
+            <div className={labelClass}>
+              <span>{L("ჯავშნის ბოლო დრო", "Reservations close")}</span>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    ["pickup_end", L("წაღების ბოლომდე", "When pickup ends")],
+                    ["time", L("აირჩიე დრო", "Choose a time")],
+                  ] as ["pickup_end" | "time", string][]
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={form.reserveMode === value}
+                    onClick={() =>
+                      setForm((current) => ({
+                        ...current,
+                        reserveMode: value,
+                        reserveUntil:
+                          value === "time" && !current.reserveUntil ? current.pickupStart : current.reserveUntil,
+                      }))
+                    }
+                    className={chip(form.reserveMode === value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {form.reserveMode === "time" && (
+                <input
+                  value={form.reserveUntil}
+                  onChange={(event) => update("reserveUntil", event.target.value)}
+                  type="time"
+                  aria-label={L("ჯავშნის ბოლო დრო", "Reservations close at")}
+                  className="premium-input w-36 p-3 font-semibold"
+                />
+              )}
+            </div>
+
             {/* 7. Days */}
             <div className={labelClass}>
               <span>
@@ -828,7 +902,11 @@ export function BagTemplatesPanel({
                   </p>
                   <p className="text-xs text-body">
                     {template.active
-                      ? formatPublishSchedule(template, language)
+                      ? `${formatPublishSchedule(template, language)}${
+                          template.reserve_until
+                            ? ` · ${L(`ჯავშანი ${template.reserve_until.slice(0, 5)}-მდე`, `reserve until ${template.reserve_until.slice(0, 5)}`)}`
+                            : ""
+                        }`
                       : L("გამორთულია — აპში აღარ ჩნდება", "Off — not shown in the app")}
                   </p>
                 </div>

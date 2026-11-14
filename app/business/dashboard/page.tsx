@@ -872,18 +872,23 @@ function BusinessDashboardPage() {
       return false;
     }
 
-    // A new photo also goes on this box's boxes that are already out today
-    // or later, so buyers see it now and not only from tomorrow.
-    if (templateId && input.image_url) {
-      const { error: photoError } = await supabase
+    // A new photo and the "reservations close at" time also go on this
+    // box's boxes that are already out today or later, so they count now and
+    // not only from tomorrow.
+    if (templateId) {
+      const changes: { reserve_until: string | null; image_url?: string } = {
+        reserve_until: input.reserve_until,
+      };
+      if (input.image_url) changes.image_url = input.image_url;
+      const { error: copyError } = await supabase
         .from("offers")
-        .update({ image_url: input.image_url })
+        .update(changes)
         .eq("template_id", templateId)
         .gte("pickup_date", getTbilisiDateKey())
         .in("business_id", ownedBusinessIds);
-      if (photoError) {
-        logAppError("Box photo could not be copied to published boxes", photoError, {
-          operation: "copy_template_photo",
+      if (copyError) {
+        logAppError("Box changes could not be copied to published boxes", copyError, {
+          operation: "copy_template_changes",
           templateId,
         });
       }
