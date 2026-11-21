@@ -78,6 +78,24 @@ cd android && JAVA_HOME=/opt/homebrew/opt/openjdk@21 ANDROID_HOME=$HOME/Library/
 For every later upload: bump `versionCode` (2, 3, …) and `versionName` in
 `android/app/build.gradle`; Play rejects a reused versionCode.
 
+### Code shrinking (R8) and edge-to-edge
+
+- Release builds use R8 (`minifyEnabled true`, `shrinkResources true`,
+  `proguard-android-optimize.txt` + `android/app/proguard-rules.pro`), added
+  21 Nov 2026 for Play's "DEX code optimization is below our threshold"
+  warning (obfuscation 1% on versionCode 9, fix by Feb 2027). First used in
+  the build after versionCode 9: install that release build on a real phone
+  and check launch, sign-in, map, checkout (TBC page), push notifications and
+  share before uploading. The R8 mapping file is packed into the .aab, so
+  Play de-obfuscates crash reports by itself.
+- "Edge-to-edge may not display for all users" (Android vitals
+  recommendation) needs no code change: Capacitor 8's built-in SystemBars
+  handles Android 15+ insets (pads the WebView and sets the
+  `--safe-area-inset-*` CSS variables the site already uses). We do not call
+  `EdgeToEdge.enable()` for older Android, because Capacitor only reports
+  insets there when the WebView supports it, which could put content under
+  the status bar.
+
 ### Signing (upload key)
 
 | | |

@@ -44,8 +44,15 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // R8 code shrinking + obfuscation (Google Play "DEX code
+            // optimization" warning, fix by Feb 2027). Capacitor and its
+            // plugins ship their own keep rules; ours are in
+            // proguard-rules.pro. The mapping file goes into the .aab, so
+            // Play can de-obfuscate crash reports. Test the release build on
+            // a real phone before uploading.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keystoreProperties['storeFile']) {
                 signingConfig signingConfigs.release
             }

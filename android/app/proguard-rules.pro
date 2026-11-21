@@ -19,3 +19,23 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# --- ArGadaagdo -------------------------------------------------------------
+# Capacitor core and every @capacitor/* plugin bring their own consumer rules
+# (plugin classes, @PluginMethod, @JavascriptInterface bridge). These extra
+# lines only keep crash reports readable and stay safe with reflection.
+
+# Readable stack traces in Play Console (file names and line numbers).
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# Annotations and generics used by the Capacitor bridge and Firebase.
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+
+# The app's own activity (declared in AndroidManifest.xml).
+-keep class com.argadaagdo.app.** { *; }
+
+# Any WebView JavaScript interface (Capacitor's bridge uses one).
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
